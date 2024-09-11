@@ -330,6 +330,7 @@
     "gem_class.boots": "靴子",
     "gem_class.shield": "盾牌",
     "gem_class.heavy_weapon": "重型武器",
+    "gem_class.anything": "任何",
 
     "bonus.apotheosis:durability.desc": "无视%s%%耐久度损耗",
     "bonus.apotheosis:enchantment.desc": "+%s%s%s",
@@ -1180,6 +1181,7 @@
     "item.apotheosis.potion_charm.enabled": "已启用",
     "item.apotheosis.potion_charm.disabled": "已禁用",
     "item.apotheosis.potion_charm.curios_only": "只能在饰品栏位工作",
+    "misc.apotheosis.blacklisted_potion": "无法转化为药水护符。",
 
     "comment_id": "/铁砧模块",
     "info.apotheosis.anvil": "可以被附魔。",

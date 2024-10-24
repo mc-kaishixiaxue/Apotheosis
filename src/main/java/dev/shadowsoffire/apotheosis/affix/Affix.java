@@ -39,6 +39,7 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.extensions.IAttributeExtension;
 import net.neoforged.neoforge.common.loot.LootModifier;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 
 /**
@@ -55,27 +56,26 @@ public abstract class Affix implements CodecProvider<Affix> {
     }
 
     /**
-     * Retrieve the modifiers from this affix to be applied to the itemstack.
+     * Adds any attribute modifiers supplied by this affix to the passed consumer.
+     * <p>
+     * Attribute modifiers must have unique IDs per-slot, since the same affix may be applicable to multiple items.
      *
-     * @param stack The stack the affix is on.
-     * @param level The level of this affix.
-     * @param type  The slot type for modifiers being gathered.
-     * @param map   The destination for generated attribute modifiers.
+     * @param inst The affix instance.
+     * @param type The slot type for modifiers being gathered.
+     * @param map  The destination for generated attribute modifiers.
      */
-    public void addModifiers(ItemStack stack, LootRarity rarity, float level, EquipmentSlot type, BiConsumer<Attribute, AttributeModifier> map) {}
+    public void addModifiers(AffixInstance inst, EquipmentSlot type, BiConsumer<Attribute, AttributeModifier> map) {}
 
     /**
      * Gets the one-line description for this affix, to be added to the item stack's tooltip.
      * <p>
-     * Description tooltips are added immediately after enchantment tooltips, or after the name if none are present.
+     * Description tooltips are added immediately before enchantment tooltips, or after the name if none are present.
      * If you do not want to show a specific affix description, return {@link Component#empty()}.
      *
-     * @param stack    The stack the affix is on.
-     * @param level    The level of this affix.
-     * @param tooltips The destination for tooltips.
+     * @param inst The affix instance.
      */
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
-        return Component.translatable("affix." + this.getId() + ".desc", fmt(level));
+    public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
+        return Component.translatable("affix." + this.getId() + ".desc", fmt(inst.level()));
     }
 
     /**
@@ -93,11 +93,10 @@ public abstract class Affix implements CodecProvider<Affix> {
      * <p>
      * This text should show the current affix power, as well as the min/max power bounds, displaying to the user what the full range is.
      *
-     * @param stack The stack the affix is on.
-     * @param level The level of this affix.
+     * @param inst The affix instance.
      */
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
-        return this.getDescription(stack, rarity, level);
+    public Component getAugmentingText(AffixInstance inst, AttributeTooltipContext ctx) {
+        return this.getDescription(inst, ctx);
     }
 
     /**
@@ -105,19 +104,22 @@ public abstract class Affix implements CodecProvider<Affix> {
      * Math is in {@link CombatRules#getDamageAfterMagicAbsorb}<br>
      * Ench module overrides with {@link EnchHooks#getDamageAfterMagicAbsorb}<br>
      *
-     * @param level  The level of this affix, if applicable.<br>
-     * @param source The damage source to compare against.<br>
-     * @return How many protection points this affix is worth against this source.<br>
+     * @param inst   The affix instance.
+     * @param source The damage source to compare against.
+     * @return How many protection points this affix is worth against this source.
      */
-    public int getDamageProtection(ItemStack stack, LootRarity rarity, float level, DamageSource source) {
+    public int getDamageProtection(AffixInstance inst, DamageSource source) {
         return 0;
     }
 
     /**
      * Calculates the additional damage this affix deals.
      * This damage is dealt as player physical damage, and is not impacted by critical strikes.
+     * 
+     * @param inst   The affix instance.
+     * @param entity The target entity.
      */
-    public float getDamageBonus(ItemStack stack, LootRarity rarity, float level) {
+    public float getDamageBonus(AffixInstance inst, Entity entity) {
         return 0.0F;
     }
 
@@ -125,29 +127,29 @@ public abstract class Affix implements CodecProvider<Affix> {
      * Called when someone attacks an entity with an item containing this affix.
      * More specifically, this is invoked whenever the user attacks a target, while having an item with this affix in either hand or any armor slot.
      *
+     * @param inst   The affix instance.
      * @param user   The wielder of the weapon. The weapon stack will be in their main hand.
      * @param target The target entity being attacked.
-     * @param level  The level of this affix, if applicable.
      */
-    public void doPostAttack(ItemStack stack, LootRarity rarity, float level, LivingEntity user, @Nullable Entity target) {}
+    public void doPostAttack(AffixInstance inst, LivingEntity user, @Nullable Entity target) {}
 
     /**
      * Whenever an entity that has this affix on one of its associated items is damaged this method will be
      * called.
      */
-    public void doPostHurt(ItemStack stack, LootRarity rarity, float level, LivingEntity user, @Nullable Entity attacker) {}
+    public void doPostHurt(AffixInstance inst, LivingEntity user, @Nullable Entity attacker) {}
 
     /**
      * Called when a user fires an arrow from a bow or crossbow with this affix on it.
      */
-    public void onArrowFired(ItemStack stack, LootRarity rarity, float level, LivingEntity user, AbstractArrow arrow) {}
+    public void onArrowFired(AffixInstance inst, LivingEntity user, AbstractArrow arrow) {}
 
     /**
      * Called when {@link Item#onItemUse(ItemUseContext)} would be called for an item with this affix.
      * Return null to not impact the original result type.
      */
     @Nullable
-    public InteractionResult onItemUse(ItemStack stack, LootRarity rarity, float level, UseOnContext ctx) {
+    public InteractionResult onItemUse(AffixInstance inst, UseOnContext ctx) {
         return null;
     }
 
@@ -165,7 +167,7 @@ public abstract class Affix implements CodecProvider<Affix> {
      * @param level  The level of this affix.
      * @return The amount of damage that is *actually* blocked by the shield, after this affix applies.
      */
-    public float onShieldBlock(ItemStack stack, LootRarity rarity, float level, LivingEntity entity, DamageSource source, float amount) {
+    public float onShieldBlock(AffixInstance inst, LivingEntity entity, DamageSource source, float amount) {
         return amount;
     }
 
@@ -177,7 +179,7 @@ public abstract class Affix implements CodecProvider<Affix> {
      * @param pos    The position of the block.
      * @param state  The state that was broken.
      */
-    public void onBlockBreak(ItemStack stack, LootRarity rarity, float level, Player player, LevelAccessor world, BlockPos pos, BlockState state) {
+    public void onBlockBreak(AffixInstance inst, Player player, LevelAccessor world, BlockPos pos, BlockState state) {
 
     }
 
@@ -190,7 +192,7 @@ public abstract class Affix implements CodecProvider<Affix> {
      * @param user   The user of the item, if applicable.
      * @return The percentage [0, 1] of durability damage to ignore. This value will be summed with all other affixes that increase it.
      */
-    public float getDurabilityBonusPercentage(ItemStack stack, LootRarity rarity, float level, @Nullable ServerPlayer user) {
+    public float getDurabilityBonusPercentage(AffixInstance inst, @Nullable ServerPlayer user) {
         return 0;
     }
 
@@ -206,7 +208,7 @@ public abstract class Affix implements CodecProvider<Affix> {
      * @param amount The amount of damage that is to be taken.
      * @return The amount of damage that will be taken, after modification. This value will propagate to other affixes.
      */
-    public float onHurt(ItemStack stack, LootRarity rarity, float level, DamageSource src, LivingEntity ent, float amount) {
+    public float onHurt(AffixInstance inst, DamageSource src, LivingEntity ent, float amount) {
         return amount;
     }
 
@@ -227,7 +229,7 @@ public abstract class Affix implements CodecProvider<Affix> {
      * @param oldLevel The original level, before modification.
      * @return The bonus level to be added to the current enchantment.
      */
-    public void getEnchantmentLevels(ItemStack stack, LootRarity rarity, float level, Map<Enchantment, Integer> enchantments) {}
+    public void getEnchantmentLevels(AffixInstance inst, Map<Enchantment, Integer> enchantments) {}
 
     /**
      * Fires from {@link LootModifier#apply(ObjectArrayList, LootContext)} when this affix is on the tool given by the context.
@@ -238,7 +240,7 @@ public abstract class Affix implements CodecProvider<Affix> {
      * @param loot   The generated loot.
      * @param ctx    The loot context.
      */
-    public void modifyLoot(ItemStack stack, LootRarity rarity, float level, ObjectArrayList<ItemStack> loot, LootContext ctx) {}
+    public void modifyLoot(AffixInstance inst, ObjectArrayList<ItemStack> loot, LootContext ctx) {}
 
     @Override
     public String toString() {

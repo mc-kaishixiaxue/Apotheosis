@@ -54,6 +54,14 @@ public class Apoth {
 
     public static final DeferredHelper R = DeferredHelper.create(Apotheosis.MODID);
 
+    public static final class Components {
+
+        public static final ComponentType
+        
+        private static void bootstrap() {}
+
+    }
+
     public static final class Blocks {
 
         public static final Holder<Block> BOSS_SPAWNER = R.block("boss_spawner", BossSpawnerBlock::new,

@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
-import dev.shadowsoffire.apotheosis.Adventure.Items;
+import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;

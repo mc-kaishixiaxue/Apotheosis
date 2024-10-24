@@ -29,6 +29,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
@@ -38,8 +39,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.event.level.BlockEvent;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
 public class RadialAffix extends Affix {
 
@@ -63,16 +64,16 @@ public class RadialAffix extends Affix {
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
-        RadialData data = this.getTrueLevel(rarity, level);
+    public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
+        RadialData data = this.getTrueLevel(inst);
         return Component.translatable("affix." + this.getId() + ".desc", data.x, data.y);
     }
 
     @Override
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
-        MutableComponent comp = this.getDescription(stack, rarity, level);
-        RadialData min = this.getTrueLevel(rarity, 0);
-        RadialData max = this.getTrueLevel(rarity, 1);
+    public Component getAugmentingText(AffixInstance inst, AttributeTooltipContext ctx) {
+        MutableComponent comp = this.getDescription(inst, ctx);
+        RadialData min = this.getTrueLevel(inst.getRarity(), 0);
+        RadialData max = this.getTrueLevel(inst.getRarity(), 1);
 
         if (min != max) {
             Component minComp = Component.translatable("%sx%s", min.x, min.y);
@@ -95,6 +96,10 @@ public class RadialAffix extends Affix {
                 breakExtraBlocks((ServerPlayer) player, e.getPos(), tool, this.getTrueLevel(inst.rarity().get(), inst.level()), hardness);
             }
         }
+    }
+
+    private RadialData getTrueLevel(AffixInstance inst) {
+        return getTrueLevel(inst.getRarity(), inst.level());
     }
 
     private RadialData getTrueLevel(LootRarity rarity, float level) {
@@ -144,7 +149,7 @@ public class RadialAffix extends Affix {
 
         Vec3 base = player.getEyePosition(0);
         Vec3 look = player.getLookAngle();
-        double reach = player.getAttributeValue(ForgeMod.BLOCK_REACH.get());
+        double reach = player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE);
         Vec3 target = base.add(look.x * reach, look.y * reach, look.z * reach);
         HitResult trace = world.clip(new ClipContext(base, target, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
 

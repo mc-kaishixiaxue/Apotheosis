@@ -6,6 +6,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow.Pickup;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class SpectralShotAffix extends Affix {
 
@@ -40,30 +42,29 @@ public class SpectralShotAffix extends Affix {
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
-        return Component.translatable("affix." + this.getId() + ".desc", fmt(100 * this.getTrueLevel(rarity, level)));
+    public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
+        return Component.translatable("affix." + this.getId() + ".desc", fmt(100 * this.getTrueLevel(inst.getRarity(), inst.level())));
     }
 
     @Override
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
-        MutableComponent comp = this.getDescription(stack, rarity, level);
+    public Component getAugmentingText(AffixInstance inst, AttributeTooltipContext ctx) {
+        MutableComponent comp = this.getDescription(inst, ctx);
 
-        Component minComp = Component.translatable("%s%%", fmt(100 * this.getTrueLevel(rarity, 0)));
-        Component maxComp = Component.translatable("%s%%", fmt(100 * this.getTrueLevel(rarity, 1)));
+        Component minComp = Component.translatable("%s%%", fmt(100 * this.getTrueLevel(inst.getRarity(), 0)));
+        Component maxComp = Component.translatable("%s%%", fmt(100 * this.getTrueLevel(inst.getRarity(), 1)));
         return comp.append(valueBounds(minComp, maxComp));
     }
 
     @Override
-    public void onArrowFired(ItemStack stack, LootRarity rarity, float level, LivingEntity user, AbstractArrow arrow) {
-        if (user.level().random.nextFloat() <= this.getTrueLevel(rarity, level)) {
+    public void onArrowFired(AffixInstance inst, LivingEntity user, AbstractArrow arrow) {
+        if (user.level().random.nextFloat() <= this.getTrueLevel(inst.getRarity(), inst.level())) {
             if (!user.level().isClientSide) {
                 ArrowItem arrowitem = (ArrowItem) Items.SPECTRAL_ARROW;
-                AbstractArrow spectralArrow = arrowitem.createArrow(user.level(), ItemStack.EMPTY, user);
+                AbstractArrow spectralArrow = arrowitem.createArrow(user.level(), ItemStack.EMPTY, user, inst.stack());
                 spectralArrow.shoot(user.getXRot(), user.getYRot(), 0.0F, 2.0F, 1.0F);
                 this.cloneMotion(arrow, spectralArrow);
                 spectralArrow.setCritArrow(arrow.isCritArrow());
                 spectralArrow.setBaseDamage(arrow.getBaseDamage());
-                spectralArrow.setKnockback(arrow.knockback);
                 spectralArrow.setRemainingFireTicks(arrow.getRemainingFireTicks());
                 spectralArrow.pickup = Pickup.CREATIVE_ONLY;
                 spectralArrow.getPersistentData().putBoolean("apoth.generated", true);

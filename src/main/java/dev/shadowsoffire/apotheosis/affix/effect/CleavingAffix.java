@@ -8,11 +8,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
+import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
 import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -24,6 +25,7 @@ import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class CleavingAffix extends Affix {
 
@@ -47,13 +49,14 @@ public class CleavingAffix extends Affix {
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
-        return Component.translatable("affix." + this.getId() + ".desc", fmt(100 * this.getChance(rarity, level)), this.getTargets(rarity, level));
+    public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
+        return Component.translatable("affix." + this.getId() + ".desc", fmt(100 * this.getChance(inst.getRarity(), inst.level())), this.getTargets(inst.getRarity(), inst.level()));
     }
 
     @Override
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
-        MutableComponent comp = this.getDescription(stack, rarity, level);
+    public Component getAugmentingText(AffixInstance inst, AttributeTooltipContext ctx) {
+        MutableComponent comp = this.getDescription(inst, ctx);
+        LootRarity rarity = inst.getRarity();
 
         float minChance = this.getChance(rarity, 0);
         float maxChance = this.getChance(rarity, 1);
@@ -83,11 +86,11 @@ public class CleavingAffix extends Affix {
     }
 
     @Override
-    public void doPostAttack(ItemStack stack, LootRarity rarity, float level, LivingEntity user, Entity target) {
-        if (Apotheosis.getLocalAtkStrength(user) >= 0.98 && !cleaving && !user.level().isClientSide) {
+    public void doPostAttack(AffixInstance inst, LivingEntity user, Entity target) {
+        if (ApothicAttributes.getLocalAtkStrength(user) >= 0.98 && !cleaving && !user.level().isClientSide) {
             cleaving = true;
-            float chance = this.getChance(rarity, level);
-            int targets = this.getTargets(rarity, level);
+            float chance = this.getChance(inst.getRarity(), inst.level());
+            int targets = this.getTargets(inst.getRarity(), inst.level());
             if (user.level().random.nextFloat() < chance && user instanceof Player player) {
                 List<Entity> nearby = target.level().getEntities(target, new AABB(target.blockPosition()).inflate(6), cleavePredicate(user, target));
                 for (Entity e : nearby) {

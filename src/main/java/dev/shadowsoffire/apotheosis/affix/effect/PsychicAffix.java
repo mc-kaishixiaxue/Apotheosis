@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 /**
  * When blocking an arrow, hurt the shooter.
@@ -38,16 +40,16 @@ public class PsychicAffix extends Affix {
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
-        return Component.translatable("affix." + this.getId() + ".desc", fmt(100 * this.getTrueLevel(rarity, level)));
+    public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
+        return Component.translatable("affix." + this.getId() + ".desc", fmt(100 * this.getTrueLevel(inst)));
     }
 
     @Override
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
-        MutableComponent comp = this.getDescription(stack, rarity, level);
+    public Component getAugmentingText(AffixInstance inst, AttributeTooltipContext ctx) {
+        MutableComponent comp = this.getDescription(inst, ctx);
 
-        Component minComp = Component.translatable("%s%%", fmt(100 * this.getTrueLevel(rarity, 0)));
-        Component maxComp = Component.translatable("%s%%", fmt(100 * this.getTrueLevel(rarity, 1)));
+        Component minComp = Component.translatable("%s%%", fmt(100 * this.getTrueLevel(inst.getRarity(), 0)));
+        Component maxComp = Component.translatable("%s%%", fmt(100 * this.getTrueLevel(inst.getRarity(), 1)));
         return comp.append(valueBounds(minComp, maxComp));
     }
 
@@ -57,24 +59,28 @@ public class PsychicAffix extends Affix {
     }
 
     @Override
-    public float onShieldBlock(ItemStack stack, LootRarity rarity, float level, LivingEntity entity, DamageSource source, float amount) {
+    public float onShieldBlock(AffixInstance inst, LivingEntity entity, DamageSource source, float amount) {
         if (source.getDirectEntity() instanceof Projectile arrow) {
             Entity owner = arrow.getOwner();
             if (owner instanceof LivingEntity living) {
-                living.hurt(entity.damageSources().source(Apoth.DamageTypes.PSYCHIC, entity), amount * this.getTrueLevel(rarity, level));
+                living.hurt(entity.damageSources().source(Apoth.DamageTypes.PSYCHIC, entity), amount * this.getTrueLevel(inst));
             }
         }
 
-        return super.onShieldBlock(stack, rarity, level, entity, source, amount);
-    }
-
-    private float getTrueLevel(LootRarity rarity, float level) {
-        return this.values.get(rarity).get(level);
+        return super.onShieldBlock(inst, entity, source, amount);
     }
 
     @Override
     public Codec<? extends Affix> getCodec() {
         return CODEC;
+    }
+
+    private float getTrueLevel(AffixInstance inst) {
+        return getTrueLevel(inst.getRarity(), inst.level());
+    }
+
+    private float getTrueLevel(LootRarity rarity, float level) {
+        return this.values.get(rarity).get(level);
     }
 
 }

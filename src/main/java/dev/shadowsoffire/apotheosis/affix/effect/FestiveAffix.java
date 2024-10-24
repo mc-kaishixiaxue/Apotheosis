@@ -26,8 +26,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 
 /**
  * Loot Pinata
@@ -47,16 +48,16 @@ public class FestiveAffix extends Affix {
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
-        return Component.translatable("affix." + this.getId() + ".desc", fmt(100 * this.getTrueLevel(rarity, level)));
+    public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
+        return Component.translatable("affix." + this.getId() + ".desc", fmt(100 * this.getTrueLevel(inst.getRarity(), inst.level())));
     }
 
     @Override
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
-        MutableComponent comp = this.getDescription(stack, rarity, level);
+    public Component getAugmentingText(AffixInstance inst, AttributeTooltipContext ctx) {
+        MutableComponent comp = this.getDescription(inst, ctx);
 
-        Component minComp = Component.translatable("%s%%", fmt(100 * this.getTrueLevel(rarity, 0)));
-        Component maxComp = Component.translatable("%s%%", fmt(100 * this.getTrueLevel(rarity, 1)));
+        Component minComp = Component.translatable("%s%%", fmt(100 * this.getTrueLevel(inst.getRarity(), 0)));
+        Component maxComp = Component.translatable("%s%%", fmt(100 * this.getTrueLevel(inst.getRarity(), 1)));
         return comp.append(valueBounds(minComp, maxComp));
     }
 

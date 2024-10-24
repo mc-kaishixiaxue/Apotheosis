@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -12,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class DurableAffix extends Affix {
 
@@ -27,18 +29,13 @@ public class DurableAffix extends Affix {
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
-        return super.getDescription(stack, rarity, level * 100);
+    public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
+        return Component.translatable("affix." + this.getId() + ".desc", fmt(inst.level() * 100));
     }
 
     @Override
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
-        return this.getDescription(stack, rarity, level);
-    }
-
-    @Override
-    public float getDurabilityBonusPercentage(ItemStack stack, LootRarity rarity, float level, @Nullable ServerPlayer user) {
-        return level;
+    public float getDurabilityBonusPercentage(AffixInstance inst, @Nullable ServerPlayer user) {
+        return inst.level();
     }
 
     @Override

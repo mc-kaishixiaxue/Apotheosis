@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -36,7 +37,7 @@ public class RetreatingAffix extends Affix {
     }
 
     @Override
-    public float onShieldBlock(ItemStack stack, LootRarity rarity, float level, LivingEntity entity, DamageSource source, float amount) {
+    public float onShieldBlock(AffixInstance inst, LivingEntity entity, DamageSource source, float amount) {
         Entity tSource = source.getEntity();
         if (tSource != null && tSource.distanceToSqr(entity) <= 9) {
             Vec3 look = entity.getLookAngle();
@@ -44,7 +45,7 @@ public class RetreatingAffix extends Affix {
             entity.hurtMarked = true;
             entity.setOnGround(false);
         }
-        return super.onShieldBlock(stack, rarity, level, entity, source, amount);
+        return super.onShieldBlock(inst, entity, source, amount);
     }
 
     @Override

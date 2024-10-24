@@ -2,8 +2,8 @@ package dev.shadowsoffire.apotheosis.socket;
 
 import com.google.gson.JsonObject;
 
-import dev.shadowsoffire.apotheosis.Adventure.Items;
 import dev.shadowsoffire.apotheosis.AdventureModule.ApothSmithingRecipe;
+import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
 import net.minecraft.core.RegistryAccess;

@@ -6,13 +6,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.placebo.util.StepFunction;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -38,29 +37,19 @@ public class CatalyzingAffix extends Affix {
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
-        return Component.translatable("affix." + this.getId() + ".desc");
-    }
-
-    @Override
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
-        return this.getDescription(stack, rarity, level);
-    }
-
-    @Override
     public boolean canApplyTo(ItemStack stack, LootCategory cat, LootRarity rarity) {
         return cat == LootCategory.SHIELD && this.values.containsKey(rarity);
     }
 
     @Override
-    public float onShieldBlock(ItemStack stack, LootRarity rarity, float level, LivingEntity entity, DamageSource source, float amount) {
+    public float onShieldBlock(AffixInstance inst, LivingEntity entity, DamageSource source, float amount) {
         if (source.is(DamageTypeTags.IS_EXPLOSION)) {
-            int time = this.values.get(rarity).getInt(level);
+            int time = this.values.get(inst.getRarity()).getInt(inst.level());
             int modifier = 1 + (int) (Math.log(amount) / Math.log(3));
             entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, time, modifier));
         }
 
-        return super.onShieldBlock(stack, rarity, level, entity, source, amount);
+        return super.onShieldBlock(inst, entity, source, amount);
     }
 
     @Override

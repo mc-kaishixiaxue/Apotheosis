@@ -6,12 +6,13 @@ import java.util.Map;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
+import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
 import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 /**
  * Damage Chain
@@ -38,13 +40,14 @@ public class ThunderstruckAffix extends Affix {
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
-        return Component.translatable("affix." + this.getId() + ".desc", fmt(this.getTrueLevel(rarity, level)));
+    public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
+        return Component.translatable("affix." + this.getId() + ".desc", fmt(this.getTrueLevel(inst.getRarity(), inst.level())));
     }
 
     @Override
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
-        MutableComponent comp = this.getDescription(stack, rarity, level);
+    public Component getAugmentingText(AffixInstance inst, AttributeTooltipContext ctx) {
+        MutableComponent comp = this.getDescription(inst, ctx);
+        LootRarity rarity = inst.getRarity();
 
         Component minComp = Component.literal(fmt(this.getTrueLevel(rarity, 0)));
         Component maxComp = Component.literal(fmt(this.getTrueLevel(rarity, 1)));
@@ -57,12 +60,12 @@ public class ThunderstruckAffix extends Affix {
     }
 
     @Override
-    public void doPostAttack(ItemStack stack, LootRarity rarity, float level, LivingEntity user, Entity target) {
+    public void doPostAttack(AffixInstance inst, LivingEntity user, Entity target) {
         if (user.level().isClientSide) return;
-        if (Apotheosis.getLocalAtkStrength(user) >= 0.98) {
+        if (ApothicAttributes.getLocalAtkStrength(user) >= 0.98) {
             List<Entity> nearby = target.level().getEntities(target, new AABB(target.blockPosition()).inflate(6), CleavingAffix.cleavePredicate(user, target));
             for (Entity e : nearby) {
-                e.hurt(user.damageSources().mobAttack(user), this.getTrueLevel(rarity, level));
+                e.hurt(user.damageSources().mobAttack(user), this.getTrueLevel(inst.getRarity(), inst.level()));
             }
         }
     }

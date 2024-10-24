@@ -3,9 +3,9 @@ package dev.shadowsoffire.apotheosis.socket.gem.cutting;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.shadowsoffire.apotheosis.Adventure.Blocks;
-import dev.shadowsoffire.apotheosis.Adventure.Items;
-import dev.shadowsoffire.apotheosis.Adventure.Menus;
+import dev.shadowsoffire.apotheosis.Apoth.Blocks;
+import dev.shadowsoffire.apotheosis.Apoth.Items;
+import dev.shadowsoffire.apotheosis.Apoth.Menus;
 import dev.shadowsoffire.apotheosis.advancements.AdvancementTriggers;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -22,7 +22,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 public class GemCuttingMenu extends PlaceboContainerMenu {
 

@@ -17,7 +17,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 
 /**
  * Teleport Drops
@@ -44,8 +45,8 @@ public class TelepathicAffix extends Affix {
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
-        LootCategory cat = LootCategory.forItem(stack);
+    public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
+        LootCategory cat = LootCategory.forItem(inst.stack());
         String type = cat.isRanged() || cat.isWeapon() ? "weapon" : "tool";
         return Component.translatable("affix." + this.getId() + ".desc." + type);
     }

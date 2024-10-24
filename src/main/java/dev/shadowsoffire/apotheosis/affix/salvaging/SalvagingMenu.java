@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Predicates;
 
-import dev.shadowsoffire.apotheosis.Adventure.Blocks;
-import dev.shadowsoffire.apotheosis.Adventure.Menus;
+import dev.shadowsoffire.apotheosis.Apoth.Blocks;
+import dev.shadowsoffire.apotheosis.Apoth.Menus;
 import dev.shadowsoffire.apotheosis.Apoth.RecipeTypes;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe.OutputData;
 import dev.shadowsoffire.placebo.cap.InternalItemHandler;
@@ -25,7 +25,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 public class SalvagingMenu extends BlockEntityMenu<SalvagingTableTile> {
 
@@ -33,7 +33,7 @@ public class SalvagingMenu extends BlockEntityMenu<SalvagingTableTile> {
     protected final InternalItemHandler inputInv = new InternalItemHandler(12);
 
     public SalvagingMenu(int id, Inventory inv, BlockPos pos) {
-        super(Menus.SALVAGE.get(), id, inv, pos);
+        super(Menus.SALVAGE, id, inv, pos);
         this.player = inv.player;
         int leftOffset = 17;
         int topOffset = 17;
@@ -67,7 +67,7 @@ public class SalvagingMenu extends BlockEntityMenu<SalvagingTableTile> {
     @Override
     public boolean stillValid(Player player) {
         if (this.level.isClientSide) return true;
-        return this.level.getBlockState(this.pos).getBlock() == Blocks.SALVAGING_TABLE.get();
+        return this.level.getBlockState(this.pos).is(Blocks.SALVAGING_TABLE);
     }
 
     @Override

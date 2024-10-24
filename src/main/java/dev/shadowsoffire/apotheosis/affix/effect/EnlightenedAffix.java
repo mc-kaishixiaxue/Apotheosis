@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -15,9 +16,11 @@ import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class EnlightenedAffix extends Affix {
 
@@ -39,28 +42,32 @@ public class EnlightenedAffix extends Affix {
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
-        return Component.translatable("affix." + this.getId() + ".desc", this.getTrueLevel(rarity, level));
+    public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
+        return Component.translatable("affix." + this.getId() + ".desc", this.getTrueLevel(inst.getRarity(), inst.level()));
     }
 
     @Override
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
-        MutableComponent comp = this.getDescription(stack, rarity, level);
+    public Component getAugmentingText(AffixInstance inst, AttributeTooltipContext ctx) {
+        MutableComponent comp = this.getDescription(inst, ctx);
 
-        Component minComp = Component.literal(fmt(this.getTrueLevel(rarity, 0)));
-        Component maxComp = Component.literal(fmt(this.getTrueLevel(rarity, 1)));
+        Component minComp = Component.literal(fmt(this.getTrueLevel(inst.getRarity(), 0)));
+        Component maxComp = Component.literal(fmt(this.getTrueLevel(inst.getRarity(), 1)));
         return comp.append(valueBounds(minComp, maxComp));
     }
 
     @Override
-    public InteractionResult onItemUse(ItemStack stack, LootRarity rarity, float level, UseOnContext ctx) {
+    public InteractionResult onItemUse(AffixInstance inst, UseOnContext ctx) {
         Player player = ctx.getPlayer();
         if (AdventureConfig.torchItem.get().useOn(ctx).consumesAction()) {
-            if (ctx.getItemInHand().isEmpty()) ctx.getItemInHand().grow(1);
-            player.getItemInHand(ctx.getHand()).hurtAndBreak(this.values.get(rarity).getInt(level), player, p -> p.broadcastBreakEvent(ctx.getHand()));
+            if (ctx.getItemInHand().isEmpty()) {
+                ctx.getItemInHand().grow(1);
+            }
+
+            int cost = this.getTrueLevel(inst.getRarity(), inst.level());
+            player.getItemInHand(ctx.getHand()).hurtAndBreak(cost, player, LivingEntity.getSlotForHand(ctx.getHand()));
             return InteractionResult.SUCCESS;
         }
-        return super.onItemUse(stack, rarity, level, ctx);
+        return super.onItemUse(inst, ctx);
     }
 
     @Override

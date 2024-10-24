@@ -14,7 +14,7 @@ import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingMenu.GemCuttingRecipe;
-import dev.shadowsoffire.attributeslib.api.AttributeHelper;
+import dev.shadowsoffire.apothic_attributes.api.AttributeHelper;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;

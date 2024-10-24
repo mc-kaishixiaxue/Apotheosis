@@ -62,12 +62,12 @@ public class AttributeAffix extends Affix {
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
+    public MutableComponent getDescription(AffixInstance inst) {
         return Component.empty();
     }
 
     @Override
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
+    public Component getAugmentingText(AffixInstance inst) {
         ModifierInst modif = this.modifiers.get(rarity);
         double value = modif.valueFactory.get(level);
 
@@ -91,7 +91,7 @@ public class AttributeAffix extends Affix {
     }
 
     @Override
-    public void addModifiers(ItemStack stack, LootRarity rarity, float level, EquipmentSlot type, BiConsumer<Attribute, AttributeModifier> map) {
+    public void addModifiers(AffixInstance inst, EquipmentSlot type, BiConsumer<Attribute, AttributeModifier> map) {
         LootCategory cat = LootCategory.forItem(stack);
         if (cat.isNone()) {
             AdventureModule.LOGGER.debug("Attempted to apply the attributes of affix {} on item {}, but it is not an affix-compatible item!", this.getId(), stack.getHoverName().getString());

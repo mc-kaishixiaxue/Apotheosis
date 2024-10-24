@@ -7,12 +7,15 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.StringUtil;
@@ -30,13 +33,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class PotionAffix extends Affix {
 
     public static final Codec<PotionAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            ForgeRegistries.MOB_EFFECTS.getCodec().fieldOf("mob_effect").forGetter(a -> a.effect),
+            BuiltInRegistries.MOB_EFFECT.holderByNameCodec().fieldOf("mob_effect").forGetter(a -> a.effect),
             Target.CODEC.fieldOf("target").forGetter(a -> a.target),
             LootRarity.mapCodec(EffectData.CODEC).fieldOf("values").forGetter(a -> a.values),
             Codec.INT.optionalFieldOf("cooldown", 0).forGetter(a -> a.cooldown),
@@ -44,7 +47,7 @@ public class PotionAffix extends Affix {
             Codec.BOOL.optionalFieldOf("stack_on_reapply", false).forGetter(a -> a.stackOnReapply))
         .apply(inst, PotionAffix::new));
 
-    protected final MobEffect effect;
+    protected final Holder<MobEffect> effect;
     protected final Target target;
     protected final Map<LootRarity, EffectData> values;
     @Deprecated(forRemoval = true, since = "6.3.0")
@@ -52,7 +55,7 @@ public class PotionAffix extends Affix {
     protected final Set<LootCategory> types;
     protected final boolean stackOnReapply;
 
-    public PotionAffix(MobEffect effect, Target target, Map<LootRarity, EffectData> values, int cooldown, Set<LootCategory> types, boolean stackOnReapply) {
+    public PotionAffix(Holder<MobEffect> effect, Target target, Map<LootRarity, EffectData> values, int cooldown, Set<LootCategory> types, boolean stackOnReapply) {
         super(AffixType.ABILITY);
         this.effect = effect;
         this.target = target;
@@ -63,12 +66,12 @@ public class PotionAffix extends Affix {
     }
 
     @Override
-    public MutableComponent getDescription(ItemStack stack, LootRarity rarity, float level) {
-        MobEffectInstance inst = this.values.get(rarity).build(this.effect, level);
-        MutableComponent comp = this.target.toComponent(toComponent(inst));
-        int cooldown = this.getCooldown(rarity);
+    public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
+        MobEffectInstance effectInst = this.values.get(inst.getRarity()).build(this.effect, inst.level());
+        MutableComponent comp = this.target.toComponent(toComponent(effectInst, ctx.tickRate()));
+        int cooldown = this.getCooldown(inst.getRarity());
         if (cooldown != 0) {
-            Component cd = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(cooldown));
+            Component cd = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(cooldown, ctx.tickRate()));
             comp = comp.append(" ").append(cd);
         }
         if (this.stackOnReapply) {
@@ -78,9 +81,10 @@ public class PotionAffix extends Affix {
     }
 
     @Override
-    public Component getAugmentingText(ItemStack stack, LootRarity rarity, float level) {
-        MobEffectInstance inst = this.values.get(rarity).build(this.effect, level);
-        MutableComponent comp = this.target.toComponent(toComponent(inst));
+    public Component getAugmentingText(AffixInstance inst, AttributeTooltipContext ctx) {
+        LootRarity rarity = inst.getRarity();
+        MobEffectInstance effectInst = this.values.get(rarity).build(this.effect, inst.level());
+        MutableComponent comp = this.target.toComponent(toComponent(effectInst, ctx.tickRate()));
 
         MobEffectInstance min = this.values.get(rarity).build(this.effect, 0);
         MobEffectInstance max = this.values.get(rarity).build(this.effect, 1);
@@ -92,15 +96,15 @@ public class PotionAffix extends Affix {
             comp.append(valueBounds(minComp, maxComp));
         }
 
-        if (!this.effect.isInstantenous() && min.getDuration() != max.getDuration()) {
-            Component minComp = MobEffectUtil.formatDuration(min, 1);
-            Component maxComp = MobEffectUtil.formatDuration(max, 1);
+        if (!this.effect.value().isInstantenous() && min.getDuration() != max.getDuration()) {
+            Component minComp = MobEffectUtil.formatDuration(min, 1, ctx.tickRate());
+            Component maxComp = MobEffectUtil.formatDuration(max, 1, ctx.tickRate());
             comp.append(valueBounds(minComp, maxComp));
         }
 
         int cooldown = this.getCooldown(rarity);
         if (cooldown != 0) {
-            Component cd = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(cooldown));
+            Component cd = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(cooldown, ctx.tickRate()));
             comp = comp.append(" ").append(cd);
         }
         if (this.stackOnReapply) {
@@ -116,29 +120,29 @@ public class PotionAffix extends Affix {
     }
 
     @Override
-    public void doPostHurt(ItemStack stack, LootRarity rarity, float level, LivingEntity user, Entity attacker) {
-        if (this.target == Target.HURT_SELF) this.applyEffect(user, rarity, level);
+    public void doPostHurt(AffixInstance inst, LivingEntity user, Entity attacker) {
+        if (this.target == Target.HURT_SELF) this.applyEffect(user, inst.getRarity(), inst.level());
         else if (this.target == Target.HURT_ATTACKER) {
             if (attacker instanceof LivingEntity tLiving) {
-                this.applyEffect(tLiving, rarity, level);
+                this.applyEffect(tLiving, inst.getRarity(), inst.level());
             }
         }
     }
 
     @Override
-    public void doPostAttack(ItemStack stack, LootRarity rarity, float level, LivingEntity user, Entity target) {
-        if (this.target == Target.ATTACK_SELF) this.applyEffect(user, rarity, level);
+    public void doPostAttack(AffixInstance inst, LivingEntity user, Entity target) {
+        if (this.target == Target.ATTACK_SELF) this.applyEffect(user, inst.getRarity(), inst.level());
         else if (this.target == Target.ATTACK_TARGET) {
             if (target instanceof LivingEntity tLiving) {
-                this.applyEffect(tLiving, rarity, level);
+                this.applyEffect(tLiving, inst.getRarity(), inst.level());
             }
         }
     }
 
     @Override
-    public void onBlockBreak(ItemStack stack, LootRarity rarity, float level, Player player, LevelAccessor world, BlockPos pos, BlockState state) {
+    public void onBlockBreak(AffixInstance inst, Player player, LevelAccessor world, BlockPos pos, BlockState state) {
         if (this.target == Target.BREAK_SELF) {
-            this.applyEffect(player, rarity, level);
+            this.applyEffect(player, inst.getRarity(), inst.level());
         }
     }
 
@@ -157,12 +161,12 @@ public class PotionAffix extends Affix {
     }
 
     @Override
-    public float onShieldBlock(ItemStack stack, LootRarity rarity, float level, LivingEntity entity, DamageSource source, float amount) {
+    public float onShieldBlock(AffixInstance inst, LivingEntity entity, DamageSource source, float amount) {
         if (this.target == Target.BLOCK_SELF) {
-            this.applyEffect(entity, rarity, level);
+            this.applyEffect(entity, inst.getRarity(), inst.level());
         }
         else if (this.target == Target.BLOCK_ATTACKER && source.getDirectEntity() instanceof LivingEntity target) {
-            this.applyEffect(target, rarity, level);
+            this.applyEffect(target, inst.getRarity(), inst.level());
         }
         return amount;
     }
@@ -197,19 +201,19 @@ public class PotionAffix extends Affix {
         return CODEC;
     }
 
-    public static Component toComponent(MobEffectInstance inst) {
+    public static Component toComponent(MobEffectInstance inst, float tickRate) {
         MutableComponent mutablecomponent = Component.translatable(inst.getDescriptionId());
-        MobEffect mobeffect = inst.getEffect();
+        Holder<MobEffect> mobeffect = inst.getEffect();
 
         if (inst.getAmplifier() > 0) {
             mutablecomponent = Component.translatable("potion.withAmplifier", mutablecomponent, Component.translatable("potion.potency." + inst.getAmplifier()));
         }
 
         if (inst.getDuration() > 20) {
-            mutablecomponent = Component.translatable("potion.withDuration", mutablecomponent, MobEffectUtil.formatDuration(inst, 1));
+            mutablecomponent = Component.translatable("potion.withDuration", mutablecomponent, MobEffectUtil.formatDuration(inst, 1, tickRate));
         }
 
-        return mutablecomponent.withStyle(mobeffect.getCategory().getTooltipFormatting());
+        return mutablecomponent.withStyle(mobeffect.value().getCategory().getTooltipFormatting());
     }
 
     public static record EffectData(StepFunction duration, StepFunction amplifier, int cooldown) {
@@ -221,7 +225,7 @@ public class PotionAffix extends Affix {
                 Codec.INT.optionalFieldOf("cooldown", -1).forGetter(EffectData::cooldown))
             .apply(inst, EffectData::new));
 
-        public MobEffectInstance build(MobEffect effect, float level) {
+        public MobEffectInstance build(Holder<MobEffect> effect, float level) {
             return new MobEffectInstance(effect, this.duration.getInt(level), this.amplifier.getInt(level));
         }
     }

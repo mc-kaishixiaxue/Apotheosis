@@ -14,6 +14,7 @@ import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class DurabilityBonus extends GemBonus {
 
@@ -31,7 +32,7 @@ public class DurabilityBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(GemInstance gem) {
+    public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
         float level = this.values.get(gem.purity());
         return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(100 * level)).withStyle(ChatFormatting.YELLOW);
     }
@@ -50,11 +51,6 @@ public class DurabilityBonus extends GemBonus {
     @Override
     public boolean supports(Purity purity) {
         return this.values.containsKey(purity);
-    }
-
-    @Override
-    public int getNumberOfUUIDs() {
-        return 0;
     }
 
     @Override

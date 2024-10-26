@@ -56,7 +56,6 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, IS
     protected final @Nullable Set<String> stages;
 
     protected transient final Map<LootCategory, GemBonus> bonusMap;
-    protected transient final int uuidsNeeded;
 
     public Gem(int weight, float quality, Purity minPurity, Set<ResourceLocation> dimensions, List<GemBonus> bonuses, boolean unique, Optional<Set<String>> stages) {
         this.weight = weight;
@@ -72,15 +71,6 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, IS
                 mapper.accept(Pair.of(c, gemData));
             }
         }).collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
-        this.uuidsNeeded = this.bonuses.stream().mapToInt(GemBonus::getNumberOfUUIDs).max().orElse(0);
-    }
-
-    /**
-     * Returns the number of UUIDs that need to be generated for this Gem to operate properly.<br>
-     * This should be equal to the maximum amount of attribute modifiers that need to be generated for proper usage.
-     */
-    public int getNumberOfUUIDs() {
-        return this.uuidsNeeded;
     }
 
     /**
@@ -105,7 +95,7 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, IS
             if (!bonus.supports(gem.purity())) {
                 continue;
             }
-            Component modifComp = bonus.getSocketBonusTooltip(gem);
+            Component modifComp = bonus.getSocketBonusTooltip(gem, ctx);
             Component sum = Component.translatable("text.apotheosis.dot_prefix", Component.translatable("%s: %s", Component.translatable("gem_class." + bonus.getGemClass().key()), modifComp)).withStyle(ChatFormatting.GOLD);
             list.accept(sum);
         }

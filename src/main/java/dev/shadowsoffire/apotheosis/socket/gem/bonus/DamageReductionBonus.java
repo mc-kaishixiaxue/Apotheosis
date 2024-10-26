@@ -18,6 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class DamageReductionBonus extends GemBonus {
 
@@ -38,7 +39,7 @@ public class DamageReductionBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(GemInstance gem) {
+    public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
         float level = this.values.get(gem.purity());
         return Component.translatable("affix.apotheosis:damage_reduction.desc", Component.translatable("misc.apotheosis." + this.type.getId()), Affix.fmt(100 * level)).withStyle(ChatFormatting.YELLOW);
     }
@@ -66,11 +67,6 @@ public class DamageReductionBonus extends GemBonus {
     @Override
     public boolean supports(Purity purity) {
         return this.values.containsKey(purity);
-    }
-
-    @Override
-    public int getNumberOfUUIDs() {
-        return 0;
     }
 
     @Override

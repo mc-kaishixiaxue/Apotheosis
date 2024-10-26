@@ -7,41 +7,42 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
+import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
+import dev.shadowsoffire.apothic_enchanting.Ench;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class BloodyArrowBonus extends GemBonus {
 
     public static Codec<BloodyArrowBonus> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            LootRarity.mapCodec(Data.CODEC).fieldOf("values").forGetter(a -> a.values))
+            Purity.mapCodec(Data.CODEC).fieldOf("values").forGetter(a -> a.values))
         .apply(inst, BloodyArrowBonus::new));
 
-    protected final Map<LootRarity, Data> values;
+    protected final Map<Purity, Data> values;
 
-    public BloodyArrowBonus(Map<LootRarity, Data> values) {
+    public BloodyArrowBonus(Map<Purity, Data> values) {
         super(Apotheosis.loc("bloody_arrow"), new GemClass("ranged_weapon", ImmutableSet.of(LootCategory.BOW, LootCategory.CROSSBOW)));
         this.values = values;
     }
 
     @Override
-    public void onArrowFired(ItemStack gem, LootRarity rarity, LivingEntity user, AbstractArrow arrow) {
-        Data d = this.values.get(rarity);
-        if (Affix.isOnCooldown(this.getCooldownId(gem), d.cooldown, user)) return;
-        user.hurt(user.damageSources().source(Apoth.DamageTypes.CORRUPTED), user.getMaxHealth() * d.healthCost);
+    public void onArrowFired(GemInstance inst, LivingEntity user, AbstractArrow arrow) {
+        Data d = this.values.get(inst.purity());
+        if (Affix.isOnCooldown(makeUniqueId(inst), d.cooldown, user)) return;
+        user.hurt(user.damageSources().source(Ench.DamageTypes.CORRUPTED), user.getMaxHealth() * d.healthCost);
         arrow.setBaseDamage(arrow.getBaseDamage() * d.dmgMultiplier);
-        Affix.startCooldown(this.getCooldownId(gem), user);
+        Affix.startCooldown(makeUniqueId(inst), user);
     }
 
     @Override
@@ -50,9 +51,9 @@ public class BloodyArrowBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(ItemStack gem, LootRarity rarity) {
-        Data d = this.values.get(rarity);
-        Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown));
+    public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
+        Data d = this.values.get(inst.purity());
+        Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown, ctx.tickRate()));
         return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(d.healthCost * 100), Affix.fmt(100 * d.dmgMultiplier), cooldown).withStyle(ChatFormatting.YELLOW);
     }
 
@@ -67,13 +68,8 @@ public class BloodyArrowBonus extends GemBonus {
     }
 
     @Override
-    public boolean supports(LootRarity rarity) {
-        return this.values.containsKey(rarity);
-    }
-
-    @Override
-    public int getNumberOfUUIDs() {
-        return 0;
+    public boolean supports(Purity purity) {
+        return this.values.containsKey(purity);
     }
 
     static record Data(float healthCost, float dmgMultiplier, int cooldown) {

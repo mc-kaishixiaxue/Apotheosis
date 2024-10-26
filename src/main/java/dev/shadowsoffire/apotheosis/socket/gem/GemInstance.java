@@ -141,8 +141,8 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity 
     /**
      * @see GemBonus#getSocketBonusTooltip(ItemStack, LootRarity)
      */
-    public Component getSocketBonusTooltip() {
-        return this.map(b -> b.getSocketBonusTooltip(this)).orElse(Component.literal("Invalid Gem Category"));
+    public Component getSocketBonusTooltip(AttributeTooltipContext ctx) {
+        return this.map(b -> b.getSocketBonusTooltip(this, ctx)).orElse(Component.literal("Invalid Gem Category"));
     }
 
     /**

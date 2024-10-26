@@ -10,36 +10,37 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
+import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class LeechBlockBonus extends GemBonus {
 
     public static Codec<LeechBlockBonus> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            LootRarity.mapCodec(Data.CODEC).fieldOf("values").forGetter(a -> a.values))
+            Purity.mapCodec(Data.CODEC).fieldOf("values").forGetter(a -> a.values))
         .apply(inst, LeechBlockBonus::new));
 
-    protected final Map<LootRarity, Data> values;
+    protected final Map<Purity, Data> values;
 
-    public LeechBlockBonus(Map<LootRarity, Data> values) {
+    public LeechBlockBonus(Map<Purity, Data> values) {
         super(Apotheosis.loc("leech_block"), new GemClass("shield", ImmutableSet.of(LootCategory.SHIELD)));
         this.values = values;
     }
 
     @Override
-    public float onShieldBlock(ItemStack gem, LootRarity rarity, LivingEntity entity, DamageSource source, float amount) {
-        Data d = this.values.get(rarity);
-        if (amount <= 2 || Affix.isOnCooldown(this.getCooldownId(gem), d.cooldown, entity)) return amount;
+    public float onShieldBlock(GemInstance inst, LivingEntity entity, DamageSource source, float amount) {
+        Data d = this.values.get(inst.purity());
+        if (amount <= 2 || Affix.isOnCooldown(makeUniqueId(inst), d.cooldown, entity)) return amount;
         entity.heal(amount * d.healFactor);
-        Affix.startCooldown(this.getCooldownId(gem), entity);
+        Affix.startCooldown(makeUniqueId(inst), entity);
         return amount;
     }
 
@@ -49,9 +50,9 @@ public class LeechBlockBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(ItemStack gem, LootRarity rarity) {
-        Data d = this.values.get(rarity);
-        Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown));
+    public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
+        Data d = this.values.get(inst.purity());
+        Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown, ctx.tickRate()));
         return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(d.healFactor * 100), cooldown).withStyle(ChatFormatting.YELLOW);
     }
 
@@ -66,13 +67,8 @@ public class LeechBlockBonus extends GemBonus {
     }
 
     @Override
-    public boolean supports(LootRarity rarity) {
-        return this.values.containsKey(rarity);
-    }
-
-    @Override
-    public int getNumberOfUUIDs() {
-        return 0;
+    public boolean supports(Purity purity) {
+        return this.values.containsKey(purity);
     }
 
     static record Data(float healFactor, int cooldown) {

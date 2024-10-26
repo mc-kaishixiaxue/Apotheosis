@@ -10,39 +10,39 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
+import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
-import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class MageSlayerBonus extends GemBonus {
 
     public static Codec<MageSlayerBonus> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            VALUES_CODEC.fieldOf("values").forGetter(a -> a.values))
+            Purity.mapCodec(Codec.floatRange(0, 1)).fieldOf("values").forGetter(a -> a.values))
         .apply(inst, MageSlayerBonus::new));
 
-    protected final Map<LootRarity, StepFunction> values;
+    protected final Map<Purity, Float> values;
 
-    public MageSlayerBonus(Map<LootRarity, StepFunction> values) {
+    public MageSlayerBonus(Map<Purity, Float> values) {
         super(Apotheosis.loc("mageslayer"), new GemClass("helmet", ImmutableSet.of(LootCategory.HELMET)));
         this.values = values;
     }
 
     @Override
-    public float onHurt(ItemStack gem, LootRarity rarity, DamageSource src, LivingEntity user, float amount) {
-        float value = this.values.get(rarity).min();
-        if (src.is(DamageTypeTags.BYPASSES_ARMOR)) { // TODO: Forge IS_MAGIC tag
+    public float onHurt(GemInstance inst, DamageSource src, LivingEntity user, float amount) {
+        float value = this.values.get(inst.purity());
+        if (src.is(Tags.DamageTypes.IS_MAGIC)) {
             user.heal(amount * value);
             return amount * (1 - value);
         }
-        return super.onHurt(gem, rarity, src, user, amount);
+        return super.onHurt(inst, src, user, amount);
     }
 
     @Override
@@ -51,8 +51,8 @@ public class MageSlayerBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(ItemStack gem, LootRarity rarity) {
-        float value = this.values.get(rarity).min();
+    public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
+        float value = this.values.get(inst.purity());
         return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(value * 100)).withStyle(ChatFormatting.YELLOW);
     }
 
@@ -67,12 +67,8 @@ public class MageSlayerBonus extends GemBonus {
     }
 
     @Override
-    public boolean supports(LootRarity rarity) {
-        return this.values.containsKey(rarity);
+    public boolean supports(Purity purity) {
+        return this.values.containsKey(purity);
     }
 
-    @Override
-    public int getNumberOfUUIDs() {
-        return 0;
-    }
 }

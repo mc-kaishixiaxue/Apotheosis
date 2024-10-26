@@ -7,10 +7,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
-import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.AllStatsBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.BloodyArrowBonus;
@@ -40,6 +38,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.loot.LootModifier;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 
@@ -75,18 +74,12 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
     public abstract boolean supports(Purity quality);
 
     /**
-     * Returns the number of UUIDs that need to be generated for this Gem to operate properly.<br>
-     * This should be equal to the maximum amount of attribute modifiers that need to be generated for proper usage.
-     */
-    public abstract int getNumberOfUUIDs();
-
-    /**
      * Gets the one-line socket bonus tooltip.
      *
      * @param gem    The gem stack.
      * @param rarity The rarity of the gem.
      */
-    public abstract Component getSocketBonusTooltip(GemInstance gem);
+    public abstract Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx);
 
     /**
      * Retrieve the modifiers from this bonus to be applied to the socketed stack.
@@ -94,20 +87,19 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
      * <p>
      * To generate modifier ids, use {@link #makeModifierId(GemInstance, EquipmentSlotGroup, String)}
      *
-     * @param gem   The gem stack.
+     * @param inst  The current gem instance.
      * @param event The attribute modifier event, which will accept any created modifiers.
      */
-    public void addModifiers(GemInstance gem, ItemAttributeModifierEvent event) {}
+    public void addModifiers(GemInstance inst, ItemAttributeModifierEvent event) {}
 
     /**
      * Calculates the protection value of this bonus, with respect to the given damage source.
      *
-     * @param gem    The gem stack.
-     * @param rarity The rarity of the gem.
+     * @param inst   The current gem instance.
      * @param source The damage source to compare against.
      * @return How many protection points this affix is worth against this source.
      */
-    public int getDamageProtection(GemInstance gem, DamageSource source) {
+    public int getDamageProtection(GemInstance inst, DamageSource source) {
         return 0;
     }
 
@@ -115,11 +107,10 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
      * Calculates the additional damage this bonus provides.
      * This damage is dealt as player physical damage.
      *
-     * @param gem    The gem stack.
-     * @param rarity The rarity of the gem.
-     * @param type   The type of the mob.
+     * @param inst The current gem instance.
+     * @param type The type of the mob.
      */
-    public float getDamageBonus(GemInstance gem, Entity target) {
+    public float getDamageBonus(GemInstance inst, Entity target) {
         return 0.0F;
     }
 
@@ -127,77 +118,74 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
      * Called when someone attacks an entity with an item that has this bonus.<br>
      * Specifically, this is invoked whenever the user attacks a target, while having an item with this bonus in either hand or any armor slot.
      *
-     * @param gem    The gem stack.
-     * @param rarity The rarity of the gem.
+     * @param inst   The current gem instance.
      * @param user   The wielder of the weapon. The weapon stack will be in their main hand.
      * @param target The target entity being attacked.
      */
-    public void doPostAttack(GemInstance gem, LivingEntity user, @Nullable Entity target) {}
+    public void doPostAttack(GemInstance inst, LivingEntity user, @Nullable Entity target) {}
 
     /**
      * Called when an entity that has this bonus on one of its armor items is damaged.
      *
-     * @param gem      The gem stack.
-     * @param rarity   The rarity of the gem.
+     * @param inst     The current gem instance.
      * @param user     The entity wearing an itme with this bonus.
      * @param attacker The entity attacking the user.
      */
-    public void doPostHurt(GemInstance gem, LivingEntity user, @Nullable Entity attacker) {}
+    public void doPostHurt(GemInstance inst, LivingEntity user, @Nullable Entity attacker) {}
 
     /**
      * Called when a user fires an arrow from a bow or crossbow with this affix on it.
      */
-    public void onArrowFired(GemInstance gem, LivingEntity user, AbstractArrow arrow) {}
+    public void onArrowFired(GemInstance inst, LivingEntity user, AbstractArrow arrow) {}
 
     /**
      * Called when {@link Item#onItemUse(ItemUseContext)} would be called for an item with this affix.
      * Return null to not impact the original result type.
      */
     @Nullable
-    public InteractionResult onItemUse(GemInstance gem, UseOnContext ctx) {
+    public InteractionResult onItemUse(GemInstance inst, UseOnContext ctx) {
         return null;
     }
 
     /**
      * Called when an arrow that was marked with this affix hits a target.
      */
-    public void onArrowImpact(GemInstance gem, AbstractArrow arrow, HitResult res) {}
+    public void onArrowImpact(GemInstance inst, AbstractArrow arrow, HitResult res) {}
 
     /**
      * Called when a shield with this affix blocks some amount of damage.
      *
+     * @param inst   The current gem instance.
      * @param entity The blocking entity.
      * @param source The damage source being blocked.
      * @param amount The amount of damage blocked.
-     * @param purity The purity of this gem.
      * @return The amount of damage that is *actually* blocked by the shield, after this affix applies.
      */
-    public float onShieldBlock(GemInstance gem, LivingEntity entity, DamageSource source, float amount) {
+    public float onShieldBlock(GemInstance inst, LivingEntity entity, DamageSource source, float amount) {
         return amount;
     }
 
     /**
      * Called when a player with this affix breaks a block.
      *
+     * @param inst   The current gem instance.
      * @param player The breaking player.
-     * @param world  The level the block was broken in.
+     * @param level  The level the block was broken in.
      * @param pos    The position of the block.
      * @param state  The state that was broken.
      */
-    public void onBlockBreak(GemInstance gem, Player player, LevelAccessor world, BlockPos pos, BlockState state) {
+    public void onBlockBreak(GemInstance inst, Player player, LevelAccessor level, BlockPos pos, BlockState state) {
 
     }
 
     /**
      * Allows an affix to reduce durability damage to an item.
      *
-     * @param gem    The stack representing this gem.
-     * @param rarity The rarity of the item.
-     * @param level  The level of the affix.
-     * @param user   The user of the item, if applicable.
+     * @param inst The current gem instance.
+     * @param user The user of the item, if applicable.
      * @return The percentage [0, 1] of durability damage to ignore. This value will be summed with all other affixes that increase it.
      */
-    public float getDurabilityBonusPercentage(GemInstance gem, @Nullable ServerPlayer user) {
+    public float getDurabilityBonusPercentage(GemInstance inst, @Nullable ServerPlayer user) {
         return 0;
     }
 
@@ -205,38 +193,33 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
      * Fires during the {@link LivingHurtEvent}, and allows for modification of the damage value.<br>
      * If the value is set to zero or below, the event will be cancelled.
      *
-     * @param gem    The stack representing this gem.
-     * @param rarity The rarity of the item.
-     * @param level  The level of the affix.
+     * @param inst   The current gem instance.
      * @param src    The Damage Source of the attack.
      * @param user   The entity being attacked.
      * @param amount The amount of damage that is to be taken.
      * @return The amount of damage that will be taken, after modification. This value will propagate to other bonuses.
      */
-    public float onHurt(GemInstance gem, DamageSource src, LivingEntity user, float amount) {
+    public float onHurt(GemInstance inst, DamageSource src, LivingEntity user, float amount) {
         return amount;
     }
 
     /**
      * Fires during {@link GetEnchantmentLevelEvent} and allows for increasing enchantment levels.
      *
-     * @param gem    The stack representing this gem.
-     * @param rarity The rarity of the item.
-     * @param level  The level of the affix.
-     * @param ench   The enchantment being queried for.
+     * @param inst The current gem instance.
+     * @param ench The enchantment being queried for.
      * @return The bonus level to be added to the current enchantment.
      */
-    public void getEnchantmentLevels(GemInstance gem, ItemEnchantments.Mutable enchantments) {}
+    public void getEnchantmentLevels(GemInstance inst, ItemEnchantments.Mutable enchantments) {}
 
     /**
      * Fires from {@link LootModifier#apply(ObjectArrayList, LootContext)} when this bonus is active on the tool given by the context.
      *
-     * @param gem    The gem itemstack.
-     * @param rarity The rarity of the gem.
-     * @param loot   The generated loot.
-     * @param ctx    The loot context.
+     * @param inst The current gem instance.
+     * @param loot The generated loot.
+     * @param ctx  The loot context.
      */
-    public void modifyLoot(GemInstance gem, ObjectArrayList<ItemStack> loot, LootContext ctx) {}
+    public void modifyLoot(GemInstance inst, ObjectArrayList<ItemStack> loot, LootContext ctx) {}
 
     public ResourceLocation getId() {
         return this.id;
@@ -247,28 +230,22 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
     }
 
     /**
-     * Generates a {@link ResourceLocation} for use with {@link Affix#isOnCooldown} / {@link Affix#startCooldown}
-     */
-    protected final ResourceLocation makeCooldownId(ItemStack gemStack) {
-        ResourceLocation gemId = GemItem.getGem(gemStack).getId();
-        return ResourceLocation.fromNamespaceAndPath(gemId.getNamespace(), gemId.getPath() + "/" + this.getId().toLanguageKey());
-    }
-
-    /**
-     * Generates a deterministic {@link ResourceLocation} that can be used to create attribute modifiers for a gem bonus.
+     * Generates a deterministic {@link ResourceLocation} that is unique for a given socketed gem instance.
+     * <p>
+     * Can be used to generate attribute modifiers, track cooldowns, and other things that need to be unique per-gem-in-slot.
      * 
      * @param inst The owning gem instance for the bonus
      * @param salt A salt value, which can be used if the bonus needs multiple modifiers.
      */
-    protected static ResourceLocation makeModifierId(GemInstance inst, String salt) {
+    protected static ResourceLocation makeUniqueId(GemInstance inst, String salt) {
         return ResourceLocation.fromNamespaceAndPath(inst.gem().getId().getNamespace(), inst.gem().getId().getPath() + "_modifier_" + inst.category().getSlots().getSerializedName() + "_" + inst.slot() + salt);
     }
 
     /**
-     * Calls {@link #makeModifierId(GemInstance, String)} with an empty salt value.
+     * Calls {@link #makeUniqueId(GemInstance, String)} with an empty salt value.
      */
-    protected static ResourceLocation makeModifierId(GemInstance inst) {
-        return makeModifierId(inst, "");
+    protected static ResourceLocation makeUniqueId(GemInstance inst) {
+        return makeUniqueId(inst, "");
     }
 
     public static void initCodecs() {

@@ -10,7 +10,6 @@ import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
-import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 
 public class AttributeBonus extends GemBonus {
@@ -47,8 +47,8 @@ public class AttributeBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(GemInstance gem) {
-        return this.attribute.value().toComponent(this.createModifier(gem), ApothicAttributes.getTooltipFlag());
+    public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
+        return this.attribute.value().toComponent(this.createModifier(gem), ctx.flag());
     }
 
     @Override
@@ -64,14 +64,9 @@ public class AttributeBonus extends GemBonus {
         return this.values.containsKey(purity);
     }
 
-    @Override
-    public int getNumberOfUUIDs() {
-        return 1;
-    }
-
     public AttributeModifier createModifier(GemInstance gem) {
         double value = this.values.get(gem.purity());
-        return new AttributeModifier(makeModifierId(gem), value, this.operation);
+        return new AttributeModifier(makeUniqueId(gem), value, this.operation);
     }
 
     @Override

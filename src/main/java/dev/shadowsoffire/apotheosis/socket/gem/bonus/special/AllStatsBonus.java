@@ -1,9 +1,6 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus.special;
 
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.function.BiConsumer;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
@@ -11,20 +8,23 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
-import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
-import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
-import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 
 @SuppressWarnings("deprecation")
 public class AllStatsBonus extends GemBonus {
@@ -33,15 +33,15 @@ public class AllStatsBonus extends GemBonus {
         .group(
             gemClass(),
             PlaceboCodecs.enumCodec(Operation.class).fieldOf("operation").forGetter(a -> a.operation),
-            VALUES_CODEC.fieldOf("values").forGetter(a -> a.values),
-            BuiltInRegistries.ATTRIBUTE.byNameCodec().listOf().fieldOf("attributes").forGetter(a -> a.attributes))
+            Purity.mapCodec(Codec.FLOAT).fieldOf("values").forGetter(a -> a.values),
+            RegistryCodecs.homogeneousList(Registries.ATTRIBUTE).fieldOf("attributes").forGetter(a -> a.attributes))
         .apply(inst, AllStatsBonus::new));
 
     protected final Operation operation;
-    protected final Map<LootRarity, StepFunction> values;
-    protected final List<Attribute> attributes;
+    protected final Map<Purity, Float> values;
+    protected final HolderSet<Attribute> attributes;
 
-    public AllStatsBonus(GemClass gemClass, Operation op, Map<LootRarity, StepFunction> values, List<Attribute> attributes) {
+    public AllStatsBonus(GemClass gemClass, Operation op, Map<Purity, Float> values, HolderSet<Attribute> attributes) {
         super(Apotheosis.loc("all_stats"), gemClass);
         this.operation = op;
         this.values = values;
@@ -49,35 +49,30 @@ public class AllStatsBonus extends GemBonus {
     }
 
     @Override
-    public void addModifiers(GemInstance gem, BiConsumer<Attribute, AttributeModifier> map) {
-        UUID id = GemItem.getUUIDs(gem).get(0);
-        for (Attribute attr : this.attributes) {
-            var modif = new AttributeModifier(id, "apoth.gem_modifier.all_stats_buff", this.values.get(rarity).min(), this.operation);
-            map.accept(attr, modif);
+    public void addModifiers(GemInstance inst, ItemAttributeModifierEvent event) {
+        int idx = 0;
+        for (Holder<Attribute> attr : this.attributes) {
+            ResourceLocation id = makeUniqueId(inst, "" + idx++);
+            var modif = new AttributeModifier(id, this.values.get(inst.purity()), this.operation);
+            event.addModifier(attr, modif, inst.category().getSlots());
         }
     }
 
     @Override
-    public Component getSocketBonusTooltip(ItemStack gem, LootRarity rarity) {
-        StepFunction value = this.values.get(rarity);
-        return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(value.get(0) * 100)).withStyle(ChatFormatting.YELLOW);
+    public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
+        float value = this.values.get(inst.purity());
+        return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(value * 100)).withStyle(ChatFormatting.YELLOW);
     }
 
     @Override
     public AllStatsBonus validate() {
-        Preconditions.checkNotNull(this.operation, "Invalid AllStatsBonus with null operation");
-        Preconditions.checkNotNull(this.values, "Invalid AllStatsBonus with null values");
+        Preconditions.checkNotNull(this.attributes.size() > 0, "An all_stats bonus must have at least one attribute.");
         return this;
     }
 
     @Override
-    public boolean supports(LootRarity rarity) {
-        return this.values.containsKey(rarity);
-    }
-
-    @Override
-    public int getNumberOfUUIDs() {
-        return 1;
+    public boolean supports(Purity purity) {
+        return this.values.containsKey(purity);
     }
 
     @Override

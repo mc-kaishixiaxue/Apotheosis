@@ -5,12 +5,15 @@ import java.util.function.Function;
 import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.floats.FloatCollection;
 import it.unimi.dsi.fastutil.floats.FloatCollections;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import it.unimi.dsi.fastutil.objects.ObjectSets;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -22,6 +25,13 @@ import net.minecraft.world.item.ItemStack;
 public final class ItemAffixes {
 
     public static final Codec<ItemAffixes> CODEC = Codec.unboundedMap(AffixRegistry.INSTANCE.holderCodec(), Codec.floatRange(0, 1)).xmap(Object2FloatOpenHashMap::new, Function.identity()).xmap(ItemAffixes::new, i -> i.affixes);
+
+    public static final StreamCodec<ByteBuf, ItemAffixes> STREAM_CODEC = StreamCodec.composite(
+        ByteBufCodecs.map(Object2FloatOpenHashMap::new, AffixRegistry.INSTANCE.holderStreamCodec(), ByteBufCodecs.FLOAT),
+        ia -> ia.affixes,
+        ItemAffixes::new);
+
+    public static final ItemAffixes EMPTY = new ItemAffixes(new Object2FloatOpenHashMap<>());
 
     private final Object2FloatOpenHashMap<DynamicHolder<Affix>> affixes;
 

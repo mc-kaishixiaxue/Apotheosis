@@ -8,10 +8,8 @@ import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityClamp;
-import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry;
 import net.minecraft.resources.ResourceLocation;
@@ -34,9 +32,9 @@ public class GemRegistry extends WeightedDynamicRegistry<Gem> {
     }
 
     /**
-     * Pulls a random LootRarity and Gem, and generates an Gem Item
+     * Pulls a random Gem and Purity, then generates an item stack holding them.
      *
-     * @param rand   Random
+     * @param rand   A random
      * @param rarity The rarity, or null if it should be randomly selected.
      * @param luck   The player's luck level
      * @param filter The filter
@@ -51,22 +49,24 @@ public class GemRegistry extends WeightedDynamicRegistry<Gem> {
         return createGemStack(gem, rarity);
     }
 
-    public static ItemStack createGemStack(Gem gem, LootRarity rarity) {
-        ItemStack stack = new ItemStack(Items.GEM.get());
+    public static ItemStack createGemStack(Gem gem, Purity purity) {
+        ItemStack stack = new ItemStack(Items.GEM);
         GemItem.setGem(stack, gem);
-        AffixHelper.setRarity(stack, rarity);
+        GemItem.setPurity(stack, purity);
         return stack;
     }
 
     @Override
     protected void validateItem(ResourceLocation key, Gem item) {
         super.validateItem(key, item);
-        for (LootRarity r = item.minRarity; r != item.maxRarity; r = r.next()) {
-            boolean atLeastOne = false;
-            for (GemBonus bonus : item.bonuses) {
-                if (bonus.supports(r)) atLeastOne = true;
+        for (Purity p : Purity.values()) {
+            if (p.isAtLeast(item.getMinPurity())) {
+                boolean atLeastOne = false;
+                for (GemBonus bonus : item.bonuses) {
+                    if (bonus.supports(p)) atLeastOne = true;
+                }
+                Preconditions.checkArgument(atLeastOne, "No bonuses provided for supported purity %s. At least one bonus must be provided, or the minimum purity should be raised.", p.getName());
             }
-            Preconditions.checkArgument(atLeastOne, "No bonuses provided for supported rarity %s. At least one bonus must be provided, or the rarity should not be supported.", RarityRegistry.INSTANCE.getKey(r));
         }
     }
 

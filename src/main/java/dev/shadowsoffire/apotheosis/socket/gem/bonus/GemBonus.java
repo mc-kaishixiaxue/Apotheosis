@@ -1,8 +1,5 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
-import java.util.Map;
-import java.util.function.BiConsumer;
-
 import javax.annotation.Nullable;
 
 import com.mojang.datafixers.kinds.App;
@@ -11,10 +8,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.AllStatsBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.BloodyArrowBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.DropTransformBonus;
@@ -22,7 +19,6 @@ import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.LeechBlockBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.MageSlayerBonus;
 import dev.shadowsoffire.placebo.codec.CodecMap;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
-import dev.shadowsoffire.placebo.util.StepFunction;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -31,27 +27,26 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.loot.LootModifier;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 
 public abstract class GemBonus implements CodecProvider<GemBonus> {
 
     // TODO: Convert to Registry<Codec<?>> instead of using a raw codec map.
     public static final CodecMap<GemBonus> CODEC = new CodecMap<>("Gem Bonus");
-    public static final Codec<Map<LootRarity, StepFunction>> VALUES_CODEC = LootRarity.mapCodec(StepFunction.CODEC);
 
     protected final ResourceLocation id;
     protected final GemClass gemClass;
@@ -71,13 +66,13 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
     public abstract GemBonus validate();
 
     /**
-     * Checks if this bonus supports the rarity.
+     * Checks if this bonus supports the quality.
      *
-     * @param rarity The rarity being checked.
-     * @return True, if this bonus contains values for the specified rarity.
-     * @apiNote Other methods in this class will throw an exception if the bonus does not support the rarity.
+     * @param quality The quality being checked.
+     * @return True, if this bonus contains values for the specified quality.
+     * @apiNote Other methods in this class will throw an exception if the bonus does not support the quality.
      */
-    public abstract boolean supports(LootRarity rarity);
+    public abstract boolean supports(Purity quality);
 
     /**
      * Returns the number of UUIDs that need to be generated for this Gem to operate properly.<br>
@@ -94,16 +89,15 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
     public abstract Component getSocketBonusTooltip(GemInstance gem);
 
     /**
-     * Retrieve the modifiers from this bonus to be applied to the socketed stack.<br>
-     * This method will be called once for each slot based on the category this bonus is for.
+     * Retrieve the modifiers from this bonus to be applied to the socketed stack.
+     * All modifiers for all slots should be supplied unconditionally.
      * <p>
-     * For modifiers created here, they should use the UUIDs from {@link GemItem.getUUIDs(gem)}
+     * To generate modifier ids, use {@link #makeModifierId(GemInstance, EquipmentSlotGroup, String)}
      *
-     * @param gem    The gem stack.
-     * @param rarity The rarity of the gem.
-     * @param map    The destination for generated attribute modifiers.
+     * @param gem   The gem stack.
+     * @param event The attribute modifier event, which will accept any created modifiers.
      */
-    public void addModifiers(GemInstance gem, BiConsumer<Attribute, AttributeModifier> map) {}
+    public void addModifiers(GemInstance gem, ItemAttributeModifierEvent event) {}
 
     /**
      * Calculates the protection value of this bonus, with respect to the given damage source.
@@ -232,7 +226,7 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
      * @param ench   The enchantment being queried for.
      * @return The bonus level to be added to the current enchantment.
      */
-    public void getEnchantmentLevels(GemInstance gem, Map<Enchantment, Integer> enchantments) {}
+    public void getEnchantmentLevels(GemInstance gem, ItemEnchantments.Mutable enchantments) {}
 
     /**
      * Fires from {@link LootModifier#apply(ObjectArrayList, LootContext)} when this bonus is active on the tool given by the context.
@@ -253,15 +247,28 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
     }
 
     /**
-     * Generates an ID for use with {@link Affix#isOnCooldown} / {@link Affix#startCooldown}
+     * Generates a {@link ResourceLocation} for use with {@link Affix#isOnCooldown} / {@link Affix#startCooldown}
      */
-    protected final ResourceLocation getCooldownId(ItemStack gemStack) {
+    protected final ResourceLocation makeCooldownId(ItemStack gemStack) {
         ResourceLocation gemId = GemItem.getGem(gemStack).getId();
         return ResourceLocation.fromNamespaceAndPath(gemId.getNamespace(), gemId.getPath() + "/" + this.getId().toLanguageKey());
     }
 
-    protected static <T extends GemBonus> App<RecordCodecBuilder.Mu<T>, GemClass> gemClass() {
-        return GemClass.CODEC.fieldOf("gem_class").forGetter(GemBonus::getGemClass);
+    /**
+     * Generates a deterministic {@link ResourceLocation} that can be used to create attribute modifiers for a gem bonus.
+     * 
+     * @param inst The owning gem instance for the bonus
+     * @param salt A salt value, which can be used if the bonus needs multiple modifiers.
+     */
+    protected static ResourceLocation makeModifierId(GemInstance inst, String salt) {
+        return ResourceLocation.fromNamespaceAndPath(inst.gem().getId().getNamespace(), inst.gem().getId().getPath() + "_modifier_" + inst.category().getSlots().getSerializedName() + "_" + inst.slot() + salt);
+    }
+
+    /**
+     * Calls {@link #makeModifierId(GemInstance, String)} with an empty salt value.
+     */
+    protected static ResourceLocation makeModifierId(GemInstance inst) {
+        return makeModifierId(inst, "");
     }
 
     public static void initCodecs() {
@@ -276,6 +283,10 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
         register("drop_transform", DropTransformBonus.CODEC);
         register("mageslayer", MageSlayerBonus.CODEC);
         register("mob_effect", PotionBonus.CODEC);
+    }
+
+    protected static <T extends GemBonus> App<RecordCodecBuilder.Mu<T>, GemClass> gemClass() {
+        return GemClass.CODEC.fieldOf("gem_class").forGetter(GemBonus::getGemClass);
     }
 
     private static void register(String id, Codec<? extends GemBonus> codec) {

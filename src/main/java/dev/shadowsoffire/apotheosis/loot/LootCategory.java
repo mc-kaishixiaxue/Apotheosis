@@ -16,19 +16,18 @@ import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
-import net.minecraft.util.ExtraCodecs;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.level.block.AbstractSkullBlock;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.ItemAbilities;
 
 public final class LootCategory {
 
@@ -37,29 +36,28 @@ public final class LootCategory {
 
     public static final Map<String, LootCategory> BY_ID = Collections.unmodifiableMap(BY_ID_INTERNAL);
     public static final List<LootCategory> VALUES = Collections.unmodifiableList(VALUES_INTERNAL);
-    public static final Codec<LootCategory> CODEC = ExtraCodecs.stringResolverCodec(LootCategory::getName, LootCategory::byId);
+    public static final Codec<LootCategory> CODEC = Codec.stringResolver(LootCategory::getName, LootCategory::byId);
     public static final Codec<Set<LootCategory>> SET_CODEC = PlaceboCodecs.setOf(CODEC);
 
-    public static final LootCategory BOW = register("bow", s -> s.getItem() instanceof BowItem, arr(EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND));
-    public static final LootCategory CROSSBOW = register("crossbow", s -> s.getItem() instanceof CrossbowItem, arr(EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND));
-    public static final LootCategory PICKAXE = register("pickaxe", s -> s.canPerformAction(ToolActions.PICKAXE_DIG), arr(EquipmentSlot.MAINHAND));
-    public static final LootCategory SHOVEL = register("shovel", s -> s.canPerformAction(ToolActions.SHOVEL_DIG), arr(EquipmentSlot.MAINHAND));
-    public static final LootCategory HEAVY_WEAPON = register("heavy_weapon", new ShieldBreakerTest(), arr(EquipmentSlot.MAINHAND));
-    public static final LootCategory HELMET = register("helmet", armorSlot(EquipmentSlot.HEAD), arr(EquipmentSlot.HEAD));
-    public static final LootCategory CHESTPLATE = register("chestplate", armorSlot(EquipmentSlot.CHEST), arr(EquipmentSlot.CHEST));
-    public static final LootCategory LEGGINGS = register("leggings", armorSlot(EquipmentSlot.LEGS), arr(EquipmentSlot.LEGS));
-    public static final LootCategory BOOTS = register("boots", armorSlot(EquipmentSlot.FEET), arr(EquipmentSlot.FEET));
-    public static final LootCategory SHIELD = register("shield", s -> s.canPerformAction(ToolActions.SHIELD_BLOCK), arr(EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND));
-    public static final LootCategory TRIDENT = register("trident", s -> s.getItem() instanceof TridentItem, arr(EquipmentSlot.MAINHAND));
+    public static final LootCategory BOW = register("bow", s -> s.getItem() instanceof BowItem, EquipmentSlotGroup.HAND);
+    public static final LootCategory CROSSBOW = register("crossbow", s -> s.getItem() instanceof CrossbowItem, EquipmentSlotGroup.HAND);
+    public static final LootCategory PICKAXE = register("pickaxe", s -> s.canPerformAction(ItemAbilities.PICKAXE_DIG), EquipmentSlotGroup.MAINHAND);
+    public static final LootCategory SHOVEL = register("shovel", s -> s.canPerformAction(ItemAbilities.SHOVEL_DIG), EquipmentSlotGroup.MAINHAND);
+    public static final LootCategory HELMET = register("helmet", armorSlot(EquipmentSlot.HEAD), EquipmentSlotGroup.HEAD);
+    public static final LootCategory CHESTPLATE = register("chestplate", armorSlot(EquipmentSlot.CHEST), EquipmentSlotGroup.CHEST);
+    public static final LootCategory LEGGINGS = register("leggings", armorSlot(EquipmentSlot.LEGS), EquipmentSlotGroup.LEGS);
+    public static final LootCategory BOOTS = register("boots", armorSlot(EquipmentSlot.FEET), EquipmentSlotGroup.FEET);
+    public static final LootCategory SHIELD = register("shield", s -> s.canPerformAction(ItemAbilities.SHIELD_BLOCK), EquipmentSlotGroup.HAND);
+    public static final LootCategory TRIDENT = register("trident", s -> s.getItem() instanceof TridentItem, EquipmentSlotGroup.MAINHAND);
     public static final LootCategory SWORD = register("sword",
-        s -> s.canPerformAction(ToolActions.SWORD_DIG) || s.getItem().getAttributeModifiers(EquipmentSlot.MAINHAND, s).get(Attributes.ATTACK_DAMAGE).stream().anyMatch(m -> m.getAmount() > 0), arr(EquipmentSlot.MAINHAND));
-    public static final LootCategory NONE = register("none", Predicates.alwaysFalse(), new EquipmentSlot[0]);
+        s -> s.canPerformAction(ItemAbilities.SWORD_DIG) || s.getItem().getDefaultAttributeModifiers(s).compute(1, EquipmentSlot.MAINHAND) > 1, EquipmentSlotGroup.MAINHAND);
+    public static final LootCategory NONE = register("none", Predicates.alwaysFalse(), EquipmentSlotGroup.ANY);
 
     private final String name;
     private final Predicate<ItemStack> validator;
-    private final EquipmentSlot[] slots;
+    private final EquipmentSlotGroup slots;
 
-    private LootCategory(String name, Predicate<ItemStack> validator, EquipmentSlot[] slots) {
+    private LootCategory(String name, Predicate<ItemStack> validator, EquipmentSlotGroup slots) {
         this.name = Preconditions.checkNotNull(name);
         this.validator = Preconditions.checkNotNull(validator);
         this.slots = Preconditions.checkNotNull(slots);
@@ -81,7 +79,7 @@ public final class LootCategory {
      * Returns the relevant equipment slot for this item.
      * The passed item should be of the type this category represents.
      */
-    public EquipmentSlot[] getSlots() {
+    public EquipmentSlotGroup getSlots() {
         return this.slots;
     }
 
@@ -105,16 +103,12 @@ public final class LootCategory {
         return this.isArmor() || this == SHIELD;
     }
 
-    public boolean isLightWeapon() {
+    public boolean isMelee() {
         return this == SWORD || this == TRIDENT;
     }
 
-    public boolean isWeapon() {
-        return this == SWORD || this == HEAVY_WEAPON || this == TRIDENT;
-    }
-
-    public boolean isWeaponOrShield() {
-        return this.isLightWeapon() || this == SHIELD;
+    public boolean isMeleeOrShield() {
+        return this.isMelee() || this == SHIELD;
     }
 
     public boolean isNone() {
@@ -145,7 +139,7 @@ public final class LootCategory {
      * @param slotGetter A function that provides the loot categories that bonuses will be active for, if an item is of this category.
      * @return A new loot category, which should be stored in a public static final field.
      */
-    public static final LootCategory register(@Nullable LootCategory orderRef, String name, Predicate<ItemStack> validator, EquipmentSlot[] slots) {
+    public static final LootCategory register(@Nullable LootCategory orderRef, String name, Predicate<ItemStack> validator, EquipmentSlotGroup slots) {
         var cat = new LootCategory(name, validator, slots);
         if (BY_ID_INTERNAL.containsKey(name)) throw new IllegalArgumentException("Cannot register a loot category with a duplicate name.");
         BY_ID_INTERNAL.put(name, cat);
@@ -176,7 +170,7 @@ public final class LootCategory {
      */
     public static LootCategory forItem(ItemStack item) {
         if (item.isEmpty()) return NONE;
-        LootCategory override = AdventureConfig.TYPE_OVERRIDES.get(ForgeRegistries.ITEMS.getKey(item.getItem()));
+        LootCategory override = AdventureConfig.TYPE_OVERRIDES.get(BuiltInRegistries.ITEM.getKey(item.getItem()));
         if (override != null) return override;
         for (LootCategory c : VALUES) {
             if (c.isValid(item)) return c;
@@ -184,18 +178,23 @@ public final class LootCategory {
         return NONE;
     }
 
-    private static EquipmentSlot[] arr(EquipmentSlot... s) {
-        return s;
-    }
-
     private static Predicate<ItemStack> armorSlot(EquipmentSlot slot) {
         return stack -> {
             if (stack.is(Items.CARVED_PUMPKIN) || stack.getItem() instanceof BlockItem bi && bi.getBlock() instanceof AbstractSkullBlock) return false;
-            return LivingEntity.getEquipmentSlotForItem(stack) == slot;
+
+            EquipmentSlot itemSlot = stack.getEquipmentSlot();
+            if (itemSlot == null) {
+                Equipable equipable = Equipable.get(stack);
+                if (equipable != null) {
+                    itemSlot = equipable.getEquipmentSlot();
+                }
+            }
+
+            return itemSlot == slot;
         };
     }
 
-    static final LootCategory register(String name, Predicate<ItemStack> validator, EquipmentSlot[] slots) {
+    static final LootCategory register(String name, Predicate<ItemStack> validator, EquipmentSlotGroup slots) {
         return register(null, name, validator, slots);
     }
 }

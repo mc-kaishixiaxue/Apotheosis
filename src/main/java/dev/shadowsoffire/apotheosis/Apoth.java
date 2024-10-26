@@ -1,5 +1,8 @@
 package dev.shadowsoffire.apotheosis;
 
+import com.mojang.serialization.Codec;
+
+import dev.shadowsoffire.apotheosis.affix.ItemAffixes;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingMenu;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingTableBlock;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingTableTile;
@@ -19,16 +22,23 @@ import dev.shadowsoffire.apotheosis.gen.BossDungeonFeature;
 import dev.shadowsoffire.apotheosis.gen.BossDungeonFeature2;
 import dev.shadowsoffire.apotheosis.gen.ItemFrameGemsProcessor;
 import dev.shadowsoffire.apotheosis.gen.RogueSpawnerFeature;
+import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
+import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingBlock;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingMenu;
 import dev.shadowsoffire.apotheosis.util.TooltipItem;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntityType.TickSide;
 import dev.shadowsoffire.placebo.registry.DeferredHelper;
+import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -39,6 +49,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -56,8 +67,18 @@ public class Apoth {
 
     public static final class Components {
 
-        public static final ComponentType
-        
+        public static final DataComponentType<ItemAffixes> AFFIXES = R.component("affixes", b -> b.persistent(ItemAffixes.CODEC).networkSynchronized(ItemAffixes.STREAM_CODEC));
+
+        public static final DataComponentType<DynamicHolder<LootRarity>> RARITY = R.component("rarity", b -> b.persistent(RarityRegistry.INSTANCE.holderCodec()).networkSynchronized(RarityRegistry.INSTANCE.holderStreamCodec()));
+
+        public static final DataComponentType<Integer> SOCKETS = R.component("sockets", b -> b.persistent(Codec.intRange(0, 16)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
+        public static final DataComponentType<ItemContainerContents> SOCKETED_GEMS = R.component("socketed_gems", b -> b.persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC));
+
+        public static final DataComponentType<DynamicHolder<Gem>> GEM = R.component("gem", b -> b.persistent(GemRegistry.INSTANCE.holderCodec()).networkSynchronized(GemRegistry.INSTANCE.holderStreamCodec()));
+
+        public static final DataComponentType<Purity> PURITY = R.component("purity", b -> b.persistent(Purity.CODEC).networkSynchronized(Purity.STREAM_CODEC));
+
         private static void bootstrap() {}
 
     }
@@ -224,6 +245,7 @@ public class Apoth {
     }
 
     public static void bootstrap() {
+        Components.bootstrap();
         Blocks.bootstrap();
         Items.bootstrap();
         Tiles.bootstrap();

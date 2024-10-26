@@ -20,9 +20,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.compat.GameStagesCompat.IStaged;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.loot.RarityClamp;
-import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
@@ -36,15 +33,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
-public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, RarityClamp, IStaged {
+public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, IStaged {
 
     public static final Codec<Gem> CODEC = RecordCodecBuilder.create(inst -> inst.group(
         Codec.intRange(0, Integer.MAX_VALUE).fieldOf("weight").forGetter(ILuckyWeighted::getWeight),
         Codec.floatRange(0, Float.MAX_VALUE).optionalFieldOf("quality", 0F).forGetter(ILuckyWeighted::getQuality),
+        Purity.CODEC.optionalFieldOf("min_purity", Purity.CRACKED).forGetter(Gem::getMinPurity),
         PlaceboCodecs.setOf(ResourceLocation.CODEC).optionalFieldOf("dimensions", Collections.emptySet()).forGetter(IDimensional::getDimensions),
-        LootRarity.CODEC.optionalFieldOf("min_rarity").forGetter(g -> Optional.of(g.getMinRarity())),
-        LootRarity.CODEC.optionalFieldOf("max_rarity").forGetter(g -> Optional.of(g.getMaxRarity())),
         GemBonus.CODEC.listOf().fieldOf("bonuses").forGetter(Gem::getBonuses),
         Codec.BOOL.optionalFieldOf("unique", false).forGetter(Gem::isUnique),
         PlaceboCodecs.setOf(Codec.STRING).optionalFieldOf("stages").forGetter(gem -> Optional.ofNullable(gem.getStages())))
@@ -52,6 +49,7 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, Ra
 
     protected final int weight;
     protected final float quality;
+    protected final Purity minPurity;
     protected final Set<ResourceLocation> dimensions;
     protected final List<GemBonus> bonuses;
     protected final boolean unique;
@@ -59,11 +57,11 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, Ra
 
     protected transient final Map<LootCategory, GemBonus> bonusMap;
     protected transient final int uuidsNeeded;
-    protected transient final LootRarity minRarity, maxRarity;
 
-    public Gem(int weight, float quality, Set<ResourceLocation> dimensions, Optional<LootRarity> minRarity, Optional<LootRarity> maxRarity, List<GemBonus> bonuses, boolean unique, Optional<Set<String>> stages) {
+    public Gem(int weight, float quality, Purity minPurity, Set<ResourceLocation> dimensions, List<GemBonus> bonuses, boolean unique, Optional<Set<String>> stages) {
         this.weight = weight;
         this.quality = quality;
+        this.minPurity = minPurity;
         this.dimensions = dimensions;
         this.bonuses = bonuses;
         this.unique = unique;
@@ -75,22 +73,6 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, Ra
             }
         }).collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
         this.uuidsNeeded = this.bonuses.stream().mapToInt(GemBonus::getNumberOfUUIDs).max().orElse(0);
-
-        if (minRarity.isPresent()) {
-            this.minRarity = minRarity.get();
-        }
-        else {
-            this.minRarity = RarityRegistry.INSTANCE.getValues().stream().filter(bonuses.get(0)::supports).min(LootRarity::compareTo).get();
-        }
-
-        if (maxRarity.isPresent()) {
-            this.maxRarity = maxRarity.get();
-        }
-        else {
-            this.maxRarity = RarityRegistry.INSTANCE.getValues().stream().filter(bonuses.get(0)::supports).max(LootRarity::compareTo).get();
-        }
-
-        Preconditions.checkArgument(this.minRarity.ordinal() <= this.maxRarity.ordinal(), "The min rarity must be <= the max rarity.");
     }
 
     /**
@@ -108,7 +90,7 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, Ra
      * @param purity   The purity of this gem.
      * @param tooltips The destination for tooltips.
      */
-    public void addInformation(GemInstance gem, Consumer<Component> list) {
+    public void addInformation(GemInstance gem, Consumer<Component> list, AttributeTooltipContext ctx) {
         if (this.isUnique()) {
             list.accept(Component.translatable("text.apotheosis.unique").withStyle(Style.EMPTY.withColor(0xC73912)));
             list.accept(CommonComponents.EMPTY);
@@ -120,7 +102,9 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, Ra
 
         list.accept(Component.translatable("text.apotheosis.when_socketed_in").withStyle(ChatFormatting.GOLD));
         for (GemBonus bonus : this.bonuses) {
-            if (!bonus.supports(gem.rarity().get())) continue;
+            if (!bonus.supports(gem.purity())) {
+                continue;
+            }
             Component modifComp = bonus.getSocketBonusTooltip(gem);
             Component sum = Component.translatable("text.apotheosis.dot_prefix", Component.translatable("%s: %s", Component.translatable("gem_class." + bonus.getGemClass().key()), modifComp)).withStyle(ChatFormatting.GOLD);
             list.accept(sum);
@@ -135,12 +119,12 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, Ra
      * @param gem      The gem
      * @return If this gem can be socketed into the item.
      */
-    public boolean canApplyTo(ItemStack socketed, ItemStack gem, LootRarity rarity) {
+    public boolean canApplyTo(ItemStack socketed, ItemStack gem, Purity purity) {
         if (this.isUnique()) {
             List<Gem> gems = SocketHelper.getGems(socketed).streamValidGems().map(GemInstance::gem).map(DynamicHolder::get).toList();
             if (gems.contains(this)) return false;
         }
-        return this.isValidIn(socketed, gem, rarity);
+        return this.isValidIn(socketed, gem, purity);
     }
 
     /**
@@ -151,9 +135,9 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, Ra
      * @param gem      The gem
      * @return If this gem can be socketed into the item.
      */
-    public boolean isValidIn(ItemStack socketed, ItemStack gem, LootRarity rarity) {
+    public boolean isValidIn(ItemStack socketed, ItemStack gem, Purity purity) {
         LootCategory cat = LootCategory.forItem(socketed);
-        return !cat.isNone() && this.bonusMap.containsKey(cat) && this.bonusMap.get(cat).supports(rarity);
+        return !cat.isNone() && this.bonusMap.containsKey(cat) && this.bonusMap.get(cat).supports(purity);
     }
 
     /**
@@ -163,8 +147,8 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, Ra
      * @param rarity The rarity
      * @return If a bonus exists for the inputs, an {@link Optional} holding it, otherwise {@link Optional#empty()}.
      */
-    public Optional<GemBonus> getBonus(LootCategory cat, LootRarity rarity) {
-        return Optional.ofNullable(this.bonusMap.get(cat)).filter(b -> b.supports(rarity));
+    public Optional<GemBonus> getBonus(LootCategory cat, Purity purity) {
+        return Optional.ofNullable(this.bonusMap.get(cat)).filter(b -> b.supports(purity));
     }
 
     @Override
@@ -191,14 +175,8 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, Ra
         return this.dimensions;
     }
 
-    @Override
-    public LootRarity getMaxRarity() {
-        return this.maxRarity;
-    }
-
-    @Override
-    public LootRarity getMinRarity() {
-        return this.minRarity;
+    public Purity getMinPurity() {
+        return this.minPurity;
     }
 
     public List<GemBonus> getBonuses() {
@@ -211,10 +189,6 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, Ra
 
     public Gem validate(ResourceLocation key) {
         Preconditions.checkNotNull(this.dimensions);
-        Preconditions.checkArgument(this.maxRarity.ordinal() >= this.minRarity.ordinal());
-        RarityRegistry.INSTANCE.getValues().stream().filter(r -> r.isAtLeast(this.minRarity) && r.isAtMost(this.maxRarity)).forEach(r -> {
-            Preconditions.checkArgument(this.bonuses.stream().allMatch(b -> b.supports(r)));
-        });
         return this;
     }
 

@@ -1,44 +1,40 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
 import java.util.Map;
-import java.util.UUID;
-import java.util.function.BiConsumer;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
-import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
-import dev.shadowsoffire.attributeslib.AttributesLib;
-import dev.shadowsoffire.attributeslib.api.IFormattableAttribute;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
-import dev.shadowsoffire.placebo.util.StepFunction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 
 public class AttributeBonus extends GemBonus {
 
     public static Codec<AttributeBonus> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
             gemClass(),
-            ForgeRegistries.ATTRIBUTES.getCodec().fieldOf("attribute").forGetter(a -> a.attribute),
+            BuiltInRegistries.ATTRIBUTE.holderByNameCodec().fieldOf("attribute").forGetter(a -> a.attribute),
             PlaceboCodecs.enumCodec(Operation.class).fieldOf("operation").forGetter(a -> a.operation),
-            VALUES_CODEC.fieldOf("values").forGetter(a -> a.values))
+            Purity.mapCodec(Codec.DOUBLE).fieldOf("values").forGetter(a -> a.values))
         .apply(inst, AttributeBonus::new));
 
-    protected final Attribute attribute;
+    protected final Holder<Attribute> attribute;
     protected final Operation operation;
-    protected final Map<LootRarity, StepFunction> values;
+    protected final Map<Purity, Double> values;
 
-    public AttributeBonus(GemClass gemClass, Attribute attr, Operation op, Map<LootRarity, StepFunction> values) {
+    public AttributeBonus(GemClass gemClass, Holder<Attribute> attr, Operation op, Map<Purity, Double> values) {
         super(Apotheosis.loc("attribute"), gemClass);
         this.attribute = attr;
         this.operation = op;
@@ -46,13 +42,13 @@ public class AttributeBonus extends GemBonus {
     }
 
     @Override
-    public void addModifiers(GemInstance gem, BiConsumer<Attribute, AttributeModifier> map) {
-        map.accept(this.attribute, this.read(gem, GemItem.getUUIDs(gem).get(0)));
+    public void addModifiers(GemInstance gem, ItemAttributeModifierEvent event) {
+        event.addModifier(this.attribute, this.createModifier(gem), gem.category().getSlots());
     }
 
     @Override
     public Component getSocketBonusTooltip(GemInstance gem) {
-        return IFormattableAttribute.toComponent(this.attribute, this.read(gem, UUID.randomUUID()), AttributesLib.getTooltipFlag());
+        return this.attribute.value().toComponent(this.createModifier(gem), ApothicAttributes.getTooltipFlag());
     }
 
     @Override
@@ -64,8 +60,8 @@ public class AttributeBonus extends GemBonus {
     }
 
     @Override
-    public boolean supports(LootRarity rarity) {
-        return this.values.containsKey(rarity);
+    public boolean supports(Purity purity) {
+        return this.values.containsKey(purity);
     }
 
     @Override
@@ -73,8 +69,9 @@ public class AttributeBonus extends GemBonus {
         return 1;
     }
 
-    public AttributeModifier read(ItemStack gem, LootRarity rarity, UUID id) {
-        return new AttributeModifier(id, "apoth.gem_modifier", this.values.get(rarity).get(0), this.operation);
+    public AttributeModifier createModifier(GemInstance gem) {
+        double value = this.values.get(gem.purity());
+        return new AttributeModifier(makeModifierId(gem), value, this.operation);
     }
 
     @Override

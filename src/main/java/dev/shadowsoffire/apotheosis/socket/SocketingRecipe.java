@@ -20,6 +20,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 public class SocketingRecipe extends ApothSmithingRecipe {
 
@@ -40,7 +41,7 @@ public class SocketingRecipe extends ApothSmithingRecipe {
         if (!gem.isValidUnsocketed()) return false;
         if (!SocketHelper.hasEmptySockets(input)) return false;
         var event = new ItemSocketingEvent.CanSocket(input, gemStack);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         Result res = event.getResult();
         return res == Result.ALLOW ? true : res == Result.DEFAULT && gem.canApplyTo(input);
     }
@@ -59,11 +60,11 @@ public class SocketingRecipe extends ApothSmithingRecipe {
         List<GemInstance> gems = new ArrayList<>(SocketHelper.getGems(result).gems());
         ItemStack gemToInsert = gemStack.copy();
         gemToInsert.setCount(1);
-        gems.set(socket, GemInstance.socketed(result, gemStack.copy()));
+        gems.set(socket, GemInstance.socketed(result, gemStack.copy(), socket));
         SocketHelper.setGems(result, new SocketedGems(gems));
 
         var event = new ItemSocketingEvent.ModifyResult(input, gemToInsert, result);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         result = event.getOutput();
         if (result.isEmpty()) throw new IllegalArgumentException("ItemSocketingEvent$ModifyResult produced an empty output stack.");
         return result;

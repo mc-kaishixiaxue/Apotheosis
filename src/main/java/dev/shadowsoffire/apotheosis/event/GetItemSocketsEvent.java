@@ -2,13 +2,10 @@ package dev.shadowsoffire.apotheosis.event;
 
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 /**
  * Fired from {@link SocketHelper#getSockets(ItemStack)} to allow modification of the number of sockets an item has.
- * <p>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  */
 public class GetItemSocketsEvent extends Event {
     protected final ItemStack stack;

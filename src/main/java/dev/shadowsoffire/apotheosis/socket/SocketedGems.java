@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
@@ -14,7 +12,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 
-import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
@@ -22,19 +19,16 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 
 /**
  * Live instance of socketed gems on an item. The size of the list is equal to the number of sockets on the object.
@@ -48,16 +42,16 @@ public record SocketedGems(ImmutableList<GemInstance> gems) implements List<GemI
         this(ImmutableList.copyOf(gems));
     }
 
-    public void addModifiers(LootCategory cat, EquipmentSlot type, BiConsumer<Attribute, AttributeModifier> map) {
-        this.streamValidGems().forEach(inst -> inst.addModifiers(type, map));
+    public void addModifiers(ItemAttributeModifierEvent event) {
+        this.streamValidGems().forEach(inst -> inst.addModifiers(event));
     }
 
     public int getDamageProtection(DamageSource source) {
         return this.streamValidGems().map(inst -> inst.getDamageProtection(source)).reduce(0, Integer::sum);
     }
 
-    public float getDamageBonus(MobType creatureType) {
-        return this.streamValidGems().map(inst -> inst.getDamageBonus(creatureType)).reduce(Float::sum).orElse(0F);
+    public float getDamageBonus(Entity entity) {
+        return this.streamValidGems().map(inst -> inst.getDamageBonus(entity)).reduce(Float::sum).orElse(0F);
     }
 
     public void doPostAttack(LivingEntity user, Entity target) {
@@ -108,7 +102,7 @@ public record SocketedGems(ImmutableList<GemInstance> gems) implements List<GemI
         return amount;
     }
 
-    public void getEnchantmentLevels(Map<Enchantment, Integer> enchantments) {
+    public void getEnchantmentLevels(ItemEnchantments.Mutable enchantments) {
         this.streamValidGems().forEach(inst -> inst.getEnchantmentLevels(enchantments));
     }
 

@@ -3,24 +3,29 @@ package dev.shadowsoffire.apotheosis.socket;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 
+import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.event.GetItemSocketsEvent;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.placebo.util.CachedObject;
 import dev.shadowsoffire.placebo.util.CachedObject.CachedObjectSource;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.world.item.component.ItemContainerContents;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Utility class for the manipulation of Sockets on items.
@@ -31,9 +36,7 @@ public class SocketHelper {
 
     public static final ResourceLocation GEMS_CACHED_OBJECT = Apotheosis.loc("gems");
 
-    public static final String AFFIX_DATA = AffixHelper.AFFIX_DATA;
-    public static final String GEMS = "gems";
-    public static final String SOCKETS = "sockets";
+    private static final ToIntFunction<ItemStack> SOCKET_DEPENDENT_COMPONENTS_HASHER = CachedObject.hashComponents(Components.GEM, Components.PURITY, Components.SOCKETED_GEMS);
 
     /**
      * Gets the number of sockets on an item.
@@ -43,10 +46,9 @@ public class SocketHelper {
      * @return The number of sockets on the stack.
      */
     public static int getSockets(ItemStack stack) {
-        CompoundTag afxData = stack.getTagElement(AFFIX_DATA);
-        int sockets = afxData != null ? afxData.getInt(SOCKETS) : 0;
+        int sockets = stack.getOrDefault(Components.SOCKETS, 0);
         var event = new GetItemSocketsEvent(stack, sockets);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event.getSockets();
     }
 
@@ -59,7 +61,7 @@ public class SocketHelper {
      * @param sockets The number of sockets.
      */
     public static void setSockets(ItemStack stack, int sockets) {
-        stack.getOrCreateTagElement(AFFIX_DATA).putInt(SOCKETS, sockets);
+        stack.set(Components.SOCKETS, Mth.clamp(sockets, 0, 16));
     }
 
     /**
@@ -76,7 +78,7 @@ public class SocketHelper {
      * Computes the invalidation hash for the SocketedGems cache. The hash changes if the number of sockets changes, or the affix data changes.
      */
     private static int hashSockets(ItemStack stack) {
-        return Objects.hash(stack.getTagElement(AFFIX_DATA), getSockets(stack));
+        return Objects.hash(SOCKET_DEPENDENT_COMPONENTS_HASHER.applyAsInt(stack), getSockets(stack));
     }
 
     /**
@@ -89,24 +91,24 @@ public class SocketHelper {
         LootCategory cat = LootCategory.forItem(stack);
         if (cat.isNone()) return SocketedGems.EMPTY;
 
-        List<GemInstance> gems = NonNullList.withSize(size, GemInstance.EMPTY);
-        int i = 0;
-        CompoundTag afxData = stack.getTagElement(AffixHelper.AFFIX_DATA);
-        if (afxData != null && afxData.contains(GEMS)) {
+        ImmutableList.Builder<GemInstance> builder = ImmutableList.builderWithExpectedSize(size);
+        int gemsFound = 0;
+        ItemContainerContents socketedGems = stack.getOrDefault(Components.SOCKETED_GEMS, ItemContainerContents.EMPTY);
 
-            ListTag gemData = afxData.getList(GEMS, Tag.TAG_COMPOUND);
-            for (Tag tag : gemData) {
-                ItemStack gemStack = ItemStack.of((CompoundTag) tag);
-                gemStack.setCount(1);
-                GemInstance inst = GemInstance.socketed(stack, gemStack);
+        for (int i = 0; i < socketedGems.getSlots(); i++) {
+            ItemStack gem = socketedGems.getStackInSlot(i);
+            if (!gem.isEmpty()) {
+                gem.setCount(1);
+                GemInstance inst = GemInstance.socketed(stack, gem, i);
                 if (inst.isValid()) {
-                    gems.set(i++, inst);
+                    builder.add(inst);
+                    gemsFound++;
                 }
-                if (i >= size) break;
+                if (gemsFound >= size) break;
             }
         }
 
-        return new SocketedGems(ImmutableList.copyOf(gems));
+        return new SocketedGems(builder.build());
     }
 
     /**
@@ -117,12 +119,8 @@ public class SocketHelper {
      * @param gems  The list of socketed gems.
      */
     public static void setGems(ItemStack stack, SocketedGems gems) {
-        CompoundTag afxData = stack.getOrCreateTagElement(AffixHelper.AFFIX_DATA);
-        ListTag gemData = new ListTag();
-        for (GemInstance inst : gems) {
-            gemData.add(inst.gemStack().save(new CompoundTag()));
-        }
-        afxData.put(GEMS, gemData);
+        var contents = ItemContainerContents.fromItems(gems.stream().map(GemInstance::gemStack).toList());
+        stack.set(Components.SOCKETED_GEMS, contents);
     }
 
     /**

@@ -11,8 +11,12 @@ import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.effect.PotionAffix.Target;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
+import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.StringUtil;
@@ -30,25 +34,24 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class PotionBonus extends GemBonus {
 
     public static final Codec<PotionBonus> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
             gemClass(),
-            ForgeRegistries.MOB_EFFECTS.getCodec().fieldOf("mob_effect").forGetter(a -> a.effect),
+            BuiltInRegistries.MOB_EFFECT.holderByNameCodec().fieldOf("mob_effect").forGetter(a -> a.effect),
             Target.CODEC.fieldOf("target").forGetter(a -> a.target),
-            LootRarity.mapCodec(EffectData.CODEC).fieldOf("values").forGetter(a -> a.values),
+            Purity.mapCodec(EffectData.CODEC).fieldOf("values").forGetter(a -> a.values),
             Codec.BOOL.optionalFieldOf("stack_on_reapply", false).forGetter(a -> a.stackOnReapply))
         .apply(inst, PotionBonus::new));
 
-    protected final MobEffect effect;
+    protected final Holder<MobEffect> effect;
     protected final Target target;
-    protected final Map<LootRarity, EffectData> values;
+    protected final Map<Purity, EffectData> values;
     protected final boolean stackOnReapply;
 
-    public PotionBonus(GemClass gemClass, MobEffect effect, Target target, Map<LootRarity, EffectData> values, boolean stackOnReapply) {
+    public PotionBonus(GemClass gemClass, Holder<MobEffect> effect, Target target, Map<Purity, EffectData> values, boolean stackOnReapply) {
         super(Apotheosis.loc("mob_effect"), gemClass);
         this.effect = effect;
         this.target = target;
@@ -57,10 +60,10 @@ public class PotionBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(ItemStack gem, LootRarity rarity) {
-        MobEffectInstance inst = this.values.get(rarity).build(this.effect);
+    public Component getSocketBonusTooltip(GemInstance gem) {
+        MobEffectInstance inst = this.values.get(gem.purity()).build(this.effect);
         MutableComponent comp = this.target.toComponent(toComponent(inst)).withStyle(ChatFormatting.YELLOW);
-        int cooldown = this.getCooldown(rarity);
+        int cooldown = this.getCooldown(gem.purity());
         if (cooldown != 0) {
             Component cd = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(cooldown));
             comp = comp.append(" ").append(cd);
@@ -138,8 +141,8 @@ public class PotionBonus extends GemBonus {
         return amount;
     }
 
-    protected int getCooldown(LootRarity rarity) {
-        EffectData data = this.values.get(rarity);
+    protected int getCooldown(Purity purity) {
+        EffectData data = this.values.get(purity);
         return data.cooldown;
     }
 
@@ -184,7 +187,7 @@ public class PotionBonus extends GemBonus {
                 Codec.INT.optionalFieldOf("cooldown", 0).forGetter(EffectData::cooldown))
             .apply(inst, EffectData::new));
 
-        public MobEffectInstance build(MobEffect effect) {
+        public MobEffectInstance build(Holder<MobEffect> effect) {
             return new MobEffectInstance(effect, this.duration, this.amplifier);
         }
     }

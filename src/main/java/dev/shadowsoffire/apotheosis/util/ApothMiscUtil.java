@@ -1,7 +1,13 @@
 package dev.shadowsoffire.apotheosis.util;
 
+import org.jetbrains.annotations.Nullable;
+
 import dev.shadowsoffire.placebo.color.GradientColor;
 import dev.shadowsoffire.placebo.util.EnchantmentUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public class ApothMiscUtil {
 
@@ -42,6 +48,18 @@ public class ApothMiscUtil {
             out[data.length * 2 - 1 - i] = data[i];
         }
         return out;
+    }
+
+    @Nullable
+    public static Player getClientPlayer() {
+        return FMLEnvironment.dist.isClient() ? ClientInternal.getClientPlayer() : null;
+    }
+
+    private static class ClientInternal {
+
+        public static LocalPlayer getClientPlayer() {
+            return Minecraft.getInstance().player;
+        }
     }
 
 }

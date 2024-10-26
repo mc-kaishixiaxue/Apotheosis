@@ -7,33 +7,32 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistryCodecs;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 public class EnchantmentBonus extends GemBonus {
 
-    protected final HolderSet<Enchantment> ench;
+    protected final Holder<Enchantment> ench;
     protected final boolean mustExist;
     protected final boolean global;
-    protected final Map<LootRarity, Integer> values;
+    protected final Map<Purity, Integer> values;
 
     public static Codec<EnchantmentBonus> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
             gemClass(),
-            RegistryCodecs.homogeneousList(Registries.ENCHANTMENT).fieldOf("enchantment").forGetter(a -> a.ench),
+            Enchantment.CODEC.fieldOf("enchantment").forGetter(a -> a.ench),
             Codec.BOOL.optionalFieldOf("must_exist", false).forGetter(a -> a.mustExist),
             Codec.BOOL.optionalFieldOf("global", false).forGetter(a -> a.global),
-            LootRarity.mapCodec(Codec.intRange(1, 127)).fieldOf("values").forGetter(a -> a.values))
+            Purity.mapCodec(Codec.intRange(1, 127)).fieldOf("values").forGetter(a -> a.values))
         .apply(inst, EnchantmentBonus::new));
 
-    public EnchantmentBonus(GemClass gemClass, HolderSet<Enchantment> ench, boolean mustExist, boolean global, Map<LootRarity, Integer> values) {
+    public EnchantmentBonus(GemClass gemClass, Holder<Enchantment> ench, boolean mustExist, boolean global, Map<Purity, Integer> values) {
         super(Apotheosis.loc("enchantment"), gemClass);
         this.ench = ench;
         this.values = values;
@@ -43,7 +42,7 @@ public class EnchantmentBonus extends GemBonus {
 
     @Override
     public Component getSocketBonusTooltip(GemInstance gem) {
-        int level = this.values.get(gem.getRarity());
+        int level = this.values.get(gem.purity());
         String desc = "bonus." + this.getId() + ".desc";
         if (this.global) {
             desc += ".global";
@@ -51,25 +50,29 @@ public class EnchantmentBonus extends GemBonus {
         else if (this.mustExist) {
             desc += ".mustExist";
         }
-        var enchName = Component.translatable(this.ench.getDescriptionId());
-        var style = this.ench.getFullname(0).getStyle();
-        if (style.getColor() != null && style.getColor().getValue() != ChatFormatting.GRAY.getColor()) enchName.withStyle(style);
+        Component enchName = this.ench.value().description().plainCopy();
         return Component.translatable(desc, level, Component.translatable("misc.apotheosis.level" + (level > 1 ? ".many" : "")), enchName).withStyle(ChatFormatting.GREEN);
     }
 
     @Override
-    public void getEnchantmentLevels(GemInstance gem, Map<Enchantment, Integer> enchantments) {
-        int level = this.values.get(rarity);
+    public void getEnchantmentLevels(GemInstance gem, ItemEnchantments.Mutable enchantments) {
+        int level = this.values.get(gem.purity());
         if (this.global) {
-            for (Enchantment e : enchantments.keySet()) {
-                enchantments.computeIfPresent(e, (key, val) -> val > 0 ? val + level : 0);
+            for (Holder<Enchantment> e : enchantments.keySet()) {
+                int current = enchantments.getLevel(e);
+                if (current > 0) {
+                    enchantments.upgrade(e, current + level);
+                }
             }
         }
         else if (this.mustExist) {
-            enchantments.computeIfPresent(this.ench, (key, val) -> val > 0 ? val + level : 0);
+            int current = enchantments.getLevel(this.ench);
+            if (current > 0) {
+                enchantments.upgrade(this.ench, current + level);
+            }
         }
         else {
-            enchantments.merge(this.ench, level, Integer::sum);
+            enchantments.upgrade(this.ench, enchantments.getLevel(this.ench) + level);
         }
     }
 
@@ -81,8 +84,8 @@ public class EnchantmentBonus extends GemBonus {
     }
 
     @Override
-    public boolean supports(LootRarity rarity) {
-        return this.values.containsKey(rarity);
+    public boolean supports(Purity purity) {
+        return this.values.containsKey(purity);
     }
 
     @Override

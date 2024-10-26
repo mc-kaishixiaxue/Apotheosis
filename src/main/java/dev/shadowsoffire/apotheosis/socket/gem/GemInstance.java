@@ -1,20 +1,16 @@
 package dev.shadowsoffire.apotheosis.socket.gem;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
-import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -24,19 +20,18 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.HitResult;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 
 /**
  * A Gem Instance is a live copy of a Gem with all context needed to call Gem methods.<br>
@@ -45,13 +40,14 @@ import net.minecraft.world.phys.HitResult;
  * The major difference between them is that most methods do not live on {@link Gem} but rather on {@link GemBonus}.
  *
  * @param gem      The socketed Gem.
- * @param cate     The LootCategory of the item the Gem is socketed into.
+ * @param category The LootCategory of the item the Gem is socketed into.
+ * @param purity   The purity of the socketed Gem.
  * @param gemStack The itemstack form of the sockted Gem.
- * @param rarity   The rarity of the Gem.
+ * @param slot     The slot index of this gem in the socketed parent item.
  */
-public record GemInstance(DynamicHolder<Gem> gem, LootCategory cat, ItemStack gemStack, DynamicHolder<LootRarity> rarity) {
+public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity purity, ItemStack gemStack, int slot) {
 
-    public static GemInstance EMPTY = new GemInstance(GemRegistry.INSTANCE.emptyHolder(), LootCategory.NONE, ItemStack.EMPTY, RarityRegistry.INSTANCE.emptyHolder());
+    public static GemInstance EMPTY = new GemInstance(GemRegistry.INSTANCE.emptyHolder(), LootCategory.NONE, Purity.CHIPPED, ItemStack.EMPTY, -1);
 
     /**
      * Creates a {@link GemInstance} for a socketed gem.
@@ -59,8 +55,8 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory cat, ItemStack ge
      * @param socketed The item the gem is socketed in.
      * @param gemStack The stack representing the gem.
      */
-    public static GemInstance socketed(ItemStack socketed, ItemStack gemStack) {
-        return socketed(LootCategory.forItem(socketed), gemStack);
+    public static GemInstance socketed(ItemStack socketed, ItemStack gemStack, int slot) {
+        return socketed(LootCategory.forItem(socketed), gemStack, slot);
     }
 
     /**
@@ -69,39 +65,32 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory cat, ItemStack ge
      * @param category The category of the object the gem is socketed in.
      * @param gemStack The stack representing the gem.
      */
-    public static GemInstance socketed(LootCategory category, ItemStack gemStack) {
+    public static GemInstance socketed(LootCategory category, ItemStack gemStack, int slot) {
         DynamicHolder<Gem> gem = GemItem.getGem(gemStack);
-        DynamicHolder<LootRarity> rarity = AffixHelper.getRarity(gemStack);
+        Purity purity = GemItem.getPurity(gemStack);
 
-        if (gem.isBound() && rarity.isBound()) {
-            rarity = RarityRegistry.INSTANCE.holder(gem.get().clamp(rarity.get()));
+        if (gem.isBound()) {
+            purity = Purity.max(gem.get().getMinPurity(), purity);
         }
 
-        return new GemInstance(gem, category, gemStack, rarity);
+        return new GemInstance(gem, category, purity, gemStack, slot);
     }
 
     /**
-     * Creates a {@link GemInstance} with {@link LootCategory#NONE}.<br>
+     * Creates a {@link GemInstance} with {@link LootCategory#NONE} and an unknown slot index (-1).
      * This instance will be unable to invoke bonus methods, but may be used to easily retrieve the gem properties.
      */
     public static GemInstance unsocketed(ItemStack gemStack) {
-        DynamicHolder<Gem> gem = GemItem.getGem(gemStack);
-        DynamicHolder<LootRarity> rarity = AffixHelper.getRarity(gemStack);
-
-        if (gem.isBound() && rarity.isBound()) {
-            rarity = RarityRegistry.INSTANCE.holder(gem.get().clamp(rarity.get()));
-        }
-
-        return new GemInstance(gem, LootCategory.NONE, gemStack, rarity);
+        return socketed(LootCategory.NONE, gemStack, -1);
     }
 
     /**
-     * Checks if both the gem and rarity are not null.<br>
-     * This should only be used in conjunction with {@link #unsocketed(ItemStack)}.<br>
-     * Otherwise, use {@link #isValid()}.
+     * Checks if the underlying {@link #gem} is bound, but does not validate that the {@link #category} is correct.
+     * <p>
+     * This should only be used in conjunction with {@link #unsocketed(ItemStack)}. Otherwise, use {@link #isValid()}.
      */
     public boolean isValidUnsocketed() {
-        return this.gem.isBound() && this.rarity.isBound();
+        return this.gem.isBound();
     }
 
     /**
@@ -114,49 +103,39 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory cat, ItemStack ge
     }
 
     /**
-     * If this gem instance {@linkplain #isValidUnsocketed() is valid}, returns the stored {@link LootRarity}.
-     * 
-     * @throws NullPointerException if this gem instance is invalid.
-     */
-    public LootRarity getRarity() {
-        return this.rarity.get();
-    }
-
-    /**
      * Checks if the gem and rarity are not null, and there is a valid bonus for the socketed category.<br>
      * Will always return false if using {@link #unsocketed(ItemStack)}
      */
     public boolean isValid() {
-        return this.isValidUnsocketed() && this.gem.get().getBonus(this.cat, this.rarity.get()).isPresent();
+        return this.isValidUnsocketed() && this.getGem().getBonus(this.category, this.purity).isPresent() && this.slot != -1;
     }
 
     /**
-     * Checks if the rarity of the gem stack is equal to the max rarity of the underlying Gem.
+     * Checks if this gem is a {@link Purity#PERFECT perfect} gem, which can no longer be upgraded.
      */
-    public boolean isMaxRarity() {
-        return this.rarity().get() == this.gem.get().getMaxRarity();
+    public boolean isPerfect() {
+        return this.purity == Purity.PERFECT;
+    }
+
+    /**
+     * @see Gem#addInformation(GemInstance, Consumer, AttributeTooltipContext)
+     */
+    public void addInformation(Consumer<Component> list, AttributeTooltipContext ctx) {
+        this.getGem().addInformation(this, list, ctx);
     }
 
     /**
      * @see Gem#canApplyTo(ItemStack, ItemStack, LootRarity)
      */
     public boolean canApplyTo(ItemStack stack) {
-        return this.gem.get().canApplyTo(stack, this.gemStack, this.rarity.get());
+        return this.gem.get().canApplyTo(stack, this.gemStack, this.purity);
     }
 
     /**
      * @see GemBonus#addModifiers(ItemStack, LootRarity, BiConsumer)
      */
-    public void addModifiers(EquipmentSlot slot, BiConsumer<Attribute, AttributeModifier> map) {
-        for (EquipmentSlot itemSlot : this.cat.getSlots()) {
-            if (itemSlot == slot) {
-                this.ifPresent(b -> b.addModifiers(this, map));
-            }
-        }
-    }
-
-    public List<UUID> getUUIDs() {
-        return GemItem.getUUIDs(this.gemStack);
+    public void addModifiers(ItemAttributeModifierEvent event) {
+        this.ifPresent(b -> b.addModifiers(this, event));
     }
 
     /**
@@ -247,7 +226,7 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory cat, ItemStack ge
     /**
      * @see GemBonus#getEnchantmentLevels(ItemStack, LootRarity, Map)
      */
-    public void getEnchantmentLevels(Map<Enchantment, Integer> enchantments) {
+    public void getEnchantmentLevels(ItemEnchantments.Mutable enchantments) {
         this.ifPresent(b -> b.getEnchantmentLevels(this, enchantments));
     }
 
@@ -264,7 +243,7 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory cat, ItemStack ge
      * @throws UnsupportedOperationException if this instance is not {@link #isValid()}.
      */
     private <T> Optional<T> map(Function<GemBonus, T> function) {
-        return this.gem.get().getBonus(this.cat, this.rarity.get()).map(function);
+        return this.gem.get().getBonus(this.category, this.purity).map(function);
     }
 
     /**
@@ -273,6 +252,6 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory cat, ItemStack ge
      * @throws UnsupportedOperationException if this instance is not {@link #isValid()}.
      */
     private void ifPresent(Consumer<GemBonus> function) {
-        this.gem.get().getBonus(this.cat, this.rarity.get()).ifPresent(function);
+        this.gem.get().getBonus(this.category, this.purity).ifPresent(function);
     }
 }

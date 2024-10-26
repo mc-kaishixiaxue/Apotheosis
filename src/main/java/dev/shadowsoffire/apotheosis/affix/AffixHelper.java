@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -50,7 +51,7 @@ public class AffixHelper {
     }
 
     public static void setAffixes(ItemStack stack, Map<DynamicHolder<? extends Affix>, AffixInstance> affixes) {
-        CompoundTag afxData = stack.getOrCreateTagElement(AFFIX_DATA);
+        ItemAffixes afxData = stack.getOrDefault(Components.AFFIXES, ItemAffixes.EMPTY);
         CompoundTag affixesTag = new CompoundTag();
         for (AffixInstance inst : affixes.values()) {
             affixesTag.putFloat(inst.affix().getId().toString(), inst.level());
@@ -82,15 +83,14 @@ public class AffixHelper {
      */
     public static Map<DynamicHolder<? extends Affix>, AffixInstance> getAffixes(ItemStack stack) {
         if (AffixRegistry.INSTANCE.getValues().isEmpty()) return Collections.emptyMap(); // Don't enter getAffixesImpl if the affixes haven't loaded yet.
-        return CachedObjectSource.getOrCreate(stack, AFFIX_CACHED_OBJECT, AffixHelper::getAffixesImpl, CachedObject.hashSubkey(AFFIX_DATA));
+        return CachedObjectSource.getOrCreate(stack, AFFIX_CACHED_OBJECT, AffixHelper::getAffixesImpl, CachedObject.hashComponents(Components.AFFIXES));
     }
 
     public static Map<DynamicHolder<? extends Affix>, AffixInstance> getAffixesImpl(ItemStack stack) {
         if (stack.isEmpty()) return Collections.emptyMap();
         Map<DynamicHolder<? extends Affix>, AffixInstance> map = new HashMap<>();
-        CompoundTag afxData = stack.getTagElement(AFFIX_DATA);
-        if (afxData != null && afxData.contains(AFFIXES)) {
-            CompoundTag affixes = afxData.getCompound(AFFIXES);
+        ItemAffixes affixes = stack.getOrDefault(Components.AFFIXES, ItemAffixes.EMPTY);
+        if (!affixes.isEmpty())) {
             DynamicHolder<LootRarity> rarity = getRarity(afxData);
             if (!rarity.isBound()) rarity = RarityRegistry.getMinRarity();
             LootCategory cat = LootCategory.forItem(stack);

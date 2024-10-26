@@ -84,7 +84,7 @@ public class AdventureEvents {
     public void affixModifiers(ItemAttributeModifierEvent e) {
         ItemStack stack = e.getItemStack();
         if (stack.hasTag()) {
-            SocketHelper.getGems(stack).addModifiers(LootCategory.forItem(stack), e.getSlotType(), e::addModifier);
+            SocketHelper.getGems(stack).addModifiers(e);
 
             var affixes = AffixHelper.getAffixes(stack);
             affixes.forEach((afx, inst) -> inst.addModifiers(e.getSlotType(), e::addModifier));

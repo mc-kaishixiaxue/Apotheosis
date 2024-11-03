@@ -8,7 +8,6 @@ import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.effect.CatalyzingAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.CleavingAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix;
-import dev.shadowsoffire.apotheosis.affix.effect.DurableAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.EnlightenedAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.ExecutingAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.FestiveAffix;
@@ -23,11 +22,11 @@ import dev.shadowsoffire.apotheosis.affix.effect.TelepathicAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.ThunderstruckAffix;
 import dev.shadowsoffire.apotheosis.client.AdventureModuleClient;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.tiers.TieredDynamicRegistry;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import dev.shadowsoffire.placebo.reload.DynamicRegistry;
 import net.neoforged.fml.loading.FMLEnvironment;
 
-public class AffixRegistry extends DynamicRegistry<Affix> {
+public class AffixRegistry extends TieredDynamicRegistry<Affix> {
 
     public static final AffixRegistry INSTANCE = new AffixRegistry();
 
@@ -47,7 +46,7 @@ public class AffixRegistry extends DynamicRegistry<Affix> {
     protected void onReload() {
         super.onReload();
         ImmutableMultimap.Builder<AffixType, DynamicHolder<Affix>> builder = ImmutableMultimap.builder();
-        this.registry.values().forEach(a -> builder.put(a.type, this.holder(a)));
+        this.registry.values().forEach(a -> builder.put(a.definition().type(), this.holder(a)));
         this.byType = builder.build();
         if (!FMLEnvironment.production && FMLEnvironment.dist.isClient()) {
             AdventureModuleClient.checkAffixLangKeys();
@@ -73,7 +72,6 @@ public class AffixRegistry extends DynamicRegistry<Affix> {
         this.registerCodec(Apotheosis.loc("spectral"), SpectralShotAffix.CODEC);
         this.registerCodec(Apotheosis.loc("telepathic"), TelepathicAffix.CODEC);
         this.registerCodec(Apotheosis.loc("thunderstruck"), ThunderstruckAffix.CODEC);
-        this.registerCodec(Apotheosis.loc("durable"), DurableAffix.CODEC);
     }
 
     public Multimap<AffixType, DynamicHolder<Affix>> getTypeMap() {

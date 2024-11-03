@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class SocketTooltipRenderer implements ClientTooltipComponent {
 
-    public static final ResourceLocation SOCKET = new ResourceLocation(Apotheosis.MODID, "textures/gui/socket.png");
+    public static final ResourceLocation SOCKET = Apotheosis.loc("textures/gui/socket.png");
 
     private final SocketComponent comp;
     private final int spacing = Minecraft.getInstance().font.lineHeight + 2;

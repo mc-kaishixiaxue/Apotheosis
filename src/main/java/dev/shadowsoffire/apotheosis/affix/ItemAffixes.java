@@ -2,6 +2,7 @@ package dev.shadowsoffire.apotheosis.affix;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.mojang.serialization.Codec;
 
@@ -63,6 +64,10 @@ public final class ItemAffixes {
 
     public ObjectSet<DynamicHolder<Affix>> keySet() {
         return ObjectSets.unmodifiable(this.affixes.keySet());
+    }
+
+    public Stream<Affix> liveAffixes() {
+        return this.keySet().stream().filter(DynamicHolder::isBound).map(DynamicHolder::get);
     }
 
     @Override

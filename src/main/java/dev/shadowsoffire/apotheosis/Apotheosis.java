@@ -1,11 +1,14 @@
 package dev.shadowsoffire.apotheosis;
 
+import dev.shadowsoffire.apotheosis.loot.LootRule;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod(Apotheosis.MODID)
 public class Apotheosis {
@@ -14,6 +17,14 @@ public class Apotheosis {
 
     public Apotheosis(IEventBus bus) {
         Apoth.bootstrap();
+        bus.register(this);
+    }
+
+    @SubscribeEvent
+    public void setup(FMLCommonSetupEvent e) {
+        e.enqueueWork(() -> {
+            LootRule.initCodecs();
+        });
     }
 
     /**

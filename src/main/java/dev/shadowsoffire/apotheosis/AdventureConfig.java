@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -16,6 +13,7 @@ import dev.shadowsoffire.apotheosis.boss.BossEvents.BossSpawnRules;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.RarityClamp;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.util.LootPatternMatcher;
 import dev.shadowsoffire.placebo.config.Configuration;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceKey;
@@ -236,22 +234,6 @@ public class AdventureConfig {
     public static boolean canGenerateIn(WorldGenLevel world) {
         ResourceKey<Level> key = world.getLevel().dimension();
         return DIM_WHITELIST.contains(key.location());
-    }
-
-    public static record LootPatternMatcher(@Nullable String domain, Pattern pathRegex, float chance) {
-
-        public boolean matches(ResourceLocation id) {
-            return (this.domain == null || this.domain.equals(id.getNamespace())) && this.pathRegex.matcher(id.getPath()).matches();
-        }
-
-        public static LootPatternMatcher parse(String s) throws Exception {
-            int pipe = s.lastIndexOf('|');
-            int colon = s.indexOf(':');
-            float chance = Float.parseFloat(s.substring(pipe + 1));
-            String domain = colon == -1 ? null : s.substring(0, colon);
-            Pattern pattern = Pattern.compile(s.substring(colon + 1, pipe));
-            return new LootPatternMatcher(domain, pattern, chance);
-        }
     }
 
 }

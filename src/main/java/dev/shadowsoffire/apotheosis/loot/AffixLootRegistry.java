@@ -1,16 +1,22 @@
 package dev.shadowsoffire.apotheosis.loot;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.base.Preconditions;
 
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry;
+import dev.shadowsoffire.apotheosis.tiers.Constraints;
+import dev.shadowsoffire.apotheosis.tiers.TieredDynamicRegistry;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * Core loot registry. Handles the management of all Affixes, LootEntries, and generation of loot items.
  */
-public class AffixLootRegistry extends WeightedDynamicRegistry<AffixLootEntry> {
+public class AffixLootRegistry extends TieredDynamicRegistry<AffixLootEntry> {
 
     public static final AffixLootRegistry INSTANCE = new AffixLootRegistry();
 
@@ -29,6 +35,11 @@ public class AffixLootRegistry extends WeightedDynamicRegistry<AffixLootEntry> {
         Preconditions.checkArgument(!item.stack.isEmpty(), "Empty itemstacks are not permitted.");
         Preconditions.checkArgument(!item.getType().isNone(), "Items without a valid loot category are not permitted.");
         Preconditions.checkArgument(item.getMinRarity().ordinal() <= item.getMaxRarity().ordinal(), "The minimum rarity must be lower or equal to the max rarity.");
+    }
+
+    @Nullable
+    public AffixLootEntry getRandomItem(RandomSource rand, Player player) {
+        return getRandomItem(rand, WorldTier.getTier(player), player.getLuck(), Constraints.eval(player));
     }
 
 }

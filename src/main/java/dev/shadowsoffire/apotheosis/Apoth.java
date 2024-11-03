@@ -92,6 +92,8 @@ public class Apoth {
 
         public static final DataComponentType<Boolean> FESTIVE_MARKER = R.component("festive_marker", UnaryOperator.identity());
 
+        public static final DataComponentType<Float> DURABILITY_BONUS = R.component("durability_bonus", b -> b.persistent(Codec.floatRange(0, 1)).networkSynchronized(ByteBufCodecs.FLOAT));
+
         private static void bootstrap() {}
 
     }

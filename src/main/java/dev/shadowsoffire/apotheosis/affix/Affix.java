@@ -12,6 +12,8 @@ import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
+import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
+import dev.shadowsoffire.apotheosis.tiers.TieredWeights.Weighted;
 import dev.shadowsoffire.apothic_enchanting.asm.EnchHooks;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -49,7 +51,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
  * The Affix's Level is a float from 0 to 1 that defines its relative power level, compared to max.
  * What the level means is up to the individual affix.
  */
-public abstract class Affix implements CodecProvider<Affix> {
+public abstract class Affix implements CodecProvider<Affix>, Weighted {
 
     protected final AffixDefinition definition;
 
@@ -258,6 +260,14 @@ public abstract class Affix implements CodecProvider<Affix> {
      */
     public void modifyEntityLoot(AffixInstance inst, LivingDropsEvent event) {}
 
+    public boolean isCompatibleWith(Affix affix) {
+        return !this.definition().exclusiveSet().contains(AffixRegistry.INSTANCE.holder(affix)) && !affix.definition().exclusiveSet().contains(AffixRegistry.INSTANCE.holder(this));
+    }
+
+    public boolean isCompatibleWith(ItemAffixes affixes) {
+        return affixes.liveAffixes().allMatch(this::isCompatibleWith);
+    }
+
     @Override
     public String toString() {
         return String.format("Affix: %s", this.id());
@@ -265,6 +275,11 @@ public abstract class Affix implements CodecProvider<Affix> {
 
     public final AffixDefinition definition() {
         return this.definition;
+    }
+
+    @Override
+    public final TieredWeights weights() {
+        return this.definition.weights();
     }
 
     public final ResourceLocation id() {

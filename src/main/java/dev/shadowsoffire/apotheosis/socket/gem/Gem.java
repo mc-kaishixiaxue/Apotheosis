@@ -1,15 +1,11 @@
 package dev.shadowsoffire.apotheosis.socket.gem;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -18,15 +14,15 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
-import dev.shadowsoffire.apotheosis.compat.GameStagesCompat.IStaged;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
+import dev.shadowsoffire.apotheosis.tiers.Constraints;
+import dev.shadowsoffire.apotheosis.tiers.Constraints.Constrained;
+import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
+import dev.shadowsoffire.apotheosis.tiers.TieredWeights.Weighted;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
-import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.ILuckyWeighted;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -35,36 +31,30 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
-public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, IStaged {
+public class Gem implements CodecProvider<Gem>, Weighted, Constrained {
 
     public static final Codec<Gem> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-        Codec.intRange(0, Integer.MAX_VALUE).fieldOf("weight").forGetter(ILuckyWeighted::getWeight),
-        Codec.floatRange(0, Float.MAX_VALUE).optionalFieldOf("quality", 0F).forGetter(ILuckyWeighted::getQuality),
+        TieredWeights.CODEC.fieldOf("weights").forGetter(Weighted::weights),
+        Constraints.CODEC.optionalFieldOf("constraints", Constraints.EMPTY).forGetter(Constrained::constraints),
         Purity.CODEC.optionalFieldOf("min_purity", Purity.CRACKED).forGetter(Gem::getMinPurity),
-        PlaceboCodecs.setOf(ResourceLocation.CODEC).optionalFieldOf("dimensions", Collections.emptySet()).forGetter(IDimensional::getDimensions),
         GemBonus.CODEC.listOf().fieldOf("bonuses").forGetter(Gem::getBonuses),
-        Codec.BOOL.optionalFieldOf("unique", false).forGetter(Gem::isUnique),
-        PlaceboCodecs.setOf(Codec.STRING).optionalFieldOf("stages").forGetter(gem -> Optional.ofNullable(gem.getStages())))
+        Codec.BOOL.optionalFieldOf("unique", false).forGetter(Gem::isUnique))
         .apply(inst, Gem::new));
 
-    protected final int weight;
-    protected final float quality;
+    protected final TieredWeights weights;
+    protected final Constraints constraints;
     protected final Purity minPurity;
-    protected final Set<ResourceLocation> dimensions;
     protected final List<GemBonus> bonuses;
     protected final boolean unique;
-    protected final @Nullable Set<String> stages;
 
     protected transient final Map<LootCategory, GemBonus> bonusMap;
 
-    public Gem(int weight, float quality, Purity minPurity, Set<ResourceLocation> dimensions, List<GemBonus> bonuses, boolean unique, Optional<Set<String>> stages) {
-        this.weight = weight;
-        this.quality = quality;
+    public Gem(TieredWeights weights, Constraints constraints, Purity minPurity, List<GemBonus> bonuses, boolean unique) {
+        this.weights = weights;
+        this.constraints = constraints;
         this.minPurity = minPurity;
-        this.dimensions = dimensions;
         this.bonuses = bonuses;
         this.unique = unique;
-        this.stages = stages.orElse(null);
         Preconditions.checkArgument(!bonuses.isEmpty(), "No bonuses were provided.");
         this.bonusMap = bonuses.stream().<Pair<LootCategory, GemBonus>>mapMulti((gemData, mapper) -> {
             for (LootCategory c : gemData.getGemClass().types()) {
@@ -146,23 +136,14 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, IS
         return String.format("Gem: %s", this.getId());
     }
 
-    public static String fmt(float f) {
-        return Affix.fmt(f);
+    @Override
+    public TieredWeights weights() {
+        return this.weights;
     }
 
     @Override
-    public float getQuality() {
-        return this.quality;
-    }
-
-    @Override
-    public int getWeight() {
-        return this.weight;
-    }
-
-    @Override
-    public Set<ResourceLocation> getDimensions() {
-        return this.dimensions;
+    public Constraints constraints() {
+        return this.constraints;
     }
 
     public Purity getMinPurity() {
@@ -177,19 +158,17 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, IS
         return this.unique;
     }
 
-    public Gem validate(ResourceLocation key) {
-        Preconditions.checkNotNull(this.dimensions);
-        return this;
-    }
-
-    @Override
-    public Set<String> getStages() {
-        return this.stages;
-    }
-
     @Override
     public Codec<? extends Gem> getCodec() {
         return CODEC;
+    }
+
+    public final ResourceLocation getId() {
+        return GemRegistry.INSTANCE.getKey(this);
+    }
+
+    public static String fmt(float f) {
+        return Affix.fmt(f);
     }
 
     public static void addTypeInfo(Consumer<Component> list, Object... types) {
@@ -213,10 +192,6 @@ public class Gem implements CodecProvider<Gem>, ILuckyWeighted, IDimensional, IS
         else {
             list.accept(Component.translatable("text.apotheosis.dot_prefix", Component.translatable("text.apotheosis.anything")).withStyle(style));
         }
-    }
-
-    public final ResourceLocation getId() {
-        return GemRegistry.INSTANCE.getKey(this);
     }
 
 }

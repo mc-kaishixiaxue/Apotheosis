@@ -1,8 +1,7 @@
 package dev.shadowsoffire.apotheosis.loot;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -15,7 +14,7 @@ import net.neoforged.neoforge.common.loot.LootModifier;
 
 public class AffixHookLootModifier extends LootModifier {
 
-    public static final Codec<AffixHookLootModifier> CODEC = Codec.unit(AffixHookLootModifier::new);
+    public static final MapCodec<AffixHookLootModifier> CODEC = MapCodec.unit(AffixHookLootModifier::new);
 
     protected AffixHookLootModifier() {
         super(new LootItemCondition[0]);
@@ -23,7 +22,6 @@ public class AffixHookLootModifier extends LootModifier {
 
     @Override
     protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext ctx) {
-        if (!Apotheosis.enableAdventure) return generatedLoot;
         if (ctx.hasParam(LootContextParams.TOOL)) {
             ItemStack tool = ctx.getParam(LootContextParams.TOOL);
             SocketHelper.getGems(tool).modifyLoot(generatedLoot, ctx);
@@ -33,7 +31,7 @@ public class AffixHookLootModifier extends LootModifier {
     }
 
     @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
+    public MapCodec<? extends IGlobalLootModifier> codec() {
         return CODEC;
     }
 

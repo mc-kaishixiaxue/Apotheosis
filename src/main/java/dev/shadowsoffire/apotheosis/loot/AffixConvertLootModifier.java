@@ -9,10 +9,8 @@ import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apotheosis.util.LootPatternMatcher;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
@@ -27,10 +25,8 @@ public class AffixConvertLootModifier extends LootModifier {
 
     @Override
     protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        Player player = context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof Player p ? p : null;
-        if (player == null) {
-            return generatedLoot;
-        }
+        var player = GemLootPoolEntry.findPlayer(context);
+        if (player == null) return generatedLoot;
 
         // TODO: Move convert loot rules into this loot modifier as a codec parameter.
         for (LootPatternMatcher m : AdventureConfig.AFFIX_CONVERT_LOOT_RULES) {

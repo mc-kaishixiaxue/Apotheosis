@@ -1,11 +1,14 @@
 package dev.shadowsoffire.apotheosis.affix;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import javax.annotation.Nullable;
 
+import com.mojang.datafixers.kinds.App;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
+import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
@@ -23,10 +26,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.Item;
@@ -40,7 +40,9 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.extensions.IAttributeExtension;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 
 /**
  * An affix is a construct very similar to an enchantment, providing bonuses to arbitrary items.
@@ -48,6 +50,22 @@ import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
  * What the level means is up to the individual affix.
  */
 public abstract class Affix implements CodecProvider<Affix> {
+
+    protected final AffixDefinition definition;
+
+    protected Affix(AffixDefinition definition) {
+        this.definition = definition;
+    }
+
+    /**
+     * Checks if this affix can be applied to an item.
+     *
+     * @param stack  The item being checked against.
+     * @param cat    The category of the target item.
+     * @param rarity The rarity of the target item.
+     * @return If this affix can be applied to the item at the specified rarity.
+     */
+    public abstract boolean canApplyTo(ItemStack stack, LootCategory cat, LootRarity rarity);
 
     /**
      * Gets the one-line description for this affix, to be added to the item stack's tooltip.
@@ -58,7 +76,7 @@ public abstract class Affix implements CodecProvider<Affix> {
      * @param inst The affix instance.
      */
     public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
-        return Component.translatable("affix." + this.getId() + ".desc", fmt(inst.level()));
+        return Component.translatable("affix." + this.id() + ".desc", fmt(inst.level()));
     }
 
     /**
@@ -67,8 +85,8 @@ public abstract class Affix implements CodecProvider<Affix> {
      * @return The name part, prefix or suffix, as requested.
      */
     public Component getName(boolean prefix) {
-        if (prefix) return Component.translatable("affix." + this.getId());
-        return Component.translatable("affix." + this.getId() + ".suffix");
+        if (prefix) return Component.translatable("affix." + this.id());
+        return Component.translatable("affix." + this.id() + ".suffix");
     }
 
     /**
@@ -87,11 +105,10 @@ public abstract class Affix implements CodecProvider<Affix> {
      * <p>
      * Attribute modifiers must have unique IDs per-slot, since the same affix may be applicable to multiple items.
      *
-     * @param inst The affix instance.
-     * @param type The slot type for modifiers being gathered.
-     * @param map  The destination for generated attribute modifiers.
+     * @param inst  The affix instance.
+     * @param event The attribute modifiers event.
      */
-    public void addModifiers(AffixInstance inst, EquipmentSlot type, BiConsumer<Attribute, AttributeModifier> map) {}
+    public void addModifiers(AffixInstance inst, ItemAttributeModifierEvent event) {}
 
     /**
      * Calculates the protection value of this affix, with respect to the given damage source.<br>
@@ -150,7 +167,7 @@ public abstract class Affix implements CodecProvider<Affix> {
     /**
      * Called when an arrow that was marked with this affix hits a target.
      */
-    public void onArrowImpact(AbstractArrow arrow, float level, HitResult res, HitResult.Type type) {}
+    public void onArrowImpact(float level, LootRarity rarity, AbstractArrow arrow, HitResult res, HitResult.Type type) {}
 
     /**
      * Called when a shield with this affix blocks some amount of damage.
@@ -236,21 +253,21 @@ public abstract class Affix implements CodecProvider<Affix> {
      */
     public void modifyLoot(AffixInstance inst, ObjectArrayList<ItemStack> loot, LootContext ctx) {}
 
+    /**
+     * Generic {@link LivingDropsEvent} handler which allows affixes to execute custom functionality.
+     */
+    public void modifyEntityLoot(AffixInstance inst, LivingDropsEvent event) {}
+
     @Override
     public String toString() {
-        return String.format("Affix: %s", this.getId());
+        return String.format("Affix: %s", this.id());
     }
 
-    /**
-     * Checks if this affix can be applied to an item.
-     *
-     * @param stack The item being checked against.
-     * @param cat   The LootCategory of the target item.
-     * @return If this affix can be applied to the item at the specified rarity.
-     */
-    public abstract boolean canApplyTo(ItemStack stack, LootCategory cat);
+    public final AffixDefinition definition() {
+        return this.definition;
+    }
 
-    public final ResourceLocation getId() {
+    public final ResourceLocation id() {
         return AffixRegistry.INSTANCE.getKey(this);
     }
 
@@ -288,7 +305,7 @@ public abstract class Affix implements CodecProvider<Affix> {
      * @param inst The owning gem instance for the bonus
      * @param salt A salt value, which can be used if the bonus needs multiple modifiers.
      */
-    protected static ResourceLocation makeUniqueId(AffixInstance inst, String salt) {
+    static ResourceLocation makeUniqueId(AffixInstance inst, String salt) {
         ResourceLocation key = inst.affix().getId();
         LootCategory cat = LootCategory.forItem(inst.stack());
         return ResourceLocation.fromNamespaceAndPath(key.getNamespace(), key.getPath() + "_modifier_" + cat.getSlots().getSerializedName() + "_" + salt);
@@ -297,7 +314,11 @@ public abstract class Affix implements CodecProvider<Affix> {
     /**
      * Calls {@link #makeUniqueId(GemInstance, String)} with an empty salt value.
      */
-    protected static ResourceLocation makeUniqueId(AffixInstance inst) {
+    static ResourceLocation makeUniqueId(AffixInstance inst) {
         return makeUniqueId(inst, "");
+    }
+
+    protected static <T extends Affix> App<RecordCodecBuilder.Mu<T>, AffixDefinition> affixDef() {
+        return AffixDefinition.CODEC.fieldOf("definition").forGetter(Affix::definition);
     }
 }

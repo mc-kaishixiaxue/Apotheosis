@@ -7,8 +7,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
@@ -39,6 +39,7 @@ public class PotionAffix extends Affix {
 
     public static final Codec<PotionAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
+            affixDef(),
             BuiltInRegistries.MOB_EFFECT.holderByNameCodec().fieldOf("mob_effect").forGetter(a -> a.effect),
             Target.CODEC.fieldOf("target").forGetter(a -> a.target),
             LootRarity.mapCodec(EffectData.CODEC).fieldOf("values").forGetter(a -> a.values),
@@ -55,8 +56,8 @@ public class PotionAffix extends Affix {
     protected final Set<LootCategory> types;
     protected final boolean stackOnReapply;
 
-    public PotionAffix(Holder<MobEffect> effect, Target target, Map<LootRarity, EffectData> values, int cooldown, Set<LootCategory> types, boolean stackOnReapply) {
-        super(AffixType.ABILITY);
+    public PotionAffix(AffixDefinition def, Holder<MobEffect> effect, Target target, Map<LootRarity, EffectData> values, int cooldown, Set<LootCategory> types, boolean stackOnReapply) {
+        super(def);
         this.effect = effect;
         this.target = target;
         this.values = values;
@@ -147,7 +148,7 @@ public class PotionAffix extends Affix {
     }
 
     @Override
-    public void onArrowImpact(AbstractArrow arrow, LootRarity rarity, float level, HitResult res, Type type) {
+    public void onArrowImpact(float level, LootRarity rarity, AbstractArrow arrow, HitResult res, Type type) {
         if (this.target == Target.ARROW_SELF) {
             if (arrow.getOwner() instanceof LivingEntity owner) {
                 this.applyEffect(owner, rarity, level);
@@ -181,7 +182,7 @@ public class PotionAffix extends Affix {
         if (target.level().isClientSide()) return;
 
         int cooldown = this.getCooldown(rarity);
-        if (cooldown != 0 && isOnCooldown(this.getId(), cooldown, target)) return;
+        if (cooldown != 0 && isOnCooldown(this.id(), cooldown, target)) return;
         EffectData data = this.values.get(rarity);
         var inst = target.getEffect(this.effect);
         if (this.stackOnReapply && inst != null) {
@@ -193,7 +194,7 @@ public class PotionAffix extends Affix {
         else {
             target.addEffect(data.build(this.effect, level));
         }
-        startCooldown(this.getId(), target);
+        startCooldown(this.id(), target);
     }
 
     @Override

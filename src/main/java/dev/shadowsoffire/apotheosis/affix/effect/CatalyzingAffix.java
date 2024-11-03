@@ -6,8 +6,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.placebo.util.StepFunction;
@@ -25,13 +25,14 @@ public class CatalyzingAffix extends Affix {
 
     public static final Codec<CatalyzingAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            StepFunction.CODEC.fieldOf("value").forGetter(a -> a.values))
+            affixDef(),
+            LootRarity.mapCodec(StepFunction.CODEC).fieldOf("values").forGetter(a -> a.values))
         .apply(inst, CatalyzingAffix::new));
 
-    protected final StepFunction value;
+    protected final Map<LootRarity, StepFunction> values;
 
-    public CatalyzingAffix(Map<LootRarity, StepFunction> values) {
-        super(AffixType.ABILITY);
+    public CatalyzingAffix(AffixDefinition def, Map<LootRarity, StepFunction> values) {
+        super(def);
         this.values = values;
     }
 

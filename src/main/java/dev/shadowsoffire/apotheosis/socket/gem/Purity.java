@@ -27,7 +27,7 @@ public enum Purity implements StringRepresentable {
     FLAWLESS("flawless", 0xED7014),
     PERFECT("perfect", GradientColor.RAINBOW);
 
-    public static final IntFunction<Purity> BY_ID = ByIdMap.continuous(Enum::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+    public static final IntFunction<Purity> BY_ID = ByIdMap.continuous(Enum::ordinal, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
     public static final Codec<Purity> CODEC = StringRepresentable.fromValues(Purity::values);
     public static final StreamCodec<ByteBuf, Purity> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Enum::ordinal);
 

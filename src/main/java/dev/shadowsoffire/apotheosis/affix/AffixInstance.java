@@ -5,12 +5,14 @@ import java.util.function.BiConsumer;
 
 import javax.annotation.Nullable;
 
+import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
@@ -18,8 +20,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
@@ -30,26 +30,39 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 
 /**
- * An Affix Instance is a wrapper around the necessary parameters for all affix methods.<br>
+ * An Affix Instance is a wrapper around the necessary parameters for all affix methods.
  * Prefer using this over directly invoking methods on {@link Affix}.
+ * 
+ * @param affix  The affix this instance is for.
+ * @param level  The level of the affix.
+ * @param rarity The rarity of the source item.
+ * @param stack  The source item stack.
  */
-public record AffixInstance(DynamicHolder<Affix> affix, ItemStack stack, float level) {
+public record AffixInstance(DynamicHolder<Affix> affix, float level, DynamicHolder<LootRarity> rarity, ItemStack stack) {
 
-    public boolean isValid() {
-        return this.affix.isBound();
+    public LootCategory category() {
+        return LootCategory.forItem(stack);
     }
 
-    private Affix afx() {
-        return this.affix.get();
+    public boolean isValid() {
+        return this.affix.isBound() && this.rarity.isBound();
+    }
+
+    /**
+     * Resolves the underlying {@link #rarity}. Throws if unbound.
+     */
+    public LootRarity getRarity() {
+        return this.rarity.get();
     }
 
     /**
      * @see Affix#addModifiers(ItemStack, LootRarity, float, EquipmentSlot, BiConsumer)
      */
-    public void addModifiers(EquipmentSlot type, BiConsumer<Attribute, AttributeModifier> map) {
-        this.afx().addModifiers(this, type, map);
+    public void addModifiers(ItemAttributeModifierEvent event) {
+        this.afx().addModifiers(this, event);
     }
 
     /**
@@ -141,7 +154,7 @@ public record AffixInstance(DynamicHolder<Affix> affix, ItemStack stack, float l
      * @see Affix#onArrowImpact(AbstractArrow, LootRarity, float, HitResult, net.minecraft.world.phys.HitResult.Type)
      */
     public void onArrowImpact(AbstractArrow arrow, HitResult res, HitResult.Type type) {
-        this.afx().onArrowImpact(arrow, this.level, res, type);
+        this.afx().onArrowImpact(this.level, this.getRarity(), arrow, res, type);
     }
 
     /**
@@ -173,6 +186,18 @@ public record AffixInstance(DynamicHolder<Affix> affix, ItemStack stack, float l
     }
 
     public AffixInstance withNewLevel(float level) {
-        return new AffixInstance(this.affix, this.stack, this.rarity, Mth.clamp(level, 0, 1));
+        return new AffixInstance(this.affix, Mth.clamp(level, 0, 1), this.rarity, this.stack);
+    }
+
+    public ResourceLocation makeUniqueId(String salt) {
+        return Affix.makeUniqueId(this, salt);
+    }
+
+    public ResourceLocation makeUniqueId() {
+        return Affix.makeUniqueId(this);
+    }
+
+    private Affix afx() {
+        return this.affix.get();
     }
 }

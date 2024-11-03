@@ -7,11 +7,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
 import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.network.chat.Component;
@@ -29,19 +28,20 @@ public class ThunderstruckAffix extends Affix {
 
     public static final Codec<ThunderstruckAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            GemBonus.VALUES_CODEC.fieldOf("values").forGetter(a -> a.values))
+            affixDef(),
+            LootRarity.mapCodec(StepFunction.CODEC).fieldOf("values").forGetter(a -> a.values))
         .apply(inst, ThunderstruckAffix::new));
 
     protected final Map<LootRarity, StepFunction> values;
 
-    public ThunderstruckAffix(Map<LootRarity, StepFunction> values) {
-        super(AffixType.ABILITY);
+    public ThunderstruckAffix(AffixDefinition def, Map<LootRarity, StepFunction> values) {
+        super(def);
         this.values = values;
     }
 
     @Override
     public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
-        return Component.translatable("affix." + this.getId() + ".desc", fmt(this.getTrueLevel(inst.getRarity(), inst.level())));
+        return Component.translatable("affix." + this.id() + ".desc", fmt(this.getTrueLevel(inst.getRarity(), inst.level())));
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ThunderstruckAffix extends Affix {
 
     @Override
     public boolean canApplyTo(ItemStack stack, LootCategory cat, LootRarity rarity) {
-        return cat.isLightWeapon() && this.values.containsKey(rarity);
+        return cat.isMelee() && this.values.containsKey(rarity);
     }
 
     @Override

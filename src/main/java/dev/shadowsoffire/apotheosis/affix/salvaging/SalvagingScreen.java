@@ -34,7 +34,7 @@ import net.minecraft.world.item.ItemStack;
 public class SalvagingScreen extends AdventureContainerScreen<SalvagingMenu> {
 
     public static final Component TITLE = Component.translatable("container.apotheosis.salvage");
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Apotheosis.MODID, "textures/gui/salvage.png");
+    public static final ResourceLocation TEXTURE = Apotheosis.loc("textures/gui/salvage.png");
 
     protected List<OutputData> results = new ArrayList<>();
     protected SimpleTexButton salvageBtn;
@@ -72,25 +72,27 @@ public class SalvagingScreen extends AdventureContainerScreen<SalvagingMenu> {
             if (recipe != null) {
                 for (OutputData d : recipe.getOutputs()) {
                     int[] counts = SalvagingMenu.getSalvageCounts(d, stack);
-                    matches.add(new OutputData(d.stack, counts[0], counts[1]));
+                    matches.add(new OutputData(d.stack(), counts[0], counts[1]));
                 }
             }
         }
 
-        List<OutputData> compressed = new ArrayList<>();
+        var compressed = new ArrayList<OutputData>();
 
         for (OutputData data : matches) {
             if (data == null) continue;
             boolean success = false;
-            for (OutputData existing : compressed) {
-                if (ItemStack.isSameItemSameTags(data.stack, existing.stack)) {
-                    existing.min += data.min;
-                    existing.max += data.max;
+            for (int i = 0; i < compressed.size(); i++) {
+                OutputData existing = compressed.get(i);
+                if (ItemStack.isSameItemSameComponents(data.stack(), existing.stack())) {
+                    compressed.set(i, new OutputData(existing.stack(), existing.min() + data.min(), existing.max() + data.max()));
                     success = true;
                     break;
                 }
             }
-            if (!success) compressed.add(data);
+            if (!success) {
+                compressed.add(data);
+            }
         }
 
         this.results = compressed;
@@ -99,7 +101,6 @@ public class SalvagingScreen extends AdventureContainerScreen<SalvagingMenu> {
 
     @Override
     public void render(GuiGraphics gfx, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(gfx);
         super.render(gfx, pMouseX, pMouseY, pPartialTick);
 
         RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
@@ -109,7 +110,7 @@ public class SalvagingScreen extends AdventureContainerScreen<SalvagingMenu> {
 
         IntSet skipSlots = new IntOpenHashSet();
         for (int i = 0; i < maxDisplay; i++) {
-            ItemStack display = this.results.get(i).stack;
+            ItemStack display = this.results.get(i).stack();
             // Search for an empty slot to draw the ghost item on.
             // Skip drawing the item if it already exists in the output inventory.
             int displaySlot = -1;
@@ -134,7 +135,7 @@ public class SalvagingScreen extends AdventureContainerScreen<SalvagingMenu> {
     }
 
     public static void renderGuiItem(GuiGraphics gfx, ItemStack pStack, int pX, int pY, Function<MultiBufferSource, MultiBufferSource> wrapper) {
-        Minecraft.getInstance().textureManager.getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
+        Minecraft.getInstance().getTextureManager().getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
         RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -177,7 +178,7 @@ public class SalvagingScreen extends AdventureContainerScreen<SalvagingMenu> {
         tooltip.add(Component.translatable("text.apotheosis.salvage_results").withStyle(ChatFormatting.YELLOW, ChatFormatting.UNDERLINE));
 
         for (OutputData data : this.results) {
-            tooltip.add(Component.translatable("%s-%s %s", data.min, data.max, data.stack.getHoverName()));
+            tooltip.add(Component.translatable("%s-%s %s", data.min(), data.max(), data.stack().getHoverName()));
         }
 
         if (tooltip.size() > 1) this.drawOnLeft(gfx, tooltip, this.getGuiTop() + 29);

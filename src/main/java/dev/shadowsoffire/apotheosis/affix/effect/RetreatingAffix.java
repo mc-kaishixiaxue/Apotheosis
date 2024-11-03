@@ -1,13 +1,16 @@
 package dev.shadowsoffire.apotheosis.affix.effect;
 
+import java.util.Set;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
+import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,19 +24,20 @@ public class RetreatingAffix extends Affix {
 
     public static final Codec<RetreatingAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            LootRarity.CODEC.fieldOf("min_rarity").forGetter(a -> a.minRarity))
+            affixDef(),
+            PlaceboCodecs.setOf(LootRarity.CODEC).fieldOf("rarities").forGetter(a -> a.rarities))
         .apply(inst, RetreatingAffix::new));
 
-    protected LootRarity minRarity;
+    protected Set<LootRarity> rarities;
 
-    public RetreatingAffix(LootRarity minRarity) {
-        super(AffixType.ABILITY);
-        this.minRarity = minRarity;
+    public RetreatingAffix(AffixDefinition def, Set<LootRarity> rarities) {
+        super(def);
+        this.rarities = rarities;
     }
 
     @Override
     public boolean canApplyTo(ItemStack stack, LootCategory cat, LootRarity rarity) {
-        return cat == LootCategory.SHIELD && rarity.isAtLeast(this.minRarity);
+        return cat == LootCategory.SHIELD && this.rarities.contains(rarity);
     }
 
     @Override

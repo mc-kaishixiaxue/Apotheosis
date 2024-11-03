@@ -14,9 +14,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.shadowsoffire.apotheosis.Apoth.Affixes;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.placebo.util.PlaceboUtil;
@@ -46,6 +46,7 @@ public class RadialAffix extends Affix {
 
     public static final Codec<RadialAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
+            affixDef(),
             LootRarity.mapCodec(Codec.list(RadialData.CODEC)).fieldOf("values").forGetter(a -> a.values))
         .apply(inst, RadialAffix::new));
 
@@ -53,8 +54,8 @@ public class RadialAffix extends Affix {
 
     protected final Map<LootRarity, List<RadialData>> values;
 
-    public RadialAffix(Map<LootRarity, List<RadialData>> values) {
-        super(AffixType.ABILITY);
+    public RadialAffix(AffixDefinition def, Map<LootRarity, List<RadialData>> values) {
+        super(def);
         this.values = values;
     }
 
@@ -66,7 +67,7 @@ public class RadialAffix extends Affix {
     @Override
     public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
         RadialData data = this.getTrueLevel(inst);
-        return Component.translatable("affix." + this.getId() + ".desc", data.x, data.y);
+        return Component.translatable("affix." + this.id() + ".desc", data.x, data.y);
     }
 
     @Override
@@ -173,7 +174,7 @@ public class RadialAffix extends Affix {
                 if (genPos.equals(pos)) continue;
                 BlockState state = world.getBlockState(genPos);
                 float stateHardness = state.getDestroySpeed(world, genPos);
-                if (!state.isAir() && stateHardness != -1 && stateHardness <= hardness * 3F && isEffective(state, player)) PlaceboUtil.tryHarvestBlock(player, genPos);
+                if (!state.isAir() && stateHardness != -1 && stateHardness <= hardness * 3F && isEffective(state, player, genPos)) PlaceboUtil.tryHarvestBlock(player, genPos);
             }
         }
 
@@ -184,8 +185,8 @@ public class RadialAffix extends Affix {
         return new BlockPos(pos.getX() + vec.getX() * y, pos.getY() - y, pos.getZ() + vec.getZ() * y);
     }
 
-    static boolean isEffective(BlockState state, Player player) {
-        return player.hasCorrectToolForDrops(state);
+    static boolean isEffective(BlockState state, Player player, BlockPos pos) {
+        return player.hasCorrectToolForDrops(state, player.level(), pos);
     }
 
     static record RadialData(int x, int y, int xOff, int yOff) {

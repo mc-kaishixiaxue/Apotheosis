@@ -6,9 +6,9 @@ import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import dev.shadowsoffire.apotheosis.Adventure;
+import dev.shadowsoffire.apotheosis.Apoth;
+import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.Adventure.Items;
 import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingMenu.ReforgingResultSlot;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingScreen;
 import dev.shadowsoffire.apotheosis.client.AdventureContainerScreen;
@@ -29,8 +29,8 @@ public class ReforgingScreen extends AdventureContainerScreen<ReforgingMenu> {
     /**
      * This texture is 256x384, which must be reflected in blit() calls.
      */
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Apotheosis.MODID, "textures/gui/reforge.png");
-    public static final ResourceLocation ANIMATED_TEXTURE = new ResourceLocation(Apotheosis.MODID, "textures/gui/reforge_animation.png");
+    public static final ResourceLocation TEXTURE = Apotheosis.loc("textures/gui/reforge.png");
+    public static final ResourceLocation ANIMATED_TEXTURE = Apotheosis.loc("textures/gui/reforge_animation.png");
     public static final int MAX_ANIMATION_TIME = 8;
 
     protected boolean hasMainItem = false;
@@ -47,7 +47,6 @@ public class ReforgingScreen extends AdventureContainerScreen<ReforgingMenu> {
 
     @Override
     public void render(GuiGraphics gfx, int mouseX, int mouseY, float pPartialTick) {
-        this.renderBackground(gfx);
         super.render(gfx, mouseX, mouseY, pPartialTick);
         RenderSystem.disableBlend();
         this.renderTooltip(gfx, mouseX, mouseY);
@@ -71,7 +70,7 @@ public class ReforgingScreen extends AdventureContainerScreen<ReforgingMenu> {
                 tooltips.add(Component.translatable("text.apotheosis.reforge_cost").withStyle(ChatFormatting.YELLOW, ChatFormatting.UNDERLINE));
                 tooltips.add(CommonComponents.EMPTY);
                 if (sigilCost > 0) {
-                    tooltips.add(Component.translatable("%s %s", sigilCost, Items.SIGIL_OF_REBIRTH.get().getName(ItemStack.EMPTY)).withStyle(creative || sigils >= sigilCost ? ChatFormatting.GRAY : ChatFormatting.RED));
+                    tooltips.add(Component.translatable("%s %s", sigilCost, Items.SIGIL_OF_REBIRTH.value().getName(ItemStack.EMPTY)).withStyle(creative || sigils >= sigilCost ? ChatFormatting.GRAY : ChatFormatting.RED));
                 }
                 if (matCost > 0) {
                     tooltips.add(Component.translatable("%s %s", matCost, this.menu.getSlot(1).getItem().getHoverName().getString()).withStyle(creative || mats >= matCost ? ChatFormatting.GRAY : ChatFormatting.RED));
@@ -107,7 +106,7 @@ public class ReforgingScreen extends AdventureContainerScreen<ReforgingMenu> {
 
         if (!hadItem && this.hasMainItem) {
             this.animationTick = MAX_ANIMATION_TIME;
-            this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(Adventure.Sounds.REFORGE.get(), 1F, 2F));
+            this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(Apoth.Sounds.REFORGE.value(), 1F, 2F));
         }
 
         if (this.hasMainItem) {

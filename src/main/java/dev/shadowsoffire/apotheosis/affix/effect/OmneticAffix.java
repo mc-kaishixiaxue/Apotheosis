@@ -8,12 +8,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.Apoth.Affixes;
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.placebo.json.ItemAdapter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -32,13 +31,14 @@ public class OmneticAffix extends Affix {
 
     public static final Codec<OmneticAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
+            affixDef(),
             LootRarity.mapCodec(OmneticData.CODEC).fieldOf("values").forGetter(a -> a.values))
         .apply(inst, OmneticAffix::new));
 
     protected final Map<LootRarity, OmneticData> values;
 
-    public OmneticAffix(Map<LootRarity, OmneticData> values) {
-        super(AffixType.ABILITY);
+    public OmneticAffix(AffixDefinition def, Map<LootRarity, OmneticData> values) {
+        super(def);
         this.values = values;
     }
 
@@ -49,7 +49,7 @@ public class OmneticAffix extends Affix {
 
     @Override
     public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
-        return Component.translatable("affix." + this.getId() + ".desc", Component.translatable("misc.apotheosis." + this.values.get(inst.getRarity()).name));
+        return Component.translatable("affix." + this.id() + ".desc", Component.translatable("misc.apotheosis." + this.values.get(inst.getRarity()).name));
     }
 
     public void harvest(HarvestCheck e) {
@@ -94,7 +94,7 @@ public class OmneticAffix extends Affix {
         public static Codec<OmneticData> CODEC = RecordCodecBuilder.create(inst -> inst
             .group(
                 Codec.STRING.fieldOf("name").forGetter(OmneticData::name),
-                Codec.list(ItemAdapter.CODEC).xmap(l -> l.toArray(new ItemStack[0]), Arrays::asList).fieldOf("items").forGetter(OmneticData::items))
+                Codec.list(ItemStack.CODEC).xmap(l -> l.toArray(new ItemStack[0]), Arrays::asList).fieldOf("items").forGetter(OmneticData::items))
             .apply(inst, OmneticData::new));
 
     }

@@ -7,48 +7,41 @@ import dev.shadowsoffire.placebo.cap.InternalItemHandler;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class SalvagingTableTile extends BlockEntity {
 
     public SalvagingTableTile(BlockPos pPos, BlockState pBlockState) {
-        super(Apoth.Tiles.SALVAGING_TABLE.get(), pPos, pBlockState);
+        super(Apoth.Tiles.SALVAGING_TABLE, pPos, pBlockState);
     }
 
     /**
      * "Real" output inventory, as reflected in the container menu.
      */
     protected final InternalItemHandler output = new InternalItemHandler(6);
+    protected final IItemHandler itemHandler = new SalvagingItemHandler();
 
-    /**
-     * External-facing inventory handler, which automatically salvages input items.
-     */
-    protected final LazyOptional<SalvagingItemHandler> itemHandler = LazyOptional.of(SalvagingItemHandler::new);
-
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return this.itemHandler.cast();
-        return super.getCapability(cap, side);
+    public IItemHandler getItemHandler() {
+        return this.itemHandler;
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("output", this.output.serializeNBT());
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider regs) {
+        tag.put("output", this.output.serializeNBT(regs));
+        super.saveAdditional(tag, regs);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        if (tag.contains("output")) this.output.deserializeNBT(tag.getCompound("output"));
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider regs) {
+        if (tag.contains("output")) {
+            this.output.deserializeNBT(regs, tag.getCompound("output"));
+        }
+        super.loadAdditional(tag, regs);
     }
 
     protected class SalvagingItemHandler implements IItemHandler {

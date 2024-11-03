@@ -25,7 +25,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 public class SalvagingMenu extends BlockEntityMenu<SalvagingTableTile> {
 
@@ -74,7 +73,7 @@ public class SalvagingMenu extends BlockEntityMenu<SalvagingTableTile> {
     public void removed(Player player) {
         super.removed(player);
         if (!this.level.isClientSide) {
-            this.clearContainer(player, new RecipeWrapper(this.inputInv));
+            this.clearContainer(player, this.inputInv);
         }
     }
 
@@ -124,7 +123,7 @@ public class SalvagingMenu extends BlockEntityMenu<SalvagingTableTile> {
     }
 
     public static int[] getSalvageCounts(OutputData output, ItemStack stack) {
-        int[] out = { output.min, output.max };
+        int[] out = { output.min(), output.max() };
         if (stack.isDamageableItem()) {
             out[1] = Math.max(out[0], Math.round(out[1] * (stack.getMaxDamage() - stack.getDamageValue()) / stack.getMaxDamage()));
         }
@@ -136,7 +135,7 @@ public class SalvagingMenu extends BlockEntityMenu<SalvagingTableTile> {
         if (recipe == null) return Collections.emptyList();
         List<ItemStack> outputs = new ArrayList<>();
         for (OutputData d : recipe.getOutputs()) {
-            ItemStack out = d.stack.copy();
+            ItemStack out = d.stack().copy();
             out.setCount(getSalvageCount(d, stack, level.random));
             outputs.add(out);
         }
@@ -148,7 +147,7 @@ public class SalvagingMenu extends BlockEntityMenu<SalvagingTableTile> {
         if (recipe == null) return Collections.emptyList();
         List<ItemStack> outputs = new ArrayList<>();
         for (OutputData d : recipe.getOutputs()) {
-            ItemStack out = d.stack.copy();
+            ItemStack out = d.stack().copy();
             out.setCount(getSalvageCounts(d, stack)[1]);
             outputs.add(out);
         }
@@ -158,7 +157,7 @@ public class SalvagingMenu extends BlockEntityMenu<SalvagingTableTile> {
     @Nullable
     public static SalvagingRecipe findMatch(Level level, ItemStack stack) {
         for (var recipe : level.getRecipeManager().getAllRecipesFor(RecipeTypes.SALVAGING)) {
-            if (recipe.matches(stack)) return recipe;
+            if (recipe.value().matches(stack)) return recipe.value();
         }
         return null;
     }

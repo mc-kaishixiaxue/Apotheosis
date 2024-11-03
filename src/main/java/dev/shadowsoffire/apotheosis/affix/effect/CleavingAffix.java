@@ -9,8 +9,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
@@ -31,6 +31,7 @@ public class CleavingAffix extends Affix {
 
     public static final Codec<CleavingAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
+            affixDef(),
             LootRarity.mapCodec(CleaveValues.CODEC).fieldOf("values").forGetter(a -> a.values))
         .apply(inst, CleavingAffix::new));
 
@@ -38,19 +39,19 @@ public class CleavingAffix extends Affix {
 
     private static boolean cleaving = false;
 
-    public CleavingAffix(Map<LootRarity, CleaveValues> values) {
-        super(AffixType.ABILITY);
+    public CleavingAffix(AffixDefinition def, Map<LootRarity, CleaveValues> values) {
+        super(def);
         this.values = values;
     }
 
     @Override
     public boolean canApplyTo(ItemStack stack, LootCategory cat, LootRarity rarity) {
-        return cat == LootCategory.HEAVY_WEAPON && this.values.containsKey(rarity);
+        return cat.isMelee() && this.values.containsKey(rarity);
     }
 
     @Override
     public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
-        return Component.translatable("affix." + this.getId() + ".desc", fmt(100 * this.getChance(inst.getRarity(), inst.level())), this.getTargets(inst.getRarity(), inst.level()));
+        return Component.translatable("affix." + this.id() + ".desc", fmt(100 * this.getChance(inst.getRarity(), inst.level())), this.getTargets(inst.getRarity(), inst.level()));
     }
 
     @Override

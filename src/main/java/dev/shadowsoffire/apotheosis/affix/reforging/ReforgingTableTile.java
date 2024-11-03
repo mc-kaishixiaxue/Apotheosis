@@ -3,7 +3,7 @@ package dev.shadowsoffire.apotheosis.affix.reforging;
 import org.jetbrains.annotations.Nullable;
 
 import dev.shadowsoffire.apotheosis.Apoth;
-import dev.shadowsoffire.apotheosis.Adventure.Items;
+import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.Apoth.RecipeTypes;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
@@ -11,7 +11,7 @@ import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
 import dev.shadowsoffire.placebo.cap.InternalItemHandler;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
@@ -19,13 +19,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class ReforgingTableTile extends BlockEntity implements TickingBlockEntity {
 
@@ -36,7 +34,7 @@ public class ReforgingTableTile extends BlockEntity implements TickingBlockEntit
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             if (slot == 0) return ReforgingTableTile.this.isValidRarityMat(stack);
-            return stack.is(Items.SIGIL_OF_REBIRTH.get());
+            return stack.is(Items.SIGIL_OF_REBIRTH);
         };
 
         @Override
@@ -46,21 +44,22 @@ public class ReforgingTableTile extends BlockEntity implements TickingBlockEntit
     };
 
     public ReforgingTableTile(BlockPos pWorldPosition, BlockState pBlockState) {
-        super(Apoth.Tiles.REFORGING_TABLE.get(), pWorldPosition, pBlockState);
-    }
-
-    public LootRarity getMaxRarity() {
-        return ((ReforgingTableBlock) this.getBlockState().getBlock()).getMaxRarity();
+        super(Apoth.Tiles.REFORGING_TABLE, pWorldPosition, pBlockState);
     }
 
     public boolean isValidRarityMat(ItemStack stack) {
         DynamicHolder<LootRarity> rarity = RarityRegistry.getMaterialRarity(stack.getItem());
-        return rarity.isBound() && this.getMaxRarity().isAtLeast(rarity.get()) && this.getRecipeFor(rarity.get()) != null;
+        return rarity.isBound() && this.getRecipeFor(rarity.get()) != null;
     }
 
     @Nullable
     public ReforgingRecipe getRecipeFor(LootRarity rarity) {
-        return this.level.getRecipeManager().getAllRecipesFor(RecipeTypes.REFORGING).stream().filter(r -> r.rarity().get() == rarity).findFirst().orElse(null);
+        return this.level.getRecipeManager().getAllRecipesFor(RecipeTypes.REFORGING)
+            .stream()
+            .map(RecipeHolder::value)
+            .filter(r -> r.rarity().get() == rarity && r.tables().contains(this.getBlockState().getBlock()))
+            .findFirst()
+            .orElse(null);
     }
 
     @Override
@@ -91,35 +90,19 @@ public class ReforgingTableTile extends BlockEntity implements TickingBlockEntit
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("inventory", this.inv.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, Provider regs) {
+        super.saveAdditional(tag, regs);
+        tag.put("inventory", this.inv.serializeNBT(regs));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        this.inv.deserializeNBT(tag.getCompound("inventory"));
+    protected void loadAdditional(CompoundTag tag, Provider regs) {
+        super.loadAdditional(tag, regs);
+        this.inv.deserializeNBT(regs, tag.getCompound("inventory"));
     }
 
-    LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> this.inv);
-
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return this.invCap.cast();
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        this.invCap.invalidate();
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        this.invCap = LazyOptional.of(() -> this.inv);
+    public IItemHandler getInventory() {
+        return this.inv;
     }
 
 }

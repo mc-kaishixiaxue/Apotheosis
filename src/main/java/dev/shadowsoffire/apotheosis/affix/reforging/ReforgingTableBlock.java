@@ -2,19 +2,17 @@ package dev.shadowsoffire.apotheosis.affix.reforging;
 
 import java.util.List;
 
-import dev.shadowsoffire.apotheosis.Adventure.Blocks;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.Apoth.Blocks;
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
 import dev.shadowsoffire.placebo.menu.MenuUtil;
 import dev.shadowsoffire.placebo.menu.SimplerMenuProvider;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -31,15 +29,8 @@ public class ReforgingTableBlock extends Block implements TickingEntityBlock {
     public static final Component TITLE = Component.translatable("container.apotheosis.reforge");
     public static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D);
 
-    protected final int maxRarity;
-
-    public ReforgingTableBlock(BlockBehaviour.Properties properties, int maxRarity) {
+    public ReforgingTableBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        this.maxRarity = maxRarity;
-    }
-
-    public LootRarity getMaxRarity() {
-        return RarityRegistry.byOrdinal(this.maxRarity).get();
     }
 
     @Override
@@ -53,7 +44,7 @@ public class ReforgingTableBlock extends Block implements TickingEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         return MenuUtil.openGui(player, pos, ReforgingMenu::new);
     }
 
@@ -63,10 +54,8 @@ public class ReforgingTableBlock extends Block implements TickingEntityBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, BlockGetter pLevel, List<Component> list, TooltipFlag pFlag) {
-        list.add(Component.translatable(Blocks.REFORGING_TABLE.get().getDescriptionId() + ".desc").withStyle(ChatFormatting.GRAY));
-        if (this.maxRarity < RarityRegistry.getMaxRarity().get().ordinal())
-            list.add(Component.translatable(Blocks.REFORGING_TABLE.get().getDescriptionId() + ".desc2", this.getMaxRarity().toComponent()).withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag tooltipFlag) {
+        list.add(Component.translatable(Blocks.REFORGING_TABLE.value().getDescriptionId() + ".desc").withStyle(ChatFormatting.GRAY));
     }
 
     @Override

@@ -8,11 +8,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.apothic_attributes.util.AttributesUtil;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.util.StepFunction;
@@ -22,14 +21,16 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class DamageReductionAffix extends Affix {
 
     public static final Codec<DamageReductionAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
+            affixDef(),
             DamageType.CODEC.fieldOf("damage_type").forGetter(a -> a.type),
-            GemBonus.VALUES_CODEC.fieldOf("values").forGetter(a -> a.values),
+            LootRarity.mapCodec(StepFunction.CODEC).fieldOf("values").forGetter(a -> a.values),
             LootCategory.SET_CODEC.fieldOf("types").forGetter(a -> a.types))
         .apply(inst, DamageReductionAffix::new));
 
@@ -37,8 +38,8 @@ public class DamageReductionAffix extends Affix {
     protected final Map<LootRarity, StepFunction> values;
     protected final Set<LootCategory> types;
 
-    public DamageReductionAffix(DamageType type, Map<LootRarity, StepFunction> levelFuncs, Set<LootCategory> types) {
-        super(AffixType.ABILITY);
+    public DamageReductionAffix(AffixDefinition def, DamageType type, Map<LootRarity, StepFunction> levelFuncs, Set<LootCategory> types) {
+        super(def);
         this.type = type;
         this.values = levelFuncs;
         this.types = types;
@@ -82,7 +83,7 @@ public class DamageReductionAffix extends Affix {
 
     public static enum DamageType implements Predicate<DamageSource> {
         PHYSICAL("physical", AttributesUtil::isPhysicalDamage),
-        MAGIC("magic", d -> d.is(DamageTypeTags.BYPASSES_ARMOR)), // TODO: Forge IS_MAGIC tag
+        MAGIC("magic", d -> d.is(Tags.DamageTypes.IS_MAGIC)),
         FIRE("fire", d -> d.is(DamageTypeTags.IS_FIRE)),
         FALL("fall", d -> d.is(DamageTypeTags.IS_FALL)),
         EXPLOSION("explosion", d -> d.is(DamageTypeTags.IS_EXPLOSION));

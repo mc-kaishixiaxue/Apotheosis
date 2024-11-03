@@ -6,11 +6,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
-import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -26,13 +25,14 @@ public class SpectralShotAffix extends Affix {
 
     public static final Codec<SpectralShotAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            GemBonus.VALUES_CODEC.fieldOf("values").forGetter(a -> a.values))
+            affixDef(),
+            LootRarity.mapCodec(StepFunction.CODEC).fieldOf("values").forGetter(a -> a.values))
         .apply(inst, SpectralShotAffix::new));
 
     protected final Map<LootRarity, StepFunction> values;
 
-    public SpectralShotAffix(Map<LootRarity, StepFunction> values) {
-        super(AffixType.ABILITY);
+    public SpectralShotAffix(AffixDefinition def, Map<LootRarity, StepFunction> values) {
+        super(def);
         this.values = values;
     }
 
@@ -43,7 +43,7 @@ public class SpectralShotAffix extends Affix {
 
     @Override
     public MutableComponent getDescription(AffixInstance inst, AttributeTooltipContext ctx) {
-        return Component.translatable("affix." + this.getId() + ".desc", fmt(100 * this.getTrueLevel(inst.getRarity(), inst.level())));
+        return Component.translatable("affix." + this.id() + ".desc", fmt(100 * this.getTrueLevel(inst.getRarity(), inst.level())));
     }
 
     @Override

@@ -1,7 +1,6 @@
 package dev.shadowsoffire.apotheosis.affix.reforging;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Axis;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
@@ -11,13 +10,13 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
 public class ReforgingTableTileRenderer implements BlockEntityRenderer<ReforgingTableTile> {
 
-    public static final ResourceLocation HAMMER = new ResourceLocation(Apotheosis.MODID, "item/hammer");
+    public static final ModelResourceLocation HAMMER = ModelResourceLocation.standalone(Apotheosis.loc("item/hammer"));
 
     @Override
     @SuppressWarnings("deprecation")
@@ -49,9 +48,9 @@ public class ReforgingTableTileRenderer implements BlockEntityRenderer<Reforging
             matrix.translate(0.125 * sinSq, -0, -0.15 * sinSq);
             matrix.mulPose(Axis.YN.rotationDegrees(45 * sinSq));
         }
-        MultiBufferSource.BufferSource src = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        irenderer.renderModelLists(base, ItemStack.EMPTY, light, overlay, matrix, ItemRenderer.getFoilBufferDirect(src, ItemBlockRenderTypes.getRenderType(tile.getBlockState(), true), true, false));
-        src.endBatch();
+        // MultiBufferSource.BufferSource src = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        irenderer.renderModelLists(base, ItemStack.EMPTY, light, overlay, matrix, ItemRenderer.getFoilBufferDirect(pBufferSource, ItemBlockRenderTypes.getRenderType(tile.getBlockState(), true), true, false));
+        // src.endBatch();
 
         matrix.popPose();
     }

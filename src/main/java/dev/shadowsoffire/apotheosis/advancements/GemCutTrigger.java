@@ -71,7 +71,7 @@ public class GemCutTrigger implements CriterionTrigger<GemCutTrigger.Instance> {
         return new GemCutTrigger.Instance(ItemPredicate.ANY, new ResourceLocation(""));
     }
 
-    public void trigger(ServerPlayer player, ItemStack stack, ResourceLocation rarity) {
+    public void trigger(ServerPlayer player, ItemStack stack) {
         GemCutTrigger.Listeners ModifierTrigger$listeners = this.listeners.get(player.getAdvancements());
         if (ModifierTrigger$listeners != null) {
             ModifierTrigger$listeners.trigger(stack, rarity);

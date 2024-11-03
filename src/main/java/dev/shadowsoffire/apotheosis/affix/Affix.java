@@ -6,8 +6,8 @@ import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
+import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.apothic_enchanting.asm.EnchHooks;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
@@ -49,23 +49,6 @@ import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
  */
 public abstract class Affix implements CodecProvider<Affix> {
 
-    protected final AffixType type;
-
-    public Affix(AffixType type) {
-        this.type = type;
-    }
-
-    /**
-     * Adds any attribute modifiers supplied by this affix to the passed consumer.
-     * <p>
-     * Attribute modifiers must have unique IDs per-slot, since the same affix may be applicable to multiple items.
-     *
-     * @param inst The affix instance.
-     * @param type The slot type for modifiers being gathered.
-     * @param map  The destination for generated attribute modifiers.
-     */
-    public void addModifiers(AffixInstance inst, EquipmentSlot type, BiConsumer<Attribute, AttributeModifier> map) {}
-
     /**
      * Gets the one-line description for this affix, to be added to the item stack's tooltip.
      * <p>
@@ -98,6 +81,17 @@ public abstract class Affix implements CodecProvider<Affix> {
     public Component getAugmentingText(AffixInstance inst, AttributeTooltipContext ctx) {
         return this.getDescription(inst, ctx);
     }
+
+    /**
+     * Adds any attribute modifiers supplied by this affix to the passed consumer.
+     * <p>
+     * Attribute modifiers must have unique IDs per-slot, since the same affix may be applicable to multiple items.
+     *
+     * @param inst The affix instance.
+     * @param type The slot type for modifiers being gathered.
+     * @param map  The destination for generated attribute modifiers.
+     */
+    public void addModifiers(AffixInstance inst, EquipmentSlot type, BiConsumer<Attribute, AttributeModifier> map) {}
 
     /**
      * Calculates the protection value of this affix, with respect to the given damage source.<br>
@@ -156,7 +150,7 @@ public abstract class Affix implements CodecProvider<Affix> {
     /**
      * Called when an arrow that was marked with this affix hits a target.
      */
-    public void onArrowImpact(AbstractArrow arrow, LootRarity rarity, float level, HitResult res, HitResult.Type type) {}
+    public void onArrowImpact(AbstractArrow arrow, float level, HitResult res, HitResult.Type type) {}
 
     /**
      * Called when a shield with this affix blocks some amount of damage.
@@ -247,19 +241,18 @@ public abstract class Affix implements CodecProvider<Affix> {
         return String.format("Affix: %s", this.getId());
     }
 
-    public AffixType getType() {
-        return this.type;
-    }
-
     /**
      * Checks if this affix can be applied to an item.
      *
-     * @param stack  The item being checked against.
-     * @param cat    The LootCategory of the item.
-     * @param rarity The rarity of the item.
+     * @param stack The item being checked against.
+     * @param cat   The LootCategory of the target item.
      * @return If this affix can be applied to the item at the specified rarity.
      */
-    public abstract boolean canApplyTo(ItemStack stack, LootCategory cat, LootRarity rarity);
+    public abstract boolean canApplyTo(ItemStack stack, LootCategory cat);
+
+    public final ResourceLocation getId() {
+        return AffixRegistry.INSTANCE.getKey(this);
+    }
 
     /**
      * Checks if the affix is still on cooldown, if a cooldown was set via {@link #startCooldown(Affix, int, LivingEntity)}
@@ -287,7 +280,24 @@ public abstract class Affix implements CodecProvider<Affix> {
         return CommonComponents.space().append(Component.translatable("misc.apotheosis.affix_bounds", min, max).withStyle(ChatFormatting.DARK_GRAY));
     }
 
-    public final ResourceLocation getId() {
-        return AffixRegistry.INSTANCE.getKey(this);
+    /**
+     * Generates a deterministic {@link ResourceLocation} that is unique for a given socketed gem instance.
+     * <p>
+     * Can be used to generate attribute modifiers, track cooldowns, and other things that need to be unique per-gem-in-slot.
+     * 
+     * @param inst The owning gem instance for the bonus
+     * @param salt A salt value, which can be used if the bonus needs multiple modifiers.
+     */
+    protected static ResourceLocation makeUniqueId(AffixInstance inst, String salt) {
+        ResourceLocation key = inst.affix().getId();
+        LootCategory cat = LootCategory.forItem(inst.stack());
+        return ResourceLocation.fromNamespaceAndPath(key.getNamespace(), key.getPath() + "_modifier_" + cat.getSlots().getSerializedName() + "_" + salt);
+    }
+
+    /**
+     * Calls {@link #makeUniqueId(GemInstance, String)} with an empty salt value.
+     */
+    protected static ResourceLocation makeUniqueId(AffixInstance inst) {
+        return makeUniqueId(inst, "");
     }
 }

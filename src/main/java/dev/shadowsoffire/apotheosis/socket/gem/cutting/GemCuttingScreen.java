@@ -3,9 +3,8 @@ package dev.shadowsoffire.apotheosis.socket.gem.cutting;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.shadowsoffire.apotheosis.Adventure;
+import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingScreen;
 import dev.shadowsoffire.apotheosis.client.AdventureContainerScreen;
 import dev.shadowsoffire.apotheosis.client.GrayBufferSource;
@@ -13,7 +12,7 @@ import dev.shadowsoffire.apotheosis.client.SimpleTexButton;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
-import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingMenu.GemCuttingRecipe;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apothic_attributes.api.AttributeHelper;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.ChatFormatting;
@@ -35,16 +34,13 @@ import net.minecraft.world.item.ItemStack;
 
 public class GemCuttingScreen extends AdventureContainerScreen<GemCuttingMenu> {
 
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Apotheosis.MODID, "textures/gui/gem_cutting.png");
+    public static final ResourceLocation TEXTURE = Apotheosis.loc("textures/gui/gem_cutting.png");
 
-    protected final ItemStack displayDust = dev.shadowsoffire.apotheosis.Adventure.Items.GEM_DUST.get().getDefaultInstance();
-
-    protected ItemStack displayMat;
     protected SimpleTexButton upgradeBtn;
 
     public GemCuttingScreen(GemCuttingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
-        this.menu.addSlotListener((id, stack) -> this.updateBtnStatus());
+        this.menu.slotChangedCallback = this::updateBtnStatus;
         this.imageHeight = 180;
         this.titleLabelY = 5;
         this.inventoryLabelY = 86;
@@ -71,17 +67,12 @@ public class GemCuttingScreen extends AdventureContainerScreen<GemCuttingMenu> {
     }
 
     protected void updateBtnStatus() {
-        ItemStack gem = this.menu.getSlot(0).getItem();
-        ItemStack left = this.menu.getSlot(1).getItem();
-        ItemStack bot = this.menu.getSlot(2).getItem();
-        ItemStack right = this.menu.getSlot(3).getItem();
         for (GemCuttingRecipe r : GemCuttingMenu.RECIPES) {
-            if (r.matches(gem, left, bot, right)) {
+            if (r.matches(this.menu.rInput, Minecraft.getInstance().level)) {
                 this.upgradeBtn.active = true;
                 return;
             }
         }
-        this.displayMat = gem.isEmpty() ? ItemStack.EMPTY : new ItemStack(AffixHelper.getRarity(gem).get().getMaterial());
         if (this.upgradeBtn != null) this.upgradeBtn.active = false;
     }
 
@@ -90,17 +81,6 @@ public class GemCuttingScreen extends AdventureContainerScreen<GemCuttingMenu> {
         int xCenter = (this.width - this.imageWidth) / 2;
         int yCenter = (this.height - this.imageHeight) / 2;
         gfx.blit(TEXTURE, xCenter, yCenter, 0, 0, this.imageWidth, this.imageHeight);
-        if (this.hasItem(0) && GemCuttingMenu.isValidMainGem(this.menu.getSlot(0).getItem())) {
-            if (!this.hasItem(1)) {
-                this.renderGrayItem(gfx, this.displayDust, this.menu.getSlot(1));
-            }
-            if (!this.hasItem(2)) {
-                this.renderGrayItem(gfx, this.menu.getSlot(0).getItem(), this.menu.getSlot(2));
-            }
-            if (!this.hasItem(3)) {
-                this.renderGrayItem(gfx, this.displayMat, this.menu.getSlot(3));
-            }
-        }
     }
 
     protected boolean hasItem(int slot) {
@@ -117,29 +97,29 @@ public class GemCuttingScreen extends AdventureContainerScreen<GemCuttingMenu> {
         GemInstance gem = GemInstance.unsocketed(gemStack);
         GemInstance secondary = GemInstance.unsocketed(this.menu.getSlot(2).getItem());
         List<Component> list = new ArrayList<>();
-        if (gem.isValidUnsocketed()) {
-            int dust = this.menu.getSlot(1).getItem().getCount();
-            DynamicHolder<LootRarity> rarity = gem.rarity();
-            if (rarity == RarityRegistry.getMaxRarity()) {
-                list.add(Component.translatable("text.apotheosis.no_upgrade").withStyle(ChatFormatting.GOLD, ChatFormatting.UNDERLINE));
-            }
-            else {
-                list.add(Component.translatable("text.apotheosis.cut_cost").withStyle(ChatFormatting.GOLD, ChatFormatting.UNDERLINE));
-                list.add(CommonComponents.EMPTY);
-                int dustCost = GemCuttingMenu.getDustCost(rarity.get());
-                boolean hasDust = dust > dustCost;
-                list.add(Component.translatable("text.apotheosis.cost", dustCost, Adventure.Items.GEM_DUST.get().getName(ItemStack.EMPTY))
-                    .withStyle(hasDust ? ChatFormatting.GREEN : ChatFormatting.RED));
-                boolean hasGem2 = secondary.isValidUnsocketed() && gem.gem() == secondary.gem() && rarity == secondary.rarity();
-                list.add(Component.translatable("text.apotheosis.cost", 1, gemStack.getHoverName().getString()).withStyle(hasGem2 ? ChatFormatting.GREEN : ChatFormatting.RED));
-                list.add(Component.translatable("text.apotheosis.one_rarity_mat").withStyle(ChatFormatting.GRAY));
-                this.addMatTooltip(RarityRegistry.next(rarity), GemCuttingMenu.NEXT_MAT_COST, list);
-                this.addMatTooltip(rarity, GemCuttingMenu.STD_MAT_COST, list);
-                if (rarity != RarityRegistry.getMinRarity()) {
-                    this.addMatTooltip(RarityRegistry.prev(rarity), GemCuttingMenu.PREV_MAT_COST, list);
-                }
-            }
-        }
+//        if (gem.isValidUnsocketed()) {
+//            int dust = this.menu.getSlot(1).getItem().getCount();
+//            if (gem.isPerfect()) {
+//                list.add(Component.translatable("text.apotheosis.no_upgrade").withStyle(ChatFormatting.GOLD, ChatFormatting.UNDERLINE));
+//            }
+//            else {
+//                Purity purity = gem.purity();
+//                list.add(Component.translatable("text.apotheosis.cut_cost").withStyle(ChatFormatting.GOLD, ChatFormatting.UNDERLINE));
+//                list.add(CommonComponents.EMPTY);
+//                int dustCost = GemCuttingMenu.getDustCost(purity);
+//                boolean hasDust = dust > dustCost;
+//                list.add(Component.translatable("text.apotheosis.cost", dustCost, Apoth.Items.GEM_DUST.value().getName(ItemStack.EMPTY))
+//                    .withStyle(hasDust ? ChatFormatting.GREEN : ChatFormatting.RED));
+//                boolean hasGem2 = secondary.isValidUnsocketed() && gem.gem() == secondary.gem() && purity == secondary.purity();
+//                list.add(Component.translatable("text.apotheosis.cost", 1, gemStack.getHoverName().getString()).withStyle(hasGem2 ? ChatFormatting.GREEN : ChatFormatting.RED));
+//                list.add(Component.translatable("text.apotheosis.one_rarity_mat").withStyle(ChatFormatting.GRAY));
+//                this.addMatTooltip(RarityRegistry.next(rarity), GemCuttingMenu.NEXT_MAT_COST, list);
+//                this.addMatTooltip(rarity, GemCuttingMenu.STD_MAT_COST, list);
+//                if (rarity != RarityRegistry.getMinRarity()) {
+//                    this.addMatTooltip(RarityRegistry.prev(rarity), GemCuttingMenu.PREV_MAT_COST, list);
+//                }
+//            }
+//        }
         this.drawOnLeft(gfx, list, this.getGuiTop() + 16);
         super.renderTooltip(gfx, pX, pY);
     }

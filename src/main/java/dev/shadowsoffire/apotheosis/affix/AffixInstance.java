@@ -35,21 +35,14 @@ import net.neoforged.neoforge.common.util.AttributeTooltipContext;
  * An Affix Instance is a wrapper around the necessary parameters for all affix methods.<br>
  * Prefer using this over directly invoking methods on {@link Affix}.
  */
-public record AffixInstance(DynamicHolder<? extends Affix> affix, ItemStack stack, DynamicHolder<LootRarity> rarity, float level) {
+public record AffixInstance(DynamicHolder<Affix> affix, ItemStack stack, float level) {
 
     public boolean isValid() {
-        return this.affix.isBound() && this.rarity.isBound();
+        return this.affix.isBound();
     }
 
     private Affix afx() {
         return this.affix.get();
-    }
-
-    /**
-     * Resolves the underlying {@link #rarity}. Throws if unbound.
-     */
-    public LootRarity getRarity() {
-        return this.rarity.get();
     }
 
     /**
@@ -148,7 +141,7 @@ public record AffixInstance(DynamicHolder<? extends Affix> affix, ItemStack stac
      * @see Affix#onArrowImpact(AbstractArrow, LootRarity, float, HitResult, net.minecraft.world.phys.HitResult.Type)
      */
     public void onArrowImpact(AbstractArrow arrow, HitResult res, HitResult.Type type) {
-        this.afx().onArrowImpact(arrow, this.getRarity(), this.level, res, type);
+        this.afx().onArrowImpact(arrow, this.level, res, type);
     }
 
     /**

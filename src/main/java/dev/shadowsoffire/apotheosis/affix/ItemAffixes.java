@@ -1,13 +1,12 @@
 package dev.shadowsoffire.apotheosis.affix;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.netty.buffer.ByteBuf;
-import it.unimi.dsi.fastutil.floats.FloatCollection;
-import it.unimi.dsi.fastutil.floats.FloatCollections;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
@@ -66,14 +65,6 @@ public final class ItemAffixes {
         return ObjectSets.unmodifiable(this.affixes.keySet());
     }
 
-    public FloatCollection values() {
-        return FloatCollections.unmodifiable(this.affixes.values());
-    }
-
-    public boolean containsKey(Object key) {
-        return this.affixes.containsKey(key);
-    }
-
     @Override
     public boolean equals(Object other) {
         return this == other || other instanceof ItemAffixes iafxs && iafxs.affixes.equals(this.affixes);
@@ -87,6 +78,63 @@ public final class ItemAffixes {
     @Override
     public String toString() {
         return "ItemAffixes{affixes=" + this.affixes + "}";
+    }
+
+    public Builder toBuilder() {
+        return new Builder(this);
+    }
+
+    public static class Builder {
+
+        Object2FloatOpenHashMap<DynamicHolder<Affix>> affixes = new Object2FloatOpenHashMap<>();
+
+        public Builder(ItemAffixes base) {
+            this.affixes.putAll(base.affixes);
+        }
+
+        public void put(DynamicHolder<Affix> affix, float level) {
+            if (level <= 0) {
+                this.affixes.removeFloat(affix);
+            }
+            else {
+                this.affixes.put(affix, Math.clamp(level, 0, 1));
+            }
+        }
+
+        public void upgrade(DynamicHolder<Affix> affix, float level) {
+            if (level > 0) {
+                this.affixes.merge(affix, Math.clamp(level, 0, 1), Float::max);
+            }
+        }
+
+        public void removeIf(Predicate<DynamicHolder<Affix>> filter) {
+            this.affixes.keySet().removeIf(filter);
+        }
+
+        public float getLevel(DynamicHolder<Affix> key) {
+            return this.affixes.getFloat(key);
+        }
+
+        public boolean isEmpty() {
+            return this.affixes.isEmpty();
+        }
+
+        public int size() {
+            return this.affixes.size();
+        }
+
+        public ObjectSet<Entry<DynamicHolder<Affix>>> entrySet() {
+            return ObjectSets.unmodifiable(this.affixes.object2FloatEntrySet());
+        }
+
+        public ObjectSet<DynamicHolder<Affix>> keySet() {
+            return ObjectSets.unmodifiable(this.affixes.keySet());
+        }
+
+        public ItemAffixes build() {
+            return new ItemAffixes(this.affixes);
+        }
+
     }
 
 }

@@ -55,6 +55,10 @@ public enum Purity implements StringRepresentable {
         return this.name;
     }
 
+    public Purity next() {
+        return this == PERFECT ? this : BY_ID.apply(this.ordinal() + 1);
+    }
+
     public boolean isAtLeast(Purity other) {
         return this.ordinal() >= other.ordinal();
     }

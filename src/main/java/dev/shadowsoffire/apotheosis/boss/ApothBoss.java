@@ -20,7 +20,6 @@ import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.compat.GameStagesCompat.IStaged;
-import dev.shadowsoffire.apotheosis.ench.asm.EnchHooks;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -28,17 +27,19 @@ import dev.shadowsoffire.apotheosis.loot.RarityClamp;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.util.NameHelper;
 import dev.shadowsoffire.apotheosis.util.SupportingEntity;
+import dev.shadowsoffire.apothic_enchanting.asm.EnchHooks;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.json.ChancedEffectInstance;
-import dev.shadowsoffire.placebo.json.GearSet;
-import dev.shadowsoffire.placebo.json.GearSet.SetPredicate;
-import dev.shadowsoffire.placebo.json.GearSetRegistry;
 import dev.shadowsoffire.placebo.json.NBTAdapter;
 import dev.shadowsoffire.placebo.json.RandomAttributeModifier;
 import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
 import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.ILuckyWeighted;
+import dev.shadowsoffire.placebo.systems.gear.GearSet;
+import dev.shadowsoffire.placebo.systems.gear.GearSet.SetPredicate;
+import dev.shadowsoffire.placebo.systems.gear.GearSetRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -76,7 +77,7 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, ILuckyWeighted
         .group(
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("weight").forGetter(ILuckyWeighted::getWeight),
             Codec.floatRange(0, Float.MAX_VALUE).optionalFieldOf("quality", 0F).forGetter(ILuckyWeighted::getQuality),
-            ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity").forGetter(a -> a.entity),
+            BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(a -> a.entity),
             AABB_CODEC.fieldOf("size").forGetter(a -> a.size),
             LootRarity.mapCodec(BossStats.CODEC).fieldOf("stats").forGetter(a -> a.stats),
             PlaceboCodecs.setOf(Codec.STRING).optionalFieldOf("stages").forGetter(a -> Optional.ofNullable(a.stages)),

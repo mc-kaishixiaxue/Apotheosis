@@ -1,10 +1,8 @@
 package dev.shadowsoffire.apotheosis.affix;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 
-import dev.shadowsoffire.apotheosis.Apoth.Affixes;
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.effect.CatalyzingAffix;
@@ -27,7 +25,7 @@ import dev.shadowsoffire.apotheosis.client.AdventureModuleClient;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import dev.shadowsoffire.placebo.reload.DynamicRegistry;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public class AffixRegistry extends DynamicRegistry<Affix> {
 
@@ -51,7 +49,6 @@ public class AffixRegistry extends DynamicRegistry<Affix> {
         ImmutableMultimap.Builder<AffixType, DynamicHolder<Affix>> builder = ImmutableMultimap.builder();
         this.registry.values().forEach(a -> builder.put(a.type, this.holder(a)));
         this.byType = builder.build();
-        Preconditions.checkArgument(Affixes.DURABLE.get() instanceof DurableAffix, "Durable Affix not registered!");
         if (!FMLEnvironment.production && FMLEnvironment.dist.isClient()) {
             AdventureModuleClient.checkAffixLangKeys();
         }

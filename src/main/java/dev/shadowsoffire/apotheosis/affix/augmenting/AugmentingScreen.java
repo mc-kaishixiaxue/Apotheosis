@@ -39,7 +39,7 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
     /**
      * Texture file is 256x307
      */
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Apotheosis.MODID, "textures/gui/augmenting.png");
+    public static final ResourceLocation TEXTURE = Apotheosis.loc("textures/gui/augmenting.png");
 
     public static final int ALTERNATIVE_TEXT_WIDTH = 150;
     public static final int ALTERNATIVE_MAX_LINES = 15;

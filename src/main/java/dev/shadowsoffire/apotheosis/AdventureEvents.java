@@ -9,6 +9,7 @@ import com.ibm.icu.util.BytesTrie.Result;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
+import dev.shadowsoffire.apotheosis.affix.effect.FestiveAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.TelepathicAffix;
 import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingMenu;
 import dev.shadowsoffire.apotheosis.commands.AffixCommand;
@@ -206,12 +207,12 @@ public class AdventureEvents {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void drops(LivingDropsEvent e) {
-        Apoth.Affixes.FESTIVE.getOptional().ifPresent(afx -> afx.drops(e));
+        FestiveAffix.drops(e);
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void deathMark(LivingDeathEvent e) {
-        Apoth.Affixes.FESTIVE.getOptional().ifPresent(afx -> afx.markEquipment(e));
+        FestiveAffix.markEquipment(e);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

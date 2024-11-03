@@ -1,27 +1,38 @@
 package dev.shadowsoffire.apotheosis.socket;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureModule.ApothSmithingRecipe;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.Container;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
 
 public class AddSocketsRecipe extends ApothSmithingRecipe {
+
+    public static final MapCodec<AddSocketsRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+        Ingredient.CODEC_NONEMPTY.fieldOf("input").forGetter(AddSocketsRecipe::getInput),
+        Codec.intRange(0, 16).fieldOf("max_sockets").forGetter(AddSocketsRecipe::getMaxSockets))
+        .apply(inst, AddSocketsRecipe::new));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, AddSocketsRecipe> STREAM_CODEC = StreamCodec.composite(
+        Ingredient.CONTENTS_STREAM_CODEC, AddSocketsRecipe::getInput,
+        ByteBufCodecs.VAR_INT, AddSocketsRecipe::getMaxSockets,
+        AddSocketsRecipe::new);
 
     private final Ingredient input;
     private final int maxSockets;
 
-    public AddSocketsRecipe(ResourceLocation id, Ingredient input, int maxSockets) {
-        super(id, Ingredient.EMPTY, input, ItemStack.EMPTY);
+    public AddSocketsRecipe(Ingredient input, int maxSockets) {
+        super(Ingredient.EMPTY, input, ItemStack.EMPTY);
         this.input = input;
         this.maxSockets = maxSockets;
     }
@@ -30,17 +41,17 @@ public class AddSocketsRecipe extends ApothSmithingRecipe {
      * Used to check if a recipe matches current crafting inventory
      */
     @Override
-    public boolean matches(Container pInv, Level level) {
-        ItemStack in = pInv.getItem(BASE);
-        return !LootCategory.forItem(in).isNone() && SocketHelper.getSockets(in) < this.getMaxSockets() && this.getInput().test(pInv.getItem(ADDITION));
+    public boolean matches(SmithingRecipeInput inv, Level level) {
+        ItemStack in = inv.getItem(BASE);
+        return !LootCategory.forItem(in).isNone() && SocketHelper.getSockets(in) < this.getMaxSockets() && this.getInput().test(inv.getItem(ADDITION));
     }
 
     /**
      * Returns an Item that is the result of this recipe
      */
     @Override
-    public ItemStack assemble(Container pInv, RegistryAccess regs) {
-        ItemStack out = pInv.getItem(BASE).copy();
+    public ItemStack assemble(SmithingRecipeInput inv, HolderLookup.Provider regs) {
+        ItemStack out = inv.getItem(BASE).copy();
         if (out.isEmpty()) return ItemStack.EMPTY;
         int sockets = SocketHelper.getSockets(out) + 1;
         SocketHelper.setSockets(out, sockets);
@@ -70,21 +81,13 @@ public class AddSocketsRecipe extends ApothSmithingRecipe {
         public static Serializer INSTANCE = new Serializer();
 
         @Override
-        public AddSocketsRecipe fromJson(ResourceLocation id, JsonObject obj) {
-            Ingredient item = CraftingHelper.getIngredient(GsonHelper.getAsJsonObject(obj, "input"), false);
-            int maxSockets = obj.get("max_sockets").getAsInt();
-            return new AddSocketsRecipe(id, item, maxSockets);
+        public MapCodec<AddSocketsRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public AddSocketsRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-            return new AddSocketsRecipe(id, Ingredient.fromNetwork(buf), buf.readInt());
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, AddSocketsRecipe recipe) {
-            recipe.input.toNetwork(buf);
-            buf.writeInt(recipe.getMaxSockets());
+        public StreamCodec<RegistryFriendlyByteBuf, AddSocketsRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

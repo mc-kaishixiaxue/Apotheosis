@@ -1,7 +1,6 @@
 package dev.shadowsoffire.apotheosis.loot;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.Map;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
 
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
@@ -61,57 +59,6 @@ public class RarityRegistry extends WeightedDynamicRegistry<LootRarity> {
         return INSTANCE.materialMap.getOrDefault(item, INSTANCE.emptyHolder());
     }
 
-    /**
-     * Returns the minimum rarity based on the ordinals.
-     * <p>
-     * Guaranted to be {@linkplain DynamicHolder#isBound() bound}.
-     */
-    public static DynamicHolder<LootRarity> getMinRarity() {
-        return INSTANCE.ordered.get(0);
-    }
-
-    /**
-     * Returns the maximum rarity based on the ordinals.
-     * <p>
-     * Guaranted to be {@linkplain DynamicHolder#isBound() bound}.
-     */
-    public static DynamicHolder<LootRarity> getMaxRarity() {
-        return INSTANCE.ordered.get(INSTANCE.ordered.size() - 1);
-    }
-
-    /**
-     * Returns the rarity for a particular ordinal.
-     * <p>
-     * Guaranted to be {@linkplain DynamicHolder#isBound() bound}.
-     *
-     * @throws IndexOutOfBoundsException if the ordinal is invalid.
-     */
-    public static DynamicHolder<LootRarity> byOrdinal(int i) {
-        return INSTANCE.ordered.get(i);
-    }
-
-    public static ResourceLocation convertId(String s) {
-        return s.contains(":") ? new ResourceLocation(s) : Apotheosis.loc(s);
-    }
-
-    public static DynamicHolder<LootRarity> byLegacyId(String s) {
-        return INSTANCE.holder(convertId(s));
-    }
-
-    public static DynamicHolder<LootRarity> prev(DynamicHolder<LootRarity> rarity) {
-        if (rarity == RarityRegistry.getMinRarity()) return rarity;
-        return RarityRegistry.byOrdinal(rarity.get().ordinal() - 1);
-    }
-
-    public static DynamicHolder<LootRarity> next(DynamicHolder<LootRarity> rarity) {
-        if (rarity == RarityRegistry.getMaxRarity()) return rarity;
-        return RarityRegistry.byOrdinal(rarity.get().ordinal() + 1);
-    }
-
-    public List<DynamicHolder<LootRarity>> getOrderedRarities() {
-        return this.ordered;
-    }
-
     @Override
     protected void beginReload() {
         super.beginReload();
@@ -122,28 +69,12 @@ public class RarityRegistry extends WeightedDynamicRegistry<LootRarity> {
     @Override
     protected void onReload() {
         super.onReload();
-        this.ordered = this.registry.values().stream().sorted(Comparator.comparing(LootRarity::ordinal)).map(this::holder).toList();
-
-        int lastOrdinal = -1;
-        for (DynamicHolder<LootRarity> r : this.ordered) {
-            if (r.get().ordinal() != lastOrdinal + 1) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("Rarity ordinal order is inconsistent. The ordinals must start at zero and be continuous up to the max value.\n");
-                for (var rarity : this.ordered) {
-                    sb.append(rarity.getId() + " | " + rarity.get().ordinal() + "\n");
-                }
-                throw new RuntimeException(sb.toString());
-            }
-            lastOrdinal = r.get().ordinal();
-        }
-
-        for (DynamicHolder<LootRarity> r : this.ordered) {
-            DynamicHolder<LootRarity> old = this.materialMap.put(r.get().getMaterial(), r);
+        for (LootRarity r : this.getValues()) {
+            DynamicHolder<LootRarity> old = this.materialMap.put(r.getMaterial(), holder(r));
             if (old != null) {
-                throw new RuntimeException("Two rarities may not share the same rarity material: " + r.getId() + " conflicts with " + old.getId());
+                throw new RuntimeException("Two rarities may not share the same rarity material: " + this.getKey(r) + " conflicts with " + old.getId());
             }
         }
-        this.ordered = ImmutableList.copyOf(this.ordered);
     }
 
     @Override

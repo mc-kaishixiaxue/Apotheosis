@@ -63,7 +63,7 @@ public class FestiveAffix extends Affix {
 
     @Override
     public boolean canApplyTo(ItemStack stack, LootCategory cat, LootRarity rarity) {
-        return cat.isLightWeapon() && this.values.containsKey(rarity);
+        return cat.isMelee() && this.values.containsKey(rarity);
     }
 
     private float getTrueLevel(LootRarity rarity, float level) {
@@ -73,7 +73,7 @@ public class FestiveAffix extends Affix {
     private static String MARKER = "apoth.equipment";
 
     // EventPriority.LOW
-    public void markEquipment(LivingDeathEvent e) {
+    public static void markEquipment(LivingDeathEvent e) {
         if (e.getEntity() instanceof Player || e.getEntity().getPersistentData().getBoolean("apoth.no_pinata")) return;
         e.getEntity().getAllSlots().forEach(i -> {
             if (!i.isEmpty()) i.getOrCreateTag().putBoolean(MARKER, true);
@@ -81,7 +81,7 @@ public class FestiveAffix extends Affix {
     }
 
     // EventPriority.LOW
-    public void drops(LivingDropsEvent e) {
+    public static void drops(LivingDropsEvent e) {
         LivingEntity dead = e.getEntity();
         if (dead instanceof Player || dead.getPersistentData().getBoolean("apoth.no_pinata")) return;
         if (e.getSource().getEntity() instanceof Player player && !e.getDrops().isEmpty()) {

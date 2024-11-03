@@ -123,7 +123,7 @@ public class LootController {
      * @param type           The type of affix to target
      * @return A list of available affixes for the item. May be empty.
      */
-    public static List<DynamicHolder<? extends Affix>> getAvailableAffixes(ItemStack stack, LootRarity rarity, Set<DynamicHolder<? extends Affix>> currentAffixes, AffixType type) {
+    public static List<DynamicHolder<Affix>> getAvailableAffixes(ItemStack stack, LootRarity rarity, Set<DynamicHolder<? extends Affix>> currentAffixes, AffixType type) {
         LootCategory cat = LootCategory.forItem(stack);
         return AffixHelper.byType(type)
             .stream()

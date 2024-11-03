@@ -84,6 +84,10 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity 
         return socketed(LootCategory.NONE, gemStack, -1);
     }
 
+    public boolean equalsUnsocketed(GemInstance other) {
+        return this.isValidUnsocketed() && this.gem.equals(other.gem) && this.purity == other.purity;
+    }
+
     /**
      * Checks if the underlying {@link #gem} is bound, but does not validate that the {@link #category} is correct.
      * <p>

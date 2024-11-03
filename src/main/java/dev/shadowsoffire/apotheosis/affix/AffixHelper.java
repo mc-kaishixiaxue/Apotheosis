@@ -18,8 +18,6 @@ import dev.shadowsoffire.placebo.util.CachedObject;
 import dev.shadowsoffire.placebo.util.CachedObject.CachedObjectSource;
 import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -44,32 +42,23 @@ public class AffixHelper {
     /**
      * Adds this specific affix to the Item's NBT tag.
      */
-    public static void applyAffix(ItemStack stack, AffixInstance affix) {
-        var affixes = new HashMap<>(getAffixes(stack));
-        affixes.put(affix.affix(), affix);
-        setAffixes(stack, affixes);
+    public static void applyAffix(ItemStack stack, AffixInstance inst) {
+        ItemAffixes.Builder builder = stack.getOrDefault(Components.AFFIXES, ItemAffixes.EMPTY).toBuilder();
+        builder.upgrade(inst.affix(), inst.level());
+        setAffixes(stack, builder.build());
     }
 
-    public static void setAffixes(ItemStack stack, Map<DynamicHolder<? extends Affix>, AffixInstance> affixes) {
-        ItemAffixes afxData = stack.getOrDefault(Components.AFFIXES, ItemAffixes.EMPTY);
-        CompoundTag affixesTag = new CompoundTag();
-        for (AffixInstance inst : affixes.values()) {
-            affixesTag.putFloat(inst.affix().getId().toString(), inst.level());
-        }
-        afxData.put(AFFIXES, affixesTag);
+    public static void setAffixes(ItemStack stack, ItemAffixes affixes) {
+        stack.set(Components.AFFIXES, affixes);
     }
 
     public static void setName(ItemStack stack, Component name) {
-        CompoundTag afxData = stack.getOrCreateTagElement(AFFIX_DATA);
-        afxData.putString(NAME, Component.Serializer.toJson(name));
+        stack.set(Components.AFFIX_NAME, name.copy());
     }
 
     @Nullable
     public static Component getName(ItemStack stack) {
-        if (!stack.hasTag()) return null;
-        CompoundTag afxData = stack.getTagElement(AFFIX_DATA);
-        if (afxData == null) return null;
-        return Component.Serializer.fromJson(afxData.getString(NAME));
+        return stack.get(Components.AFFIX_NAME);
     }
 
     /**
@@ -81,23 +70,24 @@ public class AffixHelper {
      * @return An immutable map of all affixes on the stack, or an empty map if none were found.
      * @apiNote Prefer using {@link #streamAffixes(ItemStack)} where applicable, since invalid instances will be pre-filtered.
      */
-    public static Map<DynamicHolder<? extends Affix>, AffixInstance> getAffixes(ItemStack stack) {
+    public static Map<DynamicHolder<Affix>, AffixInstance> getAffixes(ItemStack stack) {
         if (AffixRegistry.INSTANCE.getValues().isEmpty()) return Collections.emptyMap(); // Don't enter getAffixesImpl if the affixes haven't loaded yet.
-        return CachedObjectSource.getOrCreate(stack, AFFIX_CACHED_OBJECT, AffixHelper::getAffixesImpl, CachedObject.hashComponents(Components.AFFIXES));
+        return CachedObjectSource.getOrCreate(stack, AFFIX_CACHED_OBJECT, AffixHelper::getAffixesImpl, CachedObject.hashComponents(Components.AFFIXES, Components.RARITY));
     }
 
-    public static Map<DynamicHolder<? extends Affix>, AffixInstance> getAffixesImpl(ItemStack stack) {
+    public static Map<DynamicHolder<Affix>, AffixInstance> getAffixesImpl(ItemStack stack) {
         if (stack.isEmpty()) return Collections.emptyMap();
-        Map<DynamicHolder<? extends Affix>, AffixInstance> map = new HashMap<>();
+        Map<DynamicHolder<Affix>, AffixInstance> map = new HashMap<>();
         ItemAffixes affixes = stack.getOrDefault(Components.AFFIXES, ItemAffixes.EMPTY);
-        if (!affixes.isEmpty())) {
-            DynamicHolder<LootRarity> rarity = getRarity(afxData);
-            if (!rarity.isBound()) rarity = RarityRegistry.getMinRarity();
+        if (!affixes.isEmpty()) {
+            DynamicHolder<LootRarity> rarity = getRarity(stack);
+            if (!rarity.isBound()) {
+                rarity = RarityRegistry.getMinRarity();
+            }
             LootCategory cat = LootCategory.forItem(stack);
-            for (String key : affixes.getAllKeys()) {
-                DynamicHolder<Affix> affix = AffixRegistry.INSTANCE.holder(new ResourceLocation(key));
+            for (DynamicHolder<Affix> affix : affixes.keySet()) {
                 if (!affix.isBound() || !affix.get().canApplyTo(stack, cat, rarity.get())) continue;
-                float lvl = affixes.getFloat(key);
+                float lvl = affixes.getLevel(affix);
                 map.put(affix, new AffixInstance(affix, stack, rarity, lvl));
             }
         }
@@ -109,12 +99,11 @@ public class AffixHelper {
     }
 
     public static boolean hasAffixes(ItemStack stack) {
-        return stack.hasTag() && !stack.getTag().getCompound(AFFIX_DATA).getCompound(AFFIXES).isEmpty();
+        return !getAffixes(stack).isEmpty();
     }
 
     public static void setRarity(ItemStack stack, LootRarity rarity) {
-        CompoundTag afxData = stack.getOrCreateTagElement(AFFIX_DATA);
-        afxData.putString(RARITY, RarityRegistry.INSTANCE.getKey(rarity).toString());
+        stack.set(Components.RARITY, RarityRegistry.INSTANCE.holder(rarity));
     }
 
     public static void copyFrom(ItemStack stack, Entity entity) {
@@ -160,9 +149,7 @@ public class AffixHelper {
      * May be unbound
      */
     public static DynamicHolder<LootRarity> getRarity(ItemStack stack) {
-        if (!stack.hasTag()) return RarityRegistry.INSTANCE.emptyHolder();
-        CompoundTag afxData = stack.getTagElement(AFFIX_DATA);
-        return getRarity(afxData);
+        return stack.getOrDefault(Components.RARITY, RarityRegistry.INSTANCE.emptyHolder());
     }
 
     /**
@@ -187,19 +174,6 @@ public class AffixHelper {
 
     public static StepFunction step(float min, int steps, float step) {
         return new StepFunction(min, steps, step);
-    }
-
-    /**
-     * Helper method to add vanilla lore text to an item stack.
-     *
-     * @param stack The stack to add text to
-     * @param lore  The text component to add
-     */
-    public static void addLore(ItemStack stack, Component lore) {
-        CompoundTag display = stack.getOrCreateTagElement(ItemStack.TAG_DISPLAY);
-        ListTag tag = display.getList(ItemStack.TAG_LORE, 8);
-        tag.add(StringTag.valueOf(Component.Serializer.toJson(lore)));
-        display.put(ItemStack.TAG_LORE, tag);
     }
 
 }

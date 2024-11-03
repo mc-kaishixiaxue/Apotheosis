@@ -5,36 +5,34 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 
-import dev.shadowsoffire.apotheosis.Adventure;
 import dev.shadowsoffire.apotheosis.AdventureModule.ApothSmithingRecipe;
+import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.event.ItemSocketingEvent;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.MinecraftForge;
 import net.neoforged.neoforge.common.NeoForge;
 
 public class SocketingRecipe extends ApothSmithingRecipe {
 
-    private static final ResourceLocation ID = new ResourceLocation("apotheosis:socketing");
-
     public SocketingRecipe() {
-        super(ID, Ingredient.EMPTY, Ingredient.of(Adventure.Items.GEM.get()), ItemStack.EMPTY);
+        super(Ingredient.EMPTY, Ingredient.of(Apoth.Items.GEM.value()), ItemStack.EMPTY);
     }
 
     /**
      * Used to check if a recipe matches current crafting inventory
      */
     @Override
-    public boolean matches(Container inv, Level pLevel) {
+    public boolean matches(SmithingRecipeInput inv, Level pLevel) {
         ItemStack input = inv.getItem(BASE);
         ItemStack gemStack = inv.getItem(ADDITION);
         GemInstance gem = GemInstance.unsocketed(gemStack);
@@ -50,7 +48,7 @@ public class SocketingRecipe extends ApothSmithingRecipe {
      * Returns an Item that is the result of this recipe
      */
     @Override
-    public ItemStack assemble(Container inv, RegistryAccess regs) {
+    public ItemStack assemble(SmithingRecipeInput inv, HolderLookup.Provider regs) {
         ItemStack input = inv.getItem(BASE);
         ItemStack gemStack = inv.getItem(ADDITION);
 

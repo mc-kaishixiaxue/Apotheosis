@@ -12,12 +12,12 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.ListCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
+import dev.shadowsoffire.apotheosis.loot.LootRarity.LootRule;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
@@ -25,14 +25,13 @@ import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.ILuckyWeighted;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class LootRarity implements CodecProvider<LootRarity>, ILuckyWeighted, Comparable<LootRarity> {
+public class LootRarity implements CodecProvider<LootRarity>, ILuckyWeighted {
 
     public static final Codec<LootRarity> LOAD_CODEC = RecordCodecBuilder.create(inst -> inst.group(
         TextColor.CODEC.fieldOf("color").forGetter(LootRarity::getColor),
@@ -40,29 +39,23 @@ public class LootRarity implements CodecProvider<LootRarity>, ILuckyWeighted, Co
         Codec.INT.fieldOf("ordinal").forGetter(LootRarity::ordinal),
         Codec.intRange(0, Integer.MAX_VALUE).fieldOf("weight").forGetter(ILuckyWeighted::getWeight),
         Codec.floatRange(0, Float.MAX_VALUE).optionalFieldOf("quality", 0F).forGetter(ILuckyWeighted::getQuality),
-        new ListCodec<>(LootRule.CODEC).fieldOf("rules").forGetter(LootRarity::getRules))
+        LootRule.CODEC.listOf().fieldOf("rules").forGetter(LootRarity::getRules))
         .apply(inst, LootRarity::new));
-
-    @Deprecated // TODO: RarityRegistry.INSTANCE.holderCodec() - requires updating all data files to use namespaced rarities.
-    public static final Codec<DynamicHolder<LootRarity>> HOLDER_CODEC = ExtraCodecs.lazyInitializedCodec(() -> Codec.STRING.xmap(RarityRegistry::convertId, ResourceLocation::toString).xmap(RarityRegistry.INSTANCE::holder,
-        DynamicHolder::getId));
 
     /**
      * Direct resolution codec. Only for use in other datapack objects which load after the {@link RarityRegistry}.
      */
-    public static final Codec<LootRarity> CODEC = ExtraCodecs.lazyInitializedCodec(() -> HOLDER_CODEC.xmap(DynamicHolder::get, RarityRegistry.INSTANCE::holder));
+    public static final Codec<LootRarity> CODEC = Codec.lazyInitialized(() -> RarityRegistry.INSTANCE.holderCodec().xmap(DynamicHolder::get, RarityRegistry.INSTANCE::holder));
 
     private final Item material;
     private final TextColor color;
-    private final int ordinal;
     private final int weight;
     private final float quality;
     private final List<LootRule> rules;
 
-    private LootRarity(TextColor color, Item material, int ordinal, int weight, float quality, List<LootRule> rules) {
+    private LootRarity(TextColor color, Item material, int weight, float quality, List<LootRule> rules) {
         this.color = color;
         this.material = material;
-        this.ordinal = ordinal;
         this.weight = weight;
         this.quality = quality;
         this.rules = rules;
@@ -74,10 +67,6 @@ public class LootRarity implements CodecProvider<LootRarity>, ILuckyWeighted, Co
 
     public TextColor getColor() {
         return this.color;
-    }
-
-    public int ordinal() {
-        return this.ordinal;
     }
 
     @Override
@@ -102,47 +91,6 @@ public class LootRarity implements CodecProvider<LootRarity>, ILuckyWeighted, Co
         return RarityRegistry.prev(RarityRegistry.INSTANCE.holder(this)).get();
     }
 
-    /**
-     * Checks if this rarity is the same or worse than the passed rarity.
-     */
-    public boolean isAtMost(LootRarity other) {
-        return this.ordinal() <= other.ordinal();
-    }
-
-    /**
-     * Checks if this rarity is the same or better than the passed rarity.
-     */
-    public boolean isAtLeast(LootRarity other) {
-        return this.ordinal() >= other.ordinal();
-    }
-
-    /**
-     * Returns the minimum (worst) rarity between a and b.
-     */
-    public static LootRarity min(LootRarity a, @Nullable LootRarity b) {
-        if (b == null) return a;
-        return a.ordinal <= b.ordinal ? a : b;
-    }
-
-    /**
-     * Returns the maximum (best) rarity between a and b.
-     */
-    public static LootRarity max(LootRarity a, @Nullable LootRarity b) {
-        if (b == null) return a;
-        return a.ordinal >= b.ordinal ? a : b;
-    }
-
-    /**
-     * Clamps a loot rarity to within a min/max bound.
-     *
-     * @param lowerBound The minimum valid rarity
-     * @param upperBound The maximum valid rarity
-     * @return This, if this is within the bounds, or the min or max if it exceeded that bound.
-     */
-    public LootRarity clamp(@Nullable LootRarity lowerBound, @Nullable LootRarity upperBound) {
-        return LootRarity.max(LootRarity.min(this, upperBound), lowerBound);
-    }
-
     public Component toComponent() {
         return Component.translatable("rarity." + RarityRegistry.INSTANCE.getKey(this)).withStyle(Style.EMPTY.withColor(this.color));
     }
@@ -150,11 +98,6 @@ public class LootRarity implements CodecProvider<LootRarity>, ILuckyWeighted, Co
     @Override
     public String toString() {
         return "LootRarity{" + RarityRegistry.INSTANCE.getKey(this) + "}";
-    }
-
-    @Override
-    public int compareTo(LootRarity o) {
-        return Integer.compare(this.ordinal, o.ordinal);
     }
 
     @Override

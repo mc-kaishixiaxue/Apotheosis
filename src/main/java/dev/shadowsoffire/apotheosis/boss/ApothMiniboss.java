@@ -25,13 +25,14 @@ import dev.shadowsoffire.apotheosis.util.SupportingEntity;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.json.ChancedEffectInstance;
-import dev.shadowsoffire.placebo.json.GearSet;
-import dev.shadowsoffire.placebo.json.GearSet.SetPredicate;
-import dev.shadowsoffire.placebo.json.GearSetRegistry;
 import dev.shadowsoffire.placebo.json.NBTAdapter;
 import dev.shadowsoffire.placebo.json.RandomAttributeModifier;
 import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
 import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.ILuckyWeighted;
+import dev.shadowsoffire.placebo.systems.gear.GearSet;
+import dev.shadowsoffire.placebo.systems.gear.GearSet.SetPredicate;
+import dev.shadowsoffire.placebo.systems.gear.GearSetRegistry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -48,8 +49,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
 public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILuckyWeighted, IDimensional, IStaged, IEntityMatch {
 
@@ -61,7 +61,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
             Codec.floatRange(0, Float.MAX_VALUE).optionalFieldOf("quality", 0F).forGetter(ILuckyWeighted::getQuality),
             ExtraCodecs.POSITIVE_FLOAT.fieldOf("chance").forGetter(a -> a.chance),
             Codec.STRING.optionalFieldOf("name", "").forGetter(a -> a.name),
-            PlaceboCodecs.setOf(ForgeRegistries.ENTITY_TYPES.getCodec()).fieldOf("entities").forGetter(a -> a.entities),
+            PlaceboCodecs.setOf(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).fieldOf("entities").forGetter(a -> a.entities),
             BossStats.CODEC.fieldOf("stats").forGetter(a -> a.stats),
             PlaceboCodecs.setOf(Codec.STRING).optionalFieldOf("stages").forGetter(a -> Optional.ofNullable(a.stages)),
             PlaceboCodecs.setOf(ResourceLocation.CODEC).fieldOf("dimensions").forGetter(a -> a.dimensions),

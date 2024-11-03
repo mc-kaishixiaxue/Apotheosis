@@ -10,7 +10,6 @@ import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -26,10 +25,10 @@ public class CatalyzingAffix extends Affix {
 
     public static final Codec<CatalyzingAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            GemBonus.VALUES_CODEC.fieldOf("values").forGetter(a -> a.values))
+            StepFunction.CODEC.fieldOf("value").forGetter(a -> a.values))
         .apply(inst, CatalyzingAffix::new));
 
-    protected final Map<LootRarity, StepFunction> values;
+    protected final StepFunction value;
 
     public CatalyzingAffix(Map<LootRarity, StepFunction> values) {
         super(AffixType.ABILITY);

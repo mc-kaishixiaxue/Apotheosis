@@ -15,12 +15,13 @@ import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
-import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.attributeslib.AttributesLib;
 import dev.shadowsoffire.attributeslib.api.IFormattableAttribute;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -30,7 +31,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * Helper class for affixes that modify attributes, as the apply method is the same for most of those.
@@ -39,13 +39,13 @@ public class AttributeAffix extends Affix {
 
     public static final Codec<AttributeAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            ForgeRegistries.ATTRIBUTES.getCodec().fieldOf("attribute").forGetter(a -> a.attribute),
+            BuiltInRegistries.ATTRIBUTE.holderByNameCodec().fieldOf("attribute").forGetter(a -> a.attribute),
             PlaceboCodecs.enumCodec(Operation.class).fieldOf("operation").forGetter(a -> a.operation),
-            GemBonus.VALUES_CODEC.fieldOf("values").forGetter(a -> a.values),
+            LootRarity.mapCodec(StepFunction.CODEC).fieldOf("values").forGetter(a -> a.values),
             LootCategory.SET_CODEC.fieldOf("types").forGetter(a -> a.types))
         .apply(inst, AttributeAffix::new));
 
-    protected final Attribute attribute;
+    protected final Holder<Attribute> attribute;
     protected final Operation operation;
     protected final Map<LootRarity, StepFunction> values;
     protected final Set<LootCategory> types;

@@ -30,6 +30,7 @@ import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingBlock;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingMenu;
+import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingRecipe;
 import dev.shadowsoffire.apotheosis.util.TooltipItem;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntityType.TickSide;
 import dev.shadowsoffire.placebo.registry.DeferredHelper;
@@ -38,6 +39,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -70,6 +72,8 @@ public class Apoth {
         public static final DataComponentType<ItemAffixes> AFFIXES = R.component("affixes", b -> b.persistent(ItemAffixes.CODEC).networkSynchronized(ItemAffixes.STREAM_CODEC));
 
         public static final DataComponentType<DynamicHolder<LootRarity>> RARITY = R.component("rarity", b -> b.persistent(RarityRegistry.INSTANCE.holderCodec()).networkSynchronized(RarityRegistry.INSTANCE.holderStreamCodec()));
+
+        public static final DataComponentType<Component> AFFIX_NAME = R.component("affix_name", b -> b.persistent(ComponentSerialization.CODEC).networkSynchronized(ComponentSerialization.TRUSTED_STREAM_CODEC));
 
         public static final DataComponentType<Integer> SOCKETS = R.component("sockets", b -> b.persistent(Codec.intRange(0, 16)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
@@ -213,6 +217,7 @@ public class Apoth {
     public static final class RecipeTypes {
         public static final RecipeType<SalvagingRecipe> SALVAGING = R.recipe("salvaging");
         public static final RecipeType<ReforgingRecipe> REFORGING = R.recipe("reforging");
+        public static final RecipeType<GemCuttingRecipe> GEM_CUTTING = R.recipe("gem_cutting");
 
         private static void bootstrap() {}
     }

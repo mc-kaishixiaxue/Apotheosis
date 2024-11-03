@@ -3,66 +3,64 @@ package dev.shadowsoffire.apotheosis.socket.gem.cutting;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import dev.shadowsoffire.apotheosis.Apoth.Blocks;
-import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.Apoth.Menus;
 import dev.shadowsoffire.apotheosis.advancements.AdvancementTriggers;
-import dev.shadowsoffire.apotheosis.affix.AffixHelper;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
-import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
-import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingRecipe.CuttingRecipeInput;
 import dev.shadowsoffire.placebo.cap.InternalItemHandler;
 import dev.shadowsoffire.placebo.menu.PlaceboContainerMenu;
-import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 public class GemCuttingMenu extends PlaceboContainerMenu {
 
-    public static final int NEXT_MAT_COST = 1;
-    public static final int STD_MAT_COST = 3;
-    public static final int PREV_MAT_COST = 9;
+    public static final int BASE_SLOT = 0;
+    public static final int TOP_SLOT = 1;
+    public static final int LEFT_SLOT = 2;
+    public static final int RIGHT_SLOT = 3;
 
+    @Deprecated // TODO: Remove, replace with proper recipe manager calls
     public static final List<GemCuttingRecipe> RECIPES = new ArrayList<>();
-
-    static {
-        RECIPES.add(new RarityUpgrade());
-    }
 
     protected final Player player;
     protected final ContainerLevelAccess access;
     protected final InternalItemHandler inv = new InternalItemHandler(4){
         @Override
         public int getSlotLimit(int slot) {
-            return slot == 0 ? 1 : super.getSlotLimit(slot);
+            return slot == BASE_SLOT ? 1 : super.getSlotLimit(slot);
         };
     };
+    protected final CuttingRecipeInput rInput = new CuttingRecipeInput(this.inv);
+    @Nullable
+    Runnable slotChangedCallback = null;
 
     public GemCuttingMenu(int id, Inventory playerInv) {
         this(id, playerInv, ContainerLevelAccess.NULL);
     }
 
     public GemCuttingMenu(int id, Inventory playerInv, ContainerLevelAccess access) {
-        super(Menus.GEM_CUTTING.get(), id, playerInv);
+        super(Menus.GEM_CUTTING, id, playerInv);
         this.player = playerInv.player;
         this.access = access;
-        this.addSlot(new UpdatingSlot(this.inv, 0, 62, 45, stack -> GemItem.getGem(stack).isBound()));
-        this.addSlot(new UpdatingSlot(this.inv, 1, 90, 64, stack -> stack.getItem() == Items.GEM_DUST.get()));
-        this.addSlot(new UpdatingSlot(this.inv, 2, 33, 64, this::matchesMainGem));
-        this.addSlot(new UpdatingSlot(this.inv, 3, 62, 12, this::isValidMaterial));
+        this.addSlot(new UpdatingSlot(this.inv, BASE_SLOT, 62, 45, this::isValidBase));
+        this.addSlot(new UpdatingSlot(this.inv, TOP_SLOT, 62, 12, this::isValidTop));
+        this.addSlot(new UpdatingSlot(this.inv, LEFT_SLOT, 33, 64, this::isValidLeft));
+        this.addSlot(new UpdatingSlot(this.inv, RIGHT_SLOT, 90, 64, this::isValidRight));
 
         this.addPlayerSlots(playerInv, 8, 98);
-        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && this.inv.getStackInSlot(0).isEmpty() && GemCuttingMenu.isValidMainGem(stack), 0, 1);
-        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && stack.getItem() == Items.GEM_DUST.get(), 1, 2);
-        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && this.matchesMainGem(stack), 2, 3);
-        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && this.isValidMaterial(stack), 3, 4);
+        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && isValidBase(stack), BASE_SLOT, TOP_SLOT);
+        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && isValidTop(stack), TOP_SLOT, LEFT_SLOT);
+        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && isValidLeft(stack), LEFT_SLOT, RIGHT_SLOT);
+        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && isValidRight(stack), RIGHT_SLOT, RIGHT_SLOT + 1);
         this.mover.registerRule((stack, slot) -> slot < this.playerInvStart, this.playerInvStart, this.hotbarStart + 9);
         this.registerInvShuffleRules();
     }
@@ -70,17 +68,13 @@ public class GemCuttingMenu extends PlaceboContainerMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (id == 0) {
-            ItemStack gem = this.inv.getStackInSlot(0);
-            ItemStack left = this.inv.getStackInSlot(1);
-            ItemStack bot = this.inv.getStackInSlot(2);
-            ItemStack right = this.inv.getStackInSlot(3);
             for (GemCuttingRecipe r : RECIPES) {
-                if (r.matches(gem, left, bot, right)) {
-                    ItemStack out = r.getResult(gem, left, bot, right);
-                    r.decrementInputs(gem, left, bot, right);
+                if (r.matches(this.rInput, player.level())) {
+                    ItemStack out = r.assemble(this.rInput, player.level().registryAccess());
+                    r.decrementInputs(this.rInput, player.level());
                     this.inv.setStackInSlot(0, out);
                     this.level.playSound(player, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.BLOCKS, 1, 1.5F + 0.35F * (1 - 2 * this.level.random.nextFloat()));
-                    AdvancementTriggers.GEM_CUT.trigger((ServerPlayer) player, out, AffixHelper.getRarity(out).getId());
+                    AdvancementTriggers.GEM_CUT.trigger((ServerPlayer) player, out);
                     return true;
                 }
             }
@@ -88,112 +82,56 @@ public class GemCuttingMenu extends PlaceboContainerMenu {
         return false;
     }
 
-    public static boolean isValidMainGem(ItemStack stack) {
-        GemInstance inst = GemInstance.unsocketed(stack);
-        return inst.isValidUnsocketed() && !inst.isMaxRarity();
+    public boolean isValidBase(ItemStack stack) {
+        for (GemCuttingRecipe r : RECIPES) {
+            if (r.isValidBaseItem(rInput, stack)) return true;
+        }
+        return false;
     }
 
-    protected boolean isValidMaterial(ItemStack stack) {
-        var mainGem = GemInstance.unsocketed(this.inv.getStackInSlot(0));
-        if (!mainGem.isValidUnsocketed()) return false;
-        DynamicHolder<LootRarity> rarity = RarityRegistry.getMaterialRarity(stack.getItem());
-        return rarity.isBound() && Math.abs(rarity.get().ordinal() - mainGem.rarity().get().ordinal()) <= 1;
+    public boolean isValidTop(ItemStack stack) {
+        for (GemCuttingRecipe r : RECIPES) {
+            if (r.isValidTopItem(rInput, stack)) return true;
+        }
+        return false;
     }
 
-    protected boolean matchesMainGem(ItemStack stack) {
-        var gem = GemInstance.unsocketed(stack);
-        var mainGem = GemInstance.unsocketed(this.inv.getStackInSlot(0));
-        return gem.isValidUnsocketed() && mainGem.isValidUnsocketed() && gem.gem() == mainGem.gem() && gem.rarity() == mainGem.rarity();
+    public boolean isValidLeft(ItemStack stack) {
+        for (GemCuttingRecipe r : RECIPES) {
+            if (r.isValidLeftItem(rInput, stack)) return true;
+        }
+        return false;
+    }
+
+    public boolean isValidRight(ItemStack stack) {
+        for (GemCuttingRecipe r : RECIPES) {
+            if (r.isValidRightItem(rInput, stack)) return true;
+        }
+        return false;
     }
 
     @Override
     public boolean stillValid(Player pPlayer) {
-        return this.access.evaluate((level, pos) -> level.getBlockState(pos).getBlock() == Blocks.GEM_CUTTING_TABLE.get(), true);
+        return this.access.evaluate((level, pos) -> level.getBlockState(pos).is(Blocks.GEM_CUTTING_TABLE), true);
     }
 
     @Override
     public void removed(Player pPlayer) {
         super.removed(pPlayer);
         this.access.execute((level, pos) -> {
-            this.clearContainer(pPlayer, new RecipeWrapper(this.inv));
+            this.clearContainer(pPlayer, this.inv);
         });
     }
 
-    public static interface GemCuttingRecipe {
-
-        /**
-         * Checks if this recipe matches the inputs
-         *
-         * @param gem   The gem in the primary slot.
-         * @param left  The left input (Gem Dust).
-         * @param bot   The bottom input (Second Gem).
-         * @param right The right input (Rarity Materials).
-         * @return If this recipe is valid for the inputs.
-         */
-        boolean matches(ItemStack gem, ItemStack left, ItemStack bot, ItemStack right);
-
-        /**
-         * Generates the result of this recipe.<br>
-         * Calling this method when {@link #matches} return false is undefined behavior.
-         *
-         * @param gem   The gem in the primary slot.
-         * @param left  The left input (Gem Dust).
-         * @param bot   The bottom input (Second Gem).
-         * @param right The right input (Rarity Materials).
-         * @return A new copy of the output itemstack.
-         */
-        ItemStack getResult(ItemStack gem, ItemStack left, ItemStack bot, ItemStack right);
-
-        /**
-         * Reduces the count of the inputs, based on how many items should be consumed.<br>
-         * Calling this method when {@link #matches} return false is undefined behavior.
-         *
-         * @param gem   The gem in the primary slot.
-         * @param left  The left input (Gem Dust).
-         * @param bot   The bottom input (Second Gem).
-         * @param right The right input (Rarity Materials).
-         */
-        void decrementInputs(ItemStack gem, ItemStack left, ItemStack bot, ItemStack right);
-    }
-
-    public static class RarityUpgrade implements GemCuttingRecipe {
-
-        @Override
-        public boolean matches(ItemStack gem, ItemStack left, ItemStack bot, ItemStack right) {
-            GemInstance g = GemInstance.unsocketed(gem);
-            GemInstance g2 = GemInstance.unsocketed(bot);
-
-            if (!g.isValidUnsocketed() || !g2.isValidUnsocketed() || g.gem() != g2.gem() || g.rarity() != g2.rarity()) return false;
-            if (g.isMaxRarity()) return false;
-            if (left.getItem() != Items.GEM_DUST.get() || left.getCount() < getDustCost(g.rarity().get())) return false;
-            if (!RarityRegistry.isMaterial(right.getItem())) return false;
-
-            DynamicHolder<LootRarity> matRarity = RarityRegistry.getMaterialRarity(right.getItem());
-            DynamicHolder<LootRarity> gemRarity = g.rarity();
-            if (matRarity == gemRarity) return right.getCount() >= STD_MAT_COST;
-            else if (matRarity == RarityRegistry.next(gemRarity)) return right.getCount() >= NEXT_MAT_COST;
-            else return matRarity == RarityRegistry.prev(gemRarity) && right.getCount() >= PREV_MAT_COST;
-        }
-
-        @Override
-        public ItemStack getResult(ItemStack gem, ItemStack left, ItemStack bot, ItemStack right) {
-            ItemStack out = gem.copy();
-            AffixHelper.setRarity(out, RarityRegistry.next(AffixHelper.getRarity(out)).get());
-            return out;
-        }
-
-        @Override
-        public void decrementInputs(ItemStack gem, ItemStack left, ItemStack bot, ItemStack right) {
-            DynamicHolder<LootRarity> matRarity = RarityRegistry.getMaterialRarity(right.getItem());
-            DynamicHolder<LootRarity> gemRarity = GemInstance.unsocketed(gem).rarity();
-            gem.shrink(1);
-            left.shrink(getDustCost(gemRarity.get()));
-            bot.shrink(1);
-            right.shrink(matRarity == gemRarity ? STD_MAT_COST : matRarity == RarityRegistry.next(gemRarity) ? NEXT_MAT_COST : PREV_MAT_COST);
+    @Override
+    public void slotsChanged(Container container) {
+        super.slotsChanged(container);
+        if (this.slotChangedCallback != null) {
+            this.slotChangedCallback.run();
         }
     }
 
-    public static int getDustCost(LootRarity gemRarity) {
-        return 1 + gemRarity.ordinal() * 2;
+    public static int getDustCost(Purity purity) {
+        return 1 + purity.ordinal() * 2;
     }
 }

@@ -12,6 +12,7 @@ import dev.shadowsoffire.apotheosis.Apoth.Blocks;
 import dev.shadowsoffire.apotheosis.Apotheosis.ApotheosisConstruction;
 import dev.shadowsoffire.apotheosis.Apotheosis.ApotheosisReloadEvent;
 import dev.shadowsoffire.apotheosis.affix.AffixRegistry;
+import dev.shadowsoffire.apotheosis.affix.UnnamingRecipe;
 import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingRecipe;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe;
 import dev.shadowsoffire.apotheosis.boss.BossEvents;
@@ -34,7 +35,6 @@ import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.socket.AddSocketsRecipe;
 import dev.shadowsoffire.apotheosis.socket.SocketingRecipe;
-import dev.shadowsoffire.apotheosis.socket.UnnamingRecipe;
 import dev.shadowsoffire.apotheosis.socket.WithdrawalRecipe;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
@@ -58,7 +58,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -67,6 +66,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -89,9 +89,9 @@ public class AdventureModule {
     @SubscribeEvent
     public void init(FMLCommonSetupEvent e) {
         this.reload(null);
-        MinecraftForge.EVENT_BUS.register(new AdventureEvents());
-        MinecraftForge.EVENT_BUS.register(new BossEvents());
-        MinecraftForge.EVENT_BUS.addListener(this::reload);
+        NeoForge.EVENT_BUS.register(new AdventureEvents());
+        NeoForge.EVENT_BUS.register(new BossEvents());
+        NeoForge.EVENT_BUS.addListener(this::reload);
         RarityRegistry.INSTANCE.registerToBus();
         AffixRegistry.INSTANCE.registerToBus();
         GemRegistry.INSTANCE.registerToBus();
@@ -206,8 +206,8 @@ public class AdventureModule {
 
         public static final int TEMPLATE = 0, BASE = 1, ADDITION = 2;
 
-        public ApothSmithingRecipe(ResourceLocation pId, Ingredient pBase, Ingredient pAddition, ItemStack pResult) {
-            super(pId, Ingredient.EMPTY, pBase, pAddition, pResult);
+        public ApothSmithingRecipe(Ingredient pBase, Ingredient pAddition, ItemStack pResult) {
+            super(Ingredient.EMPTY, pBase, pAddition, pResult);
         }
 
         @Override

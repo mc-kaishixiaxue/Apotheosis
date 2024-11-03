@@ -1,6 +1,6 @@
 package dev.shadowsoffire.apotheosis.client;
 
-import dev.shadowsoffire.apotheosis.util.DrawsOnLeft;
+import dev.shadowsoffire.apothic_enchanting.client.DrawsOnLeft;
 import dev.shadowsoffire.placebo.screen.PlaceboContainerScreen;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;

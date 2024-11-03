@@ -15,8 +15,8 @@ import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.AffixRegistry;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootRarity.LootRule;
+import dev.shadowsoffire.apotheosis.tiers.TieredDynamicRegistry;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -25,14 +25,9 @@ import net.minecraft.world.item.Items;
 /**
  * Handles loading the configurable portion of rarities.
  */
-public class RarityRegistry extends WeightedDynamicRegistry<LootRarity> {
+public class RarityRegistry extends TieredDynamicRegistry<LootRarity> {
 
     public static final RarityRegistry INSTANCE = new RarityRegistry();
-
-    /**
-     * Sorted list of all rarities.
-     */
-    protected List<DynamicHolder<LootRarity>> ordered = new ArrayList<>();
 
     protected BiMap<Item, DynamicHolder<LootRarity>> materialMap = HashBiMap.create();
 
@@ -62,7 +57,6 @@ public class RarityRegistry extends WeightedDynamicRegistry<LootRarity> {
     @Override
     protected void beginReload() {
         super.beginReload();
-        this.ordered = new ArrayList<>();
         this.materialMap = HashBiMap.create();
     }
 
@@ -87,8 +81,6 @@ public class RarityRegistry extends WeightedDynamicRegistry<LootRarity> {
         super.validateItem(key, item);
         Preconditions.checkNotNull(item.getColor());
         Preconditions.checkArgument(item.getMaterial() != null && item.getMaterial() != Items.AIR);
-        Preconditions.checkArgument(item.getWeight() >= 0, "A rarity may not have negative weight!");
-        Preconditions.checkArgument(item.getQuality() >= 0, "A rarity may not have negative quality!");
         Preconditions.checkArgument(!item.getRules().isEmpty(), "A rarity may not have no rules!");
     }
 

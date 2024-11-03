@@ -15,11 +15,11 @@ public class GameStagesCompat {
      * Checks if the player has any of the stages listed in the second param.
      *
      * @param player The player in question.
-     * @param stages The stages of the item being checked. Null means "all stages", empty means "never available".
+     * @param stages The stages of the item being checked. An empty set means always available.
      * @return If the player has any of the passed stages.
      */
     public static boolean hasStage(Player player, Set<String> stages) {
-        return !AdventureModule.STAGES_LOADED || stages == null || Inner.hasStage(player, stages);
+        return !AdventureModule.STAGES_LOADED || stages.isEmpty() || Inner.hasStage(player, stages);
     }
 
     /**

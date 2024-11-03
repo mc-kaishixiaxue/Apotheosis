@@ -5,7 +5,6 @@ import java.util.Optional;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.json.NBTAdapter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
@@ -13,6 +12,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 
+// TODO: Remove offsets. Maybe setup a spawn range and use Gateways' inward spiral?
 public class SupportingEntity {
 
     public static Codec<SupportingEntity> CODEC = RecordCodecBuilder.create(inst -> inst

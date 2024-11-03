@@ -12,10 +12,13 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.ILuckyWeighted;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.random.WeightedEntry;
+import net.minecraft.util.random.WeightedEntry.Wrapper;
 
 public record TieredWeights(Map<WorldTier, Weight> weights) {
 
@@ -60,5 +63,24 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
 
     private static DataResult<TieredWeights> validate(TieredWeights weights) {
         return weights.weights.size() == WorldTier.APOTHEOSIS.ordinal() ? DataResult.success(weights) : DataResult.error(() -> "Weights must be provided for each WorldTier.");
+    }
+
+    public static interface Weighted {
+        TieredWeights weights();
+
+        /**
+         * Helper to wrap this object as a WeightedEntry.
+         */
+        @SuppressWarnings("unchecked")
+        default <T extends Weighted> Wrapper<T> wrap(WorldTier tier, float luck) {
+            return wrap((T) this, tier, luck);
+        }
+
+        /**
+         * Static (and more generic-safe) variant of {@link ILuckyWeighted#wrap(float)}
+         */
+        static <T extends Weighted> Wrapper<T> wrap(T item, WorldTier tier, float luck) {
+            return WeightedEntry.wrap(item, Math.max(0, item.weights().getWeight(tier, luck)));
+        }
     }
 }

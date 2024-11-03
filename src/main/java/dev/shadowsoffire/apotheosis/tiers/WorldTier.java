@@ -9,6 +9,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * World Tiers for Apothic content, each increasing the quality of loot received and the overall strength of the monsters in the world.
@@ -36,5 +37,14 @@ public enum WorldTier implements StringRepresentable {
     @Override
     public String getSerializedName() {
         return this.name;
+    }
+
+    // TODO: Implement via attachment
+    public static WorldTier getTier(Player player) {
+        return WorldTier.HAVEN;
+    }
+
+    public static void setTier(Player player, WorldTier tier) {
+        // TODO: implement
     }
 }

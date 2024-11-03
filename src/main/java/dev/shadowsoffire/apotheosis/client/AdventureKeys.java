@@ -8,12 +8,12 @@ import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.net.RadialStateChangeMessage;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.client.settings.KeyModifier;
-import net.minecraftforge.event.TickEvent.ClientTickEvent;
-import net.minecraftforge.event.TickEvent.Phase;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.settings.KeyConflictContext;
+import net.neoforged.neoforge.client.settings.KeyModifier;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class AdventureKeys {
 
@@ -26,13 +26,12 @@ public class AdventureKeys {
     }
 
     @SubscribeEvent
-    public static void handleKeys(ClientTickEvent e) {
-        if (e.phase == Phase.START) return;
+    public static void handleKeys(ClientTickEvent.Post e) {
         if (Minecraft.getInstance().player == null) return;
 
         while (TOGGLE_RADIAL.consumeClick() && TOGGLE_RADIAL.isConflictContextAndModifierActive()) {
             if (Minecraft.getInstance().screen == null) {
-                Apotheosis.CHANNEL.sendToServer(new RadialStateChangeMessage());
+                PacketDistributor.sendToServer(RadialStateChangeMessage.INSTANCE);
             }
         }
     }

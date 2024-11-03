@@ -4,12 +4,12 @@ import java.util.Optional;
 
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apoth;
-import dev.shadowsoffire.apotheosis.compat.GameStagesCompat.IStaged;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -51,7 +51,7 @@ public class BossSpawnerBlock extends Block implements TickingEntityBlock {
         protected int ticks = 0;
 
         public BossSpawnerTile(BlockPos pos, BlockState state) {
-            super(Apoth.Tiles.BOSS_SPAWNER.get(), pos, state);
+            super(Apoth.Tiles.BOSS_SPAWNER, pos, state);
         }
 
         @Override
@@ -61,12 +61,12 @@ public class BossSpawnerBlock extends Block implements TickingEntityBlock {
                 opt.ifPresent(player -> {
                     this.level.setBlockAndUpdate(this.worldPosition, Blocks.AIR.defaultBlockState());
                     BlockPos pos = this.worldPosition;
-                    ApothBoss bossItem = !this.item.isBound() ? BossRegistry.INSTANCE.getRandomItem(this.level.getRandom(), player.getLuck(), IDimensional.matches(this.level), IStaged.matches(player)) : this.item.get();
+                    ApothBoss bossItem = !this.item.isBound() ? BossRegistry.INSTANCE.getRandomItem(this.level.getRandom(), player) : this.item.get();
                     if (bossItem == null) {
                         AdventureModule.LOGGER.error("A boss spawner attempted to spawn a boss at {} in {}, but no bosses were available!", this.getBlockPos(), this.level.dimension().location());
                         return;
                     }
-                    Mob entity = bossItem.createBoss((ServerLevel) this.level, pos, this.level.getRandom(), player.getLuck());
+                    Mob entity = bossItem.createBoss((ServerLevel) this.level, pos, this.level.getRandom(), WorldTier.getTier(player), player.getLuck());
                     entity.setTarget(player);
                     entity.setPersistenceRequired();
                     ((ServerLevel) this.level).addFreshEntityWithPassengers(entity);
@@ -79,15 +79,19 @@ public class BossSpawnerBlock extends Block implements TickingEntityBlock {
         }
 
         @Override
-        public void saveAdditional(CompoundTag tag) {
-            if (this.item != null) tag.putString("boss_item", this.item.getId().toString());
-            super.saveAdditional(tag);
+        protected void saveAdditional(CompoundTag tag, Provider registries) {
+            if (this.item != null) {
+                tag.putString("boss_item", this.item.getId().toString());
+            }
+            super.saveAdditional(tag, registries);
         }
 
         @Override
-        public void load(CompoundTag tag) {
-            this.item = BossRegistry.INSTANCE.holder(new ResourceLocation(tag.getString("boss_item")));
-            super.load(tag);
+        protected void loadAdditional(CompoundTag tag, Provider registries) {
+            if (tag.contains("boss_item")) {
+                this.item = BossRegistry.INSTANCE.holder(ResourceLocation.tryParse(tag.getString("boss_item")));
+            }
+            super.loadAdditional(tag, registries);
         }
 
     }

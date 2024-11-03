@@ -10,16 +10,13 @@ import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.AdventureModule;
-import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.boss.MinibossRegistry.IEntityMatch;
 import dev.shadowsoffire.apotheosis.client.BossSpawnMessage;
-import dev.shadowsoffire.apotheosis.compat.GameStagesCompat.IStaged;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
-import dev.shadowsoffire.placebo.network.PacketDistro;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
@@ -42,25 +39,24 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.TickEvent.LevelTickEvent;
-import net.minecraftforge.event.TickEvent.Phase;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.MobSpawnEvent.FinalizeSpawn;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.eventbus.api.Event.Result;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class BossEvents {
 
     public Object2IntMap<ResourceLocation> bossCooldowns = new Object2IntOpenHashMap<>();
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void naturalBosses(FinalizeSpawn e) {
+    public void naturalBosses(FinalizeSpawnEvent e) {
         if (e.getSpawnType() == MobSpawnType.NATURAL || e.getSpawnType() == MobSpawnType.CHUNK_GENERATION) {
             LivingEntity entity = e.getEntity();
             RandomSource rand = e.getLevel().getRandom();
-            if (this.bossCooldowns.getInt(entity.level().dimension().location()) <= 0 && !e.getLevel().isClientSide() && entity instanceof Monster && e.getResult() != Result.DENY) {
+            if (this.bossCooldowns.getInt(entity.level().dimension().location()) <= 0 && !e.getLevel().isClientSide() && entity instanceof Monster && !e.isCanceled() && !e.isSpawnCancelled()) {
                 ServerLevelAccessor sLevel = e.getLevel();
                 ResourceLocation dimId = sLevel.getLevel().dimension().location();
                 Pair<Float, BossSpawnRules> rules = AdventureConfig.BOSS_SPAWN_RULES.get(dimId);
@@ -68,18 +64,19 @@ public class BossEvents {
                 if (rand.nextFloat() <= rules.getLeft() && rules.getRight().test(sLevel, BlockPos.containing(e.getX(), e.getY(), e.getZ()))) {
                     Player player = sLevel.getNearestPlayer(e.getX(), e.getY(), e.getZ(), -1, false);
                     if (player == null) return; // Spawns require player context
-                    ApothBoss item = BossRegistry.INSTANCE.getRandomItem(rand, player.getLuck(), IDimensional.matches(sLevel.getLevel()), IStaged.matches(player));
+                    ApothBoss item = BossRegistry.INSTANCE.getRandomItem(rand, player);
                     if (item == null) {
                         AdventureModule.LOGGER.error("Attempted to spawn a boss in dimension {} using configured boss spawn rule {}/{} but no bosses were made available.", dimId, rules.getRight(), rules.getLeft());
                         return;
                     }
-                    Mob boss = item.createBoss(sLevel, BlockPos.containing(e.getX() - 0.5, e.getY(), e.getZ() - 0.5), rand, player.getLuck());
+                    Mob boss = item.createBoss(sLevel, BlockPos.containing(e.getX() - 0.5, e.getY(), e.getZ() - 0.5), rand, WorldTier.getTier(player), player.getLuck());
                     if (AdventureConfig.bossAutoAggro && !player.isCreative()) {
                         boss.setTarget(player);
                     }
                     if (canSpawn(sLevel, boss, player.distanceToSqr(boss))) {
                         sLevel.addFreshEntityWithPassengers(boss);
-                        e.setResult(Result.DENY);
+                        e.setCanceled(true);
+                        e.setSpawnCancelled(true);
                         AdventureModule.debugLog(boss.blockPosition(), "Surface Boss - " + boss.getName().getString());
                         Component name = this.getName(boss);
                         if (name == null || name.getStyle().getColor() == null) AdventureModule.LOGGER.warn("A Boss {} ({}) has spawned without a custom name!", boss.getName().getString(), EntityType.getKey(boss.getType()));
@@ -89,7 +86,7 @@ public class BossEvents {
                                 if (p.distanceToSqr(tPos) <= AdventureConfig.bossAnnounceRange * AdventureConfig.bossAnnounceRange) {
                                     ((ServerPlayer) p).connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("info.apotheosis.boss_spawn", name, (int) boss.getX(), (int) boss.getY())));
                                     TextColor color = name.getStyle().getColor();
-                                    PacketDistro.sendTo(Apotheosis.CHANNEL, new BossSpawnMessage(boss.blockPosition(), color == null ? 0xFFFFFF : color.getValue()), player);
+                                    PacketDistributor.sendToPlayer(player, new BossSpawnMessage(boss.blockPosition(), color == null ? 0xFFFFFF : color.getValue()));
                                 }
                             });
                         }
@@ -106,14 +103,14 @@ public class BossEvents {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void minibosses(FinalizeSpawn e) {
+    public void minibosses(FinalizeSpawnEvent e) {
         LivingEntity entity = e.getEntity();
         RandomSource rand = e.getLevel().getRandom();
-        if (!e.getLevel().isClientSide() && entity instanceof Mob mob && e.getResult() != Result.DENY) {
+        if (!e.getLevel().isClientSide() && entity instanceof Mob mob && !e.isCanceled() && !e.isSpawnCancelled()) {
             ServerLevelAccessor sLevel = e.getLevel();
             Player player = sLevel.getNearestPlayer(e.getX(), e.getY(), e.getZ(), -1, false);
             if (player == null) return; // Spawns require player context
-            ApothMiniboss item = MinibossRegistry.INSTANCE.getRandomItem(rand, player.getLuck(), IDimensional.matches(sLevel.getLevel()), IStaged.matches(player), IEntityMatch.matches(entity));
+            ApothMiniboss item = MinibossRegistry.INSTANCE.getRandomItem(rand, player);
             if (item != null && !item.isExcluded(mob, sLevel, e.getSpawnType()) && sLevel.getRandom().nextFloat() <= item.getChance()) {
                 mob.getPersistentData().putString("apoth.miniboss", MinibossRegistry.INSTANCE.getKey(item).toString());
                 mob.getPersistentData().putFloat("apoth.miniboss.luck", player.getLuck());
@@ -127,7 +124,7 @@ public class BossEvents {
         if (!e.getLevel().isClientSide && e.getEntity() instanceof Mob mob) {
             String key = mob.getPersistentData().getString("apoth.miniboss");
             if (key != null) {
-                ApothMiniboss item = MinibossRegistry.INSTANCE.getValue(new ResourceLocation(key));
+                ApothMiniboss item = MinibossRegistry.INSTANCE.getValue(ResourceLocation.tryParse(key));
                 if (item != null) {
                     item.transformMiniboss((ServerLevel) e.getLevel(), mob, e.getLevel().getRandom(), mob.getPersistentData().getFloat("apoth.miniboss.luck"));
                 }
@@ -136,21 +133,19 @@ public class BossEvents {
     }
 
     @SubscribeEvent
-    public void tick(LevelTickEvent e) {
-        if (e.phase == Phase.END) {
-            this.bossCooldowns.computeIntIfPresent(e.level.dimension().location(), (key, value) -> Math.max(0, value - 1));
-        }
+    public void tick(LevelTickEvent.Post e) {
+        this.bossCooldowns.computeIntIfPresent(e.getLevel().dimension().location(), (key, value) -> Math.max(0, value - 1));
     }
 
     @SubscribeEvent
     public void load(ServerStartedEvent e) {
-        e.getServer().getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(this::loadTimes, TimerPersistData::new, "apotheosis_boss_times");
+        e.getServer().getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(new SavedData.Factory<>(TimerPersistData::new, this::loadTimes, null), "apotheosis_boss_times");
     }
 
     private class TimerPersistData extends SavedData {
 
         @Override
-        public CompoundTag save(CompoundTag tag) {
+        public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
             for (Object2IntMap.Entry<ResourceLocation> e : BossEvents.this.bossCooldowns.object2IntEntrySet()) {
                 tag.putInt(e.getKey().toString(), e.getIntValue());
             }
@@ -159,12 +154,14 @@ public class BossEvents {
 
     }
 
-    private TimerPersistData loadTimes(CompoundTag tag) {
+    private TimerPersistData loadTimes(CompoundTag tag, HolderLookup.Provider registries) {
         this.bossCooldowns.clear();
         for (String s : tag.getAllKeys()) {
-            ResourceLocation id = new ResourceLocation(s);
-            int val = tag.getInt(s);
-            this.bossCooldowns.put(id, val);
+            ResourceLocation id = ResourceLocation.tryParse(s);
+            if (id != null) {
+                int val = tag.getInt(s);
+                this.bossCooldowns.put(id, val);
+            }
         }
         return new TimerPersistData();
     }

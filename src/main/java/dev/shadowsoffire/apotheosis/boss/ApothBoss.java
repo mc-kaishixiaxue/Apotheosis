@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -19,22 +18,22 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
-import dev.shadowsoffire.apotheosis.compat.GameStagesCompat.IStaged;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.loot.RarityClamp;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.tiers.Constraints;
+import dev.shadowsoffire.apotheosis.tiers.Constraints.Constrained;
+import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
+import dev.shadowsoffire.apotheosis.tiers.TieredWeights.Weighted;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apotheosis.util.NameHelper;
 import dev.shadowsoffire.apotheosis.util.SupportingEntity;
 import dev.shadowsoffire.apothic_enchanting.asm.EnchHooks;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
-import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.json.ChancedEffectInstance;
 import dev.shadowsoffire.placebo.json.NBTAdapter;
 import dev.shadowsoffire.placebo.json.RandomAttributeModifier;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.ILuckyWeighted;
 import dev.shadowsoffire.placebo.systems.gear.GearSet;
 import dev.shadowsoffire.placebo.systems.gear.GearSet.SetPredicate;
 import dev.shadowsoffire.placebo.systems.gear.GearSetRegistry;
@@ -65,7 +64,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public final class ApothBoss implements CodecProvider<ApothBoss>, ILuckyWeighted, IDimensional, RarityClamp, IStaged {
+public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, Weighted {
 
     public static final Codec<AABB> AABB_CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
@@ -75,73 +74,46 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, ILuckyWeighted
 
     public static final Codec<ApothBoss> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("weight").forGetter(ILuckyWeighted::getWeight),
-            Codec.floatRange(0, Float.MAX_VALUE).optionalFieldOf("quality", 0F).forGetter(ILuckyWeighted::getQuality),
-            BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(a -> a.entity),
-            AABB_CODEC.fieldOf("size").forGetter(a -> a.size),
+            TieredWeights.CODEC.fieldOf("weights").forGetter(Weighted::weights),
+            Constraints.CODEC.optionalFieldOf("constraints", Constraints.EMPTY).forGetter(Constrained::constraints),
+            BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(ApothBoss::getEntity),
+            AABB_CODEC.fieldOf("size").forGetter(ApothBoss::getSize),
             LootRarity.mapCodec(BossStats.CODEC).fieldOf("stats").forGetter(a -> a.stats),
-            PlaceboCodecs.setOf(Codec.STRING).optionalFieldOf("stages").forGetter(a -> Optional.ofNullable(a.stages)),
             SetPredicate.CODEC.listOf().fieldOf("valid_gear_sets").forGetter(a -> a.gearSets),
-            NBTAdapter.EITHER_CODEC.optionalFieldOf("nbt").forGetter(a -> Optional.ofNullable(a.nbt)),
-            PlaceboCodecs.setOf(ResourceLocation.CODEC).fieldOf("dimensions").forGetter(a -> a.dimensions),
-            LootRarity.CODEC.fieldOf("min_rarity").forGetter(a -> a.minRarity),
-            LootRarity.CODEC.fieldOf("max_rarity").forGetter(a -> a.maxRarity),
-            SupportingEntity.CODEC.optionalFieldOf("mount").forGetter(a -> Optional.ofNullable(a.mount)))
+            NBTAdapter.EITHER_CODEC.optionalFieldOf("nbt").forGetter(a -> a.nbt),
+            SupportingEntity.CODEC.optionalFieldOf("mount").forGetter(a -> a.mount))
         .apply(inst, ApothBoss::new));
 
     public static final Predicate<Goal> IS_VILLAGER_ATTACK = a -> a instanceof NearestAttackableTargetGoal && ((NearestAttackableTargetGoal<?>) a).targetType == Villager.class;
 
-    protected final int weight;
-    protected final float quality;
+    protected final TieredWeights weights;
+    protected final Constraints constraints;
     protected final EntityType<?> entity;
     protected final AABB size;
     protected final Map<LootRarity, BossStats> stats;
-    @Nullable
-    protected final Set<String> stages;
     protected final List<SetPredicate> gearSets;
-    @Nullable
-    protected final CompoundTag nbt;
-    protected final Set<ResourceLocation> dimensions;
-    protected final LootRarity minRarity;
-    protected final LootRarity maxRarity;
-    @Nullable
-    protected final SupportingEntity mount;
+    protected final Optional<CompoundTag> nbt;
+    protected final Optional<SupportingEntity> mount;
 
-    public ApothBoss(int weight, float quality, EntityType<?> entity, AABB size, Map<LootRarity, BossStats> stats, Optional<Set<String>> stages, List<SetPredicate> armorSets, Optional<CompoundTag> nbt, Set<ResourceLocation> dimensions,
-        LootRarity minRarity, LootRarity maxRarity, Optional<SupportingEntity> mount) {
-        this.weight = weight;
-        this.quality = quality;
+    public ApothBoss(TieredWeights weights, Constraints constraints, EntityType<?> entity, AABB size, Map<LootRarity, BossStats> stats, List<SetPredicate> armorSets, Optional<CompoundTag> nbt, Optional<SupportingEntity> mount) {
+        this.weights = weights;
+        this.constraints = constraints;
         this.entity = entity;
         this.size = size;
         this.stats = stats;
-        this.stages = stages.orElse(null);
         this.gearSets = armorSets;
-        this.nbt = nbt.orElse(null);
-        this.dimensions = dimensions;
-        this.minRarity = minRarity;
-        this.maxRarity = maxRarity;
-        this.mount = mount.orElse(null);
-        Preconditions.checkArgument(minRarity.ordinal() <= maxRarity.ordinal(), "Min rarity must be less than or equal to max rarity.");
+        this.nbt = nbt;
+        this.mount = mount;
     }
 
     @Override
-    public int getWeight() {
-        return this.weight;
+    public TieredWeights weights() {
+        return this.weights;
     }
 
     @Override
-    public float getQuality() {
-        return this.quality;
-    }
-
-    @Override
-    public LootRarity getMinRarity() {
-        return this.minRarity;
-    }
-
-    @Override
-    public LootRarity getMaxRarity() {
-        return this.maxRarity;
+    public Constraints constraints() {
+        return this.constraints;
     }
 
     public AABB getSize() {
@@ -155,8 +127,8 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, ILuckyWeighted
     /**
      * @see #createBoss(ServerLevelAccessor, BlockPos, RandomSource, float, LootRarity)
      */
-    public Mob createBoss(ServerLevelAccessor world, BlockPos pos, RandomSource random, float luck) {
-        return this.createBoss(world, pos, random, luck, null);
+    public Mob createBoss(ServerLevelAccessor world, BlockPos pos, RandomSource random, WorldTier tier, float luck) {
+        return this.createBoss(world, pos, random, tier, luck, null);
     }
 
     /**
@@ -169,18 +141,20 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, ILuckyWeighted
      * @param rarity A rarity override. This will be clamped to a valid rarity, and randomly generated if null.
      * @return The newly created boss, or it's mount, if it had one.
      */
-    public Mob createBoss(ServerLevelAccessor world, BlockPos pos, RandomSource random, float luck, @Nullable LootRarity rarity) {
-        CompoundTag fakeNbt = this.nbt == null ? new CompoundTag() : this.nbt;
+    public Mob createBoss(ServerLevelAccessor world, BlockPos pos, RandomSource random, WorldTier tier, float luck, @Nullable LootRarity rarity) {
+        CompoundTag fakeNbt = this.nbt.orElse(new CompoundTag());
         fakeNbt.putString("id", EntityType.getKey(this.entity).toString());
         Mob entity = (Mob) EntityType.loadEntityRecursive(fakeNbt, world.getLevel(), Function.identity());
-        if (this.nbt != null) entity.load(this.nbt);
-        this.initBoss(random, entity, luck, rarity);
+
+        this.initBoss(random, entity, tier, luck, rarity);
         // Re-read here so we can apply certain things after the boss has been modified
         // But only mob-specific things, not a full load()
-        if (this.nbt != null) entity.readAdditionalSaveData(this.nbt);
+        if (this.nbt.isPresent()) {
+            entity.readAdditionalSaveData(this.nbt.get());
+        }
 
-        if (this.mount != null) {
-            Mob mountedEntity = this.mount.create(world.getLevel(), pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        if (this.mount.isPresent()) {
+            Mob mountedEntity = this.mount.get().create(world.getLevel(), pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
             entity.startRiding(mountedEntity, true);
             entity = mountedEntity;
         }
@@ -195,9 +169,10 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, ILuckyWeighted
      * @param rand
      * @param entity
      */
-    public void initBoss(RandomSource rand, Mob entity, float luck, @Nullable LootRarity rarity) {
-        if (rarity == null) rarity = LootRarity.random(rand, luck, this);
-        rarity = this.clamp(rarity);
+    public void initBoss(RandomSource rand, Mob entity, WorldTier tier, float luck, @Nullable LootRarity rarity) {
+        if (rarity == null) {
+            rarity = LootRarity.random(rand, tier, luck, this.stats.keySet());
+        }
         BossStats stats = this.stats.get(rarity);
         int duration = entity instanceof Creeper ? 6000 : Integer.MAX_VALUE;
 
@@ -211,7 +186,7 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, ILuckyWeighted
             modif.apply(rand, entity);
         }
 
-        entity.goalSelector.availableGoals.removeIf(IS_VILLAGER_ATTACK);
+        entity.goalSelector.getAvailableGoals().removeIf(IS_VILLAGER_ATTACK);
         String name = NameHelper.setEntityName(rand, entity);
 
         GearSet set = GearSetRegistry.INSTANCE.getRandomSet(rand, luck, this.gearSets);
@@ -299,43 +274,6 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, ILuckyWeighted
         EnchantmentHelper.setEnchantments(enchMap, stack);
         stack.getTag().putBoolean("apoth_boss", true);
         return stack;
-    }
-
-    /**
-     * Ensures that this boss item does not have null or empty fields that would cause a crash.
-     *
-     * @return this
-     */
-    public ApothBoss validate(ResourceLocation key) {
-        Preconditions.checkArgument(this.weight >= 0, "Boss Item " + key + " has a negative weight!");
-        Preconditions.checkArgument(this.quality >= 0, "Boss Item " + key + " has a negative quality!");
-        Preconditions.checkNotNull(this.entity, "Boss Item " + key + " has null entity type!");
-        Preconditions.checkNotNull(this.size, "Boss Item " + key + " has no size!");
-        if (this.minRarity != null) {
-            Preconditions.checkArgument(this.maxRarity == null || this.maxRarity.isAtLeast(this.minRarity));
-        }
-        if (this.maxRarity != null) {
-            Preconditions.checkArgument(this.minRarity == null || this.maxRarity.isAtLeast(this.minRarity));
-        }
-        if (this.mount != null) {
-            Preconditions.checkNotNull(this.mount.entity, "Boss Item " + key + " has an invalid mount");
-        }
-        LootRarity r = this.minRarity;
-        while (r != this.maxRarity) {
-            Preconditions.checkNotNull(this.stats.get(r));
-            r = r.next();
-        }
-        return this;
-    }
-
-    @Override
-    public Set<ResourceLocation> getDimensions() {
-        return this.dimensions;
-    }
-
-    @Override
-    public Set<String> getStages() {
-        return this.stages;
     }
 
     @Override

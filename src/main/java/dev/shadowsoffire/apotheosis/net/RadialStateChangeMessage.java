@@ -7,9 +7,10 @@ import dev.shadowsoffire.placebo.network.MessageHelper;
 import dev.shadowsoffire.placebo.network.MessageProvider;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent.Context;
 
 public class RadialStateChangeMessage {
+    
+    public static RadialStateChangeMessage INSTANCE = new RadialStateChangeMessage();
 
     public static class Provider implements MessageProvider<RadialStateChangeMessage> {
 

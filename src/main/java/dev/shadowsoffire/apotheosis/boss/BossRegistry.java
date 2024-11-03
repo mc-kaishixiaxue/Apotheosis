@@ -2,16 +2,22 @@ package dev.shadowsoffire.apotheosis.boss;
 
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.gson.JsonElement;
 
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry;
+import dev.shadowsoffire.apotheosis.tiers.Constraints;
+import dev.shadowsoffire.apotheosis.tiers.TieredDynamicRegistry;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.player.Player;
 
-public class BossRegistry extends WeightedDynamicRegistry<ApothBoss> {
+public class BossRegistry extends TieredDynamicRegistry<ApothBoss> {
 
     public static final BossRegistry INSTANCE = new BossRegistry();
 
@@ -36,6 +42,11 @@ public class BossRegistry extends WeightedDynamicRegistry<ApothBoss> {
     @Override
     protected void registerBuiltinCodecs() {
         this.registerDefaultCodec(Apotheosis.loc("boss"), ApothBoss.CODEC);
+    }
+
+    @Nullable
+    public ApothBoss getRandomItem(RandomSource rand, Player player) {
+        return getRandomItem(rand, WorldTier.getTier(player), player.getLuck(), Constraints.eval(player));
     }
 
 }

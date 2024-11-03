@@ -18,10 +18,13 @@ import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.loot.LootRarity.LootRule;
+import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
+import dev.shadowsoffire.apotheosis.tiers.TieredWeights.Weighted;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.ILuckyWeighted;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -31,14 +34,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class LootRarity implements CodecProvider<LootRarity>, ILuckyWeighted {
+public class LootRarity implements CodecProvider<LootRarity>, Weighted {
 
     public static final Codec<LootRarity> LOAD_CODEC = RecordCodecBuilder.create(inst -> inst.group(
         TextColor.CODEC.fieldOf("color").forGetter(LootRarity::getColor),
-        ForgeRegistries.ITEMS.getCodec().fieldOf("material").forGetter(LootRarity::getMaterial),
-        Codec.INT.fieldOf("ordinal").forGetter(LootRarity::ordinal),
-        Codec.intRange(0, Integer.MAX_VALUE).fieldOf("weight").forGetter(ILuckyWeighted::getWeight),
-        Codec.floatRange(0, Float.MAX_VALUE).optionalFieldOf("quality", 0F).forGetter(ILuckyWeighted::getQuality),
+        ItemStack.ITEM_NON_AIR_CODEC.fieldOf("material").forGetter(r -> r.material),
+        TieredWeights.CODEC.fieldOf("weights").forGetter(Weighted::weights),
         LootRule.CODEC.listOf().fieldOf("rules").forGetter(LootRarity::getRules))
         .apply(inst, LootRarity::new));
 
@@ -47,22 +48,20 @@ public class LootRarity implements CodecProvider<LootRarity>, ILuckyWeighted {
      */
     public static final Codec<LootRarity> CODEC = Codec.lazyInitialized(() -> RarityRegistry.INSTANCE.holderCodec().xmap(DynamicHolder::get, RarityRegistry.INSTANCE::holder));
 
-    private final Item material;
+    private final Holder<Item> material;
     private final TextColor color;
-    private final int weight;
-    private final float quality;
+    private final TieredWeights weights;
     private final List<LootRule> rules;
 
-    private LootRarity(TextColor color, Item material, int weight, float quality, List<LootRule> rules) {
+    private LootRarity(TextColor color, Holder<Item> material, TieredWeights weights, List<LootRule> rules) {
         this.color = color;
         this.material = material;
-        this.weight = weight;
-        this.quality = quality;
+        this.weights = weights;
         this.rules = rules;
     }
 
     public Item getMaterial() {
-        return this.material;
+        return this.material.value();
     }
 
     public TextColor getColor() {
@@ -70,25 +69,12 @@ public class LootRarity implements CodecProvider<LootRarity>, ILuckyWeighted {
     }
 
     @Override
-    public int getWeight() {
-        return this.weight;
-    }
-
-    @Override
-    public float getQuality() {
-        return this.quality;
+    public TieredWeights weights() {
+        return this.weights;
     }
 
     public List<LootRule> getRules() {
         return this.rules;
-    }
-
-    public LootRarity next() {
-        return RarityRegistry.next(RarityRegistry.INSTANCE.holder(this)).get();
-    }
-
-    public LootRarity prev() {
-        return RarityRegistry.prev(RarityRegistry.INSTANCE.holder(this)).get();
     }
 
     public Component toComponent() {
@@ -105,13 +91,12 @@ public class LootRarity implements CodecProvider<LootRarity>, ILuckyWeighted {
         return LOAD_CODEC;
     }
 
-    public static LootRarity random(RandomSource rand, float luck) {
-        return RarityRegistry.INSTANCE.getRandomItem(rand, luck);
+    public static LootRarity random(RandomSource rand, WorldTier tier, float luck) {
+        return RarityRegistry.INSTANCE.getRandomItem(rand, tier, luck);
     }
 
-    public static LootRarity random(RandomSource rand, float luck, @Nullable RarityClamp clamp) {
-        LootRarity rarity = random(rand, luck);
-        return clamp == null ? rarity : clamp.clamp(rarity);
+    public static LootRarity random(RandomSource rand, WorldTier tier, float luck, Set<LootRarity> pool) {
+        return RarityRegistry.INSTANCE.getRandomItem(rand, tier, luck, pool::contains);
     }
 
     public static <T> Codec<Map<LootRarity, T>> mapCodec(Codec<T> codec) {
@@ -120,6 +105,7 @@ public class LootRarity implements CodecProvider<LootRarity>, ILuckyWeighted {
 
     // TODO: Convert this to a subtyped system so that durability and socket info can be disjoint
     // Such a system would also permit adding loot rules thta apply specific affixes, or a pool of affixes.
+    @Deprecated
     public static record LootRule(AffixType type, float chance, @Nullable LootRule backup) {
 
         public static final Codec<LootRule> CODEC = RecordCodecBuilder.create(inst -> inst.group(

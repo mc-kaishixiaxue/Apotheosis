@@ -3,13 +3,9 @@ package dev.shadowsoffire.apotheosis.boss;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 
-import javax.annotation.Nullable;
-
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -17,29 +13,32 @@ import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.boss.MinibossRegistry.IEntityMatch;
-import dev.shadowsoffire.apotheosis.compat.GameStagesCompat.IStaged;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
+import dev.shadowsoffire.apotheosis.tiers.Constraints;
+import dev.shadowsoffire.apotheosis.tiers.Constraints.Constrained;
+import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
+import dev.shadowsoffire.apotheosis.tiers.TieredWeights.Weighted;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apotheosis.util.NameHelper;
 import dev.shadowsoffire.apotheosis.util.SupportingEntity;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
-import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.json.ChancedEffectInstance;
 import dev.shadowsoffire.placebo.json.NBTAdapter;
 import dev.shadowsoffire.placebo.json.RandomAttributeModifier;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.ILuckyWeighted;
 import dev.shadowsoffire.placebo.systems.gear.GearSet;
 import dev.shadowsoffire.placebo.systems.gear.GearSet.SetPredicate;
 import dev.shadowsoffire.placebo.systems.gear.GearSetRegistry;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -51,25 +50,23 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
-public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILuckyWeighted, IDimensional, IStaged, IEntityMatch {
+public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constrained, Weighted, IEntityMatch {
 
     public static final String NAME_GEN = "use_name_generation";
 
     public static final Codec<ApothMiniboss> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("weight").forGetter(ILuckyWeighted::getWeight),
-            Codec.floatRange(0, Float.MAX_VALUE).optionalFieldOf("quality", 0F).forGetter(ILuckyWeighted::getQuality),
-            ExtraCodecs.POSITIVE_FLOAT.fieldOf("chance").forGetter(a -> a.chance),
-            Codec.STRING.optionalFieldOf("name", "").forGetter(a -> a.name),
-            PlaceboCodecs.setOf(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).fieldOf("entities").forGetter(a -> a.entities),
+            TieredWeights.CODEC.fieldOf("weights").forGetter(Weighted::weights),
+            Constraints.CODEC.optionalFieldOf("constraints", Constraints.EMPTY).forGetter(Constrained::constraints),
+            Codec.floatRange(0, 1).fieldOf("success_chance").forGetter(a -> a.chance),
+            ComponentSerialization.CODEC.optionalFieldOf("name", CommonComponents.EMPTY).forGetter(a -> a.name),
+            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entities").forGetter(a -> a.entities),
             BossStats.CODEC.fieldOf("stats").forGetter(a -> a.stats),
-            PlaceboCodecs.setOf(Codec.STRING).optionalFieldOf("stages").forGetter(a -> Optional.ofNullable(a.stages)),
-            PlaceboCodecs.setOf(ResourceLocation.CODEC).fieldOf("dimensions").forGetter(a -> a.dimensions),
             Codec.BOOL.optionalFieldOf("affixed", false).forGetter(a -> a.affixed),
             SetPredicate.CODEC.listOf().optionalFieldOf("valid_gear_sets", Collections.emptyList()).forGetter(a -> a.gearSets),
-            NBTAdapter.EITHER_CODEC.optionalFieldOf("nbt").forGetter(a -> Optional.ofNullable(a.nbt)),
+            NBTAdapter.EITHER_CODEC.optionalFieldOf("nbt").forGetter(a -> a.nbt),
             SupportingEntity.CODEC.listOf().optionalFieldOf("supporting_entities", Collections.emptyList()).forGetter(a -> a.support),
-            SupportingEntity.CODEC.optionalFieldOf("mount").forGetter(a -> Optional.ofNullable(a.mount)),
+            SupportingEntity.CODEC.optionalFieldOf("mount").forGetter(a -> a.mount),
             Exclusion.CODEC.listOf().optionalFieldOf("exclusions", Collections.emptyList()).forGetter(a -> a.exclusions),
             Codec.BOOL.optionalFieldOf("finalize", false).forGetter(a -> a.finalize))
         .apply(inst, ApothMiniboss::new));
@@ -77,12 +74,12 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
     /**
      * Weight relative to other minibosses that may apply to the same entity.
      */
-    protected final int weight;
+    protected final TieredWeights weights;
 
     /**
-     * Quality increases the weight by the quality value for every point of luck.
+     * Application constraints that may remove this miniboss from the available pool.
      */
-    protected final float quality;
+    protected final Constraints constraints;
 
     /**
      * Chance that this miniboss item is applied, if selected. Selection runs for every entity spawn.
@@ -94,29 +91,17 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
      * Name of the miniboss. Can be a lang key. Empty or null will cause no name to be set. The special string "use_name_generation" will invoke NameHelper (like
      * normal bosses).
      */
-    protected final String name;
+    protected final Component name;
 
     /**
      * List of matching entities.
      */
-    protected final Set<EntityType<?>> entities;
+    protected final HolderSet<EntityType<?>> entities;
 
     /**
      * Stats that are applied to the miniboss.
      */
     protected final BossStats stats;
-
-    /**
-     * Game stages that this miniboss may spawn in.
-     * If omitted (null), it can always spawn. If empty, it can never spawn.
-     */
-    @Nullable
-    protected final Set<String> stages;
-
-    /**
-     * Dimensions that this miniboss may spawn in.
-     */
-    protected final Set<ResourceLocation> dimensions;
 
     /**
      * If the miniboss will be given an affix item like a normal boss.
@@ -132,8 +117,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
     /**
      * Entity NBT
      */
-    @Nullable
-    protected final CompoundTag nbt;
+    protected final Optional<CompoundTag> nbt;
 
     /**
      * A list of supporting entities that will be spawned if this miniboss is activated.+
@@ -143,8 +127,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
     /**
      * The entity the miniboss will mount.
      */
-    @Nullable
-    protected final SupportingEntity mount;
+    protected final Optional<SupportingEntity> mount;
 
     /**
      * List of rules that may prevent this miniboss from being selected.
@@ -159,36 +142,33 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
      */
     protected final boolean finalize;
 
-    public ApothMiniboss(int weight, float quality, float chance,
-        String name, Set<EntityType<?>> entities, BossStats stats,
-        Optional<Set<String>> stages, Set<ResourceLocation> dimensions, boolean affixed,
-        List<SetPredicate> gearSets, Optional<CompoundTag> nbt, List<SupportingEntity> support,
+    public ApothMiniboss(TieredWeights weights, Constraints constraints, float chance,
+        Component name, HolderSet<EntityType<?>> entities, BossStats stats,
+        boolean affixed, List<SetPredicate> gearSets, Optional<CompoundTag> nbt, List<SupportingEntity> support,
         Optional<SupportingEntity> mount, List<Exclusion> exclusions, boolean finalize) {
-        this.weight = weight;
-        this.quality = quality;
+        this.weights = weights;
+        this.constraints = constraints;
         this.chance = chance;
         this.name = name;
         this.entities = entities;
         this.stats = stats;
-        this.stages = stages.orElse(null);
-        this.dimensions = dimensions;
         this.affixed = affixed;
         this.gearSets = gearSets;
-        this.nbt = nbt.orElse(null);
+        this.nbt = nbt;
         this.support = support;
-        this.mount = mount.orElse(null);
+        this.mount = mount;
         this.exclusions = exclusions;
         this.finalize = finalize;
     }
 
     @Override
-    public int getWeight() {
-        return this.weight;
+    public TieredWeights weights() {
+        return this.weights;
     }
 
     @Override
-    public float getQuality() {
-        return this.quality;
+    public Constraints constraints() {
+        return this.constraints;
     }
 
     public float getChance() {
@@ -196,7 +176,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
     }
 
     @Override
-    public Set<EntityType<?>> getEntities() {
+    public HolderSet<EntityType<?>> getEntities() {
         return this.entities;
     }
 
@@ -207,11 +187,12 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
      * @param random A random, used for selection of boss stats.
      * @return The newly created boss, or it's mount, if it had one.
      */
-    public void transformMiniboss(ServerLevelAccessor level, Mob mob, RandomSource random, float luck) {
+    public void transformMiniboss(ServerLevelAccessor level, Mob mob, RandomSource random, WorldTier tier, float luck) {
         var pos = mob.getPosition(0);
-        if (this.nbt != null) {
-            if (this.nbt.contains(Entity.PASSENGERS_TAG)) {
-                ListTag passengers = this.nbt.getList(Entity.PASSENGERS_TAG, 10);
+        if (this.nbt.isPresent()) {
+            CompoundTag nbt = this.nbt.get();
+            if (nbt.contains(Entity.PASSENGERS_TAG)) {
+                ListTag passengers = nbt.getList(Entity.PASSENGERS_TAG, 10);
                 for (int i = 0; i < passengers.size(); ++i) {
                     Entity entity = EntityType.loadEntityRecursive(passengers.getCompound(i), level.getLevel(), Function.identity());
                     if (entity != null) {
@@ -221,12 +202,14 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
             }
         }
         mob.setPos(pos);
-        this.initBoss(random, mob, luck);
+        this.initBoss(random, mob, tier, luck);
         // readAdditionalSaveData should leave unchanged any tags that are not in the NBT data.
-        if (this.nbt != null) mob.readAdditionalSaveData(this.nbt);
+        if (this.nbt.isPresent()) {
+            mob.readAdditionalSaveData(this.nbt.get());
+        }
 
-        if (this.mount != null) {
-            Mob mountedEntity = this.mount.create(mob.level(), mob.getX() + 0.5, mob.getY(), mob.getZ() + 0.5);
+        if (this.mount.isPresent()) {
+            Mob mountedEntity = this.mount.get().create(mob.level(), mob.getX() + 0.5, mob.getY(), mob.getZ() + 0.5);
             mob.startRiding(mountedEntity, true);
             level.addFreshEntity(mountedEntity);
         }
@@ -245,7 +228,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
      * @param rand
      * @param mob
      */
-    public void initBoss(RandomSource rand, Mob mob, float luck) {
+    public void initBoss(RandomSource rand, Mob mob, WorldTier tier, float luck) {
         mob.getPersistentData().putBoolean("apoth.miniboss", true);
 
         int duration = mob instanceof Creeper ? 6000 : Integer.MAX_VALUE;
@@ -260,11 +243,12 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
             modif.apply(rand, mob);
         }
 
-        if (NAME_GEN.equals(this.name)) {
+        String nameStr = this.name.getString();
+        if (NAME_GEN.equals(nameStr)) {
             NameHelper.setEntityName(rand, mob);
         }
-        else if (!Strings.isNullOrEmpty(this.name)) {
-            mob.setCustomName(Component.translatable(this.name));
+        else if (!nameStr.isBlank()) {
+            mob.setCustomName(this.name);
         }
 
         if (mob.hasCustomName()) mob.setCustomNameVisible(true);
@@ -300,6 +284,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
                 temp = mob.getItemBySlot(EquipmentSlot.values()[guaranteed]);
             }
 
+            // TODO: Change `boolean affixed` to an AffixData class with a specified set of rarities to pull from.
             var rarity = LootRarity.random(rand, luck, AdventureConfig.AFFIX_CONVERT_RARITIES.get(mob.level().dimension().location()));
             ApothBoss.modifyBossItem(temp, rand, mob.hasCustomName() ? mob.getCustomName().getString() : "", luck, rarity, this.stats);
             mob.setCustomName(((MutableComponent) mob.getCustomName()).withStyle(Style.EMPTY.withColor(rarity.getColor())));
@@ -314,29 +299,6 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, ILucky
             }
         }
         mob.setHealth(mob.getMaxHealth());
-    }
-
-    /**
-     * Ensures that this boss item does not have null or empty fields that would cause a crash.
-     *
-     * @return this
-     */
-    public ApothMiniboss validate(ResourceLocation key) {
-        Preconditions.checkArgument(this.weight >= 0, "Miniboss Item " + key + " has a negative weight!");
-        Preconditions.checkArgument(this.quality >= 0, "Miniboss Item " + key + " has a negative quality!");
-        Preconditions.checkNotNull(this.entities, "Miniboss Item " + key + " has null entity match list!");
-        Preconditions.checkNotNull(this.stats, "Miniboss Item " + key + " has no stats!");
-        return this;
-    }
-
-    @Override
-    public Set<ResourceLocation> getDimensions() {
-        return this.dimensions;
-    }
-
-    @Override
-    public Set<String> getStages() {
-        return this.stages;
     }
 
     @Override

@@ -77,18 +77,18 @@ public class AffixHelper {
 
     public static Map<DynamicHolder<Affix>, AffixInstance> getAffixesImpl(ItemStack stack) {
         if (stack.isEmpty()) return Collections.emptyMap();
+        DynamicHolder<LootRarity> rarity = getRarity(stack);
+        if (!rarity.isBound()) {
+            return Collections.emptyMap();
+        }
         Map<DynamicHolder<Affix>, AffixInstance> map = new HashMap<>();
         ItemAffixes affixes = stack.getOrDefault(Components.AFFIXES, ItemAffixes.EMPTY);
         if (!affixes.isEmpty()) {
-            DynamicHolder<LootRarity> rarity = getRarity(stack);
-            if (!rarity.isBound()) {
-                rarity = RarityRegistry.getMinRarity();
-            }
             LootCategory cat = LootCategory.forItem(stack);
             for (DynamicHolder<Affix> affix : affixes.keySet()) {
                 if (!affix.isBound() || !affix.get().canApplyTo(stack, cat, rarity.get())) continue;
                 float lvl = affixes.getLevel(affix);
-                map.put(affix, new AffixInstance(affix, stack, rarity, lvl));
+                map.put(affix, new AffixInstance(affix, lvl, rarity, stack));
             }
         }
         return Collections.unmodifiableMap(map);

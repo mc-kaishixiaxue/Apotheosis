@@ -1,7 +1,6 @@
 package dev.shadowsoffire.apotheosis.boss;
 
-import dev.shadowsoffire.apotheosis.compat.GameStagesCompat.IStaged;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
@@ -22,14 +21,14 @@ public class BossSummonerItem extends Item {
         Level world = ctx.getLevel();
         if (world.isClientSide) return InteractionResult.SUCCESS;
         Player player = ctx.getPlayer();
-        ApothBoss item = BossRegistry.INSTANCE.getRandomItem(world.getRandom(), ctx.getPlayer().getLuck(), IDimensional.matches(world), IStaged.matches(player));
+        ApothBoss item = BossRegistry.INSTANCE.getRandomItem(world.getRandom(), player);
         if (item == null) return InteractionResult.FAIL;
         BlockPos pos = ctx.getClickedPos().relative(ctx.getClickedFace());
         if (!world.noCollision(item.getSize().move(pos))) {
             pos = pos.above();
             if (!world.noCollision(item.getSize().move(pos))) return InteractionResult.FAIL;
         }
-        Mob boss = item.createBoss((ServerLevel) world, pos, world.getRandom(), player.getLuck());
+        Mob boss = item.createBoss((ServerLevel) world, pos, world.getRandom(), WorldTier.getTier(player), player.getLuck());
         boss.setTarget(player);
         ((ServerLevel) world).addFreshEntityWithPassengers(boss);
         ctx.getItemInHand().shrink(1);

@@ -1,21 +1,18 @@
 package dev.shadowsoffire.apotheosis.affix.augmenting;
 
 import dev.shadowsoffire.apotheosis.Apoth;
-import dev.shadowsoffire.apotheosis.Adventure.Items;
+import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
 import dev.shadowsoffire.placebo.cap.InternalItemHandler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class AugmentingTableTile extends BlockEntity implements TickingBlockEntity {
 
@@ -28,7 +25,7 @@ public class AugmentingTableTile extends BlockEntity implements TickingBlockEnti
     protected InternalItemHandler inv = new InternalItemHandler(1){
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return stack.is(Items.SIGIL_OF_ENHANCEMENT.get());
+            return stack.is(Items.SIGIL_OF_ENHANCEMENT);
         };
 
         @Override
@@ -38,7 +35,7 @@ public class AugmentingTableTile extends BlockEntity implements TickingBlockEnti
     };
 
     public AugmentingTableTile(BlockPos pPos, BlockState pBlockState) {
-        super(Apoth.Tiles.AUGMENTING_TABLE.get(), pPos, pBlockState);
+        super(Apoth.Tiles.AUGMENTING_TABLE, pPos, pBlockState);
     }
 
     @Override
@@ -89,35 +86,19 @@ public class AugmentingTableTile extends BlockEntity implements TickingBlockEnti
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("inventory", this.inv.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, Provider regs) {
+        super.saveAdditional(tag, regs);
+        tag.put("inventory", this.inv.serializeNBT(regs));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        this.inv.deserializeNBT(tag.getCompound("inventory"));
+    protected void loadAdditional(CompoundTag tag, Provider regs) {
+        super.loadAdditional(tag, regs);
+        this.inv.deserializeNBT(regs, tag.getCompound("inventory"));
     }
 
-    LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> this.inv);
-
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return this.invCap.cast();
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        this.invCap.invalidate();
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        this.invCap = LazyOptional.of(() -> this.inv);
+    public IItemHandler getInventory() {
+        return this.inv;
     }
 
     public static enum AnimationStage {

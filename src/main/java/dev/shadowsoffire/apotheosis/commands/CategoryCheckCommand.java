@@ -6,7 +6,7 @@ import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -17,24 +17,11 @@ public class CategoryCheckCommand {
             Player p = c.getSource().getPlayerOrException();
             ItemStack stack = p.getMainHandItem();
             LootCategory cat = LootCategory.forItem(stack);
-            EquipmentSlot[] slots = cat == null ? null : cat.getSlots();
+            EquipmentSlotGroup slots = cat == null ? null : cat.getSlots();
             p.sendSystemMessage(Component.literal("Loot Category - " + (cat == null ? "null" : cat.getName())));
-            p.sendSystemMessage(Component.literal("Equipment Slot - " + (slots == null ? "null" : toStr(slots))));
+            p.sendSystemMessage(Component.literal("Equipment Slot - " + (slots == null ? "null" : slots.toString())));
             return 0;
         }));
-    }
-
-    static String toStr(EquipmentSlot[] slots) {
-        StringBuilder b = new StringBuilder();
-        b.append('{');
-        for (int i = 0; i < slots.length; i++) {
-            b.append(slots[i].name().toLowerCase());
-            if (i == slots.length - 1) {
-                b.append('}');
-            }
-            else b.append(", ");
-        }
-        return b.toString();
     }
 
 }

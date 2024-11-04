@@ -2,30 +2,28 @@ package dev.shadowsoffire.apotheosis.affix.augmenting;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import dev.shadowsoffire.apotheosis.Apoth.Affixes;
+import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.Apoth.Menus;
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
+import dev.shadowsoffire.apotheosis.affix.ItemAffixes;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.placebo.cap.InternalItemHandler;
 import dev.shadowsoffire.placebo.menu.BlockEntityMenu;
-import dev.shadowsoffire.placebo.network.PacketDistro;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
 
@@ -67,7 +65,7 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
     @Override
     public void removed(Player pPlayer) {
         super.removed(pPlayer);
-        this.clearContainer(pPlayer, new RecipeWrapper(this.itemInv));
+        this.clearContainer(pPlayer, this.itemInv);
     }
 
     @Override
@@ -112,7 +110,7 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
             }
             case REROLL -> {
                 AffixInstance inst = affixes.get(selected);
-                List<DynamicHolder<Affix>> alternatives = computeAlternatives(mainItem, inst, affixes);
+                List<DynamicHolder<Affix>> alternatives = computeAlternatives(mainItem, inst);
                 if (alternatives.isEmpty()) {
                     return false;
                 }
@@ -127,19 +125,19 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
                     }
                 }
 
-                Map<DynamicHolder<Affix>, AffixInstance> newAffixes = new HashMap<>(AffixHelper.getAffixes(mainItem));
-                newAffixes.remove(inst.affix());
+                ItemAffixes.Builder builder = mainItem.getOrDefault(Components.AFFIXES, ItemAffixes.EMPTY).toBuilder();
+                builder.remove(inst.affix());
 
                 DynamicHolder<Affix> newAffix = alternatives.get(player.getRandom().nextInt(alternatives.size()));
-                newAffixes.put(newAffix, new AffixInstance(newAffix, mainItem, inst.rarity(), player.random.nextFloat()));
+                builder.upgrade(newAffix, player.getRandom().nextFloat());
 
-                AffixHelper.setAffixes(mainItem, newAffixes);
+                AffixHelper.setAffixes(mainItem, builder.build());
                 this.slots.get(0).set(mainItem);
                 player.level().playSound(null, this.pos, SoundEvents.EVOKER_CAST_SPELL, SoundSource.PLAYERS, 1F, player.level().random.nextFloat() * 0.25F + 1F);
                 player.level().playSound(null, this.pos, SoundEvents.AMETHYST_CLUSTER_STEP, SoundSource.PLAYERS, 0.34F, player.level().random.nextFloat() * 0.2F + 0.8F);
                 player.level().playSound(null, this.pos, SoundEvents.SMITHING_TABLE_USE, SoundSource.PLAYERS, 0.45F, player.level().random.nextFloat() * 0.75F + 0.5F);
                 this.broadcastChanges();
-                PacketDistro.sendTo(Apotheosis.CHANNEL, new RerollResultMessage(newAffix), this.player);
+                PacketDistributor.sendToPlayer((ServerPlayer) this.player, new RerollResultPayload(newAffix));
                 return true;
             }
         }
@@ -155,18 +153,20 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
         return this.slots.get(1).getItem();
     }
 
+    /**
+     * Returns a sorted list of the item affixes on the given stack.
+     */
     public static List<AffixInstance> computeItemAffixes(ItemStack stack) {
-        Map<DynamicHolder<? extends Affix>, AffixInstance> affixes = AffixHelper.getAffixes(stack);
+        Map<DynamicHolder<Affix>, AffixInstance> affixes = AffixHelper.getAffixes(stack);
         if (affixes.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return affixes.values().stream().sorted(Comparator.comparing(inst -> inst.affix().getId())).filter(a -> !a.affix().equals(Affixes.DURABLE)).toList();
+        return affixes.values().stream().sorted(Comparator.comparing(inst -> inst.affix().getId())).toList();
     }
 
-    protected static List<DynamicHolder<Affix>> computeAlternatives(ItemStack stack, AffixInstance selected, List<AffixInstance> affixes) {
-        return LootController.getAvailableAffixes(stack, selected.rarity().get(), affixes.stream().map(AffixInstance::affix).collect(Collectors.toSet()),
-            selected.affix().get().getType());
+    protected static List<DynamicHolder<Affix>> computeAlternatives(ItemStack stack, AffixInstance selected) {
+        return LootController.getAvailableAffixes(stack, selected.rarity().get(), selected.affix().get().definition().type()).toList();
     }
 
 }

@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import dev.shadowsoffire.apotheosis.Apoth.Blocks;
+import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.Apotheosis.ApotheosisConstruction;
 import dev.shadowsoffire.apotheosis.Apotheosis.ApotheosisReloadEvent;
 import dev.shadowsoffire.apotheosis.affix.AffixRegistry;
@@ -54,7 +55,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
@@ -113,8 +113,8 @@ public class AdventureModule {
             LootSystem.defaultBlockTable(Blocks.SALVAGING_TABLE.get());
             LootSystem.defaultBlockTable(Blocks.GEM_CUTTING_TABLE.get());
             LootSystem.defaultBlockTable(Blocks.AUGMENTING_TABLE.get());
-            Registry.register(BuiltInRegistries.LOOT_POOL_ENTRY_TYPE, new ResourceLocation(Apotheosis.MODID, "random_affix_item"), AffixLootPoolEntry.TYPE);
-            Registry.register(BuiltInRegistries.LOOT_POOL_ENTRY_TYPE, new ResourceLocation(Apotheosis.MODID, "random_gem"), GemLootPoolEntry.TYPE);
+            Registry.register(BuiltInRegistries.LOOT_POOL_ENTRY_TYPE, Apotheosis.loc("random_affix_item"), AffixLootPoolEntry.TYPE);
+            Registry.register(BuiltInRegistries.LOOT_POOL_ENTRY_TYPE, Apotheosis.loc("random_gem"), GemLootPoolEntry.TYPE);
             Exclusion.initSerializers();
             GemBonus.initCodecs();
             CraftingHelper.register(Apotheosis.loc("affix_item"), AffixItemIngredient.Serializer.INSTANCE);

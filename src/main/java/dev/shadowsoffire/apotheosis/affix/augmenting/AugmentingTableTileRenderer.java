@@ -14,14 +14,14 @@ import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 
 public class AugmentingTableTileRenderer implements BlockEntityRenderer<AugmentingTableTile> {
 
-    public static final ResourceLocation STAR_CUBE = new ResourceLocation(Apotheosis.MODID, "item/star_cube");
+    public static final ModelResourceLocation STAR_CUBE = ModelResourceLocation.standalone(Apotheosis.loc("item/star_cube"));
 
     @Override
     @SuppressWarnings("deprecation")
@@ -30,7 +30,7 @@ public class AugmentingTableTileRenderer implements BlockEntityRenderer<Augmenti
             return; // no-op if the cube is hidden
         }
 
-        Minecraft.getInstance().textureManager.getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
+        Minecraft.getInstance().getTextureManager().getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
         RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);

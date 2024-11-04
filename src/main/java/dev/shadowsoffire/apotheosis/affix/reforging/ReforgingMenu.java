@@ -10,6 +10,7 @@ import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apotheosis.util.ApothMiscUtil;
 import dev.shadowsoffire.placebo.cap.InternalItemHandler;
 import dev.shadowsoffire.placebo.menu.BlockEntityMenu;
@@ -130,7 +131,7 @@ public class ReforgingMenu extends BlockEntityMenu<ReforgingTableTile> {
             if (!input.isEmpty() && rarity != null) {
                 RandomSource rand = this.random;
                 rand.setSeed(this.seed ^ BuiltInRegistries.ITEM.getKey(input.getItem()).hashCode() + slot);
-                ItemStack output = LootController.createLootItem(input.copy(), rarity, rand);
+                ItemStack output = LootController.createLootItem(input.copy(), rarity, rand, WorldTier.getTier(this.player), this.player.getLuck());
                 this.choicesInv.setStackInSlot(slot, output);
             }
             else {

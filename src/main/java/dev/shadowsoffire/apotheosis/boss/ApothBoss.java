@@ -1,22 +1,19 @@
 package dev.shadowsoffire.apotheosis.boss;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
-import dev.shadowsoffire.apotheosis.Apotheosis;
+import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootController;
@@ -37,14 +34,19 @@ import dev.shadowsoffire.placebo.json.RandomAttributeModifier;
 import dev.shadowsoffire.placebo.systems.gear.GearSet;
 import dev.shadowsoffire.placebo.systems.gear.GearSet.SetPredicate;
 import dev.shadowsoffire.placebo.systems.gear.GearSetRegistry;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -60,9 +62,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, Weighted {
 
@@ -217,11 +219,11 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
             if (stack.isEmpty()) continue;
             if (s.ordinal() == guaranteed) entity.setDropChance(s, 2F);
             if (s.ordinal() == guaranteed) {
-                entity.setItemSlot(s, modifyBossItem(stack, rand, name, luck, rarity, stats));
+                entity.setItemSlot(s, modifyBossItem(stack, rand, name, tier, luck, rarity, stats, entity.level().registryAccess()));
                 entity.setCustomName(((MutableComponent) entity.getCustomName()).withStyle(Style.EMPTY.withColor(rarity.getColor())));
             }
             else if (rand.nextFloat() < stats.enchantChance()) {
-                enchantBossItem(rand, stack, Apotheosis.enableEnch ? stats.enchLevels()[0] : stats.enchLevels()[1], true);
+                enchantBossItem(rand, stack, stats.enchLevels().secondary(), true, entity.level().registryAccess());
                 entity.setItemSlot(s, stack);
             }
         }
@@ -231,17 +233,18 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
         if (AdventureConfig.bossGlowOnSpawn) entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 3600));
     }
 
-    public static void enchantBossItem(RandomSource rand, ItemStack stack, int level, boolean treasure) {
-        List<EnchantmentInstance> ench = EnchantmentHelper.selectEnchantment(rand, stack, level, treasure);
-        var map = ench.stream().filter(d -> !d.enchantment.isCurse()).collect(Collectors.toMap(d -> d.enchantment, d -> d.level, Math::max));
-        map.putAll(EnchantmentHelper.getEnchantments(stack));
-        EnchantmentHelper.setEnchantments(map, stack);
+    public static void enchantBossItem(RandomSource rand, ItemStack stack, int level, boolean treasure, RegistryAccess reg) {
+        Stream<Holder<Enchantment>> available = reg.registryOrThrow(Registries.ENCHANTMENT).getTag(EnchantmentTags.ON_MOB_SPAWN_EQUIPMENT).map(HolderSet::stream).orElse(Stream.empty());
+        List<EnchantmentInstance> ench = EnchantmentHelper.selectEnchantment(rand, stack, level, available);
+        ItemEnchantments.Mutable builder = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(stack));
+        ench.stream().filter(d -> !d.enchantment.is(EnchantmentTags.CURSE)).forEach(i -> builder.upgrade(i.enchantment, i.level));
+        EnchantmentHelper.setEnchantments(stack, builder.toImmutable());
     }
 
-    public static ItemStack modifyBossItem(ItemStack stack, RandomSource rand, String bossName, float luck, LootRarity rarity, BossStats stats) {
-        enchantBossItem(rand, stack, Apotheosis.enableEnch ? stats.enchLevels()[2] : stats.enchLevels()[3], true);
+    public static ItemStack modifyBossItem(ItemStack stack, RandomSource rand, String bossName, WorldTier tier, float luck, LootRarity rarity, BossStats stats, RegistryAccess reg) {
+        enchantBossItem(rand, stack, stats.enchLevels().primary(), true, reg);
         NameHelper.setItemName(rand, stack);
-        stack = LootController.createLootItem(stack, LootCategory.forItem(stack), rarity, rand);
+        stack = LootController.createLootItem(stack, LootCategory.forItem(stack), rarity, rand, tier, luck);
 
         String bossOwnerName = String.format(NameHelper.ownershipFormat, bossName);
         Component name = AffixHelper.getName(stack);
@@ -257,22 +260,23 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
             AffixHelper.setName(stack, copy);
         }
 
-        Map<Enchantment, Integer> enchMap = new HashMap<>();
-        for (Entry<Enchantment, Integer> e : EnchantmentHelper.getEnchantments(stack).entrySet()) {
-            if (e.getKey() != null) enchMap.put(e.getKey(), Math.min(EnchHooks.getMaxLevel(e.getKey()), e.getValue() + rand.nextInt(2)));
-        }
-
-        if (AdventureConfig.curseBossItems) {
-            final ItemStack stk = stack; // Lambda rules require this instead of a direct reference to stack
-            List<Enchantment> curses = ForgeRegistries.ENCHANTMENTS.getValues().stream().filter(e -> e.canApplyAtEnchantingTable(stk) && e.isCurse()).collect(Collectors.toList());
-            if (!curses.isEmpty()) {
-                Enchantment curse = curses.get(rand.nextInt(curses.size()));
-                enchMap.put(curse, Mth.nextInt(rand, 1, EnchHooks.getMaxLevel(curse)));
+        ItemEnchantments.Mutable enchMap = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        for (Object2IntMap.Entry<Holder<Enchantment>> e : EnchantmentHelper.getEnchantmentsForCrafting(stack).entrySet()) {
+            if (e.getKey() != null) {
+                enchMap.upgrade(e.getKey(), Math.min(EnchHooks.getMaxLevel(e.getKey().value()), e.getIntValue() + rand.nextInt(2)));
             }
         }
 
-        EnchantmentHelper.setEnchantments(enchMap, stack);
-        stack.getTag().putBoolean("apoth_boss", true);
+        if (AdventureConfig.curseBossItems) {
+            List<Holder.Reference<Enchantment>> curses = reg.registryOrThrow(Registries.ENCHANTMENT).holders().filter(e -> e.is(EnchantmentTags.CURSE) && e.is(EnchantmentTags.ON_MOB_SPAWN_EQUIPMENT)).toList();
+            if (!curses.isEmpty()) {
+                Holder<Enchantment> curse = curses.get(rand.nextInt(curses.size()));
+                enchMap.upgrade(curse, Mth.nextInt(rand, 1, EnchHooks.getMaxLevel(curse.value())));
+            }
+        }
+
+        EnchantmentHelper.setEnchantments(stack, enchMap.toImmutable());
+        stack.set(Components.FROM_BOSS, true);
         return stack;
     }
 

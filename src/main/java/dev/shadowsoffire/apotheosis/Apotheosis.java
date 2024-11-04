@@ -1,6 +1,10 @@
 package dev.shadowsoffire.apotheosis;
 
+import dev.shadowsoffire.apotheosis.affix.augmenting.RerollResultPayload;
+import dev.shadowsoffire.apotheosis.client.BossSpawnPayload;
 import dev.shadowsoffire.apotheosis.loot.LootRule;
+import dev.shadowsoffire.apotheosis.net.RadialStateChangePayload;
+import dev.shadowsoffire.placebo.network.PayloadHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -25,6 +29,9 @@ public class Apotheosis {
         e.enqueueWork(() -> {
             LootRule.initCodecs();
         });
+        PayloadHelper.registerPayload(new BossSpawnPayload.Provider());
+        PayloadHelper.registerPayload(new RerollResultPayload.Provider());
+        PayloadHelper.registerPayload(new RadialStateChangePayload.Provider());
     }
 
     /**

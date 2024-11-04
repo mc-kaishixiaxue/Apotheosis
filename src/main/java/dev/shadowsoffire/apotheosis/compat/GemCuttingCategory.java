@@ -3,8 +3,8 @@ package dev.shadowsoffire.apotheosis.compat;
 import java.util.Arrays;
 
 import dev.shadowsoffire.apotheosis.Adventure;
+import dev.shadowsoffire.apotheosis.Apoth.Blocks;
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.Adventure.Blocks;
 import dev.shadowsoffire.apotheosis.compat.GemCuttingCategory.GemCuttingRecipe;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
@@ -27,14 +27,14 @@ import net.minecraft.world.item.ItemStack;
 @SuppressWarnings("removal")
 public class GemCuttingCategory implements IRecipeCategory<GemCuttingRecipe> {
 
-    public static final ResourceLocation TEXTURES = new ResourceLocation(Apotheosis.MODID, "textures/gui/gem_cutting_jei.png");
+    public static final ResourceLocation TEXTURES = Apotheosis.loc("textures/gui/gem_cutting_jei.png");
 
     private final IDrawable background;
     private final IDrawable icon;
 
     public GemCuttingCategory(IGuiHelper guiHelper) {
         this.background = guiHelper.drawableBuilder(TEXTURES, 0, 0, 148, 78).addPadding(0, 0, 0, 0).build();
-        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.GEM_CUTTING_TABLE.get()));
+        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.GEM_CUTTING_TABLE.value()));
     }
 
     @Override

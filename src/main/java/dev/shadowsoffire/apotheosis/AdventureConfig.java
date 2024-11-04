@@ -78,7 +78,7 @@ public class AdventureConfig {
             try {
                 LootCategory type = LootCategory.byId(split[1].toLowerCase(Locale.ROOT));
                 if (type.isArmor()) throw new UnsupportedOperationException("Cannot override an item to an armor type.");
-                TYPE_OVERRIDES.put(new ResourceLocation(split[0]), type);
+                TYPE_OVERRIDES.put(ResourceLocation.parse(split[0]), type);
             }
             catch (Exception e) {
                 AdventureModule.LOGGER.error("Invalid type override entry: " + s + " will be ignored!");

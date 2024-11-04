@@ -1,7 +1,6 @@
 package dev.shadowsoffire.apotheosis.commands;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -17,7 +16,8 @@ import dev.shadowsoffire.apotheosis.affix.AffixRegistry;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.attributeslib.api.AttributeHelper;
+import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
+import dev.shadowsoffire.apothic_attributes.api.AttributeHelper;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -31,7 +31,10 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class AffixCommand {
 
@@ -58,7 +61,7 @@ public class AffixCommand {
         if (entity instanceof LivingEntity living) {
             ItemStack held = living.getMainHandItem();
             if (!held.isEmpty()) {
-                Map<DynamicHolder<? extends Affix>, AffixInstance> affixes = AffixHelper.getAffixes(held);
+                Map<DynamicHolder<Affix>, AffixInstance> affixes = AffixHelper.getAffixes(held);
                 return SharedSuggestionProvider.suggest(affixes.keySet().stream().map(DynamicHolder::getId).map(ResourceLocation::toString), builder);
             }
         }
@@ -114,7 +117,7 @@ public class AffixCommand {
                 return fail(c, "The selected affix cannot be applied to the target item.", -5);
             }
 
-            AffixHelper.applyAffix(held, new AffixInstance(afx, held, rarity, level));
+            AffixHelper.applyAffix(held, new AffixInstance(afx, level, rarity, held));
             c.getSource().sendSuccess(() -> Component.translatable("Successfully applied affix %s with level %s to %s", affixId, level, held.getDisplayName()), true);
             return 0;
         }
@@ -136,12 +139,13 @@ public class AffixCommand {
                 return fail(c, "The target item must have a set rarity.", -3);
             }
 
-            Map<DynamicHolder<? extends Affix>, AffixInstance> affixes = AffixHelper.getAffixes(held);
+            Map<DynamicHolder<Affix>, AffixInstance> affixes = AffixHelper.getAffixes(held);
+            AttributeTooltipContext ctx = AttributeTooltipContext.of(living instanceof Player p ? p : null, TooltipContext.of(c.getSource().getLevel()), ApothicAttributes.getTooltipFlag());
 
             c.getSource().sendSystemMessage(Component.translatable("Affixes present on %s:", held.getDisplayName()));
             affixes.forEach((afx, inst) -> {
                 MutableComponent name = Component.translatable("[%s]", inst.getName(true));
-                name.setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, inst.getAugmentingText())));
+                name.setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, inst.getAugmentingText(ctx))));
                 c.getSource().sendSystemMessage(Component.translatable("%s - %s%%", name, Affix.fmt(100 * inst.level())));
             });
 
@@ -170,18 +174,19 @@ public class AffixCommand {
                 return fail(c, "The target item must have a set rarity.", -3);
             }
 
-            Map<DynamicHolder<? extends Affix>, AffixInstance> affixes = AffixHelper.getAffixes(held);
+            Map<DynamicHolder<Affix>, AffixInstance> affixes = AffixHelper.getAffixes(held);
             if (!affixes.containsKey(afx)) {
                 return fail(c, "The target item does not contain the selected affix.", -4);
             }
 
-            List<DynamicHolder<? extends Affix>> alternatives = LootController.getAvailableAffixes(held, rarity.get(), affixes.keySet(), afx.get().getType());
-
+            Stream<DynamicHolder<Affix>> alternatives = LootController.getAvailableAffixes(held, rarity.get(), afx.get().definition().type());
             c.getSource().sendSystemMessage(Component.translatable("Possible alternatives to %s:", afx.get().getName(true)));
+            AttributeTooltipContext ctx = AttributeTooltipContext.of(living instanceof Player p ? p : null, TooltipContext.of(c.getSource().getLevel()), ApothicAttributes.getTooltipFlag());
 
             alternatives.forEach(a -> {
                 MutableComponent name = Component.translatable("[%s]", a.get().getName(true));
-                Component augTxt = a.get().getAugmentingText(held, rarity.get(), 0.5F);
+                AffixInstance inst = new AffixInstance(a, 0.5F, rarity, held);
+                Component augTxt = inst.getAugmentingText(ctx);
                 name.setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, augTxt)));
                 c.getSource().sendSystemMessage(AttributeHelper.list().append(name));
             });

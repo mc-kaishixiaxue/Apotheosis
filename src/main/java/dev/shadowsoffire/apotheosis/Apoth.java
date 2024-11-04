@@ -4,7 +4,6 @@ import java.util.function.UnaryOperator;
 
 import com.mojang.serialization.Codec;
 
-import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.ItemAffixes;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingMenu;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingTableBlock;
@@ -39,8 +38,8 @@ import dev.shadowsoffire.placebo.block_entity.TickingBlockEntityType.TickSide;
 import dev.shadowsoffire.placebo.registry.DeferredHelper;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -59,7 +58,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 
@@ -69,10 +67,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 public class Apoth {
 
     public static final DeferredHelper R = DeferredHelper.create(Apotheosis.MODID);
-
-    public static final class Registries {
-        public static final ResourceKey<Registry<Affix>> AFFIX = ResourceKey.createRegistryKey(Apotheosis.loc("affix"));
-    }
 
     public static final class Components {
 
@@ -95,6 +89,8 @@ public class Apoth {
         public static final DataComponentType<Float> DURABILITY_BONUS = R.component("durability_bonus", b -> b.persistent(Codec.floatRange(0, 1)).networkSynchronized(ByteBufCodecs.FLOAT));
 
         public static final DataComponentType<Boolean> FROM_CHEST = R.component("from_chest", b -> b.persistent(Codec.BOOL));
+        public static final DataComponentType<Boolean> FROM_TRADER = R.component("from_trader", b -> b.persistent(Codec.BOOL));
+        public static final DataComponentType<Boolean> FROM_BOSS = R.component("from_boss", b -> b.persistent(Codec.BOOL));
 
         private static void bootstrap() {}
 
@@ -105,11 +101,9 @@ public class Apoth {
         public static final Holder<Block> BOSS_SPAWNER = R.block("boss_spawner", BossSpawnerBlock::new,
             p -> p.requiresCorrectToolForDrops().strength(-1.0F, 3600000.0F).noLootTable());
 
-        public static final Holder<Block> SIMPLE_REFORGING_TABLE = R.block("simple_reforging_table",
-            () -> new ReforgingTableBlock(BlockBehaviour.Properties.of().requiresCorrectToolForDrops().strength(2, 20F), 2));
+        public static final Holder<Block> SIMPLE_REFORGING_TABLE = R.block("simple_reforging_table", ReforgingTableBlock::new, p -> p.requiresCorrectToolForDrops().strength(2, 20F));
 
-        public static final Holder<Block> REFORGING_TABLE = R.block("reforging_table",
-            () -> new ReforgingTableBlock(BlockBehaviour.Properties.of().requiresCorrectToolForDrops().strength(4, 1000F), 4));
+        public static final Holder<Block> REFORGING_TABLE = R.block("reforging_table", ReforgingTableBlock::new, p -> p.requiresCorrectToolForDrops().strength(4, 1000F));
 
         public static final Holder<Block> SALVAGING_TABLE = R.block("salvaging_table", SalvagingTableBlock::new,
             p -> p.sound(SoundType.WOOD).strength(2.5F));

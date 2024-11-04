@@ -68,7 +68,7 @@ public class SocketTooltipRenderer implements ClientTooltipComponent {
 
     public static Component getSocketDesc(GemInstance inst) {
         if (!inst.isValid()) return Component.translatable("socket.apotheosis.empty");
-        return inst.getSocketBonusTooltip();
+        return inst.getSocketBonusTooltip(AdventureModuleClient.tooltipCtx());
     }
 
     public static record SocketComponent(ItemStack socketed, SocketedGems gems) implements TooltipComponent {}

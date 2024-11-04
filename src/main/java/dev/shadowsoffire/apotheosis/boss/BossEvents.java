@@ -10,7 +10,7 @@ import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.AdventureModule;
-import dev.shadowsoffire.apotheosis.client.BossSpawnMessage;
+import dev.shadowsoffire.apotheosis.client.BossSpawnPayload;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -86,7 +86,7 @@ public class BossEvents {
                                 if (p.distanceToSqr(tPos) <= AdventureConfig.bossAnnounceRange * AdventureConfig.bossAnnounceRange) {
                                     ((ServerPlayer) p).connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("info.apotheosis.boss_spawn", name, (int) boss.getX(), (int) boss.getY())));
                                     TextColor color = name.getStyle().getColor();
-                                    PacketDistributor.sendToPlayer(player, new BossSpawnMessage(boss.blockPosition(), color == null ? 0xFFFFFF : color.getValue()));
+                                    PacketDistributor.sendToPlayer(player, new BossSpawnPayload(boss.blockPosition(), color == null ? 0xFFFFFF : color.getValue()));
                                 }
                             });
                         }

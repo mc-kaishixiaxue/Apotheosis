@@ -97,10 +97,10 @@ public abstract class DropDownList<T> extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (this.isScrollBarActive()) {
             int i = this.getOffscreenRows();
-            this.scrollOffs = (float) (this.scrollOffs - pDelta / i);
+            this.scrollOffs = (float) (this.scrollOffs - scrollY / i);
             this.scrollOffs = Mth.clamp(this.scrollOffs, 0.0F, 1.0F);
             this.startIndex = (int) (this.scrollOffs * i + 0.5D);
         }

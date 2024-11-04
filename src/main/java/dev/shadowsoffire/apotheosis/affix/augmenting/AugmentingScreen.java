@@ -15,6 +15,7 @@ import dev.shadowsoffire.apotheosis.client.AdventureContainerScreen;
 import dev.shadowsoffire.apotheosis.client.DropDownList;
 import dev.shadowsoffire.apotheosis.client.SimpleTexButton;
 import dev.shadowsoffire.apotheosis.loot.LootController;
+import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -32,7 +33,9 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
 
@@ -57,9 +60,12 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
     protected AffixDropList list;
     protected SimpleTexButton upgradeBtn, rerollBtn;
 
-    public AugmentingScreen(AugmentingMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
-        super(pMenu, pPlayerInventory, pTitle);
+    protected final AttributeTooltipContext tooltipCtx;
+
+    public AugmentingScreen(AugmentingMenu menu, Inventory inv, Component pTitle) {
+        super(menu, inv, pTitle);
         this.imageHeight = 222;
+        this.tooltipCtx = AttributeTooltipContext.of(inv.player, TooltipContext.of(inv.player.level()), ApothicAttributes.getTooltipFlag());
     }
 
     @Override
@@ -110,7 +116,7 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
 
         if (selected != DropDownList.NO_SELECTION && !this.list.isOpen()) {
             AffixInstance inst = this.currentItemAffixes.get(selected);
-            Component comp = inst.getAugmentingText();
+            Component comp = inst.getAugmentingText(this.tooltipCtx);
             List<FormattedCharSequence> split = this.font.split(comp, 117);
             for (int i = 0; i < split.size(); i++) {
                 gfx.drawString(this.font, split.get(i), left + 43, top + 40 + i * 11, ChatFormatting.YELLOW.getColor(), true);
@@ -147,19 +153,19 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
 
         if (selected != DropDownList.NO_SELECTION && this.upgradeBtn.isActive() && this.upgradeBtn.isHovered()) {
             AffixInstance inst = this.currentItemAffixes.get(selected);
-            AffixInstance upgraded = new AffixInstance(inst.affix(), inst.stack(), inst.rarity(), Math.min(1F, inst.level() + 0.25F));
+            AffixInstance upgraded = new AffixInstance(inst.affix(), Math.min(1F, inst.level() + 0.25F), inst.rarity(), inst.stack());
 
             List<Component> altText = new ArrayList<>();
             altText.add(Component.translatable("text.apotheosis.upgraded_form").withStyle(ChatFormatting.GOLD, ChatFormatting.UNDERLINE));
-            altText.add(Component.translatable("%s", upgraded.getAugmentingText()).withStyle(ChatFormatting.YELLOW));
+            altText.add(Component.translatable("%s", upgraded.getAugmentingText(this.tooltipCtx)).withStyle(ChatFormatting.YELLOW));
 
-            this.drawOnLeft(gfx, altText, top + 33, 150);
+            this.drawOnLeft(gfx, altText, top + 33); // maxWidth=150
         }
     }
 
     protected void updateCachedState() {
         ItemStack mainItem = this.menu.getMainItem();
-        if (!ItemStack.isSameItemSameTags(mainItem, this.lastMainItem)) {
+        if (!ItemStack.isSameItemSameComponents(mainItem, this.lastMainItem)) {
             List<AffixInstance> newAffixes = AugmentingMenu.computeItemAffixes(mainItem);
 
             if (ItemStack.isSameItem(mainItem, this.lastMainItem) && this.currentItemAffixes.size() == newAffixes.size()) {
@@ -224,8 +230,7 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
         }
 
         AffixInstance current = this.currentItemAffixes.get(selected);
-        List<DynamicHolder<? extends Affix>> alternatives = LootController.getAvailableAffixes(this.lastMainItem, current.rarity().get(),
-            this.currentItemAffixes.stream().map(AffixInstance::affix).collect(Collectors.toSet()), current.affix().get().getType());
+        List<DynamicHolder<Affix>> alternatives = LootController.getAvailableAffixes(this.lastMainItem, current.rarity().get(), current.affix().get().definition().type()).toList();
 
         if (alternatives.isEmpty()) {
             this.alternativePages = Collections.emptyList();
@@ -241,10 +246,11 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
                 List<FormattedText> page = new ArrayList<>();
                 page.add(heading);
                 boolean first = true; // For the first line in the first page, we have to skip the initial newline.
-                for (DynamicHolder<? extends Affix> afx : alternatives) {
-                    Component augTxt = afx.get().getAugmentingText(current.stack(), current.rarity().get(), current.level());
+                for (DynamicHolder<Affix> afx : alternatives) {
+                    AffixInstance inst = new AffixInstance(afx, current.level(), current.rarity(), current.stack());
+                    Component augTxt = inst.getAugmentingText(this.tooltipCtx);
                     List<FormattedText> split = splitter.splitLines(Component.translatable("%s", augTxt).withStyle(ChatFormatting.YELLOW), ALTERNATIVE_TEXT_WIDTH, augTxt.getStyle());
-                    maxWidth = Math.max(maxWidth, split.stream().map(this.ths().font::width).max(Integer::compare).get());
+                    maxWidth = Math.max(maxWidth, split.stream().map(this.font::width).max(Integer::compare).get());
 
                     if (page.size() + split.size() + 1 > ALTERNATIVE_MAX_LINES) {
                         pages.add(page);
@@ -322,9 +328,9 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
                 AffixInstance inst = this.entries.get(hovered);
                 List<Component> list = new ArrayList<>();
                 list.add(inst.getName(true).copy().withStyle(Style.EMPTY.withColor(0xFFFF80).withUnderlined(true)));
-                list.add(Component.translatable("%s", inst.getAugmentingText()).withStyle(ChatFormatting.YELLOW));
+                list.add(Component.translatable("%s", inst.getAugmentingText(AugmentingScreen.this.tooltipCtx)).withStyle(ChatFormatting.YELLOW));
 
-                AugmentingScreen.this.drawOnLeft(gfx, list, AugmentingScreen.this.getGuiTop() + 33, 150);
+                AugmentingScreen.this.drawOnLeft(gfx, list, AugmentingScreen.this.getGuiTop() + 33); // maxWidth=150
             }
 
             gfx.blit(TEXTURE, this.getX() + this.width - 15, this.getY(), 123 + (this.isOpen ? 15 : 0), 239, 15, 14, 256, 307);
@@ -395,9 +401,9 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
         }
 
         @Override
-        public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+        public boolean mouseScrolled(double pMouseX, double pMouseY, double scrollX, double scrollY) {
             if (this == AugmentingScreen.this.rerollBtn && this.isActive() && this.isHovered()) {
-                int change = pDelta < 0 ? 1 : -1;
+                int change = scrollY < 0 ? 1 : -1;
                 int page = AugmentingScreen.this.alternativePage;
 
                 page = Math.floorMod(page + change, AugmentingScreen.this.alternativePages.size());
@@ -405,7 +411,7 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
                 AugmentingScreen.this.alternativePage = page;
                 return true;
             }
-            return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+            return super.mouseScrolled(pMouseX, pMouseY, scrollX, scrollY);
         }
 
     }

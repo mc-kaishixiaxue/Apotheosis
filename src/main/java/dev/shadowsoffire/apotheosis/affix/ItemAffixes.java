@@ -112,6 +112,10 @@ public final class ItemAffixes {
             }
         }
 
+        public void remove(DynamicHolder<Affix> affix) {
+            this.affixes.removeFloat(affix);
+        }
+
         public void removeIf(Predicate<DynamicHolder<Affix>> filter) {
             this.affixes.keySet().removeIf(filter);
         }

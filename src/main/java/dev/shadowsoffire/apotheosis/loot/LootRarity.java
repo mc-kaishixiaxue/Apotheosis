@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -82,7 +83,7 @@ public class LootRarity implements CodecProvider<LootRarity>, Weighted {
     }
 
     public static LootRarity random(RandomSource rand, WorldTier tier, float luck, Set<LootRarity> pool) {
-        return RarityRegistry.INSTANCE.getRandomItem(rand, tier, luck, pool::contains);
+        return RarityRegistry.INSTANCE.getRandomItem(rand, tier, luck, pool.isEmpty() ? Predicates.alwaysTrue() : pool::contains);
     }
 
     public static <T> Codec<Map<LootRarity, T>> mapCodec(Codec<T> codec) {

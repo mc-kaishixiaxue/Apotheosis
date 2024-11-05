@@ -1,33 +1,34 @@
 package dev.shadowsoffire.apotheosis.util;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Stream;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.MapCodec;
 
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
-import net.minecraftforge.common.crafting.AbstractIngredient;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 
-public class AffixItemIngredient extends AbstractIngredient {
+public class AffixItemIngredient implements ICustomIngredient {
+
+    public static final MapCodec<AffixItemIngredient> CODEC = RarityRegistry.INSTANCE.holderCodec().fieldOf("rarity").xmap(AffixItemIngredient::new, a -> a.rarity);
+    public static final StreamCodec<ByteBuf, AffixItemIngredient> STREAM_CODEC = RarityRegistry.INSTANCE.holderStreamCodec().map(AffixItemIngredient::new, a -> a.rarity);
+    public static final IngredientType<AffixItemIngredient> TYPE = new IngredientType<>(CODEC, STREAM_CODEC);
 
     protected final DynamicHolder<LootRarity> rarity;
-    protected ItemStack[] items;
 
     public AffixItemIngredient(DynamicHolder<LootRarity> rarity) {
         this.rarity = rarity;
@@ -41,17 +42,8 @@ public class AffixItemIngredient extends AbstractIngredient {
     }
 
     @Override
-    public ItemStack[] getItems() {
-        if (this.items == null) {
-            this.items = createFakeDisplayItems(this.rarity.get()).toArray(new ItemStack[0]);
-        }
-        return this.items;
-    }
-
-    @Override
-    protected void invalidate() {
-        super.invalidate();
-        this.items = null;
+    public Stream<ItemStack> getItems() {
+        return createFakeDisplayItems(this.getRarity());
     }
 
     @Override
@@ -59,47 +51,22 @@ public class AffixItemIngredient extends AbstractIngredient {
         return false;
     }
 
-    @Override
-    public IIngredientSerializer<? extends Ingredient> getSerializer() {
-        return Serializer.INSTANCE;
-    }
-
-    @Override
-    public JsonElement toJson() {
-        return new JsonObject();
-    }
-
     public LootRarity getRarity() {
         return this.rarity.get();
     }
 
-    public static class Serializer implements IIngredientSerializer<AffixItemIngredient> {
-        public static final Serializer INSTANCE = new Serializer();
-
-        @Override
-        public AffixItemIngredient parse(FriendlyByteBuf buffer) {
-            var rarity = RarityRegistry.INSTANCE.holder(buffer.readResourceLocation());
-            return new AffixItemIngredient(rarity);
-        }
-
-        @Override
-        public AffixItemIngredient parse(JsonObject json) {
-            var rarity = RarityRegistry.INSTANCE.holder(new ResourceLocation(GsonHelper.getAsString(json, "rarity")));
-            return new AffixItemIngredient(rarity);
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buffer, AffixItemIngredient ingredient) {
-            buffer.writeResourceLocation(ingredient.rarity.getId());
-        }
+    @Override
+    public IngredientType<?> getType() {
+        return TYPE;
     }
 
-    private static List<ItemStack> createFakeDisplayItems(LootRarity rarity) {
+    private static Stream<ItemStack> createFakeDisplayItems(LootRarity rarity) {
         RandomSource src = new LegacyRandomSource(0);
-        List<ItemStack> out = Arrays.asList(Items.DIAMOND_SWORD, Items.DIAMOND_PICKAXE, Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS).stream().map(ItemStack::new).toList();
-        out.forEach(stack -> {
-            LootController.createLootItem(stack, rarity, src);
+        Stream<ItemStack> out = Arrays.asList(Items.DIAMOND_SWORD, Items.DIAMOND_PICKAXE, Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS).stream().map(ItemStack::new);
+        out.map(stack -> {
+            LootController.createLootItem(stack, rarity, src, WorldTier.HAVEN, 0);
             AffixHelper.setName(stack, Component.translatable("text.apotheosis.any_x_item", rarity.toComponent(), "").withStyle(Style.EMPTY.withColor(rarity.getColor())));
+            return stack;
         });
         return out;
     }

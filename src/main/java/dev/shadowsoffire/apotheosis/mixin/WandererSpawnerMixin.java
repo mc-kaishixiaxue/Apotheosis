@@ -13,10 +13,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.npc.WanderingTraderSpawner;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.NaturalSpawner;
 
 @Mixin(WanderingTraderSpawner.class)
 public class WandererSpawnerMixin {
@@ -54,7 +53,7 @@ public class WandererSpawnerMixin {
                         break;
                     }
                 }
-                if (NaturalSpawner.isSpawnPositionOk(SpawnPlacements.Type.ON_GROUND, level, spawnPos, EntityType.WANDERING_TRADER)) {
+                if (SpawnPlacementTypes.ON_GROUND.isSpawnPositionOk(level, spawnPos, EntityType.WANDERING_TRADER)) {
                     cir.setReturnValue(spawnPos.immutable());
                     return;
                 }

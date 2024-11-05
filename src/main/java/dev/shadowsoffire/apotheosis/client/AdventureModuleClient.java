@@ -33,8 +33,8 @@ import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingTableTileRenderer
 import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingScreen;
 import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingTableTileRenderer;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingScreen;
-import dev.shadowsoffire.apotheosis.client.BossSpawnPayload.BossSpawnData;
 import dev.shadowsoffire.apotheosis.client.SocketTooltipRenderer.SocketComponent;
+import dev.shadowsoffire.apotheosis.net.BossSpawnPayload.BossSpawnData;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;

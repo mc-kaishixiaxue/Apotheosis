@@ -1,9 +1,9 @@
 package dev.shadowsoffire.apotheosis;
 
-import dev.shadowsoffire.apotheosis.affix.augmenting.RerollResultPayload;
-import dev.shadowsoffire.apotheosis.client.BossSpawnPayload;
 import dev.shadowsoffire.apotheosis.loot.LootRule;
+import dev.shadowsoffire.apotheosis.net.BossSpawnPayload;
 import dev.shadowsoffire.apotheosis.net.RadialStateChangePayload;
+import dev.shadowsoffire.apotheosis.net.RerollResultPayload;
 import dev.shadowsoffire.placebo.network.PayloadHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

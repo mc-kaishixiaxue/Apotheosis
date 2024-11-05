@@ -1,10 +1,5 @@
 package dev.shadowsoffire.apotheosis.mixin;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.DoubleStream;
 
 import javax.annotation.Nullable;
@@ -13,27 +8,18 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
-import dev.shadowsoffire.apotheosis.ench.asm.EnchHooks;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 @Mixin(value = ItemStack.class, priority = 500)
 public class ItemStackMixin {
@@ -41,8 +27,7 @@ public class ItemStackMixin {
     @Inject(method = "getHoverName", at = @At("RETURN"), cancellable = true)
     public void apoth_affixItemName(CallbackInfoReturnable<Component> cir) {
         ItemStack ths = (ItemStack) (Object) this;
-        CompoundTag afxData = ths.getTagElement(AffixHelper.AFFIX_DATA);
-        if (afxData != null && afxData.contains(AffixHelper.NAME, 8)) {
+        if (ths.has(Components.AFFIX_NAME)) {
             try {
                 Component component = AffixHelper.getName(ths);
                 if (component.getContents() instanceof TranslatableContents tContents) {
@@ -50,14 +35,16 @@ public class ItemStackMixin {
                     tContents.getArgs()[idx] = cir.getReturnValue();
                     cir.setReturnValue(component);
                 }
-                else afxData.remove(AffixHelper.NAME);
+                else {
+                    ths.remove(Components.AFFIX_NAME);
+                }
             }
             catch (Exception exception) {
-                afxData.remove(AffixHelper.NAME);
+                ths.remove(Components.AFFIX_NAME);
             }
         }
 
-        DynamicHolder<LootRarity> rarity = AffixHelper.getRarity(afxData);
+        DynamicHolder<LootRarity> rarity = AffixHelper.getRarity(ths);
         if (rarity.isBound()) {
             Component recolored = cir.getReturnValue().copy().withStyle(s -> s.withColor(rarity.get().getColor()));
             cir.setReturnValue(recolored);

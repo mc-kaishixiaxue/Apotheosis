@@ -1,14 +1,14 @@
 package dev.shadowsoffire.apotheosis.commands;
 
-import java.util.Collections;
-
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
+import dev.shadowsoffire.apotheosis.affix.ItemAffixes;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
@@ -24,8 +24,8 @@ public class LootifyCommand {
             Player p = c.getSource().getPlayerOrException();
             LootRarity rarity = RarityRegistry.INSTANCE.getValue(ResourceLocationArgument.getId(c, "rarity"));
             ItemStack stack = p.getMainHandItem();
-            AffixHelper.setAffixes(stack, Collections.emptyMap());
-            LootController.createLootItem(stack, rarity, p.level().random);
+            AffixHelper.setAffixes(stack, ItemAffixes.EMPTY);
+            LootController.createLootItem(stack, rarity, p.getRandom(), WorldTier.getTier(p), p.getLuck());
             return 0;
         })));
     }

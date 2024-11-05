@@ -10,7 +10,7 @@ import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.AdventureModule;
-import dev.shadowsoffire.apotheosis.client.BossSpawnPayload;
+import dev.shadowsoffire.apotheosis.net.BossSpawnPayload;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;

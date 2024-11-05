@@ -1,20 +1,17 @@
 package dev.shadowsoffire.apotheosis.socket;
 
-import com.google.gson.JsonObject;
-
 import dev.shadowsoffire.apotheosis.AdventureModule.ApothSmithingRecipe;
+import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
-import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
@@ -28,18 +25,18 @@ public class WithdrawalRecipe extends ApothSmithingRecipe implements ReactiveSmi
      * Used to check if a recipe matches current crafting inventory
      */
     @Override
-    public boolean matches(Container pInv, Level pLevel) {
-        ItemStack base = pInv.getItem(BASE);
-        ItemStack sigils = pInv.getItem(ADDITION);
-        return base.getCount() == 1 && sigils.getItem() == Items.SIGIL_OF_WITHDRAWAL.get() && SocketHelper.getGems(base).stream().anyMatch(GemInstance::isValid);
+    public boolean matches(SmithingRecipeInput inv, Level level) {
+        ItemStack base = inv.getItem(BASE);
+        ItemStack sigils = inv.getItem(ADDITION);
+        return base.getCount() == 1 && sigils.is(Items.SIGIL_OF_WITHDRAWAL) && SocketHelper.getGems(base).stream().anyMatch(GemInstance::isValid);
     }
 
     /**
      * Returns an Item that is the result of this recipe
      */
     @Override
-    public ItemStack assemble(Container pInv, RegistryAccess regs) {
-        ItemStack out = pInv.getItem(BASE).copy();
+    public ItemStack assemble(SmithingRecipeInput inv, HolderLookup.Provider regs) {
+        ItemStack out = inv.getItem(BASE).copy();
         if (out.isEmpty()) {
             return ItemStack.EMPTY;
         }
@@ -54,7 +51,6 @@ public class WithdrawalRecipe extends ApothSmithingRecipe implements ReactiveSmi
         for (int i = 0; i < gems.size(); i++) {
             ItemStack stack = gems.get(i).gemStack();
             if (!stack.isEmpty()) {
-                stack.removeTagKey(GemItem.UUID_ARRAY);
                 if (!player.addItem(stack)) Block.popResource(player.level(), player.blockPosition(), stack);
             }
         }
@@ -63,7 +59,7 @@ public class WithdrawalRecipe extends ApothSmithingRecipe implements ReactiveSmi
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return Serializer.INSTANCE;
+        return Apoth.RecipeSerializers.WITHDRAWAL.value();
     }
 
     @Override
@@ -74,26 +70,6 @@ public class WithdrawalRecipe extends ApothSmithingRecipe implements ReactiveSmi
     @Override
     public boolean isSpecial() {
         return true;
-    }
-
-    public static class Serializer implements RecipeSerializer<WithdrawalRecipe> {
-
-        public static Serializer INSTANCE = new Serializer();
-
-        @Override
-        public WithdrawalRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
-            return new WithdrawalRecipe();
-        }
-
-        @Override
-        public WithdrawalRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            return new WithdrawalRecipe();
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf pBuffer, WithdrawalRecipe pRecipe) {
-
-        }
     }
 
 }

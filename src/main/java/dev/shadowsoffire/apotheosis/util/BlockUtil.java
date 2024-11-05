@@ -19,9 +19,10 @@ import net.minecraft.world.level.block.JigsawBlock;
 import net.minecraft.world.level.block.StructureBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.UsernameCache;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.common.UsernameCache;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.event.EventHooks;
 
 public class BlockUtil {
 
@@ -78,7 +79,7 @@ public class BlockUtil {
                     ItemStack itemstack1 = itemstack.copy();
                     boolean canHarvest = blockstate.canHarvestBlock(world, pos, player);
                     itemstack.mineBlock(world, blockstate, pos, player);
-                    if (itemstack.isEmpty() && !itemstack1.isEmpty()) net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, itemstack1, InteractionHand.MAIN_HAND);
+                    if (itemstack.isEmpty() && !itemstack1.isEmpty()) EventHooks.onPlayerDestroyItem(player, itemstack1, InteractionHand.MAIN_HAND);
                     boolean removed = removeBlock(world, player, pos, canHarvest);
 
                     if (removed && canHarvest) {

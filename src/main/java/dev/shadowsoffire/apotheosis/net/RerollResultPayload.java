@@ -1,51 +1,48 @@
-package dev.shadowsoffire.apotheosis.client;
+package dev.shadowsoffire.apotheosis.net;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.mutable.MutableInt;
-
 import dev.shadowsoffire.apotheosis.Apotheosis;
+import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixRegistry;
+import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingScreen;
 import dev.shadowsoffire.placebo.network.PayloadProvider;
+import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record BossSpawnPayload(BlockPos pos, int color) implements CustomPacketPayload {
+public record RerollResultPayload(DynamicHolder<Affix> newAffix) implements CustomPacketPayload {
 
-    public static final Type<BossSpawnPayload> TYPE = new Type<>(Apotheosis.loc("boss_spawn"));
+    public static final Type<RerollResultPayload> TYPE = new Type<>(Apotheosis.loc("reroll_result"));
 
-    public static final StreamCodec<ByteBuf, BossSpawnPayload> CODEC = StreamCodec.composite(
-        BlockPos.STREAM_CODEC, BossSpawnPayload::pos,
-        ByteBufCodecs.INT, BossSpawnPayload::color,
-        BossSpawnPayload::new);
+    public static final StreamCodec<ByteBuf, RerollResultPayload> CODEC = AffixRegistry.INSTANCE.holderStreamCodec().map(RerollResultPayload::new, RerollResultPayload::newAffix);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 
-    public static class Provider implements PayloadProvider<BossSpawnPayload> {
+    public static class Provider implements PayloadProvider<RerollResultPayload> {
 
         @Override
-        public Type<BossSpawnPayload> getType() {
+        public Type<RerollResultPayload> getType() {
             return TYPE;
         }
 
         @Override
-        public StreamCodec<? super RegistryFriendlyByteBuf, BossSpawnPayload> getCodec() {
+        public StreamCodec<? super RegistryFriendlyByteBuf, RerollResultPayload> getCodec() {
             return CODEC;
         }
 
         @Override
-        public void handle(BossSpawnPayload msg, IPayloadContext ctx) {
-            AdventureModuleClient.onBossSpawn(msg.pos, msg.color);
+        public void handle(RerollResultPayload msg, IPayloadContext ctx) {
+            AugmentingScreen.handleRerollResult(msg.newAffix());
         }
 
         @Override
@@ -62,10 +59,6 @@ public record BossSpawnPayload(BlockPos pos, int color) implements CustomPacketP
         public String getVersion() {
             return "1";
         }
-
-    }
-
-    public static record BossSpawnData(BlockPos pos, int color, MutableInt ticks) {
 
     }
 

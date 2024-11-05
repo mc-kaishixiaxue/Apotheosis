@@ -2,13 +2,14 @@ package dev.shadowsoffire.apotheosis.gen;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.AdventureModule;
+import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
@@ -17,14 +18,14 @@ import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 /**
  * Boss Dungeon Feature (Variant 2) - Credit to BigAl607 on discord for the structure.
  */
 public class BossDungeonFeature2 extends Feature<NoneFeatureConfiguration> {
 
-    public static final ResourceLocation TEMPLATE_ID = new ResourceLocation(Apotheosis.MODID, "boss_1");
+    public static final ResourceLocation TEMPLATE_ID = Apotheosis.loc("boss_1");
 
     protected static int xRadius = 4;
     protected static int floor = -1;
@@ -84,11 +85,11 @@ public class BossDungeonFeature2 extends Feature<NoneFeatureConfiguration> {
             BlockPos chest2 = pos.offset(!rand1 ? xRadius - 1 : -xRadius + 1, 0, !rand2 ? zRadius - 1 : -zRadius + 1);
 
             world.setBlock(chest1, StructurePiece.reorient(world, chest1, Blocks.CHEST.defaultBlockState()), 2);
-            RandomizableContainerBlockEntity.setLootTable(world, rand, chest1, BuiltInLootTables.SIMPLE_DUNGEON);
+            RandomizableContainer.setBlockEntityLootTable(world, rand, chest1, BuiltInLootTables.SIMPLE_DUNGEON);
             world.setBlock(chest2, StructurePiece.reorient(world, chest2, Blocks.CHEST.defaultBlockState()), 2);
-            RandomizableContainerBlockEntity.setLootTable(world, rand, chest2, BuiltInLootTables.SIMPLE_DUNGEON);
+            RandomizableContainer.setBlockEntityLootTable(world, rand, chest2, BuiltInLootTables.SIMPLE_DUNGEON);
 
-            world.setBlock(pos, dev.shadowsoffire.apotheosis.Adventure.Blocks.BOSS_SPAWNER.get().defaultBlockState(), 2);
+            world.setBlock(pos, Apoth.Blocks.BOSS_SPAWNER.value().defaultBlockState(), 2);
             AdventureModule.debugLog(pos, "Boss Dungeon (Variant 2)");
             return true;
         }

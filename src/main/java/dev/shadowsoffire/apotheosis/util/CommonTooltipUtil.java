@@ -6,17 +6,16 @@ import com.google.common.base.Predicates;
 
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
-import dev.shadowsoffire.apothic_attributes.api.IFormattableAttribute;
-import dev.shadowsoffire.attributeslib.AttributesLib;
+import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.neoforged.fml.loading.FMLEnvironment;
 
 public class CommonTooltipUtil {
@@ -29,10 +28,11 @@ public class CommonTooltipUtil {
         tooltip.accept(CommonComponents.EMPTY);
         tooltip.accept(Component.translatable("info.apotheosis.boss_modifiers").withStyle(ChatFormatting.GRAY));
         AttributeMap map = entity.getAttributes();
-        ForgeRegistries.ATTRIBUTES.getValues().stream().map(map::getInstance).filter(Predicates.notNull()).forEach(inst -> {
+        BuiltInRegistries.ATTRIBUTE.holders().map(map::getInstance).filter(Predicates.notNull()).forEach(inst -> {
             for (AttributeModifier modif : inst.getModifiers()) {
+                // TODO: Figure out how to identify boss modifiers after the fact.
                 if (modif.getName().startsWith("placebo_random_modifier_")) {
-                    tooltip.accept(IFormattableAttribute.toComponent(inst.getAttribute(), modif, AttributesLib.getTooltipFlag()));
+                    tooltip.accept(inst.getAttribute().value().toComponent(modif, ApothicAttributes.getTooltipFlag()));
                 }
             }
         });

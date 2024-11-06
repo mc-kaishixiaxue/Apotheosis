@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.base.Predicates;
-import com.ibm.icu.util.BytesTrie.Result;
 
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
@@ -17,7 +16,6 @@ import dev.shadowsoffire.apotheosis.commands.BossCommand;
 import dev.shadowsoffire.apotheosis.commands.CategoryCheckCommand;
 import dev.shadowsoffire.apotheosis.commands.GemCommand;
 import dev.shadowsoffire.apotheosis.commands.LootifyCommand;
-import dev.shadowsoffire.apotheosis.commands.ModifierCommand;
 import dev.shadowsoffire.apotheosis.commands.RarityCommand;
 import dev.shadowsoffire.apotheosis.commands.SocketCommand;
 import dev.shadowsoffire.apotheosis.compat.GameStagesCompat.IStaged;
@@ -27,7 +25,6 @@ import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
 import dev.shadowsoffire.apothic_attributes.event.ApotheosisCommandEvent;
 import dev.shadowsoffire.placebo.events.AnvilLandEvent;
-import dev.shadowsoffire.placebo.events.ItemUseEvent;
 import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -47,25 +44,27 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent.FinalizeSpawn;
-import net.minecraftforge.event.entity.living.ShieldBlockEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
+import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
+import net.neoforged.neoforge.event.entity.living.MobDespawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.HarvestCheck;
+import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 public class AdventureEvents {
 
@@ -74,7 +73,6 @@ public class AdventureEvents {
         RarityCommand.register(e.getRoot());
         CategoryCheckCommand.register(e.getRoot());
         LootifyCommand.register(e.getRoot());
-        ModifierCommand.register(e.getRoot());
         GemCommand.register(e.getRoot());
         SocketCommand.register(e.getRoot());
         BossCommand.register(e.getRoot());
@@ -89,10 +87,10 @@ public class AdventureEvents {
         affixes.forEach((afx, inst) -> inst.addModifiers(e));
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void preventBossSuffocate(LivingHurtEvent e) {
+    @SubscribeEvent
+    public void preventBossSuffocate(EntityInvulnerabilityCheckEvent e) {
         if (e.getSource().is(DamageTypes.IN_WALL) && e.getEntity().getPersistentData().contains("apoth.boss")) {
-            e.setCanceled(true);
+            e.setInvulnerable(true);
         }
     }
 
@@ -152,15 +150,15 @@ public class AdventureEvents {
     }
 
     @SubscribeEvent
-    public void onItemUse(ItemUseEvent e) {
+    public void onItemUse(UseItemOnBlockEvent e) {
         ItemStack s = e.getItemStack();
-        InteractionResult socketRes = SocketHelper.getGems(s).onItemUse(e.getContext());
+        InteractionResult socketRes = SocketHelper.getGems(s).onItemUse(e.getUseOnContext());
         if (socketRes != null) {
             e.setCanceled(true);
             e.setCancellationResult(socketRes);
         }
 
-        InteractionResult afxRes = AffixHelper.streamAffixes(s).map(afx -> afx.onItemUse(e.getContext())).filter(Predicates.notNull()).findFirst().orElse(null);
+        InteractionResult afxRes = AffixHelper.streamAffixes(s).map(afx -> afx.onItemUse(e.getUseOnContext())).filter(Predicates.notNull()).findFirst().orElse(null);
         if (afxRes != null) {
             e.setCanceled(true);
             e.setCancellationResult(afxRes);
@@ -168,7 +166,7 @@ public class AdventureEvents {
     }
 
     @SubscribeEvent
-    public void shieldBlock(ShieldBlockEvent e) {
+    public void shieldBlock(LivingShieldBlockEvent e) {
         ItemStack stack = e.getEntity().getUseItem();
         var affixes = AffixHelper.getAffixes(stack);
         float blocked = e.getBlockedDamage();
@@ -194,7 +192,7 @@ public class AdventureEvents {
         if (e.getSource().getEntity() instanceof ServerPlayer p && e.getEntity() instanceof Monster) {
             if (p instanceof FakePlayer) return;
             float chance = AdventureConfig.gemDropChance + (e.getEntity().getPersistentData().contains("apoth.boss") ? AdventureConfig.gemBossBonus : 0);
-            if (p.random.nextFloat() <= chance) {
+            if (p.getRandom().nextFloat() <= chance) {
                 Entity ent = e.getEntity();
                 e.getDrops()
                     .add(new ItemEntity(ent.level(), ent.getX(), ent.getY(), ent.getZ(), GemRegistry.createRandomGemStack(p.random, (ServerLevel) p.level(), p.getLuck(), IDimensional.matches(p.level()), IStaged.matches(p)), 0, 0, 0));
@@ -283,16 +281,16 @@ public class AdventureEvents {
 
     @SubscribeEvent
     @SuppressWarnings("deprecation")
-    public void update(LivingTickEvent e) {
-        LivingEntity entity = e.getEntity();
+    public void update(EntityTickEvent.Post e) {
+        Entity entity = e.getEntity();
         if (entity.getPersistentData().contains("apoth.burns_in_sun")) {
             // Copy of Mob#isSunBurnTick()
             if (entity.level().isDay() && !entity.level().isClientSide) {
                 float f = entity.getLightLevelDependentMagicValue();
                 BlockPos blockpos = BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ());
                 boolean flag = entity.isInWaterRainOrBubble() || entity.isInPowderSnow || entity.wasInPowderSnow;
-                if (f > 0.5F && entity.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && !flag && entity.level().canSeeSky(blockpos)) {
-                    entity.setSecondsOnFire(8);
+                if (f > 0.5F && entity.getRandom().nextFloat() * 30.0F < (f - 0.4F) * 2.0F && !flag && entity.level().canSeeSky(blockpos)) {
+                    entity.setRemainingFireTicks(160);
                 }
             }
         }
@@ -303,7 +301,7 @@ public class AdventureEvents {
      * Without this, they'll pile up forever - https://github.com/Shadows-of-Fire/Apotheosis/issues/1248
      */
     @SubscribeEvent
-    public void despawn(MobSpawnEvent.AllowDespawn e) {
+    public void despawn(MobDespawnEvent e) {
         if (e.getEntity() instanceof AbstractGolem g && g.tickCount > 12000 && g.getPersistentData().getBoolean("apoth.boss")) {
             Entity player = g.level().getNearestPlayer(g, -1.0D);
             if (player != null) {
@@ -311,7 +309,7 @@ public class AdventureEvents {
                 int despawnDist = g.getType().getCategory().getDespawnDistance();
                 int dsDistSq = despawnDist * despawnDist;
                 if (dist > dsDistSq) {
-                    e.setResult(Result.ALLOW);
+                    e.setResult(MobDespawnEvent.Result.ALLOW);
                 }
             }
         }

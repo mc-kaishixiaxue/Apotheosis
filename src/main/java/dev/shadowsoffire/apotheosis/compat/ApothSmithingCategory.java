@@ -69,7 +69,7 @@ public class ApothSmithingCategory implements IRecipeCategory<SmithingRecipe> {
         return EXTENSIONS.containsKey(recipe.getClass());
     }
 
-    public static interface Extension<R extends SmithingRecipe> extends IRecipeCategoryExtension {
+    public static interface Extension<R extends SmithingRecipe> extends IRecipeCategoryExtension<R> {
 
         public void setRecipe(IRecipeLayoutBuilder builder, R recipe, IFocusGroup focuses);
 

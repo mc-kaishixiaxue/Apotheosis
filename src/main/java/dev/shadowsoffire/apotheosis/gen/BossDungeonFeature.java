@@ -2,12 +2,13 @@ package dev.shadowsoffire.apotheosis.gen;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.AdventureModule;
+import dev.shadowsoffire.apotheosis.Apoth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
@@ -106,14 +107,14 @@ public class BossDungeonFeature extends Feature<NoneFeatureConfiguration> {
 
                         if (nearbySolids == 1) {
                             world.setBlock(blockpos2, StructurePiece.reorient(world, blockpos2, Blocks.CHEST.defaultBlockState()), 2);
-                            RandomizableContainerBlockEntity.setLootTable(world, rand, blockpos2, BuiltInLootTables.SIMPLE_DUNGEON);
+                            RandomizableContainer.setBlockEntityLootTable(world, rand, blockpos2, BuiltInLootTables.SIMPLE_DUNGEON);
                             break;
                         }
                     }
                 }
             }
 
-            world.setBlock(pos, dev.shadowsoffire.apotheosis.Adventure.Blocks.BOSS_SPAWNER.get().defaultBlockState(), 2);
+            world.setBlock(pos, Apoth.Blocks.BOSS_SPAWNER.value().defaultBlockState(), 2);
             AdventureModule.debugLog(pos, "Boss Dungeon");
 
             return true;

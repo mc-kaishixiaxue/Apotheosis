@@ -86,7 +86,7 @@ public class BossEvents {
                                 if (p.distanceToSqr(tPos) <= AdventureConfig.bossAnnounceRange * AdventureConfig.bossAnnounceRange) {
                                     ((ServerPlayer) p).connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("info.apotheosis.boss_spawn", name, (int) boss.getX(), (int) boss.getY())));
                                     TextColor color = name.getStyle().getColor();
-                                    PacketDistributor.sendToPlayer(player, new BossSpawnPayload(boss.blockPosition(), color == null ? 0xFFFFFF : color.getValue()));
+                                    PacketDistributor.sendToPlayer((ServerPlayer) player, new BossSpawnPayload(boss.blockPosition(), color == null ? 0xFFFFFF : color.getValue()));
                                 }
                             });
                         }

@@ -4,6 +4,7 @@ import com.google.common.base.Predicates;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.util.CommonTooltipUtil;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -29,12 +30,12 @@ public class AdventureHwylaPlugin implements IWailaPlugin, IEntityComponentProvi
 
     @Override
     public void register(IWailaCommonRegistration reg) {
-        if (Apotheosis.enableAdventure) reg.registerEntityDataProvider(this, LivingEntity.class);
+        reg.registerEntityDataProvider(this, LivingEntity.class);
     }
 
     @Override
     public void registerClient(IWailaClientRegistration reg) {
-        if (Apotheosis.enableAdventure) reg.registerEntityComponent(this, Entity.class);
+        reg.registerEntityComponent(this, Entity.class);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class AdventureHwylaPlugin implements IWailaPlugin, IEntityComponentProvi
             AttributeMap map = living.getAttributes();
             for (Tag t : bossAttribs) {
                 CompoundTag tag = (CompoundTag) t;
-                Attribute attrib = ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation(tag.getString("Name")));
+                Attribute attrib = BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.tryParse(tag.getString("Name")));
                 map.getInstance(attrib).load(tag);
             }
             accessor.getServerData().remove("apoth.modifiers");

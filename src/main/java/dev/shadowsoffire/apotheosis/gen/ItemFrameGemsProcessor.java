@@ -1,6 +1,5 @@
 package dev.shadowsoffire.apotheosis.gen;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import dev.shadowsoffire.apotheosis.Adventure;
@@ -22,7 +21,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 
 public class ItemFrameGemsProcessor extends StructureProcessor {
 
-    public static final MapCodec<StructureProcessor> CODEC = Codec.unit(new ItemFrameGemsProcessor(null));
+    public static final MapCodec<StructureProcessor> CODEC = MapCodec.unit(new ItemFrameGemsProcessor(null));
 
     // public static final Codec<ItemFrameGemsProcessor> CODEC = RecordCodecBuilder
     // .create(instance -> instance.group(ResourceLocation.CODEC.fieldOf("loot_table").forGetter(ItemFrameGemsProcessor::getLootTable)).apply(instance,

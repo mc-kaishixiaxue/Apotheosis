@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.Adventure.Blocks;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe.OutputData;
 import mezz.jei.api.constants.VanillaTypes;
@@ -28,7 +28,7 @@ import net.minecraft.world.item.ItemStack;
 @SuppressWarnings("removal")
 public class SalvagingCategory implements IRecipeCategory<SalvagingRecipe> {
 
-    public static final ResourceLocation TEXTURES = new ResourceLocation(Apotheosis.MODID, "textures/gui/salvage_jei.png");
+    public static final ResourceLocation TEXTURES = Apotheosis.loc("textures/gui/salvage_jei.png");
 
     private final Component title = Component.translatable("title.apotheosis.salvaging");
     private final IDrawable background;
@@ -36,7 +36,7 @@ public class SalvagingCategory implements IRecipeCategory<SalvagingRecipe> {
 
     public SalvagingCategory(IGuiHelper guiHelper) {
         this.background = guiHelper.drawableBuilder(TEXTURES, 0, 0, 98, 74).addPadding(0, 0, 0, 0).build();
-        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.SALVAGING_TABLE.get()));
+        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.SALVAGING_TABLE));
     }
 
     @Override
@@ -69,7 +69,7 @@ public class SalvagingCategory implements IRecipeCategory<SalvagingRecipe> {
         for (var d : outputs) {
             pose.pushPose();
             pose.translate(0, 0, 200);
-            String text = String.format("%d-%d", d.getMin(), d.getMax());
+            String text = String.format("%d-%d", d.min(), d.max());
 
             float x = 59 + 18 * (idx % 2) + (16 - font.width(text) * 0.5F);
             float y = 23F + 18 * (idx / 2);
@@ -91,7 +91,7 @@ public class SalvagingCategory implements IRecipeCategory<SalvagingRecipe> {
         List<OutputData> outputs = recipe.getOutputs();
         int idx = 0;
         for (var d : outputs) {
-            builder.addSlot(RecipeIngredientRole.OUTPUT, 59 + 18 * (idx % 2), 11 + 18 * (idx / 2)).addIngredient(VanillaTypes.ITEM_STACK, d.getStack());
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 59 + 18 * (idx % 2), 11 + 18 * (idx / 2)).addIngredient(VanillaTypes.ITEM_STACK, d.stack());
             idx++;
         }
     }

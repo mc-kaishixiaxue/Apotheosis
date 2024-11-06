@@ -34,12 +34,6 @@ public class BossRegistry extends TieredDynamicRegistry<ApothBoss> {
     }
 
     @Override
-    protected void validateItem(ResourceLocation key, ApothBoss item) {
-        super.validateItem(key, item);
-        item.validate(key);
-    }
-
-    @Override
     protected void registerBuiltinCodecs() {
         this.registerDefaultCodec(Apotheosis.loc("boss"), ApothBoss.CODEC);
     }

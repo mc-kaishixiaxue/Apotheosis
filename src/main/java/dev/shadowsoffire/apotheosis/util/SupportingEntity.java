@@ -6,18 +6,18 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.placebo.json.NBTAdapter;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 
 // TODO: Remove offsets. Maybe setup a spawn range and use Gateways' inward spiral?
 public class SupportingEntity {
 
     public static Codec<SupportingEntity> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            ForgeRegistries.ENTITY_TYPES.getCodec().fieldOf("entity").forGetter(t -> t.entity),
+            BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(t -> t.entity),
             NBTAdapter.EITHER_CODEC.optionalFieldOf("nbt").forGetter(t -> Optional.ofNullable(t.nbt)),
             Codec.DOUBLE.optionalFieldOf("x", 0D).forGetter(t -> t.x),
             Codec.DOUBLE.optionalFieldOf("y", 0D).forGetter(t -> t.y),
@@ -38,7 +38,9 @@ public class SupportingEntity {
 
     public Mob create(Level level, double x, double y, double z) {
         Mob ent = (Mob) this.entity.create(level);
-        if (this.nbt != null) ent.deserializeNBT(this.nbt);
+        if (this.nbt != null) {
+            ent.load(this.nbt);
+        }
         ent.setPos(this.x + x, this.y + y, this.z + z);
         return ent;
     }

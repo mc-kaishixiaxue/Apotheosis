@@ -5,10 +5,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import dev.shadowsoffire.apotheosis.Apoth.RecipeTypes;
 import dev.shadowsoffire.apotheosis.Adventure;
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.AdventureModule.ApothSmithingRecipe;
+import dev.shadowsoffire.apotheosis.Apoth;
+import dev.shadowsoffire.apotheosis.Apoth.RecipeTypes;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe.OutputData;
@@ -39,6 +40,7 @@ import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -46,7 +48,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
-import net.minecraftforge.registries.ForgeRegistries;
 
 @JeiPlugin
 public class AdventureJEIPlugin implements IModPlugin {
@@ -57,14 +58,13 @@ public class AdventureJEIPlugin implements IModPlugin {
 
     @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation(Apotheosis.MODID, "adventure_module");
+        return Apotheosis.loc("adventure_module");
     }
 
     @Override
     @SuppressWarnings("removal")
     public void registerRecipes(IRecipeRegistration reg) {
-        if (!Apotheosis.enableAdventure) return;
-        ItemStack gem = new ItemStack(Adventure.Items.GEM.get());
+        ItemStack gem = new ItemStack(Apoth.Items.GEM);
         Gem gemObj = GemRegistry.INSTANCE.getRandomItem(new LegacyRandomSource(1854));
         GemItem.setGem(gem, gemObj);
         AffixHelper.setRarity(gem, gemObj.getMaxRarity());
@@ -92,7 +92,6 @@ public class AdventureJEIPlugin implements IModPlugin {
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration reg) {
-        if (!Apotheosis.enableAdventure) return;
         reg.addRecipeCategories(new ApothSmithingCategory(reg.getJeiHelpers().getGuiHelper()));
         reg.addRecipeCategories(new SalvagingCategory(reg.getJeiHelpers().getGuiHelper()));
         reg.addRecipeCategories(new GemCuttingCategory(reg.getJeiHelpers().getGuiHelper()));
@@ -100,16 +99,14 @@ public class AdventureJEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration reg) {
-        if (!Apotheosis.enableAdventure) return;
         reg.addRecipeCatalyst(new ItemStack(Blocks.SMITHING_TABLE), APO_SMITHING);
-        reg.addRecipeCatalyst(new ItemStack(Adventure.Blocks.SALVAGING_TABLE.get()), SALVAGING);
-        reg.addRecipeCatalyst(new ItemStack(Adventure.Blocks.GEM_CUTTING_TABLE.get()), GEM_CUTTING);
+        reg.addRecipeCatalyst(new ItemStack(Apoth.Blocks.SALVAGING_TABLE.value()), SALVAGING);
+        reg.addRecipeCatalyst(new ItemStack(Apoth.Blocks.GEM_CUTTING_TABLE.value()), GEM_CUTTING);
     }
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration reg) {
-        if (!Apotheosis.enableAdventure) return;
-        reg.registerSubtypeInterpreter(Adventure.Items.GEM.get(), new GemSubtypes());
+        reg.registerSubtypeInterpreter(Apoth.Items.GEM.value(), new GemSubtypes());
     }
 
     private static final List<ItemStack> DUMMY_INPUTS = Arrays.asList(Items.GOLDEN_SWORD, Items.DIAMOND_PICKAXE, Items.STONE_AXE, Items.IRON_CHESTPLATE, Items.TRIDENT).stream().map(ItemStack::new).toList();
@@ -144,8 +141,10 @@ public class AdventureJEIPlugin implements IModPlugin {
         @Override
         public String apply(ItemStack stack, UidContext context) {
             GemInstance inst = GemInstance.unsocketed(stack);
-            if (!inst.isValidUnsocketed()) return ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
-            return inst.gem().getId() + "@" + inst.rarity().getId();
+            if (!inst.isValidUnsocketed()) {
+                return BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+            }
+            return inst.gem().getId() + "@" + inst.purity().ordinal();
         }
 
     }

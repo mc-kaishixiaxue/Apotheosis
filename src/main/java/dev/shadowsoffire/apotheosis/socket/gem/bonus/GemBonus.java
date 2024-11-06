@@ -139,7 +139,7 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
     public void onArrowFired(GemInstance inst, LivingEntity user, AbstractArrow arrow) {}
 
     /**
-     * Called when {@link Item#onItemUse(ItemUseContext)} would be called for an item with this affix.
+     * Called when {@link Item#useOn(ItemUseContext)} would be called for an item with this affix.
      * Return null to not impact the original result type.
      */
     @Nullable

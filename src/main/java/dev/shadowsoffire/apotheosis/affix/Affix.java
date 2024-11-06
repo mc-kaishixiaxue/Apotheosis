@@ -158,7 +158,7 @@ public abstract class Affix implements CodecProvider<Affix>, Weighted {
     public void onArrowFired(AffixInstance inst, LivingEntity user, AbstractArrow arrow) {}
 
     /**
-     * Called when {@link Item#onItemUse(ItemUseContext)} would be called for an item with this affix.
+     * Called when {@link Item#useOn(ItemUseContext)} would be called for an item with this affix.
      * Return null to not impact the original result type.
      */
     @Nullable

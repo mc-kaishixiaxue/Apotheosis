@@ -374,7 +374,7 @@ public class NameHelper {
                     itemsByTier.computeIfAbsent(mat, m -> new ArrayList<>()).add(i);
                 }
                 if (i instanceof ArmorItem) {
-                    ArmorMaterial mat = ((ArmorItem) i).getMaterial();
+                    ResourceKey<ArmorMaterial> mat = ((ArmorItem) i).getMaterial().getKey();
                     armorsByTier.computeIfAbsent(mat, m -> new ArrayList<>()).add(i);
                 }
             }

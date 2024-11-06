@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
 import dev.shadowsoffire.apotheosis.AdventureModule;
-import net.darkhax.gamestages.GameStageHelper;
 import net.minecraft.world.entity.player.Player;
 
 public class GameStagesCompat {
@@ -44,7 +43,7 @@ public class GameStagesCompat {
     private static class Inner {
 
         private static boolean hasStage(Player player, Set<String> stages) {
-            return GameStageHelper.hasAnyOf(player, stages);
+            return false; // GameStageHelper.hasAnyOf(player, stages);
         }
 
     }

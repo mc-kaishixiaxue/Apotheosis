@@ -1,6 +1,7 @@
 package dev.shadowsoffire.apotheosis.compat;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
@@ -11,14 +12,15 @@ import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
+import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.placebo.color.GradientColor;
 import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.InteractionResult;
@@ -37,23 +39,24 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import twilightforest.TwilightForestMod;
 import twilightforest.capabilities.CapabilityList;
 import twilightforest.entity.monster.Redcap;
 
 public class AdventureTwilightCompat {
 
-    protected static final RegistryObject<Item> ORE_MAGNET = RegistryObject.create(new ResourceLocation("twilightforest", "ore_magnet"), Registries.ITEM, Apotheosis.MODID);
-    protected static final RegistryObject<EntityType<Redcap>> REDCAP = RegistryObject.create(new ResourceLocation("twilightforest", "redcap"), Registries.ENTITY_TYPE, Apotheosis.MODID);
+    protected static final Holder<Item> ORE_MAGNET = DeferredHolder.create(Registries.ITEM, TwilightForestMod.prefix("ore_magnet"));
+    protected static final Supplier<EntityType<Redcap>> REDCAP = DeferredHolder.create(Registries.ENTITY_TYPE, TwilightForestMod.prefix("redcap"));
 
     public static void register() {
         GemBonus.CODEC.register(Apotheosis.loc("twilight_ore_magnet"), OreMagnetBonus.CODEC);
         GemBonus.CODEC.register(Apotheosis.loc("twilight_treasure_goblin"), TreasureGoblinBonus.CODEC);
         GemBonus.CODEC.register(Apotheosis.loc("twilight_fortification"), FortificationBonus.CODEC);
-        MinecraftForge.EVENT_BUS.addListener(AdventureTwilightCompat::doGoblins);
+        NeoForge.EVENT_BUS.addListener(AdventureTwilightCompat::doGoblins);
     }
 
     public static class OreMagnetBonus extends GemBonus {
@@ -72,7 +75,7 @@ public class AdventureTwilightCompat {
         }
 
         @Override
-        public InteractionResult onItemUse(ItemStack gem, LootRarity rarity, UseOnContext ctx) {
+        public InteractionResult onItemUse(GemInstance inst, UseOnContext ctx) {
             BlockState state = ctx.getLevel().getBlockState(ctx.getClickedPos());
             if (state.isAir()) return null;
             Level level = ctx.getLevel();
@@ -101,11 +104,6 @@ public class AdventureTwilightCompat {
         @Override
         public boolean supports(LootRarity rarity) {
             return this.values.containsKey(rarity);
-        }
-
-        @Override
-        public int getNumberOfUUIDs() {
-            return 0;
         }
 
         @Override
@@ -173,11 +171,6 @@ public class AdventureTwilightCompat {
         @Override
         public boolean supports(LootRarity rarity) {
             return this.values.containsKey(rarity);
-        }
-
-        @Override
-        public int getNumberOfUUIDs() {
-            return 0;
         }
 
         @Override
@@ -249,11 +242,6 @@ public class AdventureTwilightCompat {
         @Override
         public boolean supports(LootRarity rarity) {
             return this.values.containsKey(rarity);
-        }
-
-        @Override
-        public int getNumberOfUUIDs() {
-            return 0;
         }
 
         @Override

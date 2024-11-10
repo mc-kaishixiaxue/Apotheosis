@@ -9,15 +9,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Keyable;
 import com.mojang.serialization.MapCodec;
 
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.color.GradientColor;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 
 /**
@@ -71,11 +69,11 @@ public enum Purity implements StringRepresentable {
         return BY_ID.apply(Math.max(p1.ordinal(), p2.ordinal()));
     }
 
-    public static Purity random(RandomSource rand, WorldTier tier, float luck) {
+    public static Purity random(GenContext ctx) {
         return Purity.CRACKED; // TODO: Implement
     }
 
-    public static Purity random(RandomSource rand, WorldTier tier, float luck, Set<LootRarity> pool) {
+    public static Purity random(GenContext ctx, Set<Purity> pool) {
         return Purity.CRACKED; // TODO: Implement
     }
 

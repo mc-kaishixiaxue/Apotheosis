@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apoth;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
@@ -55,18 +55,20 @@ public class BossSpawnerBlock extends Block implements TickingEntityBlock {
         }
 
         @Override
-        public void serverTick(Level pLevel, BlockPos pPos, BlockState pState) {
+        public void serverTick(Level pLevel, BlockPos pos, BlockState pState) {
             if (this.ticks++ % 40 == 0) {
                 Optional<Player> opt = this.level.getEntities(EntityType.PLAYER, new AABB(this.worldPosition).inflate(8, 8, 8), EntitySelector.NO_CREATIVE_OR_SPECTATOR).stream().findFirst();
                 opt.ifPresent(player -> {
                     this.level.setBlockAndUpdate(this.worldPosition, Blocks.AIR.defaultBlockState());
-                    BlockPos pos = this.worldPosition;
-                    ApothBoss bossItem = !this.item.isBound() ? BossRegistry.INSTANCE.getRandomItem(this.level.getRandom(), player) : this.item.get();
+
+                    GenContext ctx = GenContext.forPlayerAtPos(level.random, player, pos);
+                    ApothBoss bossItem = !this.item.isBound() ? BossRegistry.INSTANCE.getRandomItem(ctx) : this.item.get();
                     if (bossItem == null) {
                         AdventureModule.LOGGER.error("A boss spawner attempted to spawn a boss at {} in {}, but no bosses were available!", this.getBlockPos(), this.level.dimension().location());
                         return;
                     }
-                    Mob entity = bossItem.createBoss((ServerLevel) this.level, pos, this.level.getRandom(), WorldTier.getTier(player), player.getLuck());
+
+                    Mob entity = bossItem.createBoss((ServerLevel) this.level, pos, ctx);
                     entity.setTarget(player);
                     entity.setPersistenceRequired();
                     ((ServerLevel) this.level).addFreshEntityWithPassengers(entity);

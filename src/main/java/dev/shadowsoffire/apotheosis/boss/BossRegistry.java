@@ -9,13 +9,11 @@ import com.google.gson.JsonElement;
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredDynamicRegistry;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.entity.player.Player;
 
 public class BossRegistry extends TieredDynamicRegistry<ApothBoss> {
 
@@ -39,8 +37,8 @@ public class BossRegistry extends TieredDynamicRegistry<ApothBoss> {
     }
 
     @Nullable
-    public ApothBoss getRandomItem(RandomSource rand, Player player) {
-        return getRandomItem(rand, WorldTier.getTier(player), player.getLuck(), Constraints.eval(player));
+    public ApothBoss getRandomItem(GenContext ctx) {
+        return getRandomItem(ctx, Constraints.eval(ctx));
     }
 
 }

@@ -14,13 +14,12 @@ import dev.shadowsoffire.apotheosis.affix.AffixRegistry;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.affix.ItemAffixes;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.codec.CodecMap;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.item.ItemStack;
@@ -38,7 +37,7 @@ public interface LootRule extends CodecProvider<LootRule> {
      * @param tier   The player's world tier.
      * @param luck   The player's luck.
      */
-    void execute(ItemStack stack, RandomSource rand, LootRarity rarity, WorldTier tier, float luck);
+    void execute(ItemStack stack, LootRarity rarity, GenContext ctx);
 
     public static void initCodecs() {
         register("component", ComponentLootRule.CODEC);
@@ -68,7 +67,7 @@ public interface LootRule extends CodecProvider<LootRule> {
         }
 
         @Override
-        public void execute(ItemStack stack, RandomSource rand, LootRarity rarity, WorldTier tier, float luck) {
+        public void execute(ItemStack stack, LootRarity rarity, GenContext ctx) {
             stack.applyComponents(this.components);
         }
 
@@ -89,16 +88,16 @@ public interface LootRule extends CodecProvider<LootRule> {
         }
 
         @Override
-        public void execute(ItemStack stack, RandomSource rand, LootRarity rarity, WorldTier tier, float luck) {
-            List<WeightedEntry.Wrapper<Affix>> available = LootController.getWeightedAffixes(stack, rarity, this.type, tier, luck);
+        public void execute(ItemStack stack, LootRarity rarity, GenContext ctx) {
+            List<WeightedEntry.Wrapper<Affix>> available = LootController.getWeightedAffixes(stack, rarity, this.type, ctx);
             int weight = WeightedRandom.getTotalWeight(available);
             if (available.size() == 0 && weight == 0) {
                 AdventureModule.LOGGER.error("Failed to execute LootRule {}/{}/{}/{}!", BuiltInRegistries.ITEM.getKey(stack.getItem()), RarityRegistry.INSTANCE.getKey(rarity), this.type);
                 return;
             }
-            Affix selected = WeightedRandom.getRandomItem(rand, available, weight).get().data();
+            Affix selected = WeightedRandom.getRandomItem(ctx.rand(), available, weight).get().data();
             ItemAffixes.Builder builder = stack.getOrDefault(Components.AFFIXES, ItemAffixes.EMPTY).toBuilder();
-            builder.upgrade(AffixRegistry.INSTANCE.holder(selected), rand.nextFloat());
+            builder.upgrade(AffixRegistry.INSTANCE.holder(selected), ctx.rand().nextFloat());
             AffixHelper.setAffixes(stack, builder.build());
         }
     }
@@ -121,9 +120,9 @@ public interface LootRule extends CodecProvider<LootRule> {
         }
 
         @Override
-        public void execute(ItemStack stack, RandomSource rand, LootRarity rarity, WorldTier tier, float luck) {
+        public void execute(ItemStack stack, LootRarity rarity, GenContext ctx) {
             int sockets = SocketHelper.getSockets(stack);
-            int newSockets = rand.nextIntBetweenInclusive(this.min, this.max);
+            int newSockets = ctx.rand().nextIntBetweenInclusive(this.min, this.max);
             if (newSockets > sockets) {
                 SocketHelper.setSockets(stack, newSockets);
             }
@@ -149,8 +148,8 @@ public interface LootRule extends CodecProvider<LootRule> {
         }
 
         @Override
-        public void execute(ItemStack stack, RandomSource rand, LootRarity rarity, WorldTier tier, float luck) {
-            stack.set(Components.DURABILITY_BONUS, Mth.lerp(rand.nextFloat(), this.min, this.max));
+        public void execute(ItemStack stack, LootRarity rarity, GenContext ctx) {
+            stack.set(Components.DURABILITY_BONUS, Mth.lerp(ctx.rand().nextFloat(), this.min, this.max));
         }
 
     }
@@ -172,9 +171,9 @@ public interface LootRule extends CodecProvider<LootRule> {
         }
 
         @Override
-        public void execute(ItemStack stack, RandomSource rand, LootRarity rarity, WorldTier tier, float luck) {
-            if (rand.nextFloat() <= this.chance) {
-                this.rule.execute(stack, rand, rarity, tier, luck);
+        public void execute(ItemStack stack, LootRarity rarity, GenContext ctx) {
+            if (ctx.rand().nextFloat() <= this.chance) {
+                this.rule.execute(stack, rarity, ctx);
             }
         }
 
@@ -197,9 +196,9 @@ public interface LootRule extends CodecProvider<LootRule> {
         }
 
         @Override
-        public void execute(ItemStack stack, RandomSource rand, LootRarity rarity, WorldTier tier, float luck) {
+        public void execute(ItemStack stack, LootRarity rarity, GenContext ctx) {
             for (LootRule rule : this.rules) {
-                rule.execute(stack, rand, rarity, tier, luck);
+                rule.execute(stack, rarity, ctx);
             }
         }
 

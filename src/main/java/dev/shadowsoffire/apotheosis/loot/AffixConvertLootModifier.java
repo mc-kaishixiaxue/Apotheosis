@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.util.LootPatternMatcher;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.RandomSource;
@@ -13,9 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
-import net.neoforged.neoforge.common.loot.LootModifier;
 
-public class AffixConvertLootModifier extends LootModifier {
+public class AffixConvertLootModifier extends ContextualLootModifier {
 
     public static final MapCodec<AffixConvertLootModifier> CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, AffixConvertLootModifier::new));
 
@@ -24,19 +23,14 @@ public class AffixConvertLootModifier extends LootModifier {
     }
 
     @Override
-    protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        var player = GemLootPoolEntry.findPlayer(context);
-        if (player == null) return generatedLoot;
-
+    protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context, GenContext gCtx) {
         // TODO: Move convert loot rules into this loot modifier as a codec parameter.
         for (LootPatternMatcher m : AdventureConfig.AFFIX_CONVERT_LOOT_RULES) {
             if (m.matches(context.getQueriedLootTableId())) {
                 RandomSource rand = context.getRandom();
-                float luck = context.getLuck();
                 for (ItemStack s : generatedLoot) {
                     if (!LootCategory.forItem(s).isNone() && AffixHelper.getAffixes(s).isEmpty() && rand.nextFloat() <= m.chance()) {
-                        WorldTier tier = WorldTier.getTier(player);
-                        LootController.createLootItem(s, LootRarity.random(rand, tier, luck), rand, tier, luck);
+                        LootController.createLootItem(s, LootRarity.random(gCtx), gCtx);
                     }
                 }
                 break;

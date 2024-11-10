@@ -21,9 +21,9 @@ import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.Constraints.Constrained;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights.Weighted;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apotheosis.util.NameHelper;
 import dev.shadowsoffire.apotheosis.util.SupportingEntity;
 import dev.shadowsoffire.apothic_enchanting.asm.EnchHooks;
@@ -67,6 +67,16 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 
 public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, Weighted {
+
+    /**
+     * NBT key for a boolean value applied to entity persistent data to indicate a mob is an apoth boss.
+     */
+    public static final String BOSS_KEY = "apoth.boss";
+
+    /**
+     * NBT key for a string value applied to entity persistent data indicating a boss's rarity.
+     */
+    public static final String RARITY_KEY = BOSS_KEY + ".rarity";
 
     public static final Codec<AABB> AABB_CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
@@ -129,8 +139,8 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
     /**
      * @see #createBoss(ServerLevelAccessor, BlockPos, RandomSource, float, LootRarity)
      */
-    public Mob createBoss(ServerLevelAccessor world, BlockPos pos, RandomSource random, WorldTier tier, float luck) {
-        return this.createBoss(world, pos, random, tier, luck, null);
+    public Mob createBoss(ServerLevelAccessor world, BlockPos pos, GenContext ctx) {
+        return this.createBoss(world, pos, ctx, null);
     }
 
     /**
@@ -143,12 +153,12 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
      * @param rarity A rarity override. This will be clamped to a valid rarity, and randomly generated if null.
      * @return The newly created boss, or it's mount, if it had one.
      */
-    public Mob createBoss(ServerLevelAccessor world, BlockPos pos, RandomSource random, WorldTier tier, float luck, @Nullable LootRarity rarity) {
+    public Mob createBoss(ServerLevelAccessor world, BlockPos pos, GenContext ctx, @Nullable LootRarity rarity) {
         CompoundTag fakeNbt = this.nbt.orElse(new CompoundTag());
         fakeNbt.putString("id", EntityType.getKey(this.entity).toString());
         Mob entity = (Mob) EntityType.loadEntityRecursive(fakeNbt, world.getLevel(), Function.identity());
 
-        this.initBoss(random, entity, tier, luck, rarity);
+        this.initBoss(entity, ctx, rarity);
         // Re-read here so we can apply certain things after the boss has been modified
         // But only mob-specific things, not a full load()
         if (this.nbt.isPresent()) {
@@ -161,7 +171,7 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
             entity = mountedEntity;
         }
 
-        entity.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, random.nextFloat() * 360.0F, 0.0F);
+        entity.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, ctx.rand().nextFloat() * 360.0F, 0.0F);
         return entity;
     }
 
@@ -171,10 +181,13 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
      * @param rand
      * @param entity
      */
-    public void initBoss(RandomSource rand, Mob entity, WorldTier tier, float luck, @Nullable LootRarity rarity) {
+    public void initBoss(Mob entity, GenContext ctx, @Nullable LootRarity rarity) {
+        RandomSource rand = ctx.rand();
+
         if (rarity == null) {
-            rarity = LootRarity.random(rand, tier, luck, this.stats.keySet());
+            rarity = LootRarity.random(ctx, this.stats.keySet());
         }
+
         BossStats stats = this.stats.get(rarity);
         int duration = entity instanceof Creeper ? 6000 : Integer.MAX_VALUE;
 
@@ -191,7 +204,7 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
         entity.goalSelector.getAvailableGoals().removeIf(IS_VILLAGER_ATTACK);
         String name = NameHelper.setEntityName(rand, entity);
 
-        GearSet set = GearSetRegistry.INSTANCE.getRandomSet(rand, luck, this.gearSets);
+        GearSet set = GearSetRegistry.INSTANCE.getRandomSet(rand, ctx.luck(), this.gearSets);
         set.apply(entity);
 
         boolean anyValid = false;
@@ -219,7 +232,7 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
             if (stack.isEmpty()) continue;
             if (s.ordinal() == guaranteed) entity.setDropChance(s, 2F);
             if (s.ordinal() == guaranteed) {
-                entity.setItemSlot(s, modifyBossItem(stack, rand, name, tier, luck, rarity, stats, entity.level().registryAccess()));
+                entity.setItemSlot(s, modifyBossItem(stack, name, ctx, rarity, stats, entity.level().registryAccess()));
                 entity.setCustomName(((MutableComponent) entity.getCustomName()).withStyle(Style.EMPTY.withColor(rarity.getColor())));
             }
             else if (rand.nextFloat() < stats.enchantChance()) {
@@ -227,8 +240,8 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
                 entity.setItemSlot(s, stack);
             }
         }
-        entity.getPersistentData().putBoolean("apoth.boss", true);
-        entity.getPersistentData().putString("apoth.rarity", RarityRegistry.INSTANCE.getKey(rarity).toString());
+        entity.getPersistentData().putBoolean(BOSS_KEY, true);
+        entity.getPersistentData().putString(RARITY_KEY, RarityRegistry.INSTANCE.getKey(rarity).toString());
         entity.setHealth(entity.getMaxHealth());
         if (AdventureConfig.bossGlowOnSpawn) entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 3600));
     }
@@ -241,10 +254,11 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
         EnchantmentHelper.setEnchantments(stack, builder.toImmutable());
     }
 
-    public static ItemStack modifyBossItem(ItemStack stack, RandomSource rand, String bossName, WorldTier tier, float luck, LootRarity rarity, BossStats stats, RegistryAccess reg) {
+    public static ItemStack modifyBossItem(ItemStack stack, String bossName, GenContext ctx, LootRarity rarity, BossStats stats, RegistryAccess reg) {
+        RandomSource rand = ctx.rand();
         enchantBossItem(rand, stack, stats.enchLevels().primary(), true, reg);
         NameHelper.setItemName(rand, stack);
-        stack = LootController.createLootItem(stack, LootCategory.forItem(stack), rarity, rand, tier, luck);
+        stack = LootController.createLootItem(stack, LootCategory.forItem(stack), rarity, ctx);
 
         String bossOwnerName = String.format(NameHelper.ownershipFormat, bossName);
         Component name = AffixHelper.getName(stack);

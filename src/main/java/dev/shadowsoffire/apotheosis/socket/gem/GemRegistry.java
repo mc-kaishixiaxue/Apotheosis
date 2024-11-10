@@ -9,12 +9,9 @@ import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredDynamicRegistry;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class GemRegistry extends TieredDynamicRegistry<Gem> {
@@ -52,8 +49,8 @@ public class GemRegistry extends TieredDynamicRegistry<Gem> {
     }
 
     @Nullable
-    public Gem getRandomItem(RandomSource rand, Player player) {
-        return getRandomItem(rand, WorldTier.getTier(player), player.getLuck(), Constraints.eval(player));
+    public Gem getRandomItem(GenContext ctx) {
+        return getRandomItem(ctx, Constraints.eval(ctx));
     }
 
     /**
@@ -65,8 +62,8 @@ public class GemRegistry extends TieredDynamicRegistry<Gem> {
      * @param filter The filter
      * @return A gem item, or an empty ItemStack if no entries were available for the dimension.
      */
-    public static ItemStack createRandomGemStack(RandomSource rand, ServerLevel level, Player player) {
-        Gem gem = GemRegistry.INSTANCE.getRandomItem(rand, player);
+    public static ItemStack createRandomGemStack(GenContext ctx) {
+        Gem gem = GemRegistry.INSTANCE.getRandomItem(ctx);
         if (gem == null) return ItemStack.EMPTY;
         Purity purity = Purity.CRACKED; // TODO: Implement purity selection via TieredWeights. Need a place to store that data.
         return createGemStack(gem, purity);

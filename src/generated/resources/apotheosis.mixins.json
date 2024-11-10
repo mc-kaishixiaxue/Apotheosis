@@ -5,6 +5,7 @@
     "refmap": "apotheosis.refmap.json",
     "maxShiftBy": 5,
     "mixins": [
+        "BaseSpawnerAccessor",
         "BlockMixin",
         "EnchantmentHelperMixin",
         "FallingBlockEntityMixin",
@@ -15,7 +16,6 @@
         "MHFMixinLivingEntity",
         "SlimeMixin",
         "SmithingMenuMixin",
-        "ThrownTridentMixin",
         "WandererSpawnerMixin"
     ],
     "client": [

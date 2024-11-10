@@ -5,16 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import dev.shadowsoffire.apotheosis.boss.BossEvents.BossSpawnRules;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
+import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityClamp;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.util.LootPatternMatcher;
 import dev.shadowsoffire.placebo.config.Configuration;
+import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -44,7 +47,7 @@ public class AdventureConfig {
      * Loot table matchers and dimensional rarities for affix conversion rules.
      */
     public static final List<LootPatternMatcher> AFFIX_CONVERT_LOOT_RULES = new ArrayList<>();
-    public static final Map<ResourceLocation, RarityClamp> AFFIX_CONVERT_RARITIES = new HashMap<>();
+    public static final Map<ResourceLocation, Set<DynamicHolder<LootRarity>>> AFFIX_CONVERT_RARITIES = new HashMap<>();
 
     // Boss Stats
     public static boolean curseBossItems = false;

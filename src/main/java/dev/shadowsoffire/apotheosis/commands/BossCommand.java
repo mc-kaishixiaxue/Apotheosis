@@ -10,7 +10,7 @@ import dev.shadowsoffire.apotheosis.boss.ApothBoss;
 import dev.shadowsoffire.apotheosis.boss.BossRegistry;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -62,8 +62,8 @@ public class BossCommand {
             return -1;
         }
 
-        WorldTier tier = WorldTier.getTier(summoner);
-        ApothBoss boss = bossId == null ? BossRegistry.INSTANCE.getRandomItem(summoner.getRandom(), summoner) : BossRegistry.INSTANCE.getValue(bossId);
+        GenContext ctx = GenContext.forPlayer(summoner);
+        ApothBoss boss = bossId == null ? BossRegistry.INSTANCE.getRandomItem(ctx) : BossRegistry.INSTANCE.getValue(bossId);
         if (boss == null) {
             if (bossId == null) {
                 c.getSource().sendFailure(Component.literal("Unknown boss: " + bossId));
@@ -82,10 +82,10 @@ public class BossCommand {
                 c.getSource().sendFailure(Component.literal("Unknown rarity: " + rarityId));
                 return -3;
             }
-            bossEntity = boss.createBoss((ServerLevelAccessor) summoner.level(), BlockPos.containing(pos), summoner.getRandom(), tier, summoner.getLuck(), rarity.get());
+            bossEntity = boss.createBoss((ServerLevelAccessor) summoner.level(), BlockPos.containing(pos), ctx, rarity.get());
         }
         else {
-            bossEntity = boss.createBoss((ServerLevelAccessor) summoner.level(), BlockPos.containing(pos), summoner.getRandom(), tier, summoner.getLuck());
+            bossEntity = boss.createBoss((ServerLevelAccessor) summoner.level(), BlockPos.containing(pos), ctx);
         }
 
         c.getSource().getLevel().addFreshEntityWithPassengers(bossEntity);

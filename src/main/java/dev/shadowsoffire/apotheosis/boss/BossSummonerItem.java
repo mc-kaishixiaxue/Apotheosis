@@ -1,6 +1,6 @@
 package dev.shadowsoffire.apotheosis.boss;
 
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
@@ -19,16 +19,25 @@ public class BossSummonerItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext ctx) {
         Level world = ctx.getLevel();
-        if (world.isClientSide) return InteractionResult.SUCCESS;
+        if (world.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
+
         Player player = ctx.getPlayer();
-        ApothBoss item = BossRegistry.INSTANCE.getRandomItem(world.getRandom(), player);
-        if (item == null) return InteractionResult.FAIL;
+        GenContext gCtx = GenContext.forPlayer(player);
+
+        ApothBoss item = BossRegistry.INSTANCE.getRandomItem(gCtx);
+        if (item == null) {
+            return InteractionResult.FAIL;
+        }
+
         BlockPos pos = ctx.getClickedPos().relative(ctx.getClickedFace());
         if (!world.noCollision(item.getSize().move(pos))) {
             pos = pos.above();
             if (!world.noCollision(item.getSize().move(pos))) return InteractionResult.FAIL;
         }
-        Mob boss = item.createBoss((ServerLevel) world, pos, world.getRandom(), WorldTier.getTier(player), player.getLuck());
+
+        Mob boss = item.createBoss((ServerLevel) world, pos, gCtx);
         boss.setTarget(player);
         ((ServerLevel) world).addFreshEntityWithPassengers(boss);
         ctx.getItemInHand().shrink(1);

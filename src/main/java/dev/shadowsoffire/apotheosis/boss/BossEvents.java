@@ -11,7 +11,7 @@ import com.mojang.serialization.Codec;
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.net.BossSpawnPayload;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -49,6 +49,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 public class BossEvents {
 
+    public static final String APOTH_MINIBOSS = "apoth.miniboss";
+    public static final String APOTH_MINIBOSS_PLAYER = APOTH_MINIBOSS + ".player";
+
     public Object2IntMap<ResourceLocation> bossCooldowns = new Object2IntOpenHashMap<>();
 
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -64,22 +67,28 @@ public class BossEvents {
                 if (rand.nextFloat() <= rules.getLeft() && rules.getRight().test(sLevel, BlockPos.containing(e.getX(), e.getY(), e.getZ()))) {
                     Player player = sLevel.getNearestPlayer(e.getX(), e.getY(), e.getZ(), -1, false);
                     if (player == null) return; // Spawns require player context
-                    ApothBoss item = BossRegistry.INSTANCE.getRandomItem(rand, player);
+
+                    GenContext ctx = GenContext.forPlayerAtPos(rand, player, entity.blockPosition());
+                    ApothBoss item = BossRegistry.INSTANCE.getRandomItem(ctx);
                     if (item == null) {
                         AdventureModule.LOGGER.error("Attempted to spawn a boss in dimension {} using configured boss spawn rule {}/{} but no bosses were made available.", dimId, rules.getRight(), rules.getLeft());
                         return;
                     }
-                    Mob boss = item.createBoss(sLevel, BlockPos.containing(e.getX() - 0.5, e.getY(), e.getZ() - 0.5), rand, WorldTier.getTier(player), player.getLuck());
+
+                    Mob boss = item.createBoss(sLevel, BlockPos.containing(e.getX() - 0.5, e.getY(), e.getZ() - 0.5), GenContext.forPlayer(rand, player));
                     if (AdventureConfig.bossAutoAggro && !player.isCreative()) {
                         boss.setTarget(player);
                     }
+
                     if (canSpawn(sLevel, boss, player.distanceToSqr(boss))) {
                         sLevel.addFreshEntityWithPassengers(boss);
                         e.setCanceled(true);
                         e.setSpawnCancelled(true);
                         AdventureModule.debugLog(boss.blockPosition(), "Surface Boss - " + boss.getName().getString());
                         Component name = this.getName(boss);
-                        if (name == null || name.getStyle().getColor() == null) AdventureModule.LOGGER.warn("A Boss {} ({}) has spawned without a custom name!", boss.getName().getString(), EntityType.getKey(boss.getType()));
+                        if (name == null || name.getStyle().getColor() == null) {
+                            AdventureModule.LOGGER.warn("A Boss {} ({}) has spawned without a custom name!", boss.getName().getString(), EntityType.getKey(boss.getType()));
+                        }
                         else {
                             sLevel.players().forEach(p -> {
                                 Vec3 tPos = new Vec3(boss.getX(), AdventureConfig.bossAnnounceIgnoreY ? p.getY() : boss.getY(), boss.getZ());
@@ -90,6 +99,7 @@ public class BossEvents {
                                 }
                             });
                         }
+
                         this.bossCooldowns.put(entity.level().dimension().location(), AdventureConfig.bossSpawnCooldown);
                     }
                 }
@@ -99,7 +109,7 @@ public class BossEvents {
 
     @Nullable
     private Component getName(Mob boss) {
-        return boss.getSelfAndPassengers().filter(e -> e.getPersistentData().contains("apoth.boss")).findFirst().map(Entity::getCustomName).orElse(null);
+        return boss.getSelfAndPassengers().filter(e -> e.getPersistentData().contains(ApothBoss.BOSS_KEY)).findFirst().map(Entity::getCustomName).orElse(null);
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -109,8 +119,12 @@ public class BossEvents {
         if (!e.getLevel().isClientSide() && entity instanceof Mob mob && !e.isCanceled() && !e.isSpawnCancelled()) {
             ServerLevelAccessor sLevel = e.getLevel();
             Player player = sLevel.getNearestPlayer(e.getX(), e.getY(), e.getZ(), -1, false);
-            if (player == null) return; // Spawns require player context
-            ApothMiniboss item = MinibossRegistry.INSTANCE.getRandomItem(rand, player);
+            if (player == null) {
+                return; // Spawns require player context
+            }
+
+            GenContext ctx = GenContext.forPlayerAtPos(rand, player, entity.blockPosition());
+            ApothMiniboss item = MinibossRegistry.INSTANCE.getRandomItem(ctx, entity);
             if (item != null && !item.isExcluded(mob, sLevel, e.getSpawnType()) && sLevel.getRandom().nextFloat() <= item.getChance()) {
                 mob.getPersistentData().putString("apoth.miniboss", MinibossRegistry.INSTANCE.getKey(item).toString());
                 mob.getPersistentData().putFloat("apoth.miniboss.luck", player.getLuck());
@@ -126,6 +140,7 @@ public class BossEvents {
             if (key != null) {
                 ApothMiniboss item = MinibossRegistry.INSTANCE.getValue(ResourceLocation.tryParse(key));
                 if (item != null) {
+                    // TODO: Encode the player's UUID in nbt so we can link back to them for eval
                     item.transformMiniboss((ServerLevel) e.getLevel(), mob, e.getLevel().getRandom(), mob.getPersistentData().getFloat("apoth.miniboss.luck"));
                 }
             }

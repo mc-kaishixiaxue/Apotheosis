@@ -2,66 +2,60 @@ package dev.shadowsoffire.apotheosis.loot;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
-import javax.annotation.Nullable;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.reflect.TypeToken;
-
-import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.AdventureModule;
-import dev.shadowsoffire.apotheosis.compat.GameStagesCompat.IStaged;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
+import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.util.random.WeightedEntry.Wrapper;
 import net.minecraft.util.random.WeightedRandom;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
-public class GemLootPoolEntry extends LootPoolSingletonContainer {
-    public static final Serializer SERIALIZER = new Serializer();
-    public static final LootPoolEntryType TYPE = new LootPoolEntryType(SERIALIZER);
+public class GemLootPoolEntry extends ContextualLootPoolEntry {
+    public static final MapCodec<GemLootPoolEntry> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+        PlaceboCodecs.setOf(Purity.CODEC).optionalFieldOf("purities", Set.of()).forGetter(a -> a.purities),
+        PlaceboCodecs.setOf(GemRegistry.INSTANCE.holderCodec()).optionalFieldOf("gems", Set.of()).forGetter(a -> a.gems))
+        .and(LootPoolSingletonContainer.singletonFields(inst))
+        .apply(inst, GemLootPoolEntry::new));
 
-    @Nullable
-    private final RarityClamp.Simple rarityLimit;
-    private final List<DynamicHolder<Gem>> gems;
+    public static final LootPoolEntryType TYPE = new LootPoolEntryType(CODEC);
 
-    public GemLootPoolEntry(@Nullable RarityClamp.Simple rarityLimit, List<ResourceLocation> gems, int weight, int quality, LootItemCondition[] conditions, LootItemFunction[] functions) {
+    private final Set<Purity> purities;
+    private final Set<DynamicHolder<Gem>> gems;
+
+    public GemLootPoolEntry(Set<Purity> purities, Set<DynamicHolder<Gem>> gems, int weight, int quality, List<LootItemCondition> conditions, List<LootItemFunction> functions) {
         super(weight, quality, conditions, functions);
-        this.rarityLimit = rarityLimit;
-        this.gems = gems.stream().map(GemRegistry.INSTANCE::holder).toList();
+        this.purities = purities;
+        this.gems = gems;
     }
 
     @Override
-    protected void createItemStack(Consumer<ItemStack> list, LootContext ctx) {
+    protected void createItemStack(Consumer<ItemStack> list, LootContext ctx, GenContext gCtx) {
         Gem gem;
 
         if (!this.gems.isEmpty()) {
-            List<Wrapper<Gem>> resolved = this.gems.stream().map(this::unwrap).filter(Objects::nonNull).map(e -> e.<Gem>wrap(ctx.getLuck())).toList();
-            gem = WeightedRandom.getRandomItem(ctx.getRandom(), resolved).get().getData();
+            List<Wrapper<Gem>> resolved = this.gems.stream().map(this::unwrap).filter(Objects::nonNull).map(e -> e.<Gem>wrap(gCtx.tier(), gCtx.luck())).toList();
+            gem = WeightedRandom.getRandomItem(ctx.getRandom(), resolved).get().data();
         }
         else {
-            var player = GemLootPoolEntry.findPlayer(ctx);
-            if (player == null) return;
-            gem = GemRegistry.INSTANCE.getRandomItem(ctx.getRandom(), ctx.getLuck(), IDimensional.matches(ctx.getLevel()), IStaged.matches(player));
+            gem = GemRegistry.INSTANCE.getRandomItem(gCtx);
         }
 
-        RarityClamp clamp = this.rarityLimit == null ? AdventureConfig.GEM_DIM_RARITIES.get(ctx.getLevel().dimension().location()) : this.rarityLimit;
-        ItemStack stack = GemRegistry.createGemStack(gem, gem.clamp(LootRarity.random(ctx.getRandom(), ctx.getLuck(), clamp)));
+        Purity purity = Purity.random(gCtx, this.purities);
+        ItemStack stack = GemRegistry.createGemStack(gem, Purity.max(purity, gem.getMinPurity()));
         list.accept(stack);
     }
 
@@ -79,43 +73,5 @@ public class GemLootPoolEntry extends LootPoolSingletonContainer {
             return null;
         }
         return holder.get();
-    }
-
-    @Nullable
-    public static Player findPlayer(LootContext ctx) {
-        if (ctx.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof Player p) return p;
-        if (ctx.getParamOrNull(LootContextParams.ATTACKING_ENTITY) instanceof Player p) return p;
-        if (ctx.getParamOrNull(LootContextParams.DIRECT_ATTACKING_ENTITY) instanceof Player p) return p;
-        if (ctx.getParamOrNull(LootContextParams.LAST_DAMAGE_PLAYER) != null) return ctx.getParamOrNull(LootContextParams.LAST_DAMAGE_PLAYER);
-        return null;
-    }
-
-    public static class Serializer extends LootPoolSingletonContainer.Serializer<GemLootPoolEntry> {
-
-        @Override
-        protected GemLootPoolEntry deserialize(JsonObject obj, JsonDeserializationContext context, int weight, int quality, LootItemCondition[] lootConditions, LootItemFunction[] lootFunctions) {
-            RarityClamp.Simple rarity;
-            if (obj.has("min_rarity") || obj.has("max_rarity")) {
-                DynamicHolder<LootRarity> minRarity = RarityRegistry.byLegacyId(GsonHelper.getAsString(obj, "min_rarity"));
-                DynamicHolder<LootRarity> maxRarity = RarityRegistry.byLegacyId(GsonHelper.getAsString(obj, "max_rarity"));
-                rarity = new RarityClamp.Simple(minRarity, maxRarity);
-            }
-            else {
-                rarity = null;
-            }
-            List<String> gems = context.deserialize(GsonHelper.getAsJsonArray(obj, "gems", new JsonArray()), new TypeToken<List<String>>(){}.getType());
-            return new GemLootPoolEntry(rarity, gems.stream().map(ResourceLocation::new).toList(), weight, quality, lootConditions, lootFunctions);
-        }
-
-        @Override
-        public void serializeCustom(JsonObject object, GemLootPoolEntry e, JsonSerializationContext ctx) {
-            if (e.rarityLimit != null) {
-                object.addProperty("min_rarity", e.rarityLimit.min().getId().toString());
-                object.addProperty("max_rarity", e.rarityLimit.max().getId().toString());
-            }
-            object.add("gems", ctx.serialize(e.gems));
-            super.serializeCustom(object, e, ctx);
-        }
-
     }
 }

@@ -21,6 +21,10 @@ public class GameStagesCompat {
         return !AdventureModule.STAGES_LOADED || stages.isEmpty() || Inner.hasStage(player, stages);
     }
 
+    public static Set<String> getStages(Player player) {
+        return AdventureModule.STAGES_LOADED ? Inner.getStages(player) : Set.of();
+    }
+
     /**
      * An item that is restricted by a particular game stage (or other string).
      */
@@ -44,6 +48,10 @@ public class GameStagesCompat {
 
         private static boolean hasStage(Player player, Set<String> stages) {
             return false; // GameStageHelper.hasAnyOf(player, stages);
+        }
+
+        private static Set<String> getStages(Player player) {
+            return Set.of(); // TODO
         }
 
     }

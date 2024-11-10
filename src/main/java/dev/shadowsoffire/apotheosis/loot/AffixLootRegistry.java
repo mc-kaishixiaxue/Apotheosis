@@ -7,11 +7,9 @@ import com.google.common.base.Preconditions;
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredDynamicRegistry;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
 
 /**
  * Core loot registry. Handles the management of all Affixes, LootEntries, and generation of loot items.
@@ -36,8 +34,8 @@ public class AffixLootRegistry extends TieredDynamicRegistry<AffixLootEntry> {
     }
 
     @Nullable
-    public AffixLootEntry getRandomItem(RandomSource rand, Player player) {
-        return getRandomItem(rand, WorldTier.getTier(player), player.getLuck(), Constraints.eval(player));
+    public AffixLootEntry getRandomItem(GenContext ctx) {
+        return getRandomItem(ctx, Constraints.eval(ctx));
     }
 
 }

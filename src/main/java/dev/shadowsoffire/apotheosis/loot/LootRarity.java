@@ -3,21 +3,21 @@ package dev.shadowsoffire.apotheosis.loot;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights.Weighted;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -78,12 +78,16 @@ public class LootRarity implements CodecProvider<LootRarity>, Weighted {
         return LOAD_CODEC;
     }
 
-    public static LootRarity random(RandomSource rand, WorldTier tier, float luck) {
-        return RarityRegistry.INSTANCE.getRandomItem(rand, tier, luck);
+    public static LootRarity random(GenContext ctx) {
+        return RarityRegistry.INSTANCE.getRandomItem(ctx);
     }
 
-    public static LootRarity random(RandomSource rand, WorldTier tier, float luck, Set<LootRarity> pool) {
-        return RarityRegistry.INSTANCE.getRandomItem(rand, tier, luck, pool.isEmpty() ? Predicates.alwaysTrue() : pool::contains);
+    public static LootRarity random(GenContext ctx, Set<LootRarity> pool) {
+        return RarityRegistry.INSTANCE.getRandomItem(ctx, pool.isEmpty() ? Predicates.alwaysTrue() : pool::contains);
+    }
+
+    public static LootRarity randomFromHolders(GenContext ctx, Set<DynamicHolder<LootRarity>> pool) {
+        return random(ctx, pool.stream().filter(DynamicHolder::isBound).map(DynamicHolder::get).collect(Collectors.toSet()));
     }
 
     public static <T> Codec<Map<LootRarity, T>> mapCodec(Codec<T> codec) {

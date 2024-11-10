@@ -1,17 +1,14 @@
 package dev.shadowsoffire.apotheosis.affix;
 
-import com.google.gson.JsonObject;
-
 import dev.shadowsoffire.apotheosis.AdventureModule.ApothSmithingRecipe;
+import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -44,7 +41,7 @@ public class UnnamingRecipe extends ApothSmithingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return Serializer.INSTANCE;
+        return Apoth.RecipeSerializers.UNNAMING.value();
     }
 
     @Override
@@ -55,26 +52,6 @@ public class UnnamingRecipe extends ApothSmithingRecipe {
     @Override
     public boolean isSpecial() {
         return true;
-    }
-
-    public static class Serializer implements RecipeSerializer<UnnamingRecipe> {
-
-        public static Serializer INSTANCE = new Serializer();
-
-        @Override
-        public UnnamingRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
-            return new UnnamingRecipe();
-        }
-
-        @Override
-        public UnnamingRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            return new UnnamingRecipe();
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf pBuffer, UnnamingRecipe pRecipe) {
-
-        }
     }
 
 }

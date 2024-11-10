@@ -7,14 +7,12 @@ import org.jetbrains.annotations.Nullable;
 import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredDynamicRegistry;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
 
 public class MinibossRegistry extends TieredDynamicRegistry<ApothMiniboss> {
 
@@ -30,8 +28,8 @@ public class MinibossRegistry extends TieredDynamicRegistry<ApothMiniboss> {
     }
 
     @Nullable
-    public ApothMiniboss getRandomItem(RandomSource rand, Player player) {
-        return getRandomItem(rand, WorldTier.getTier(player), player.getLuck(), Constraints.eval(player));
+    public ApothMiniboss getRandomItem(GenContext ctx, Entity target) {
+        return getRandomItem(ctx, Constraints.eval(ctx), IEntityMatch.matches(target));
     }
 
     /**

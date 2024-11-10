@@ -1,60 +1,33 @@
 package dev.shadowsoffire.apotheosis.util;
 
-import java.util.Collection;
 import java.util.stream.Stream;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.MapCodec;
 
-import dev.shadowsoffire.apotheosis.Adventure;
-import dev.shadowsoffire.apotheosis.affix.AffixHelper;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
-import dev.shadowsoffire.apotheosis.socket.gem.Gem;
+import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
-import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.AbstractIngredient;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 
-public class GemIngredient extends AbstractIngredient {
+public record GemIngredient(Purity purity) implements ICustomIngredient {
 
-    protected final DynamicHolder<LootRarity> rarity;
-    protected ItemStack[] items;
-
-    public GemIngredient(DynamicHolder<LootRarity> rarity) {
-        super(Stream.empty());
-        this.rarity = rarity;
-    }
+    public static final MapCodec<GemIngredient> CODEC = Purity.CODEC.fieldOf("purity").xmap(GemIngredient::new, GemIngredient::purity);
+    public static final StreamCodec<ByteBuf, GemIngredient> STREAM_CODEC = Purity.STREAM_CODEC.map(GemIngredient::new, GemIngredient::purity);
+    public static final IngredientType<GemIngredient> TYPE = new IngredientType<>(CODEC, STREAM_CODEC);
 
     @Override
     public boolean test(ItemStack stack) {
-        var rarity = AffixHelper.getRarity(stack);
-        return stack.getItem() == Adventure.Items.GEM.get() && rarity.isBound() && rarity == this.rarity;
+        GemInstance inst = GemInstance.unsocketed(stack);
+        return inst.isValidUnsocketed() && inst.purity() == this.purity;
     }
 
     @Override
-    public ItemStack[] getItems() {
-        if (this.items == null) {
-            Collection<Gem> gems = GemRegistry.INSTANCE.getValues();
-            if (gems.size() == 0) return new ItemStack[0]; // Hasn't been initialized yet, don't cache.
-            this.items = new ItemStack[gems.size()];
-            int i = 0;
-            for (Gem g : GemRegistry.INSTANCE.getValues()) {
-                this.items[i++] = GemRegistry.createGemStack(g, this.rarity.get());
-            }
-        }
-        return this.items;
-    }
-
-    @Override
-    protected void invalidate() {
-        super.invalidate();
-        this.items = null;
+    public Stream<ItemStack> getItems() {
+        return GemRegistry.INSTANCE.getValues().stream().map(g -> GemRegistry.createGemStack(g, this.purity));
     }
 
     @Override
@@ -63,38 +36,8 @@ public class GemIngredient extends AbstractIngredient {
     }
 
     @Override
-    public IIngredientSerializer<? extends Ingredient> getSerializer() {
-        return Serializer.INSTANCE;
-    }
-
-    @Override
-    public JsonElement toJson() {
-        return new JsonObject();
-    }
-
-    public LootRarity getRarity() {
-        return this.rarity.get();
-    }
-
-    public static class Serializer implements IIngredientSerializer<GemIngredient> {
-        public static final Serializer INSTANCE = new Serializer();
-
-        @Override
-        public GemIngredient parse(FriendlyByteBuf buffer) {
-            var rarity = RarityRegistry.INSTANCE.holder(buffer.readResourceLocation());
-            return new GemIngredient(rarity);
-        }
-
-        @Override
-        public GemIngredient parse(JsonObject json) {
-            var rarity = RarityRegistry.INSTANCE.holder(new ResourceLocation(GsonHelper.getAsString(json, "rarity")));
-            return new GemIngredient(rarity);
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buffer, GemIngredient ingredient) {
-            buffer.writeResourceLocation(ingredient.rarity.getId());
-        }
+    public IngredientType<?> getType() {
+        return TYPE;
     }
 
 }

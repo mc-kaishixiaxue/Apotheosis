@@ -8,9 +8,7 @@ import java.util.function.Predicate;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.compat.GameStagesCompat;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
@@ -18,7 +16,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
@@ -45,20 +42,18 @@ public record Constraints(Set<ResourceKey<Level>> dimensions, HolderSet<Biome> b
         ByteBufCodecs.collection(HashSet::new, ByteBufCodecs.stringUtf8(256)), Constraints::gameStages,
         Constraints::new);
 
-    public boolean test(Player player) {
-        Level level = player.level();
-        BlockPos pos = player.blockPosition();
-        if (!dimensions.isEmpty() && !dimensions.contains(level.dimension())) {
+    public boolean test(GenContext ctx) {
+        if (!dimensions.isEmpty() && !dimensions.contains(ctx.dimension())) {
             return false;
         }
-        if (biomes.size() != 0 && !biomes.contains(level.getBiome(pos))) {
+        if (biomes.size() != 0 && !biomes.contains(ctx.biome())) {
             return false;
         }
-        return GameStagesCompat.hasStage(player, gameStages);
+        return this.gameStages.isEmpty() || this.gameStages.stream().anyMatch(ctx.stages()::contains);
     }
 
-    public static <T extends Constrained> Predicate<T> eval(Player player) {
-        return t -> t.constraints().test(player);
+    public static <T extends Constrained> Predicate<T> eval(GenContext ctx) {
+        return t -> t.constraints().test(ctx);
     }
 
     public static interface Constrained {

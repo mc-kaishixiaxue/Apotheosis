@@ -8,7 +8,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -30,12 +30,14 @@ public class GemCommand {
         root.then(Commands.literal("gem").requires(c -> c.hasPermission(2)).then(Commands.literal("fromPreset").then(Commands.argument("gem", ResourceLocationArgument.id()).suggests(SUGGEST_GEM).executes(c -> {
             Gem gem = GemRegistry.INSTANCE.getValue(ResourceLocationArgument.getId(c, "gem"));
             Player p = c.getSource().getPlayerOrException();
-            ItemStack stack = GemRegistry.createGemStack(gem, Purity.random(p.getRandom(), WorldTier.getTier(p), p.getLuck()));
+            GenContext ctx = GenContext.forPlayer(p);
+            ItemStack stack = GemRegistry.createGemStack(gem, Purity.random(ctx));
             p.addItem(stack);
             return 0;
         }))).then(Commands.literal("random").executes(c -> {
             Player p = c.getSource().getPlayerOrException();
-            ItemStack gem = GemRegistry.createRandomGemStack(p.getRandom(), c.getSource().getLevel(), p);
+            GenContext ctx = GenContext.forPlayer(p);
+            ItemStack gem = GemRegistry.createRandomGemStack(ctx);
             p.addItem(gem);
             return 0;
         })));

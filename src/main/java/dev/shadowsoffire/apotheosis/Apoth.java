@@ -5,6 +5,7 @@ import java.util.function.UnaryOperator;
 import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.apotheosis.affix.ItemAffixes;
+import dev.shadowsoffire.apotheosis.affix.UnnamingRecipe;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingMenu;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingTableBlock;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingTableTile;
@@ -35,6 +36,8 @@ import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingBlock;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingMenu;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingRecipe;
+import dev.shadowsoffire.apotheosis.util.AffixItemIngredient;
+import dev.shadowsoffire.apotheosis.util.GemIngredient;
 import dev.shadowsoffire.apotheosis.util.SingletonRecipeSerializer;
 import dev.shadowsoffire.apotheosis.util.TooltipItem;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntityType.TickSide;
@@ -47,7 +50,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -64,6 +66,9 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 /**
  * Object Holder Class. For the main mod class, see {@link Apotheosis}
@@ -236,17 +241,29 @@ public class Apoth {
     public static final class RecipeSerializers {
         public static final Holder<RecipeSerializer<?>> WITHDRAWAL = R.recipeSerializer("withdrawal", () -> new SingletonRecipeSerializer<>(WithdrawalRecipe::new));
         public static final Holder<RecipeSerializer<?>> SOCKETING = R.recipeSerializer("socketing", () -> new SingletonRecipeSerializer<>(SocketingRecipe::new));
+        public static final Holder<RecipeSerializer<?>> UNNAMING = R.recipeSerializer("unnaming", () -> new SingletonRecipeSerializer<>(UnnamingRecipe::new));
+
+        private static void bootstrap() {}
+    }
+
+    public static final class Ingredients {
+        public static final Holder<IngredientType<?>> AFFIX = R.custom("affix", NeoForgeRegistries.Keys.INGREDIENT_TYPES, () -> AffixItemIngredient.TYPE);
+        public static final Holder<IngredientType<?>> GEM = R.custom("gem", NeoForgeRegistries.Keys.INGREDIENT_TYPES, () -> GemIngredient.TYPE);
 
         private static void bootstrap() {}
     }
 
     public static final class LootTables {
 
-        public static final ResourceLocation CHEST_VALUABLE = Apotheosis.loc("chests/chest_valuable");
-        public static final ResourceLocation SPAWNER_BRUTAL_ROTATE = Apotheosis.loc("chests/spawner_brutal_rotate");
-        public static final ResourceLocation SPAWNER_BRUTAL = Apotheosis.loc("chests/spawner_brutal");
-        public static final ResourceLocation SPAWNER_SWARM = Apotheosis.loc("chests/spawner_swarm");
-        public static final ResourceLocation TOME_TOWER = Apotheosis.loc("chests/tome_tower");
+        public static final ResourceKey<LootTable> CHEST_VALUABLE = key("chests/chest_valuable");
+        public static final ResourceKey<LootTable> SPAWNER_BRUTAL_ROTATE = key("chests/spawner_brutal_rotate");
+        public static final ResourceKey<LootTable> SPAWNER_BRUTAL = key("chests/spawner_brutal");
+        public static final ResourceKey<LootTable> SPAWNER_SWARM = key("chests/spawner_swarm");
+        public static final ResourceKey<LootTable> TOME_TOWER = key("chests/tome_tower");
+
+        private static ResourceKey<LootTable> key(String path) {
+            return ResourceKey.create(Registries.LOOT_TABLE, Apotheosis.loc(path));
+        }
     }
 
     public static final class Tags {
@@ -268,9 +285,10 @@ public class Apoth {
         Items.bootstrap();
         Tiles.bootstrap();
         Menus.bootstrap();
-        Features.bootstrap();
         Tabs.bootstrap();
         Sounds.bootstrap();
+        Features.bootstrap();
+        Ingredients.bootstrap();
         RecipeTypes.bootstrap();
         RecipeSerializers.bootstrap();
     }

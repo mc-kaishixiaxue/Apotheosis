@@ -13,6 +13,7 @@ import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.placebo.color.GradientColor;
 import dev.shadowsoffire.placebo.util.StepFunction;
@@ -41,6 +42,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import twilightforest.TwilightForestMod;
@@ -64,12 +66,12 @@ public class AdventureTwilightCompat {
         public static final Codec<OreMagnetBonus> CODEC = RecordCodecBuilder.create(inst -> inst
             .group(
                 gemClass(),
-                GemBonus.VALUES_CODEC.fieldOf("values").forGetter(a -> a.values))
+                Purity.mapCodec(StepFunction.CODEC).fieldOf("values").forGetter(a -> a.values))
             .apply(inst, OreMagnetBonus::new));
 
-        protected final Map<LootRarity, StepFunction> values;
+        protected final Map<Purity, StepFunction> values;
 
-        public OreMagnetBonus(GemClass gemClass, Map<LootRarity, StepFunction> values) {
+        public OreMagnetBonus(GemClass gemClass, Map<Purity, StepFunction> values) {
             super(Apotheosis.loc("twilight_ore_magnet"), gemClass);
             this.values = values;
         }
@@ -102,13 +104,13 @@ public class AdventureTwilightCompat {
         }
 
         @Override
-        public boolean supports(LootRarity rarity) {
-            return this.values.containsKey(rarity);
+        public boolean supports(Purity purity) {
+            return this.values.containsKey(purity);
         }
 
         @Override
-        public Component getSocketBonusTooltip(ItemStack gem, LootRarity rarity) {
-            return Component.translatable("bonus." + this.getId() + ".desc", this.values.get(rarity).getInt(0)).withStyle(ChatFormatting.YELLOW);
+        public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
+            return Component.translatable("bonus." + this.getId() + ".desc", this.values.get(gem.purity()).getInt(0)).withStyle(ChatFormatting.YELLOW);
         }
 
     }
@@ -118,18 +120,18 @@ public class AdventureTwilightCompat {
         public static final Codec<TreasureGoblinBonus> CODEC = RecordCodecBuilder.create(inst -> inst
             .group(
                 gemClass(),
-                LootRarity.mapCodec(Data.CODEC).fieldOf("values").forGetter(a -> a.values))
+                Purity.mapCodec(Data.CODEC).fieldOf("values").forGetter(a -> a.values))
             .apply(inst, TreasureGoblinBonus::new));
 
-        protected final Map<LootRarity, Data> values;
+        protected final Map<Purity, Data> values;
 
-        public TreasureGoblinBonus(GemClass gemClass, Map<LootRarity, Data> values) {
+        public TreasureGoblinBonus(GemClass gemClass, Map<Purity, Data> values) {
             super(Apotheosis.loc("twilight_treasure_goblin"), gemClass);
             this.values = values;
         }
 
         @Override
-        public void doPostAttack(ItemStack gem, LootRarity rarity, LivingEntity user, Entity target) {
+        public void doPostAttack(GemInstance inst, LivingEntity user, Entity target) {
             Data d = this.values.get(rarity);
             if (Affix.isOnCooldown(this.getCooldownId(gem), d.cooldown, user)) return;
             if (user.random.nextFloat() <= d.chance) {
@@ -169,14 +171,14 @@ public class AdventureTwilightCompat {
         }
 
         @Override
-        public boolean supports(LootRarity rarity) {
-            return this.values.containsKey(rarity);
+        public boolean supports(Purity purity) {
+            return this.values.containsKey(purity);
         }
 
         @Override
-        public Component getSocketBonusTooltip(ItemStack gem, LootRarity rarity) {
-            Data d = this.values.get(rarity);
-            Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown));
+        public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
+            Data d = this.values.get(inst.purity());
+            Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown, ctx.tickRate()));
             return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(d.chance * 100), cooldown).withStyle(ChatFormatting.YELLOW);
         }
 

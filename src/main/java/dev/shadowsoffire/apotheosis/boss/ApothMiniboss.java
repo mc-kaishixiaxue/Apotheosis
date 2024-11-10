@@ -11,15 +11,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.AdventureModule;
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.boss.MinibossRegistry.IEntityMatch;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.Constraints.Constrained;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights.Weighted;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apotheosis.util.NameHelper;
 import dev.shadowsoffire.apotheosis.util.SupportingEntity;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
@@ -53,6 +52,18 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constrained, Weighted, IEntityMatch {
 
     public static final String NAME_GEN = "use_name_generation";
+
+    /**
+     * NBT key for a boolean value applied to entity persistent data to indicate a mob is a miniboss.
+     */
+    public static final String MINIBOSS_KEY = "apoth.miniboss";
+
+    /**
+     * NBT key for a string value applied to entity persistent data indicating the player that trigger's a miniboss's summoning.
+     * <p>
+     * Used to resolve the player when the miniboss is added to the world and initialized.
+     */
+    public static final String PLAYER_KEY = MINIBOSS_KEY + ".player";
 
     public static final Codec<ApothMiniboss> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
@@ -187,7 +198,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
      * @param random A random, used for selection of boss stats.
      * @return The newly created boss, or it's mount, if it had one.
      */
-    public void transformMiniboss(ServerLevelAccessor level, Mob mob, RandomSource random, WorldTier tier, float luck) {
+    public void transformMiniboss(ServerLevelAccessor level, Mob mob, GenContext ctx) {
         var pos = mob.getPosition(0);
         if (this.nbt.isPresent()) {
             CompoundTag nbt = this.nbt.get();
@@ -202,7 +213,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
             }
         }
         mob.setPos(pos);
-        this.initBoss(random, mob, tier, luck);
+        this.initBoss(mob, ctx);
         // readAdditionalSaveData should leave unchanged any tags that are not in the NBT data.
         if (this.nbt.isPresent()) {
             mob.readAdditionalSaveData(this.nbt.get());
@@ -228,7 +239,8 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
      * @param rand
      * @param mob
      */
-    public void initBoss(RandomSource rand, Mob mob, WorldTier tier, float luck) {
+    public void initBoss(Mob mob, GenContext ctx) {
+        RandomSource rand = ctx.rand();
         mob.getPersistentData().putBoolean("apoth.miniboss", true);
 
         int duration = mob instanceof Creeper ? 6000 : Integer.MAX_VALUE;
@@ -254,7 +266,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
         if (mob.hasCustomName()) mob.setCustomNameVisible(true);
 
         if (!this.gearSets.isEmpty()) {
-            GearSet set = GearSetRegistry.INSTANCE.getRandomSet(rand, luck, this.gearSets);
+            GearSet set = GearSetRegistry.INSTANCE.getRandomSet(rand, ctx.luck(), this.gearSets);
             Preconditions.checkNotNull(set, String.format("Failed to find a valid gear set for the miniboss %s.", MinibossRegistry.INSTANCE.getKey(this)));
             set.apply(mob);
         }
@@ -285,8 +297,8 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
             }
 
             // TODO: Change `boolean affixed` to an AffixData class with a specified set of rarities to pull from.
-            var rarity = LootRarity.random(rand, luck, AdventureConfig.AFFIX_CONVERT_RARITIES.get(mob.level().dimension().location()));
-            ApothBoss.modifyBossItem(temp, rand, mob.hasCustomName() ? mob.getCustomName().getString() : "", luck, rarity, this.stats);
+            var rarity = LootRarity.randomFromHolders(ctx, AdventureConfig.AFFIX_CONVERT_RARITIES.get(mob.level().dimension().location()));
+            ApothBoss.modifyBossItem(temp, mob.hasCustomName() ? mob.getCustomName().getString() : "", ctx, rarity, this.stats, mob.level().registryAccess());
             mob.setCustomName(((MutableComponent) mob.getCustomName()).withStyle(Style.EMPTY.withColor(rarity.getColor())));
             mob.setDropChance(EquipmentSlot.values()[guaranteed], 2F);
         }
@@ -294,7 +306,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
         for (EquipmentSlot s : EquipmentSlot.values()) {
             ItemStack stack = mob.getItemBySlot(s);
             if (!stack.isEmpty() && s.ordinal() != guaranteed && rand.nextFloat() < this.stats.enchantChance()) {
-                ApothBoss.enchantBossItem(rand, stack, Apotheosis.enableEnch ? this.stats.enchLevels()[0] : this.stats.enchLevels()[1], true);
+                ApothBoss.enchantBossItem(rand, stack, stats.enchLevels().secondary(), true, mob.level().registryAccess());
                 mob.setItemSlot(s, stack);
             }
         }

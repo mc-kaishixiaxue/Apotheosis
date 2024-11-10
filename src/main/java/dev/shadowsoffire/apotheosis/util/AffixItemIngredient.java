@@ -9,7 +9,7 @@ import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
@@ -64,7 +64,7 @@ public class AffixItemIngredient implements ICustomIngredient {
         RandomSource src = new LegacyRandomSource(0);
         Stream<ItemStack> out = Arrays.asList(Items.DIAMOND_SWORD, Items.DIAMOND_PICKAXE, Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS).stream().map(ItemStack::new);
         out.map(stack -> {
-            LootController.createLootItem(stack, rarity, src, WorldTier.HAVEN, 0);
+            LootController.createLootItem(stack, rarity, GenContext.dummy(src));
             AffixHelper.setName(stack, Component.translatable("text.apotheosis.any_x_item", rarity.toComponent(), "").withStyle(Style.EMPTY.withColor(rarity.getColor())));
             return stack;
         });

@@ -4,7 +4,6 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
-import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;

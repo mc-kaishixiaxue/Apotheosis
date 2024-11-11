@@ -1,8 +1,8 @@
 package dev.shadowsoffire.apotheosis.gen;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
-import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apoth;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -115,7 +115,7 @@ public class BossDungeonFeature extends Feature<NoneFeatureConfiguration> {
             }
 
             world.setBlock(pos, Apoth.Blocks.BOSS_SPAWNER.value().defaultBlockState(), 2);
-            AdventureModule.debugLog(pos, "Boss Dungeon");
+            Apotheosis.debugLog(pos, "Boss Dungeon");
 
             return true;
         }

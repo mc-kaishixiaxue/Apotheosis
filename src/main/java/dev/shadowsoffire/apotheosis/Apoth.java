@@ -20,6 +20,7 @@ import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingMenu;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingTableBlock;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingTableTile;
+import dev.shadowsoffire.apotheosis.attachments.BonusLootTables;
 import dev.shadowsoffire.apotheosis.boss.BossSpawnerBlock;
 import dev.shadowsoffire.apotheosis.boss.BossSpawnerBlock.BossSpawnerTile;
 import dev.shadowsoffire.apotheosis.boss.BossSummonerItem;
@@ -45,6 +46,7 @@ import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingBlock;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingMenu;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingRecipe;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apotheosis.util.AffixItemIngredient;
 import dev.shadowsoffire.apotheosis.util.GemIngredient;
 import dev.shadowsoffire.apotheosis.util.SingletonRecipeSerializer;
@@ -77,6 +79,7 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
@@ -117,6 +120,15 @@ public class Apoth {
 
         private static void bootstrap() {}
 
+    }
+
+    public static final class Attachments {
+
+        public static final AttachmentType<BonusLootTables> BONUS_LOOT_TABLES = R.attachment("bonus_loot_tables", () -> BonusLootTables.EMPTY, b -> b.serialize(BonusLootTables.CODEC, blt -> !blt.tables().isEmpty()));
+
+        public static final AttachmentType<WorldTier> WORLD_TIER = R.attachment("world_tier", () -> WorldTier.HAVEN, b -> b.serialize(WorldTier.CODEC).copyOnDeath());
+
+        private static void bootstrap() {}
     }
 
     public static final class Blocks {
@@ -299,6 +311,7 @@ public class Apoth {
     }
 
     public static void bootstrap() {
+        Attachments.bootstrap();
         Components.bootstrap();
         Blocks.bootstrap();
         Items.bootstrap();

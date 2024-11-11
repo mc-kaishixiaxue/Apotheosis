@@ -1,6 +1,5 @@
 package dev.shadowsoffire.apotheosis.spawner;
 
-import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry;
 

@@ -4,6 +4,7 @@ import java.util.function.IntFunction;
 
 import com.mojang.serialization.Codec;
 
+import dev.shadowsoffire.apotheosis.Apoth.Attachments;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -39,12 +40,11 @@ public enum WorldTier implements StringRepresentable {
         return this.name;
     }
 
-    // TODO: Implement via attachment
     public static WorldTier getTier(Player player) {
-        return WorldTier.HAVEN;
+        return player.getData(Attachments.WORLD_TIER);
     }
 
     public static void setTier(Player player, WorldTier tier) {
-        // TODO: implement
+        player.setData(Attachments.WORLD_TIER, tier);
     }
 }

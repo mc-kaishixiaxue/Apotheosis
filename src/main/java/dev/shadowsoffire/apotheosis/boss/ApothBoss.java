@@ -13,8 +13,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
+import dev.shadowsoffire.apotheosis.Apoth.Attachments;
 import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
+import dev.shadowsoffire.apotheosis.attachments.BonusLootTables;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -93,7 +95,8 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
             LootRarity.mapCodec(BossStats.CODEC).fieldOf("stats").forGetter(a -> a.stats),
             SetPredicate.CODEC.listOf().fieldOf("valid_gear_sets").forGetter(a -> a.gearSets),
             NBTAdapter.EITHER_CODEC.optionalFieldOf("nbt").forGetter(a -> a.nbt),
-            SupportingEntity.CODEC.optionalFieldOf("mount").forGetter(a -> a.mount))
+            SupportingEntity.CODEC.optionalFieldOf("mount").forGetter(a -> a.mount),
+            BonusLootTables.CODEC.optionalFieldOf("bonus_loot", BonusLootTables.EMPTY).forGetter(a -> a.bonusLoot))
         .apply(inst, ApothBoss::new));
 
     public static final Predicate<Goal> IS_VILLAGER_ATTACK = a -> a instanceof NearestAttackableTargetGoal && ((NearestAttackableTargetGoal<?>) a).targetType == Villager.class;
@@ -106,8 +109,10 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
     protected final List<SetPredicate> gearSets;
     protected final Optional<CompoundTag> nbt;
     protected final Optional<SupportingEntity> mount;
+    protected final BonusLootTables bonusLoot;
 
-    public ApothBoss(TieredWeights weights, Constraints constraints, EntityType<?> entity, AABB size, Map<LootRarity, BossStats> stats, List<SetPredicate> armorSets, Optional<CompoundTag> nbt, Optional<SupportingEntity> mount) {
+    public ApothBoss(TieredWeights weights, Constraints constraints, EntityType<?> entity, AABB size, Map<LootRarity, BossStats> stats, List<SetPredicate> armorSets, Optional<CompoundTag> nbt, Optional<SupportingEntity> mount,
+        BonusLootTables bonusLoot) {
         this.weights = weights;
         this.constraints = constraints;
         this.entity = entity;
@@ -116,6 +121,7 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
         this.gearSets = armorSets;
         this.nbt = nbt;
         this.mount = mount;
+        this.bonusLoot = bonusLoot;
     }
 
     @Override
@@ -243,7 +249,10 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
         entity.getPersistentData().putBoolean(BOSS_KEY, true);
         entity.getPersistentData().putString(RARITY_KEY, RarityRegistry.INSTANCE.getKey(rarity).toString());
         entity.setHealth(entity.getMaxHealth());
-        if (AdventureConfig.bossGlowOnSpawn) entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 3600));
+        if (AdventureConfig.bossGlowOnSpawn) {
+            entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 3600));
+        }
+        entity.setData(Attachments.BONUS_LOOT_TABLES, this.bonusLoot);
     }
 
     public static void enchantBossItem(RandomSource rand, ItemStack stack, int level, boolean treasure, RegistryAccess reg) {

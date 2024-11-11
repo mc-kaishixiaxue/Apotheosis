@@ -1,35 +1,8 @@
 package dev.shadowsoffire.apotheosis.util;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Set;
-import java.util.function.BiConsumer;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.stream.JsonWriter;
-import com.mojang.serialization.JsonOps;
-
-import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.loot.AffixLootEntry;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
-import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterials;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TieredItem;
-import net.minecraft.world.item.Tiers;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.registries.ForgeRegistries;
-
 public class MiscDatagenCode {
-
+    /*
+    @formatter:off
     private static final DynamicHolder<LootRarity> COMMON = RarityRegistry.INSTANCE.holder(Apotheosis.loc("common"));
     private static final DynamicHolder<LootRarity> UNCOMMON = RarityRegistry.INSTANCE.holder(Apotheosis.loc("uncommon"));
     private static final DynamicHolder<LootRarity> RARE = RarityRegistry.INSTANCE.holder(Apotheosis.loc("rare"));
@@ -98,5 +71,5 @@ public class MiscDatagenCode {
             }
         }
     }
-
+*/
 }

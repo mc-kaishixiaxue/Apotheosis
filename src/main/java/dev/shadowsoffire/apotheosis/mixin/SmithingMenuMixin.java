@@ -16,6 +16,7 @@ import net.minecraft.world.inventory.ItemCombinerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 
 @Mixin(SmithingMenu.class)
@@ -27,11 +28,11 @@ public abstract class SmithingMenuMixin extends ItemCombinerMenu {
 
     @Shadow
     @Nullable
-    private SmithingRecipe selectedRecipe;
+    private RecipeHolder<SmithingRecipe> selectedRecipe;
 
     @Inject(at = @At("HEAD"), method = "onTake")
     protected void onTake(Player player, ItemStack stack, CallbackInfo ci) {
-        if (this.selectedRecipe instanceof ReactiveSmithingRecipe ext) {
+        if (this.selectedRecipe.value() instanceof ReactiveSmithingRecipe ext) {
             ext.onCraft(this.inputSlots, player, stack);
         }
     }

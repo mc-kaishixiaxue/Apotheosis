@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
-import dev.shadowsoffire.apotheosis.AdventureModule;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.spawner.RogueSpawner;
 import dev.shadowsoffire.apotheosis.spawner.RogueSpawnerRegistry;
 import net.minecraft.core.BlockPos;
@@ -41,7 +41,7 @@ public class RogueSpawnerFeature extends Feature<RogueSpawnerFeature.Config> {
                 RogueSpawner item = RogueSpawnerRegistry.INSTANCE.getRandomItem(rand);
                 if (item == null) return false;
                 item.place(world, pos, rand);
-                AdventureModule.debugLog(pos, "Rogue Spawner - " + RogueSpawnerRegistry.INSTANCE.getKey(item));
+                Apotheosis.debugLog(pos, "Rogue Spawner - " + RogueSpawnerRegistry.INSTANCE.getKey(item));
                 return true;
             }
         }

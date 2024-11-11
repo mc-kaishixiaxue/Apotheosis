@@ -23,19 +23,15 @@ import dev.shadowsoffire.apotheosis.commands.GemCommand;
 import dev.shadowsoffire.apotheosis.commands.LootifyCommand;
 import dev.shadowsoffire.apotheosis.commands.RarityCommand;
 import dev.shadowsoffire.apotheosis.commands.SocketCommand;
-import dev.shadowsoffire.apotheosis.compat.GameStagesCompat.IStaged;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
-import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apothic_attributes.event.ApotheosisCommandEvent;
 import dev.shadowsoffire.placebo.events.AnvilLandEvent;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
@@ -52,7 +48,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
@@ -164,13 +159,13 @@ public class AdventureEvents {
         InteractionResult socketRes = SocketHelper.getGems(s).onItemUse(e.getUseOnContext());
         if (socketRes != null) {
             e.setCanceled(true);
-            e.setCancellationResult(socketRes);
+            e.setCancellationResult(toItemResult(socketRes));
         }
 
         InteractionResult afxRes = AffixHelper.streamAffixes(s).map(afx -> afx.onItemUse(e.getUseOnContext())).filter(Predicates.notNull()).findFirst().orElse(null);
         if (afxRes != null) {
             e.setCanceled(true);
-            e.setCancellationResult(afxRes);
+            e.setCancellationResult(toItemResult(afxRes));
         }
     }
 
@@ -194,22 +189,6 @@ public class AdventureEvents {
         AffixHelper.streamAffixes(stack).forEach(inst -> {
             inst.onBlockBreak(e.getPlayer(), e.getLevel(), e.getPos(), e.getState());
         });
-    }
-
-    // TODO: Reduce to GLM, no reason for this to be a LivingDropsEvent hook.
-    // Also figure out how to staple extra loot tables to bosses to add their gem bonus.
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void dropsHigh(LivingDropsEvent e) {
-        if (e.getSource().getEntity() instanceof ServerPlayer p && e.getEntity() instanceof Monster) {
-            if (p instanceof FakePlayer) return;
-            float chance = AdventureConfig.gemDropChance + (e.getEntity().getPersistentData().contains("apoth.boss") ? AdventureConfig.gemBossBonus : 0);
-            if (p.getRandom().nextFloat() <= chance) {
-                Entity ent = e.getEntity();
-                e.getDrops()
-                    .add(new ItemEntity(ent.level(), ent.getX(), ent.getY(), ent.getZ(),
-                        GemRegistry.createRandomGemStack(p.getRandom(), (ServerLevel) p.level(), p.getLuck(), IDimensional.matches(p.level()), IStaged.matches(p)), 0, 0, 0));
-            }
-        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -339,6 +318,22 @@ public class AdventureEvents {
     public void clone(PlayerEvent.Clone e) {
         int oldSeed = e.getOriginal().getPersistentData().getInt(ReforgingMenu.REFORGE_SEED);
         e.getEntity().getPersistentData().putInt(ReforgingMenu.REFORGE_SEED, oldSeed);
+    }
+
+    /**
+     * Conversion from {@link InteractionResult} to {@link ItemInteractionResult} for use in {@link UseItemOnBlockEvent}-based hooks.
+     * <p>
+     * In these cases, the event will immediately convert the IIR back to an IR, so we just need to mirror {@link ItemInteractionResult#result()}.
+     */
+    private static ItemInteractionResult toItemResult(InteractionResult result) {
+        return switch (result) {
+            case SUCCESS -> ItemInteractionResult.SUCCESS;
+            case SUCCESS_NO_ITEM_USED -> ItemInteractionResult.SUCCESS;
+            case CONSUME -> ItemInteractionResult.CONSUME;
+            case CONSUME_PARTIAL -> ItemInteractionResult.CONSUME_PARTIAL;
+            case PASS -> ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            case FAIL -> ItemInteractionResult.FAIL;
+        };
     }
 
 }

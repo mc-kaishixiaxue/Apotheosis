@@ -61,7 +61,7 @@ public class Apotheosis {
     public static final String MODID = "apotheosis";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
-    public static final boolean DEBUG_WORLDGEN = System.getenv("apotheosis.debug_worldgen").equalsIgnoreCase("on");
+    public static final boolean DEBUG_WORLDGEN = "on".equalsIgnoreCase(System.getenv("apotheosis.debug_worldgen"));
 
     public static final boolean STAGES_LOADED = ModList.get().isLoaded("gamestages");
     static final Map<ResourceLocation, LootCategory> IMC_TYPE_OVERRIDES = new HashMap<>();
@@ -110,6 +110,15 @@ public class Apotheosis {
             .provider(ApothRecipeProvider::new)
             .provider(ApothTagsProvider::new)
             .build(e);
+
+        /*
+         * TODO: Loot Modifier Provider, with the following entries:
+         * 1. Affix conversion modifier
+         * 2. Affix hook modifier (no config)
+         * 3. Gem Loot Modifier (chest config)
+         * 4. Gem Loot Modifier (player-only condition, entity config)
+         * 5. Affix loot modifier (chest config)
+         */
     }
 
     @SubscribeEvent

@@ -33,9 +33,9 @@ public class CommonTooltipUtil {
             BuiltInRegistries.ATTRIBUTE.holders().map(map::getInstance).filter(Predicates.notNull()).forEach(inst -> {
                 for (AttributeModifier modif : inst.getModifiers()) {
                     // TODO: Figure out how to identify boss modifiers after the fact.
-                    if (modif.getName().startsWith("placebo_random_modifier_")) {
-                        tooltip.accept(inst.getAttribute().value().toComponent(modif, ApothicAttributes.getTooltipFlag()));
-                    }
+                    // if (modif.getName().startsWith("placebo_random_modifier_")) {
+                    // tooltip.accept(inst.getAttribute().value().toComponent(modif, ApothicAttributes.getTooltipFlag()));
+                    // }
                 }
             });
         }

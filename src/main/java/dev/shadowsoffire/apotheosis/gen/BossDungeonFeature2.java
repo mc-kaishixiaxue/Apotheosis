@@ -1,7 +1,6 @@
 package dev.shadowsoffire.apotheosis.gen;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
-import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import net.minecraft.core.BlockPos;
@@ -90,7 +89,7 @@ public class BossDungeonFeature2 extends Feature<NoneFeatureConfiguration> {
             RandomizableContainer.setBlockEntityLootTable(world, rand, chest2, BuiltInLootTables.SIMPLE_DUNGEON);
 
             world.setBlock(pos, Apoth.Blocks.BOSS_SPAWNER.value().defaultBlockState(), 2);
-            AdventureModule.debugLog(pos, "Boss Dungeon (Variant 2)");
+            Apotheosis.debugLog(pos, "Boss Dungeon (Variant 2)");
             return true;
         }
         return false;

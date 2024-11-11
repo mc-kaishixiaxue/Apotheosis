@@ -3,7 +3,6 @@ package dev.shadowsoffire.apotheosis.affix;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 
-import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.effect.CatalyzingAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.CleavingAffix;
@@ -21,7 +20,6 @@ import dev.shadowsoffire.apotheosis.affix.effect.SpectralShotAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.TelepathicAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.ThunderstruckAffix;
 import dev.shadowsoffire.apotheosis.client.AdventureModuleClient;
-import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.tiers.TieredDynamicRegistry;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -51,7 +49,6 @@ public class AffixRegistry extends TieredDynamicRegistry<Affix> {
         if (!FMLEnvironment.production && FMLEnvironment.dist.isClient()) {
             AdventureModuleClient.checkAffixLangKeys();
         }
-        RarityRegistry.INSTANCE.validateLootRules();
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.google.common.base.Predicates;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.util.CommonTooltipUtil;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -44,7 +45,7 @@ public class AdventureHwylaPlugin implements IWailaPlugin, IEntityComponentProvi
             AttributeMap map = living.getAttributes();
             for (Tag t : bossAttribs) {
                 CompoundTag tag = (CompoundTag) t;
-                Attribute attrib = BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.tryParse(tag.getString("Name")));
+                Holder<Attribute> attrib = BuiltInRegistries.ATTRIBUTE.getHolder(ResourceLocation.tryParse(tag.getString("Name"))).get();
                 map.getInstance(attrib).load(tag);
             }
             accessor.getServerData().remove("apoth.modifiers");
@@ -62,9 +63,10 @@ public class AdventureHwylaPlugin implements IWailaPlugin, IEntityComponentProvi
             ListTag bossAttribs = new ListTag();
             BuiltInRegistries.ATTRIBUTE.holders().map(map::getInstance).filter(Predicates.notNull()).forEach(inst -> {
                 for (AttributeModifier modif : inst.getModifiers()) {
-                    if (modif.getName().startsWith("placebo_random_modifier_")) {
-                        bossAttribs.add(inst.save());
-                    }
+                    // TODO: Figure out how to identify boss modifiers after the fact.
+                    // if (modif.getName().startsWith("placebo_random_modifier_")) {
+                    // bossAttribs.add(inst.save());
+                    // }
                 }
             });
             tag.put("apoth.modifiers", bossAttribs);

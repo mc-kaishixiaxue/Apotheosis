@@ -41,8 +41,6 @@ public class AdventureConfig {
 
     // Affix
     public static float randomAffixItem = 0.075F;
-    public static float gemDropChance = 0.045F;
-    public static float gemBossBonus = 0.33F;
     public static boolean disableQuarkOnAffixItems = true; // needs sync - maybe client only?
     public static Supplier<Item> torchItem = () -> Items.TORCH; // needs sync
     public static boolean cleaveHitsPlayers = false; // needs sync
@@ -71,8 +69,6 @@ public class AdventureConfig {
         }
 
         randomAffixItem = c.getFloat("Random Affix Chance", "affixes", randomAffixItem, 0, 1, "The chance that a naturally spawned mob will be granted an affix item. 0 = 0%, 1 = 100%");
-        gemDropChance = c.getFloat("Gem Drop Chance", "affixes", gemDropChance, 0, 1, "The chance that a mob will drop a gem. 0 = 0%, 1 = 100%");
-        gemBossBonus = c.getFloat("Gem Boss Bonus", "affixes", gemBossBonus, 0, 1, "The flat bonus chance that bosses have to drop a gem, added to Gem Drop Chance. 0 = 0%, 1 = 100%");
         cleaveHitsPlayers = c.getBoolean("Cleave Players", "affixes", cleaveHitsPlayers, "If affixes that cleave can hit players (excluding the user).");
 
         disableQuarkOnAffixItems = c.getBoolean("Disable Quark Tooltips for Affix Items", "affixes", true, "If Quark's Attribute Tooltip handling is disabled for affix items");

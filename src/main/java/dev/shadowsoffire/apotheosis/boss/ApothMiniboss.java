@@ -9,8 +9,9 @@ import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.AdventureConfig;
+import dev.shadowsoffire.apotheosis.Apoth.Attachments;
 import dev.shadowsoffire.apotheosis.Apotheosis;
+import dev.shadowsoffire.apotheosis.attachments.BonusLootTables;
 import dev.shadowsoffire.apotheosis.boss.MinibossRegistry.IEntityMatch;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -19,6 +20,7 @@ import dev.shadowsoffire.apotheosis.tiers.Constraints.Constrained;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights.Weighted;
+import dev.shadowsoffire.apotheosis.util.AffixData;
 import dev.shadowsoffire.apotheosis.util.NameHelper;
 import dev.shadowsoffire.apotheosis.util.SupportingEntity;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
@@ -73,13 +75,14 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
             ComponentSerialization.CODEC.optionalFieldOf("name", CommonComponents.EMPTY).forGetter(a -> a.name),
             RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entities").forGetter(a -> a.entities),
             BossStats.CODEC.fieldOf("stats").forGetter(a -> a.stats),
-            Codec.BOOL.optionalFieldOf("affixed", false).forGetter(a -> a.affixed),
+            AffixData.CODEC.optionalFieldOf("affix_data", AffixData.DEFAULT).forGetter(a -> a.afxData),
             SetPredicate.CODEC.listOf().optionalFieldOf("valid_gear_sets", Collections.emptyList()).forGetter(a -> a.gearSets),
             NBTAdapter.EITHER_CODEC.optionalFieldOf("nbt").forGetter(a -> a.nbt),
             SupportingEntity.CODEC.listOf().optionalFieldOf("supporting_entities", Collections.emptyList()).forGetter(a -> a.support),
             SupportingEntity.CODEC.optionalFieldOf("mount").forGetter(a -> a.mount),
             Exclusion.CODEC.listOf().optionalFieldOf("exclusions", Collections.emptyList()).forGetter(a -> a.exclusions),
-            Codec.BOOL.optionalFieldOf("finalize", false).forGetter(a -> a.finalize))
+            Codec.BOOL.optionalFieldOf("finalize", false).forGetter(a -> a.finalize),
+            BonusLootTables.CODEC.optionalFieldOf("bonus_loot", BonusLootTables.EMPTY).forGetter(a -> a.bonusLoot))
         .apply(inst, ApothMiniboss::new));
 
     /**
@@ -118,7 +121,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
      * If the miniboss will be given an affix item like a normal boss.
      * Rarity selection follows the affix convert rarities of the dimension.
      */
-    protected final boolean affixed;
+    protected final AffixData afxData;
 
     /**
      * Valid armor sets for this miniboss.
@@ -153,23 +156,29 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
      */
     protected final boolean finalize;
 
+    /**
+     * Bonus loot tables that will be dropped by the miniboss on kill.
+     */
+    protected final BonusLootTables bonusLoot;
+
     public ApothMiniboss(TieredWeights weights, Constraints constraints, float chance,
         Component name, HolderSet<EntityType<?>> entities, BossStats stats,
-        boolean affixed, List<SetPredicate> gearSets, Optional<CompoundTag> nbt, List<SupportingEntity> support,
-        Optional<SupportingEntity> mount, List<Exclusion> exclusions, boolean finalize) {
+        AffixData afxData, List<SetPredicate> gearSets, Optional<CompoundTag> nbt, List<SupportingEntity> support,
+        Optional<SupportingEntity> mount, List<Exclusion> exclusions, boolean finalize, BonusLootTables bonusLoot) {
         this.weights = weights;
         this.constraints = constraints;
         this.chance = chance;
         this.name = name;
         this.entities = entities;
         this.stats = stats;
-        this.affixed = affixed;
+        this.afxData = afxData;
         this.gearSets = gearSets;
         this.nbt = nbt;
         this.support = support;
         this.mount = mount;
         this.exclusions = exclusions;
         this.finalize = finalize;
+        this.bonusLoot = bonusLoot;
     }
 
     @Override
@@ -272,7 +281,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
         }
 
         int guaranteed = -1;
-        if (this.affixed) {
+        if (this.afxData.enabled()) {
             boolean anyValid = false;
 
             for (EquipmentSlot t : EquipmentSlot.values()) {
@@ -296,8 +305,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
                 temp = mob.getItemBySlot(EquipmentSlot.values()[guaranteed]);
             }
 
-            // TODO: Change `boolean affixed` to an AffixData class with a specified set of rarities to pull from.
-            var rarity = LootRarity.randomFromHolders(ctx, AdventureConfig.AFFIX_CONVERT_RARITIES.get(mob.level().dimension().location()));
+            var rarity = LootRarity.random(ctx, this.afxData.rarities());
             ApothBoss.modifyBossItem(temp, mob.hasCustomName() ? mob.getCustomName().getString() : "", ctx, rarity, this.stats, mob.level().registryAccess());
             mob.setCustomName(((MutableComponent) mob.getCustomName()).withStyle(Style.EMPTY.withColor(rarity.getColor())));
             mob.setDropChance(EquipmentSlot.values()[guaranteed], 2F);
@@ -311,6 +319,8 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
             }
         }
         mob.setHealth(mob.getMaxHealth());
+
+        mob.setData(Attachments.BONUS_LOOT_TABLES, this.bonusLoot);
     }
 
     @Override

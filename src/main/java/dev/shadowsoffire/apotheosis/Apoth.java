@@ -3,7 +3,9 @@ package dev.shadowsoffire.apotheosis;
 import java.util.function.UnaryOperator;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
+import dev.shadowsoffire.apotheosis.advancements.GemCutTrigger;
 import dev.shadowsoffire.apotheosis.affix.ItemAffixes;
 import dev.shadowsoffire.apotheosis.affix.UnnamingRecipe;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingMenu;
@@ -25,6 +27,12 @@ import dev.shadowsoffire.apotheosis.gen.BossDungeonFeature;
 import dev.shadowsoffire.apotheosis.gen.BossDungeonFeature2;
 import dev.shadowsoffire.apotheosis.gen.ItemFrameGemsProcessor;
 import dev.shadowsoffire.apotheosis.gen.RogueSpawnerFeature;
+import dev.shadowsoffire.apotheosis.loot.AffixConvertLootModifier;
+import dev.shadowsoffire.apotheosis.loot.AffixHookLootModifier;
+import dev.shadowsoffire.apotheosis.loot.AffixLootModifier;
+import dev.shadowsoffire.apotheosis.loot.AffixLootPoolEntry;
+import dev.shadowsoffire.apotheosis.loot.GemLootModifier;
+import dev.shadowsoffire.apotheosis.loot.GemLootPoolEntry;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.socket.SocketingRecipe;
@@ -67,8 +75,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.neoforged.neoforge.common.crafting.IngredientType;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 /**
  * Object Holder Class. For the main mod class, see {@link Apotheosis}
@@ -98,8 +106,12 @@ public class Apoth {
         public static final DataComponentType<Float> DURABILITY_BONUS = R.component("durability_bonus", b -> b.persistent(Codec.floatRange(0, 1)).networkSynchronized(ByteBufCodecs.FLOAT));
 
         public static final DataComponentType<Boolean> FROM_CHEST = R.component("from_chest", b -> b.persistent(Codec.BOOL));
+
         public static final DataComponentType<Boolean> FROM_TRADER = R.component("from_trader", b -> b.persistent(Codec.BOOL));
+
         public static final DataComponentType<Boolean> FROM_BOSS = R.component("from_boss", b -> b.persistent(Codec.BOOL));
+
+        public static final DataComponentType<Boolean> FROM_MOB = R.component("from_mob", b -> b.persistent(Codec.BOOL));
 
         private static void bootstrap() {}
 
@@ -126,7 +138,7 @@ public class Apoth {
         private static void bootstrap() {}
     }
 
-    public static final class Items {
+    public static final class Items extends net.minecraft.world.item.Items {
 
         public static final Holder<Item> COMMON_MATERIAL = rarityMat("common");
 
@@ -176,39 +188,27 @@ public class Apoth {
     }
 
     public static final class Tiles {
-
         public static final BlockEntityType<BossSpawnerTile> BOSS_SPAWNER = R.tickingBlockEntity("boss_spawner", BossSpawnerTile::new, TickSide.SERVER, Blocks.BOSS_SPAWNER);
-
         public static final BlockEntityType<ReforgingTableTile> REFORGING_TABLE = R.tickingBlockEntity("reforging_table", ReforgingTableTile::new, TickSide.CLIENT, Blocks.REFORGING_TABLE, Blocks.SIMPLE_REFORGING_TABLE);
-
         public static final BlockEntityType<SalvagingTableTile> SALVAGING_TABLE = R.blockEntity("salvaging_table", SalvagingTableTile::new, Blocks.BOSS_SPAWNER);
-
         public static final BlockEntityType<AugmentingTableTile> AUGMENTING_TABLE = R.tickingBlockEntity("augmenting_table", AugmentingTableTile::new, TickSide.CLIENT, Blocks.AUGMENTING_TABLE);
 
         private static void bootstrap() {}
     }
 
     public static final class Menus {
-
         public static final MenuType<ReforgingMenu> REFORGING = R.menuWithPos("reforging", ReforgingMenu::new);
-
         public static final MenuType<SalvagingMenu> SALVAGE = R.menuWithPos("salvage", SalvagingMenu::new);
-
         public static final MenuType<GemCuttingMenu> GEM_CUTTING = R.menu("gem_cutting", GemCuttingMenu::new);
-
         public static final MenuType<AugmentingMenu> AUGMENTING = R.menuWithPos("augmenting", AugmentingMenu::new);
 
         private static void bootstrap() {}
     }
 
     public static class Features {
-
         public static final Holder<Feature<?>> BOSS_DUNGEON = R.feature("boss_dungeon", BossDungeonFeature::new);
-
         public static final Holder<Feature<?>> BOSS_DUNGEON_2 = R.feature("boss_dungeon_2", BossDungeonFeature2::new);
-
         public static final Holder<Feature<?>> ROGUE_SPAWNER = R.feature("rogue_spawner", RogueSpawnerFeature::new);
-
         public static final Holder<StructureProcessorType<?>> ITEM_FRAME_GEMS = R.custom("item_frame_gems", Registries.STRUCTURE_PROCESSOR, () -> () -> ItemFrameGemsProcessor.CODEC);
 
         private static void bootstrap() {}
@@ -216,7 +216,6 @@ public class Apoth {
     }
 
     public static class Tabs {
-
         public static final Holder<CreativeModeTab> ADVENTURE = R.creativeTab("adventure",
             b -> b.title(Component.translatable("itemGroup.apotheosis.adventure")).icon(() -> Items.GEM.value().getDefaultInstance()));
 
@@ -224,7 +223,6 @@ public class Apoth {
     }
 
     public static class Sounds {
-
         public static final Holder<SoundEvent> REFORGE = R.sound("reforge");
 
         private static void bootstrap() {}
@@ -247,14 +245,35 @@ public class Apoth {
     }
 
     public static final class Ingredients {
-        public static final Holder<IngredientType<?>> AFFIX = R.custom("affix", NeoForgeRegistries.Keys.INGREDIENT_TYPES, () -> AffixItemIngredient.TYPE);
-        public static final Holder<IngredientType<?>> GEM = R.custom("gem", NeoForgeRegistries.Keys.INGREDIENT_TYPES, () -> GemIngredient.TYPE);
+        public static final IngredientType<AffixItemIngredient> AFFIX = R.ingredient("affix", AffixItemIngredient.TYPE);
+        public static final IngredientType<GemIngredient> GEM = R.ingredient("gem", GemIngredient.TYPE);
+
+        private static void bootstrap() {}
+    }
+
+    public static final class LootPoolEntries {
+        public static final LootPoolEntryType RANDOM_AFFIX_ITEM = R.lootPoolEntry("random_affix_item", AffixLootPoolEntry.TYPE);
+        public static final LootPoolEntryType RANDOM_GEM = R.lootPoolEntry("random_gem", GemLootPoolEntry.TYPE);
+
+        private static void bootstrap() {}
+    }
+
+    public static final class LootModifiers {
+        public static final MapCodec<GemLootModifier> GEMS = R.lootModifier("random_affix_item", GemLootModifier.CODEC);
+        public static final MapCodec<AffixLootModifier> AFFIX_LOOT = R.lootModifier("random_gem", AffixLootModifier.CODEC);
+        public static final MapCodec<AffixConvertLootModifier> AFFIX_CONVERSION = R.lootModifier("random_gem", AffixConvertLootModifier.CODEC);
+        public static final MapCodec<AffixHookLootModifier> CODE_HOOK = R.lootModifier("random_gem", AffixHookLootModifier.CODEC);
+
+        private static void bootstrap() {}
+    }
+
+    public static final class Triggers {
+        public static final GemCutTrigger GEM_CUTTING = R.criteriaTrigger("gem_cutting", new GemCutTrigger());
 
         private static void bootstrap() {}
     }
 
     public static final class LootTables {
-
         public static final ResourceKey<LootTable> CHEST_VALUABLE = key("chests/chest_valuable");
         public static final ResourceKey<LootTable> SPAWNER_BRUTAL_ROTATE = key("chests/spawner_brutal_rotate");
         public static final ResourceKey<LootTable> SPAWNER_BRUTAL = key("chests/spawner_brutal");
@@ -267,13 +286,11 @@ public class Apoth {
     }
 
     public static final class Tags {
-
         public static final TagKey<Block> ROGUE_SPAWNER_COVERS = BlockTags.create(Apotheosis.loc("rogue_spawner_covers"));
 
     }
 
     public static final class DamageTypes {
-
         public static final ResourceKey<DamageType> EXECUTE = ResourceKey.create(Registries.DAMAGE_TYPE, Apotheosis.loc("execute"));
         public static final ResourceKey<DamageType> PSYCHIC = ResourceKey.create(Registries.DAMAGE_TYPE, Apotheosis.loc("psychic"));
 
@@ -287,9 +304,12 @@ public class Apoth {
         Menus.bootstrap();
         Tabs.bootstrap();
         Sounds.bootstrap();
+        Triggers.bootstrap();
         Features.bootstrap();
         Ingredients.bootstrap();
         RecipeTypes.bootstrap();
+        LootModifiers.bootstrap();
+        LootPoolEntries.bootstrap();
         RecipeSerializers.bootstrap();
     }
 

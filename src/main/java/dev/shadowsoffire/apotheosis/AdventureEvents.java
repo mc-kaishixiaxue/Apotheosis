@@ -1,14 +1,17 @@
 package dev.shadowsoffire.apotheosis;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.base.Predicates;
 
+import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.effect.FestiveAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.OmneticAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.TelepathicAffix;
 import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingMenu;
 import dev.shadowsoffire.apotheosis.commands.AffixCommand;
@@ -23,6 +26,7 @@ import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apothic_attributes.event.ApotheosisCommandEvent;
 import dev.shadowsoffire.placebo.events.AnvilLandEvent;
 import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
@@ -45,7 +49,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.MobSpawnEvent.FinalizeSpawn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -54,6 +57,7 @@ import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
@@ -222,12 +226,12 @@ public class AdventureEvents {
 
     @SubscribeEvent
     public void harvest(HarvestCheck e) {
-        Apoth.Affixes.OMNETIC.getOptional().ifPresent(afx -> afx.harvest(e));
+        OmneticAffix.harvest(e);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void speed(BreakSpeed e) {
-        Apoth.Affixes.OMNETIC.getOptional().ifPresent(afx -> afx.speed(e));
+        OmneticAffix.speed(e);
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -236,15 +240,18 @@ public class AdventureEvents {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void special(FinalizeSpawn e) {
+    public void special(FinalizeSpawnEvent e) {
         if (e.getSpawnType() == MobSpawnType.NATURAL && e.getLevel().getRandom().nextFloat() <= AdventureConfig.randomAffixItem && e.getEntity() instanceof Monster) {
             Player player = e.getLevel().getNearestPlayer(e.getX(), e.getY(), e.getZ(), -1, false);
             if (player == null) return;
-            ItemStack affixItem = LootController.createRandomLootItem(e.getLevel().getRandom(), null, player, (ServerLevel) e.getEntity().level());
+
+            GenContext ctx = GenContext.forPlayer(player);
+            ItemStack affixItem = LootController.createRandomLootItem(ctx, null);
             if (affixItem.isEmpty()) return;
-            affixItem.getOrCreateTag().putBoolean("apoth_rspawn", true);
+
+            affixItem.set(Components.FROM_MOB, true);
             LootCategory cat = LootCategory.forItem(affixItem);
-            EquipmentSlot slot = cat.getSlots()[0];
+            EquipmentSlot slot = Arrays.stream(EquipmentSlot.values()).filter(cat.getSlots()::test).findAny().orElse(EquipmentSlot.MAINHAND);
             e.getEntity().setItemSlot(slot, affixItem);
             e.getEntity().setGuaranteedDrop(slot);
         }
@@ -254,11 +261,11 @@ public class AdventureEvents {
     public void gemSmashing(AnvilLandEvent e) {
         Level level = e.getLevel();
         BlockPos pos = e.getPos();
-        List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class, new AABB(pos, pos.offset(1, 1, 1)));
+        List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class, new AABB(pos));
         for (ItemEntity ent : items) {
             ItemStack stack = ent.getItem();
-            if (stack.getItem() == Items.GEM.get()) {
-                ent.setItem(new ItemStack(Items.GEM_DUST.get(), stack.getCount()));
+            if (stack.is(Items.GEM)) {
+                ent.setItem(new ItemStack(Items.GEM_DUST, stack.getCount()));
             }
         }
     }

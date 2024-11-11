@@ -38,3 +38,24 @@ ${mixinConfig}
     versionRange="[${placeboVersion},)"
     ordering="AFTER"
     side="BOTH"
+
+[[dependencies.${modid}]]
+    modId="apothic_attributes"
+    type="required"
+    versionRange="[${apothicAttributesVersion},)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${modid}]]
+    modId="apothic_spawners"
+    type="required"
+    versionRange="[${apothicSpawnersVersion},)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${modid}]]
+    modId="apothic_enchanting"
+    type="required"
+    versionRange="[${apothicEnchantingVersion},)"
+    ordering="AFTER"
+    side="BOTH"

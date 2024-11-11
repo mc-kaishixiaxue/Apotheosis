@@ -84,7 +84,7 @@ public class AdventureConfig {
                 TYPE_OVERRIDES.put(ResourceLocation.parse(split[0]), type);
             }
             catch (Exception e) {
-                AdventureModule.LOGGER.error("Invalid type override entry: " + s + " will be ignored!");
+                Apotheosis.LOGGER.error("Invalid type override entry: " + s + " will be ignored!");
                 e.printStackTrace();
             }
         }
@@ -109,7 +109,7 @@ public class AdventureConfig {
                 AFFIX_ITEM_LOOT_RULES.add(LootPatternMatcher.parse(s));
             }
             catch (Exception e) {
-                AdventureModule.LOGGER.error("Invalid affix item loot rule: " + s + " will be ignored");
+                Apotheosis.LOGGER.error("Invalid affix item loot rule: " + s + " will be ignored");
                 e.printStackTrace();
             }
         }
@@ -122,7 +122,7 @@ public class AdventureConfig {
                 GEM_LOOT_RULES.add(LootPatternMatcher.parse(s));
             }
             catch (Exception e) {
-                AdventureModule.LOGGER.error("Invalid gem loot rule: " + s + " will be ignored");
+                Apotheosis.LOGGER.error("Invalid gem loot rule: " + s + " will be ignored");
                 e.printStackTrace();
             }
         }
@@ -135,7 +135,7 @@ public class AdventureConfig {
                 AFFIX_CONVERT_LOOT_RULES.add(LootPatternMatcher.parse(s));
             }
             catch (Exception e) {
-                AdventureModule.LOGGER.error("Invalid affix convert loot rule: " + s + " will be ignored");
+                Apotheosis.LOGGER.error("Invalid affix convert loot rule: " + s + " will be ignored");
                 e.printStackTrace();
             }
         }
@@ -152,7 +152,7 @@ public class AdventureConfig {
                 AFFIX_CONVERT_RARITIES.put(dim, new RarityClamp.Simple(min, max));
             }
             catch (Exception e) {
-                AdventureModule.LOGGER.error("Invalid Affix Convert Rarity: " + s + " will be ignored");
+                Apotheosis.LOGGER.error("Invalid Affix Convert Rarity: " + s + " will be ignored");
                 e.printStackTrace();
             }
         }
@@ -169,7 +169,7 @@ public class AdventureConfig {
                 GEM_DIM_RARITIES.put(dim, new RarityClamp.Simple(min, max));
             }
             catch (Exception e) {
-                AdventureModule.LOGGER.error("Invalid Gem Dimensional Rarity: " + s + " will be ignored");
+                Apotheosis.LOGGER.error("Invalid Gem Dimensional Rarity: " + s + " will be ignored");
                 e.printStackTrace();
             }
         }
@@ -184,7 +184,7 @@ public class AdventureConfig {
                 return i == Items.AIR ? Items.TORCH : i;
             }
             catch (Exception ex) {
-                AdventureModule.LOGGER.error("Invalid torch item {}", torch);
+                Apotheosis.LOGGER.error("Invalid torch item {}", torch);
                 return Items.TORCH;
             }
         };
@@ -215,7 +215,7 @@ public class AdventureConfig {
                 BOSS_SPAWN_RULES.put(new ResourceLocation(split[0]), Pair.of(Float.parseFloat(split[1]), BossSpawnRules.valueOf(split[2].toUpperCase(Locale.ROOT))));
             }
             catch (Exception e) {
-                AdventureModule.LOGGER.error("Invalid boss spawn rules: " + s + " will be ignored");
+                Apotheosis.LOGGER.error("Invalid boss spawn rules: " + s + " will be ignored");
                 e.printStackTrace();
             }
         }
@@ -227,7 +227,7 @@ public class AdventureConfig {
                 DIM_WHITELIST.add(new ResourceLocation(s.trim()));
             }
             catch (ResourceLocationException e) {
-                AdventureModule.LOGGER.error("Invalid dim whitelist entry: " + s + " will be ignored");
+                Apotheosis.LOGGER.error("Invalid dim whitelist entry: " + s + " will be ignored");
             }
         }
 

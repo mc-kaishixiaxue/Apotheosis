@@ -20,7 +20,7 @@ public class BossRegistry extends TieredDynamicRegistry<ApothBoss> {
     public static final BossRegistry INSTANCE = new BossRegistry();
 
     public BossRegistry() {
-        super(AdventureModule.LOGGER, "bosses", false, false);
+        super(Apotheosis.LOGGER, "bosses", false, false);
     }
 
     @Override

@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
-import dev.shadowsoffire.apotheosis.AdventureModule;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import net.minecraft.world.entity.player.Player;
 
 public class GameStagesCompat {
@@ -18,11 +18,11 @@ public class GameStagesCompat {
      * @return If the player has any of the passed stages.
      */
     public static boolean hasStage(Player player, Set<String> stages) {
-        return !AdventureModule.STAGES_LOADED || stages.isEmpty() || Inner.hasStage(player, stages);
+        return !Apotheosis.STAGES_LOADED || stages.isEmpty() || Inner.hasStage(player, stages);
     }
 
     public static Set<String> getStages(Player player) {
-        return AdventureModule.STAGES_LOADED ? Inner.getStages(player) : Set.of();
+        return Apotheosis.STAGES_LOADED ? Inner.getStages(player) : Set.of();
     }
 
     /**

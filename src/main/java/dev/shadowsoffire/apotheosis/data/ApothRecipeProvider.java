@@ -1,0 +1,105 @@
+package dev.shadowsoffire.apotheosis.data;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+import dev.shadowsoffire.apotheosis.Apoth.Blocks;
+import dev.shadowsoffire.apotheosis.Apoth.Items;
+import dev.shadowsoffire.apotheosis.Apotheosis;
+import dev.shadowsoffire.apotheosis.affix.UnnamingRecipe;
+import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingRecipe;
+import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe;
+import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe.OutputData;
+import dev.shadowsoffire.apotheosis.loot.LootRarity;
+import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.socket.AddSocketsRecipe;
+import dev.shadowsoffire.apotheosis.socket.SocketingRecipe;
+import dev.shadowsoffire.apotheosis.socket.WithdrawalRecipe;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import dev.shadowsoffire.apotheosis.util.AffixItemIngredient;
+import dev.shadowsoffire.apotheosis.util.GemIngredient;
+import dev.shadowsoffire.placebo.datagen.LegacyRecipeProvider;
+import dev.shadowsoffire.placebo.reload.DynamicHolder;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
+
+public class ApothRecipeProvider extends LegacyRecipeProvider {
+
+    public ApothRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+        super(output, registries, Apotheosis.MODID);
+    }
+
+    @Override
+    protected void genRecipes(RecipeOutput out, HolderLookup.Provider registries) {
+        out.accept(Apotheosis.loc("socketing"), new SocketingRecipe(), null);
+        out.accept(Apotheosis.loc("unnaming"), new UnnamingRecipe(), null);
+        out.accept(Apotheosis.loc("widthdrawal"), new WithdrawalRecipe(), null);
+        addSockets("sigil_add_sockets", ingredient(Items.GEM), 3);
+        addAffixSalvaging("common", Items.COMMON_MATERIAL);
+        addAffixSalvaging("uncommon", Items.UNCOMMON_MATERIAL);
+        addAffixSalvaging("rare", Items.RARE_MATERIAL);
+        addAffixSalvaging("epic", Items.EPIC_MATERIAL);
+        addAffixSalvaging("mythic", Items.MYTHIC_MATERIAL);
+        addGemSalvaging(Purity.CRACKED, 1, 2);
+        addGemSalvaging(Purity.CHIPPED, 1, 3);
+        addGemSalvaging(Purity.FLAWED, 2, 4);
+        addGemSalvaging(Purity.NORMAL, 3, 5);
+        addGemSalvaging(Purity.FLAWLESS, 4, 7);
+        addGemSalvaging(Purity.PERFECT, 5, 10);
+        addSalvaging("leather_horse_armor", Ingredient.of(Items.LEATHER_HORSE_ARMOR), new OutputData(Items.LEATHER, 3, 8));
+        addSalvaging("iron_horse_armor", Ingredient.of(Items.IRON_HORSE_ARMOR), new OutputData(Items.IRON_INGOT, 3, 8));
+        addSalvaging("golden_horse_armor", Ingredient.of(Items.GOLDEN_HORSE_ARMOR), new OutputData(Items.GOLD_INGOT, 3, 8));
+        addSalvaging("diamond_horse_armor", Ingredient.of(Items.DIAMOND_HORSE_ARMOR), new OutputData(Items.DIAMOND, 3, 8));
+        addSalvaging("wolf_armor", Ingredient.of(Items.WOLF_ARMOR), new OutputData(Items.ARMADILLO_SCUTE, 1, 3));
+        addReforging("common", 1, 0, 2, Blocks.SIMPLE_REFORGING_TABLE, Blocks.REFORGING_TABLE);
+        addReforging("uncommon", 2, 1, 5, Blocks.SIMPLE_REFORGING_TABLE, Blocks.REFORGING_TABLE);
+        addReforging("rare", 2, 2, 15, Blocks.SIMPLE_REFORGING_TABLE, Blocks.REFORGING_TABLE);
+        addReforging("epic", 2, 4, 30, Blocks.REFORGING_TABLE);
+        addReforging("mythic", 3, 5, 50, Blocks.REFORGING_TABLE);
+    }
+
+    @SafeVarargs
+    private void addReforging(String rarity, int mats, int sigils, int levels, Holder<Block>... tables) {
+        DynamicHolder<LootRarity> lRarity = RarityRegistry.INSTANCE.holder(Apotheosis.loc(rarity));
+        Set<Block> tableSet = Arrays.stream(tables).map(Holder::value).collect(Collectors.toSet());
+        this.recipeOutput.accept(Apotheosis.loc("reforging/" + rarity), new ReforgingRecipe(lRarity, mats, sigils, levels, tableSet), null);
+    }
+
+    private void addGemSalvaging(Purity purity, int min, int max) {
+        Ingredient input = new Ingredient(new GemIngredient(purity));
+        OutputData output = new OutputData(new ItemStack(Items.GEM_DUST), min, max);
+        addSalvaging("salvaging/" + purity.getSerializedName() + "_gem", input, output);
+    }
+
+    private void addAffixSalvaging(String rarity, Holder<Item> material) {
+        Ingredient input = new Ingredient(new AffixItemIngredient(RarityRegistry.INSTANCE.holder(Apotheosis.loc(rarity))));
+        OutputData output = new OutputData(new ItemStack(material), 1, 4);
+        addSalvaging("salvaging/" + rarity + "_affix_item", input, output);
+    }
+
+    private void addSalvaging(String path, Ingredient input, OutputData output) {
+        addSalvaging(path, input, List.of(output));
+    }
+
+    private void addSalvaging(String path, Ingredient input, List<OutputData> outputs) {
+        this.recipeOutput.accept(Apotheosis.loc(path), new SalvagingRecipe(input, outputs), null);
+    }
+
+    private void addSockets(String path, Ingredient input, int maxSockets) {
+        this.recipeOutput.accept(Apotheosis.loc(path), new AddSocketsRecipe(input, maxSockets), null);
+    }
+
+    private static <T extends ItemLike> Ingredient ingredient(Holder<T> holder) {
+        return Ingredient.of(holder.value());
+    }
+}

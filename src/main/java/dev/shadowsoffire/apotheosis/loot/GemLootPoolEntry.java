@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.AdventureModule;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
@@ -69,7 +69,7 @@ public class GemLootPoolEntry extends ContextualLootPoolEntry {
      */
     private Gem unwrap(DynamicHolder<Gem> holder) {
         if (!holder.isBound()) {
-            AdventureModule.LOGGER.error("A GemLootPoolEntry failed to resolve the Gem {}!", holder.getId());
+            Apotheosis.LOGGER.error("A GemLootPoolEntry failed to resolve the Gem {}!", holder.getId());
             return null;
         }
         return holder.get();

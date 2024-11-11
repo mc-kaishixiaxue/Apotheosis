@@ -28,7 +28,7 @@ public interface Exclusion extends CodecProvider<Exclusion> {
 
     public boolean requiresNbtAccess();
 
-    public static void initSerializers() {
+    public static void initCodecs() {
         register("spawn_type", SpawnTypeExclusion.CODEC);
         register("nbt", NbtExclusion.CODEC);
         register("surface_type", SurfaceTypeExclusion.CODEC);

@@ -1,21 +1,15 @@
 package dev.shadowsoffire.apotheosis.compat;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import dev.shadowsoffire.apotheosis.Adventure;
 import dev.shadowsoffire.apotheosis.AdventureModule.ApothSmithingRecipe;
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apoth.RecipeTypes;
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe.OutputData;
-import dev.shadowsoffire.apotheosis.compat.GemCuttingCategory.GemCuttingRecipe;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.socket.AddSocketsRecipe;
 import dev.shadowsoffire.apotheosis.socket.ReactiveSmithingRecipe;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
@@ -23,6 +17,8 @@ import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import dev.shadowsoffire.apotheosis.socket.gem.cutting.PurityUpgradeRecipe;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -45,16 +41,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.levelgen.LegacyRandomSource;
 
 @JeiPlugin
 public class AdventureJEIPlugin implements IModPlugin {
 
     public static final RecipeType<SmithingRecipe> APO_SMITHING = RecipeType.create(Apotheosis.MODID, "smithing", ApothSmithingRecipe.class);
     public static final RecipeType<SalvagingRecipe> SALVAGING = RecipeType.create(Apotheosis.MODID, "salvaging", SalvagingRecipe.class);
-    public static final RecipeType<GemCuttingRecipe> GEM_CUTTING = RecipeType.create(Apotheosis.MODID, "gem_cutting", GemCuttingRecipe.class);
+    public static final RecipeType<PurityUpgradeRecipe> PURITY_UPGRADE = RecipeType.create(Apotheosis.MODID, "purity_upgrade", PurityUpgradeRecipe.class);
 
     @Override
     public ResourceLocation getPluginUid() {
@@ -65,43 +61,42 @@ public class AdventureJEIPlugin implements IModPlugin {
     @SuppressWarnings("removal")
     public void registerRecipes(IRecipeRegistration reg) {
         ItemStack gem = new ItemStack(Apoth.Items.GEM);
-        Gem gemObj = GemRegistry.INSTANCE.getRandomItem(new LegacyRandomSource(1854));
+        Gem gemObj = GemRegistry.INSTANCE.getValues().stream().findAny().get();
         GemItem.setGem(gem, gemObj);
-        AffixHelper.setRarity(gem, gemObj.getMaxRarity());
+        GemItem.setPurity(gem, Purity.PERFECT);
         reg.addIngredientInfo(gem, VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.socketing"));
-
-        reg.addIngredientInfo(new ItemStack(Adventure.Items.GEM_DUST.get()), VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.gem_crushing"));
-        reg.addIngredientInfo(new ItemStack(Adventure.Items.SIGIL_OF_UNNAMING.get()), VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.unnaming"));
+        reg.addIngredientInfo(new ItemStack(Apoth.Items.GEM_DUST), VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.gem_crushing"));
+        reg.addIngredientInfo(new ItemStack(Apoth.Items.SIGIL_OF_UNNAMING), VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.unnaming"));
         ApothSmithingCategory.registerExtension(AddSocketsRecipe.class, new AddSocketsExtension());
-        reg.addRecipes(APO_SMITHING, Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType.SMITHING).stream().filter(ReactiveSmithingRecipe.class::isInstance).toList());
-        List<SalvagingRecipe> salvagingRecipes = new ArrayList<>(Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(RecipeTypes.SALVAGING));
-        salvagingRecipes.sort(Comparator.comparingInt(recipe -> recipe.getOutputs().stream().mapToInt(OutputData::getMax).max().orElse(0)));
+
+        reg.addRecipes(APO_SMITHING, Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType.SMITHING).stream()
+            .map(RecipeHolder::value)
+            .filter(ReactiveSmithingRecipe.class::isInstance)
+            .toList());
+
+        List<SalvagingRecipe> salvagingRecipes = Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(RecipeTypes.SALVAGING).stream().map(RecipeHolder::value).toList();
+        salvagingRecipes.sort(Comparator.comparingInt(recipe -> recipe.getOutputs().stream().mapToInt(OutputData::max).max().orElse(0)));
         reg.addRecipes(SALVAGING, salvagingRecipes);
 
-        List<GemCuttingRecipe> gemCutRecipes = new ArrayList<>();
-        for (Gem g : GemRegistry.INSTANCE.getValues()) {
-            LootRarity r = RarityRegistry.getMinRarity().get();
-            LootRarity max = RarityRegistry.getMaxRarity().get();
-            while (r != max) {
-                if (g.clamp(r) == r) gemCutRecipes.add(new GemCuttingRecipe(g, r));
-                r = r.next();
-            }
-        }
-        reg.addRecipes(GEM_CUTTING, gemCutRecipes);
+        reg.addRecipes(PURITY_UPGRADE, Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(RecipeTypes.GEM_CUTTING).stream()
+            .map(RecipeHolder::value)
+            .filter(PurityUpgradeRecipe.class::isInstance)
+            .map(PurityUpgradeRecipe.class::cast)
+            .toList());
     }
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration reg) {
         reg.addRecipeCategories(new ApothSmithingCategory(reg.getJeiHelpers().getGuiHelper()));
         reg.addRecipeCategories(new SalvagingCategory(reg.getJeiHelpers().getGuiHelper()));
-        reg.addRecipeCategories(new GemCuttingCategory(reg.getJeiHelpers().getGuiHelper()));
+        reg.addRecipeCategories(new PurityUpgradeCategory(reg.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration reg) {
         reg.addRecipeCatalyst(new ItemStack(Blocks.SMITHING_TABLE), APO_SMITHING);
         reg.addRecipeCatalyst(new ItemStack(Apoth.Blocks.SALVAGING_TABLE.value()), SALVAGING);
-        reg.addRecipeCatalyst(new ItemStack(Apoth.Blocks.GEM_CUTTING_TABLE.value()), GEM_CUTTING);
+        reg.addRecipeCatalyst(new ItemStack(Apoth.Blocks.GEM_CUTTING_TABLE.value()), PURITY_UPGRADE);
     }
 
     @Override
@@ -144,7 +139,7 @@ public class AdventureJEIPlugin implements IModPlugin {
             if (!inst.isValidUnsocketed()) {
                 return BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
             }
-            return inst.gem().getId() + "@" + inst.purity().ordinal();
+            return inst.gem().getId() + "@" + inst.purity().getSerializedName();
         }
 
     }

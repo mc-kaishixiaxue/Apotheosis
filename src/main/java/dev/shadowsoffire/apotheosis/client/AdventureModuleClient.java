@@ -19,7 +19,6 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.datafixers.util.Either;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
-import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apoth.Menus;
@@ -183,7 +182,9 @@ public class AdventureModuleClient {
                 any = true;
             }
         }
-        if (any) AdventureModule.LOGGER.error(sb.toString());
+        if (any) {
+            Apotheosis.LOGGER.error(sb.toString());
+        }
     }
 
     public static AttributeTooltipContext tooltipCtx() {

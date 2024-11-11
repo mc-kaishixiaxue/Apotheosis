@@ -92,7 +92,7 @@ public interface LootRule extends CodecProvider<LootRule> {
             List<WeightedEntry.Wrapper<Affix>> available = LootController.getWeightedAffixes(stack, rarity, this.type, ctx);
             int weight = WeightedRandom.getTotalWeight(available);
             if (available.size() == 0 && weight == 0) {
-                AdventureModule.LOGGER.error("Failed to execute LootRule {}/{}/{}/{}!", BuiltInRegistries.ITEM.getKey(stack.getItem()), RarityRegistry.INSTANCE.getKey(rarity), this.type);
+                Apotheosis.LOGGER.error("Failed to execute LootRule {}/{}/{}/{}!", BuiltInRegistries.ITEM.getKey(stack.getItem()), RarityRegistry.INSTANCE.getKey(rarity), this.type);
                 return;
             }
             Affix selected = WeightedRandom.getRandomItem(ctx.rand(), available, weight).get().data();

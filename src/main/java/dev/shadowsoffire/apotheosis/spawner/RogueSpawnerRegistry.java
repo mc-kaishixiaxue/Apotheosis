@@ -9,7 +9,7 @@ public class RogueSpawnerRegistry extends WeightedDynamicRegistry<RogueSpawner> 
     public static final RogueSpawnerRegistry INSTANCE = new RogueSpawnerRegistry();
 
     public RogueSpawnerRegistry() {
-        super(AdventureModule.LOGGER, "rogue_spawners", false, false);
+        super(Apotheosis.LOGGER, "rogue_spawners", false, false);
     }
 
     @Override

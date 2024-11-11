@@ -10,6 +10,7 @@ import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.AdventureModule;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.net.BossSpawnPayload;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
@@ -71,7 +72,7 @@ public class BossEvents {
                     GenContext ctx = GenContext.forPlayerAtPos(rand, player, entity.blockPosition());
                     ApothBoss item = BossRegistry.INSTANCE.getRandomItem(ctx);
                     if (item == null) {
-                        AdventureModule.LOGGER.error("Attempted to spawn a boss in dimension {} using configured boss spawn rule {}/{} but no bosses were made available.", dimId, rules.getRight(), rules.getLeft());
+                        Apotheosis.LOGGER.error("Attempted to spawn a boss in dimension {} using configured boss spawn rule {}/{} but no bosses were made available.", dimId, rules.getRight(), rules.getLeft());
                         return;
                     }
 
@@ -87,7 +88,7 @@ public class BossEvents {
                         AdventureModule.debugLog(boss.blockPosition(), "Surface Boss - " + boss.getName().getString());
                         Component name = this.getName(boss);
                         if (name == null || name.getStyle().getColor() == null) {
-                            AdventureModule.LOGGER.warn("A Boss {} ({}) has spawned without a custom name!", boss.getName().getString(), EntityType.getKey(boss.getType()));
+                            Apotheosis.LOGGER.warn("A Boss {} ({}) has spawned without a custom name!", boss.getName().getString(), EntityType.getKey(boss.getType()));
                         }
                         else {
                             sLevel.players().forEach(p -> {

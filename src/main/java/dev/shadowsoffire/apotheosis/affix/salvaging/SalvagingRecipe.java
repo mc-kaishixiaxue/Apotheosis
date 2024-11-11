@@ -11,6 +11,7 @@ import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -94,6 +95,9 @@ public class SalvagingRecipe implements Recipe<SingleRecipeInput> {
             ByteBufCodecs.VAR_INT, OutputData::max,
             OutputData::new);
 
+        public OutputData(Item item, int min, int max) {
+            this(item.getDefaultInstance(), min, max);
+        }
     }
 
     @Override

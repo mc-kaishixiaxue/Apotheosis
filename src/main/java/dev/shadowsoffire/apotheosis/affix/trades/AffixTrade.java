@@ -10,8 +10,8 @@ import javax.annotation.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apoth.Components;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.loot.AffixLootEntry;
 import dev.shadowsoffire.apotheosis.loot.AffixLootRegistry;
 import dev.shadowsoffire.apotheosis.loot.LootController;
@@ -114,7 +114,7 @@ public class AffixTrade implements WandererTrade {
      */
     private AffixLootEntry unwrap(DynamicHolder<AffixLootEntry> holder) {
         if (!holder.isBound()) {
-            AdventureModule.LOGGER.error("An AffixTrade failed to resolve the Affix Loot Entry {}!", holder.getId());
+            Apotheosis.LOGGER.error("An AffixTrade failed to resolve the Affix Loot Entry {}!", holder.getId());
             return null;
         }
         return holder.get();

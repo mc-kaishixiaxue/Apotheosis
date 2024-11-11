@@ -32,7 +32,7 @@ public class RarityRegistry extends TieredDynamicRegistry<LootRarity> {
     protected BiMap<Item, DynamicHolder<LootRarity>> materialMap = HashBiMap.create();
 
     private RarityRegistry() {
-        super(AdventureModule.LOGGER, "rarities", true, false);
+        super(Apotheosis.LOGGER, "rarities", true, false);
     }
 
     /**
@@ -103,7 +103,7 @@ public class RarityRegistry extends TieredDynamicRegistry<LootRarity> {
                         errMsg.append("; Provided: " + affixes.size());
                         // errMsg.append("The following affixes exist for this category/rarity combination: ");
                         // affixes.forEach(a -> errMsg.append(a.getId() + " "));
-                        AdventureModule.LOGGER.error(errMsg.toString());
+                        Apotheosis.LOGGER.error(errMsg.toString());
                     }
                 }
             });

@@ -19,7 +19,7 @@ public class AffixLootRegistry extends TieredDynamicRegistry<AffixLootEntry> {
     public static final AffixLootRegistry INSTANCE = new AffixLootRegistry();
 
     private AffixLootRegistry() {
-        super(AdventureModule.LOGGER, "affix_loot_entries", false, false);
+        super(Apotheosis.LOGGER, "affix_loot_entries", false, false);
     }
 
     @Override

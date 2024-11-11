@@ -19,7 +19,7 @@ public class MinibossRegistry extends TieredDynamicRegistry<ApothMiniboss> {
     public static final MinibossRegistry INSTANCE = new MinibossRegistry();
 
     public MinibossRegistry() {
-        super(AdventureModule.LOGGER, "minibosses", false, false);
+        super(Apotheosis.LOGGER, "minibosses", false, false);
     }
 
     @Override

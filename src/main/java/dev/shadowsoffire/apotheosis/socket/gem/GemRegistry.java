@@ -19,7 +19,7 @@ public class GemRegistry extends TieredDynamicRegistry<Gem> {
     public static final GemRegistry INSTANCE = new GemRegistry();
 
     public GemRegistry() {
-        super(AdventureModule.LOGGER, "gems", true, false);
+        super(Apotheosis.LOGGER, "gems", true, false);
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.AdventureModule;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
@@ -88,7 +88,7 @@ public class AffixLootPoolEntry extends ContextualLootPoolEntry {
      */
     private static boolean checkBound(DynamicHolder<AffixLootEntry> holder) {
         if (!holder.isBound()) {
-            AdventureModule.LOGGER.error("An AffixLootPoolEntry failed to resolve the Affix Loot Entry {}!", holder.getId());
+            Apotheosis.LOGGER.error("An AffixLootPoolEntry failed to resolve the Affix Loot Entry {}!", holder.getId());
             return false;
         }
         return true;

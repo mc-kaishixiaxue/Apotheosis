@@ -90,12 +90,12 @@ public class AttributeAffix extends Affix {
     public void addModifiers(AffixInstance inst, ItemAttributeModifierEvent event) {
         LootCategory cat = inst.category();
         if (cat.isNone()) {
-            AdventureModule.LOGGER.debug("Attempted to apply the attributes of affix {} on item {}, but it is not an affix-compatible item!", this.id(), inst.stack().getHoverName().getString());
+            Apotheosis.LOGGER.debug("Attempted to apply the attributes of affix {} on item {}, but it is not an affix-compatible item!", this.id(), inst.stack().getHoverName().getString());
             return;
         }
         ModifierInst modif = this.modifiers.get(inst.getRarity());
         if (modif.attr == null) {
-            AdventureModule.LOGGER.debug("The affix {} has attempted to apply a null attribute modifier to {}!", this.id(), inst.stack().getHoverName().getString());
+            Apotheosis.LOGGER.debug("The affix {} has attempted to apply a null attribute modifier to {}!", this.id(), inst.stack().getHoverName().getString());
             return;
         }
         event.addModifier(this.attribute, modif.build(inst), cat.getSlots());

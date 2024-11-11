@@ -284,7 +284,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
             }
 
             if (!anyValid) {
-                AdventureModule.LOGGER.error("Attempted to affix a miniboss with ID " + MinibossRegistry.INSTANCE.getKey(this) + " but it is not wearing any affixable items!");
+                Apotheosis.LOGGER.error("Attempted to affix a miniboss with ID " + MinibossRegistry.INSTANCE.getKey(this) + " but it is not wearing any affixable items!");
                 return;
             }
 

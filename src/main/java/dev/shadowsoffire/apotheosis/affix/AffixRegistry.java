@@ -33,7 +33,7 @@ public class AffixRegistry extends TieredDynamicRegistry<Affix> {
     private Multimap<AffixType, DynamicHolder<Affix>> byType = ImmutableMultimap.of();
 
     public AffixRegistry() {
-        super(AdventureModule.LOGGER, "affixes", true, true);
+        super(Apotheosis.LOGGER, "affixes", true, true);
     }
 
     @Override

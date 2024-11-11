@@ -134,7 +134,7 @@ public class AdventureTwilightCompat {
         public void doPostAttack(GemInstance inst, LivingEntity user, Entity target) {
             Data d = this.values.get(rarity);
             if (Affix.isOnCooldown(this.getCooldownId(gem), d.cooldown, user)) return;
-            if (user.random.nextFloat() <= d.chance) {
+            if (user.getRandom().nextFloat() <= d.chance) {
                 Redcap goblin = REDCAP.get().create(user.level());
                 CompoundTag tag = new CompoundTag();
                 tag.putString("DeathLootTable", "apotheosis:entity/treasure_goblin");
@@ -146,9 +146,9 @@ public class AdventureTwilightCompat {
                 goblin.getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("apoth.healmth", 60, Operation.ADDITION));
                 goblin.setHealth(goblin.getMaxHealth());
                 for (int i = 0; i < 8; i++) {
-                    int x = Mth.nextInt(goblin.random, -5, 5);
-                    int y = Mth.nextInt(goblin.random, -1, 1);
-                    int z = Mth.nextInt(goblin.random, -5, 5);
+                    int x = Mth.nextInt(goblin.getRandom(), -5, 5);
+                    int y = Mth.nextInt(goblin.getRandom(), -1, 1);
+                    int z = Mth.nextInt(goblin.getRandom(), -5, 5);
                     goblin.setPos(target.position().add(x, y, z));
                     if (user.level().noCollision(goblin)) break;
                     if (i == 7) goblin.setPos(target.position());

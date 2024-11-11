@@ -11,9 +11,10 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
 
-import dev.shadowsoffire.apotheosis.AdventureModule;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.placebo.config.Configuration;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
@@ -31,7 +32,6 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 
@@ -366,8 +366,8 @@ public class NameHelper {
         Preconditions.checkArgument(swords.length > 0 && axes.length > 0 && pickaxes.length > 0 && shovels.length > 0 && bows.length > 0, "Detected empty lists for weapon root names in apotheosis/names.cfg, this is not allowed.");
 
         Map<Tier, List<Item>> itemsByTier = new HashMap<>();
-        Map<ArmorMaterial, List<Item>> armorsByTier = new HashMap<>();
-        for (Item i : ForgeRegistries.ITEMS) {
+        Map<ResourceKey<ArmorMaterial>, List<Item>> armorsByTier = new HashMap<>();
+        for (Item i : BuiltInRegistries.ITEM) {
             try {
                 if (i instanceof TieredItem) {
                     Tier mat = ((TieredItem) i).getTier();
@@ -379,7 +379,7 @@ public class NameHelper {
                 }
             }
             catch (Exception e) {
-                AdventureModule.LOGGER.error("The item {} has thrown an exception while attempting to access it's tier.", ForgeRegistries.ITEMS.getKey(i));
+                Apotheosis.LOGGER.error("The item {} has thrown an exception while attempting to access it's tier.", BuiltInRegistries.ITEM.getKey(i));
                 e.printStackTrace();
             }
         }
@@ -393,12 +393,15 @@ public class NameHelper {
             if (read.length > 0) tierNames.put(key, read);
         }
 
-        for (Map.Entry<ArmorMaterial, List<Item>> e : armorsByTier.entrySet()) {
-            ArmorMaterial tier = e.getKey();
+        for (Map.Entry<ResourceKey<ArmorMaterial>, List<Item>> e : armorsByTier.entrySet()) {
+            ResourceKey<ArmorMaterial> mat = e.getKey();
+            Supplier<Ingredient> repairMat = BuiltInRegistries.ARMOR_MATERIAL.get(mat).repairIngredient();
             List<Item> items = e.getValue();
-            String key = getID(tier, items);
-            String[] read = c.getStringList(key, "armors", materialNames.getOrDefault(tier, new String[0]), computeComment(items, tier::getRepairIngredient));
-            if (read.length > 0) materialNames.put(key, read);
+            String key = getID(mat, items);
+            String[] read = c.getStringList(key, "armors", materialNames.getOrDefault(mat, new String[0]), computeComment(items, repairMat));
+            if (read.length > 0) {
+                materialNames.put(mat, read);
+            }
         }
 
         suffixFormat = c.getString("Suffix Format", "formatting", suffixFormat, "The format string that will be used when a suffix is applied.");
@@ -411,14 +414,14 @@ public class NameHelper {
         String cmt = "A list of material-based prefix names for this material group. May be empty.\n";
         cmt += "Items in this group: ";
         for (Item i : items)
-            cmt += ForgeRegistries.ITEMS.getKey(i) + ", ";
+            cmt += BuiltInRegistries.ITEM.getKey(i) + ", ";
         cmt = cmt.substring(0, cmt.length() - 2);
         return cmt + "\n";
     }
 
     private static String getID(Object o, List<Item> items) {
         if (o instanceof Enum<?>) return ((Enum<?>) o).name();
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(items.get(0));
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(items.get(0));
         return id.getNamespace() + "_" + id.getPath();
     }
 

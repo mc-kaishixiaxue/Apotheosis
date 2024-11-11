@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 
-import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
@@ -65,7 +64,7 @@ public class GemRegistry extends TieredDynamicRegistry<Gem> {
     public static ItemStack createRandomGemStack(GenContext ctx) {
         Gem gem = GemRegistry.INSTANCE.getRandomItem(ctx);
         if (gem == null) return ItemStack.EMPTY;
-        Purity purity = Purity.CRACKED; // TODO: Implement purity selection via TieredWeights. Need a place to store that data.
+        Purity purity = Purity.random(ctx);
         return createGemStack(gem, purity);
     }
 

@@ -5,49 +5,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import dev.shadowsoffire.apotheosis.boss.BossEvents.BossSpawnRules;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.loot.RarityClamp;
-import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
-import dev.shadowsoffire.apotheosis.util.LootPatternMatcher;
 import dev.shadowsoffire.placebo.config.Configuration;
-import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.ResourceLocationException;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class AdventureConfig {
 
     public static final List<ResourceLocation> DIM_WHITELIST = new ArrayList<>();
-    public static final Map<ResourceLocation, LootCategory> TYPE_OVERRIDES = new HashMap<>();
+    public static final Map<ResourceLocation, LootCategory> TYPE_OVERRIDES = new HashMap<>(); // needs sync
     public static final Map<ResourceLocation, Pair<Float, BossSpawnRules>> BOSS_SPAWN_RULES = new HashMap<>();
-
-    /**
-     * These lists contain "loot table matchers" for the drop chances for loot tables.
-     * Loot table matchers take the form of domain:pattern and the float chance is 0..1
-     * Omitting the domain causes the pattern to be run for all domains.
-     * The pattern is only run on the loot table's path.
-     */
-    public static final List<LootPatternMatcher> AFFIX_ITEM_LOOT_RULES = new ArrayList<>();
-    public static final List<LootPatternMatcher> GEM_LOOT_RULES = new ArrayList<>();
-    public static final Map<ResourceLocation, RarityClamp> GEM_DIM_RARITIES = new HashMap<>();
-
-    /**
-     * Loot table matchers and dimensional rarities for affix conversion rules.
-     */
-    public static final List<LootPatternMatcher> AFFIX_CONVERT_LOOT_RULES = new ArrayList<>();
-    public static final Map<ResourceLocation, Set<DynamicHolder<LootRarity>>> AFFIX_CONVERT_RARITIES = new HashMap<>();
 
     // Boss Stats
     public static boolean curseBossItems = false;
@@ -65,15 +43,18 @@ public class AdventureConfig {
     public static float randomAffixItem = 0.075F;
     public static float gemDropChance = 0.045F;
     public static float gemBossBonus = 0.33F;
-    public static boolean disableQuarkOnAffixItems = true;
-    public static Supplier<Item> torchItem = () -> Items.TORCH;
-    public static boolean cleaveHitsPlayers = false;
+    public static boolean disableQuarkOnAffixItems = true; // needs sync - maybe client only?
+    public static Supplier<Item> torchItem = () -> Items.TORCH; // needs sync
+    public static boolean cleaveHitsPlayers = false; // needs sync
+
+    // Wandering Trader
+    public static boolean undergroundTrader = true;
 
     public static void load(Configuration c) {
         c.setTitle("Apotheosis Adventure Module Config");
 
         TYPE_OVERRIDES.clear();
-        TYPE_OVERRIDES.putAll(AdventureModule.IMC_TYPE_OVERRIDES);
+        TYPE_OVERRIDES.putAll(Apotheosis.IMC_TYPE_OVERRIDES);
         String[] overrides = c.getStringList("Equipment Type Overrides", "affixes", new String[] { "minecraft:iron_sword|sword", "minecraft:shulker_shell|none" },
             "A list of type overrides for the affix loot system.  Format is <itemname>|chance|<type>.\nValid types are: none, sword, trident, shield, heavy_weapon, pickaxe, shovel, crossbow, bow");
         for (String s : overrides) {
@@ -94,93 +75,13 @@ public class AdventureConfig {
         gemBossBonus = c.getFloat("Gem Boss Bonus", "affixes", gemBossBonus, 0, 1, "The flat bonus chance that bosses have to drop a gem, added to Gem Drop Chance. 0 = 0%, 1 = 100%");
         cleaveHitsPlayers = c.getBoolean("Cleave Players", "affixes", cleaveHitsPlayers, "If affixes that cleave can hit players (excluding the user).");
 
-        String[] lootRules = c.getStringList("Affix Item Loot Rules", "affixes", new String[] { "minecraft:chests.*|0.35", ".*chests.*|0.3", "twilightforest:structures.*|0.3" },
-
-            """
-                Loot Rules, in the form of Loot Table Matchers, permitting affix items to spawn in loot tables.
-                The format for these is domain:pattern|chance and domain is optional.  Domain is a modid, pattern is a regex string, and chance is a float 0..1 chance for the item to spawn in any matched tables.
-                If you omit the domain, the format is pattern|chance, and the matcher will run for all domains.
-                The pattern MUST be a valid regex string, and should match the paths of desired loot tables under the specified domain.  Note: "Match Any Character" is ".*" (dot star) and not "*" (star).
-                If there is a match, an item has a chance to spawn in that loot table.""");
-
-        AFFIX_ITEM_LOOT_RULES.clear();
-        for (String s : lootRules) {
-            try {
-                AFFIX_ITEM_LOOT_RULES.add(LootPatternMatcher.parse(s));
-            }
-            catch (Exception e) {
-                Apotheosis.LOGGER.error("Invalid affix item loot rule: " + s + " will be ignored");
-                e.printStackTrace();
-            }
-        }
-
-        lootRules = c.getStringList("Gem Loot Rules", "gems", new String[] { "minecraft:chests.*|0.25", ".*chests.*|0.20", "twilightforest:structures.*|0.20" },
-            "Loot Rules, in the form of Loot Table Matchers, permitting gems to spawn in loot tables.  See comment on \"Affix Item Loot Rules\" for description.");
-        GEM_LOOT_RULES.clear();
-        for (String s : lootRules) {
-            try {
-                GEM_LOOT_RULES.add(LootPatternMatcher.parse(s));
-            }
-            catch (Exception e) {
-                Apotheosis.LOGGER.error("Invalid gem loot rule: " + s + " will be ignored");
-                e.printStackTrace();
-            }
-        }
-
-        lootRules = c.getStringList("Affix Convert Loot Rules", "affixes", new String[] { ".*blocks.*|0", ".*|0.35" },
-            "Loot Rules, in the form of Loot Table Matchers, permitting affixes to be added to any valid item. Here, the chance refers to the chance an item receives affixes. See comment on \"Affix Item Loot Rules\" for description.");
-        AFFIX_CONVERT_LOOT_RULES.clear();
-        for (String s : lootRules) {
-            try {
-                AFFIX_CONVERT_LOOT_RULES.add(LootPatternMatcher.parse(s));
-            }
-            catch (Exception e) {
-                Apotheosis.LOGGER.error("Invalid affix convert loot rule: " + s + " will be ignored");
-                e.printStackTrace();
-            }
-        }
-
-        String[] convertRarities = c.getStringList("Affix Convert Rarities", "affixes", new String[] { "overworld|common|rare", "the_nether|uncommon|epic", "the_end|rare|mythic", "twilightforest:twilight_forest|uncommon|epic" },
-            "Dimensional rarities for affix conversion (see \"Affix Convert Loot Rules\"), in the form of dimension|min|max. A dimension not listed uses all rarities.");
-        AFFIX_CONVERT_RARITIES.clear();
-        for (String s : convertRarities) {
-            try {
-                String[] split = s.split("\\|");
-                ResourceLocation dim = new ResourceLocation(split[0]);
-                var min = RarityRegistry.byLegacyId(split[1]);
-                var max = RarityRegistry.byLegacyId(split[2]);
-                AFFIX_CONVERT_RARITIES.put(dim, new RarityClamp.Simple(min, max));
-            }
-            catch (Exception e) {
-                Apotheosis.LOGGER.error("Invalid Affix Convert Rarity: " + s + " will be ignored");
-                e.printStackTrace();
-            }
-        }
-
-        String[] gemDimRarities = c.getStringList("Gem Dimensional Rarities", "gems", new String[] { "overworld|common|mythic", "the_nether|uncommon|mythic", "the_end|rare|mythic", "twilightforest:twilight_forest|uncommon|mythic" },
-            "Dimensional rarities for gem drops, in the form of dimension|min|max. A dimension not listed uses all rarities.");
-        GEM_DIM_RARITIES.clear();
-        for (String s : gemDimRarities) {
-            try {
-                String[] split = s.split("\\|");
-                ResourceLocation dim = new ResourceLocation(split[0]);
-                var min = RarityRegistry.byLegacyId(split[1]);
-                var max = RarityRegistry.byLegacyId(split[2]);
-                GEM_DIM_RARITIES.put(dim, new RarityClamp.Simple(min, max));
-            }
-            catch (Exception e) {
-                Apotheosis.LOGGER.error("Invalid Gem Dimensional Rarity: " + s + " will be ignored");
-                e.printStackTrace();
-            }
-        }
-
         disableQuarkOnAffixItems = c.getBoolean("Disable Quark Tooltips for Affix Items", "affixes", true, "If Quark's Attribute Tooltip handling is disabled for affix items");
 
         String torch = c.getString("Torch Placement Item", "affixes", "minecraft:torch",
             "The item that will be used when attempting to place torches with the torch placer affix.  Must be a valid item that places a block on right click.");
         torchItem = () -> {
             try {
-                Item i = ForgeRegistries.ITEMS.getValue(new ResourceLocation(torch));
+                Item i = BuiltInRegistries.ITEM.get(ResourceLocation.parse(torch));
                 return i == Items.AIR ? Items.TORCH : i;
             }
             catch (Exception ex) {
@@ -212,7 +113,7 @@ public class AdventureConfig {
         for (String s : dims) {
             try {
                 String[] split = s.split("\\|");
-                BOSS_SPAWN_RULES.put(new ResourceLocation(split[0]), Pair.of(Float.parseFloat(split[1]), BossSpawnRules.valueOf(split[2].toUpperCase(Locale.ROOT))));
+                BOSS_SPAWN_RULES.put(ResourceLocation.parse(split[0]), Pair.of(Float.parseFloat(split[1]), BossSpawnRules.valueOf(split[2].toUpperCase(Locale.ROOT))));
             }
             catch (Exception e) {
                 Apotheosis.LOGGER.error("Invalid boss spawn rules: " + s + " will be ignored");
@@ -224,7 +125,7 @@ public class AdventureConfig {
         DIM_WHITELIST.clear();
         for (String s : dims) {
             try {
-                DIM_WHITELIST.add(new ResourceLocation(s.trim()));
+                DIM_WHITELIST.add(ResourceLocation.parse(s.trim()));
             }
             catch (ResourceLocationException e) {
                 Apotheosis.LOGGER.error("Invalid dim whitelist entry: " + s + " will be ignored");
@@ -232,6 +133,8 @@ public class AdventureConfig {
         }
 
         spawnerValueChance = c.getFloat("Spawner Value Chance", "spawners", spawnerValueChance, 0, 1, "The chance that a Rogue Spawner has a \"valuable\" chest instead of a standard one. 0 = 0%, 1 = 100%");
+
+        undergroundTrader = c.getBoolean("Underground Trader", "wanderer", undergroundTrader, "If the Wandering Trader can attempt to spawn underground.\nServer-authoritative.");
     }
 
     public static boolean canGenerateIn(WorldGenLevel world) {

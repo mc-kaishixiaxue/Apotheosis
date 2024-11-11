@@ -121,10 +121,10 @@ public class PotionAffix extends Affix {
     }
 
     @Override
-    public void doPostHurt(AffixInstance inst, LivingEntity user, Entity attacker) {
+    public void doPostHurt(AffixInstance inst, LivingEntity user, DamageSource source) {
         if (this.target == Target.HURT_SELF) this.applyEffect(user, inst.getRarity(), inst.level());
         else if (this.target == Target.HURT_ATTACKER) {
-            if (attacker instanceof LivingEntity tLiving) {
+            if (source.getEntity() instanceof LivingEntity tLiving) {
                 this.applyEffect(tLiving, inst.getRarity(), inst.level());
             }
         }

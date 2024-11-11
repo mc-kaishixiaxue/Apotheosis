@@ -4,12 +4,14 @@ import com.mojang.serialization.MapCodec;
 
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.IDimensional;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -50,9 +52,11 @@ public class ItemFrameGemsProcessor extends StructureProcessor {
         return entityInfo;
     }
 
-    protected void writeEntityNBT(ServerLevel world, BlockPos pos, RandomSource rand, CompoundTag nbt, StructurePlaceSettings settings) {
-        ItemStack stack = GemRegistry.createRandomGemStack(rand, world, 0, IDimensional.matches(world));
-        nbt.put("Item", stack.serializeNBT());
+    protected void writeEntityNBT(ServerLevel level, BlockPos pos, RandomSource rand, CompoundTag nbt, StructurePlaceSettings settings) {
+        Player player = level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), -1, true);
+        GenContext ctx = player != null ? GenContext.forPlayerAtPos(rand, player, pos) : GenContext.standalone(rand, WorldTier.HAVEN, 0, level, pos);
+        ItemStack stack = GemRegistry.createRandomGemStack(ctx);
+        nbt.put("Item", stack.save(level.registryAccess()));
         nbt.putInt("TileX", pos.getX());
         nbt.putInt("TileY", pos.getY());
         nbt.putInt("TileZ", pos.getZ());

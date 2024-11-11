@@ -2,8 +2,8 @@ package dev.shadowsoffire.apotheosis.boss;
 
 import java.util.Optional;
 
-import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apoth;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;

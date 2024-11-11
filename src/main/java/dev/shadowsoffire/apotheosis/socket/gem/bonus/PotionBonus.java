@@ -84,10 +84,10 @@ public class PotionBonus extends GemBonus {
     }
 
     @Override
-    public void doPostHurt(GemInstance inst, LivingEntity user, Entity attacker) {
+    public void doPostHurt(GemInstance inst, LivingEntity user, DamageSource source) {
         if (this.target == Target.HURT_SELF) this.applyEffect(inst, user);
         else if (this.target == Target.HURT_ATTACKER) {
-            if (attacker instanceof LivingEntity tLiving) {
+            if (source.getEntity() instanceof LivingEntity tLiving) {
                 this.applyEffect(inst, tLiving);
             }
         }

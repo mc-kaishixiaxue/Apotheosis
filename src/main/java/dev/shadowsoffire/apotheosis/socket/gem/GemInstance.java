@@ -152,8 +152,8 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity 
     /**
      * @see GemBonus#getDamageProtection(ItemStack, LootRarity, DamageSource)
      */
-    public int getDamageProtection(DamageSource source) {
-        return this.map(b -> b.getDamageProtection(this, source)).orElse(0);
+    public float getDamageProtection(DamageSource source) {
+        return this.map(b -> b.getDamageProtection(this, source)).orElse(0F);
     }
 
     /**
@@ -173,8 +173,8 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity 
     /**
      * @see GemBonus#doPostHurt(ItemStack, LootRarity, LivingEntity, Entity)
      */
-    public void doPostHurt(LivingEntity user, @Nullable Entity attacker) {
-        this.ifPresent(b -> b.doPostHurt(this, user, attacker));
+    public void doPostHurt(LivingEntity user, DamageSource source) {
+        this.ifPresent(b -> b.doPostHurt(this, user, source));
     }
 
     /**

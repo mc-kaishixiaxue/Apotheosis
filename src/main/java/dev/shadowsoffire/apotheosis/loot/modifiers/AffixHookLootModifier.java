@@ -1,4 +1,4 @@
-package dev.shadowsoffire.apotheosis.loot;
+package dev.shadowsoffire.apotheosis.loot.modifiers;
 
 import com.mojang.serialization.MapCodec;
 

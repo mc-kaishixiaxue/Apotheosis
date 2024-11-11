@@ -1,13 +1,13 @@
 package dev.shadowsoffire.apotheosis.socket.gem.cutting;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
+import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apoth.Blocks;
 import dev.shadowsoffire.apotheosis.Apoth.Menus;
-import dev.shadowsoffire.apotheosis.advancements.AdvancementTriggers;
+import dev.shadowsoffire.apotheosis.Apoth.RecipeTypes;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingRecipe.CuttingRecipeInput;
 import dev.shadowsoffire.placebo.cap.InternalItemHandler;
@@ -20,6 +20,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.Level;
 
 public class GemCuttingMenu extends PlaceboContainerMenu {
 
@@ -27,9 +29,6 @@ public class GemCuttingMenu extends PlaceboContainerMenu {
     public static final int TOP_SLOT = 1;
     public static final int LEFT_SLOT = 2;
     public static final int RIGHT_SLOT = 3;
-
-    @Deprecated // TODO: Remove, replace with proper recipe manager calls
-    public static final List<GemCuttingRecipe> RECIPES = new ArrayList<>();
 
     protected final Player player;
     protected final ContainerLevelAccess access;
@@ -68,13 +67,14 @@ public class GemCuttingMenu extends PlaceboContainerMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (id == 0) {
-            for (GemCuttingRecipe r : RECIPES) {
+            for (RecipeHolder<GemCuttingRecipe> holder : getRecipes(this.level)) {
+                GemCuttingRecipe r = holder.value();
                 if (r.matches(this.rInput, player.level())) {
                     ItemStack out = r.assemble(this.rInput, player.level().registryAccess());
                     r.decrementInputs(this.rInput, player.level());
                     this.inv.setStackInSlot(0, out);
                     this.level.playSound(player, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.BLOCKS, 1, 1.5F + 0.35F * (1 - 2 * this.level.random.nextFloat()));
-                    AdvancementTriggers.GEM_CUT.trigger((ServerPlayer) player, out);
+                    Apoth.Triggers.GEM_CUTTING.trigger((ServerPlayer) player, out);
                     return true;
                 }
             }
@@ -83,28 +83,32 @@ public class GemCuttingMenu extends PlaceboContainerMenu {
     }
 
     public boolean isValidBase(ItemStack stack) {
-        for (GemCuttingRecipe r : RECIPES) {
+        for (RecipeHolder<GemCuttingRecipe> holder : getRecipes(this.level)) {
+            GemCuttingRecipe r = holder.value();
             if (r.isValidBaseItem(rInput, stack)) return true;
         }
         return false;
     }
 
     public boolean isValidTop(ItemStack stack) {
-        for (GemCuttingRecipe r : RECIPES) {
+        for (RecipeHolder<GemCuttingRecipe> holder : getRecipes(this.level)) {
+            GemCuttingRecipe r = holder.value();
             if (r.isValidTopItem(rInput, stack)) return true;
         }
         return false;
     }
 
     public boolean isValidLeft(ItemStack stack) {
-        for (GemCuttingRecipe r : RECIPES) {
+        for (RecipeHolder<GemCuttingRecipe> holder : getRecipes(this.level)) {
+            GemCuttingRecipe r = holder.value();
             if (r.isValidLeftItem(rInput, stack)) return true;
         }
         return false;
     }
 
     public boolean isValidRight(ItemStack stack) {
-        for (GemCuttingRecipe r : RECIPES) {
+        for (RecipeHolder<GemCuttingRecipe> holder : getRecipes(this.level)) {
+            GemCuttingRecipe r = holder.value();
             if (r.isValidRightItem(rInput, stack)) return true;
         }
         return false;
@@ -133,5 +137,9 @@ public class GemCuttingMenu extends PlaceboContainerMenu {
 
     public static int getDustCost(Purity purity) {
         return 1 + purity.ordinal() * 2;
+    }
+
+    public static List<RecipeHolder<GemCuttingRecipe>> getRecipes(Level level) {
+        return level.getRecipeManager().getAllRecipesFor(RecipeTypes.GEM_CUTTING);
     }
 }

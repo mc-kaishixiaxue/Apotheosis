@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.Blocks;
 
 public class ApothSmithingCategory implements IRecipeCategory<SmithingRecipe> {
 
-    public static final ResourceLocation RECIPE_GUI_VANILLA = new ResourceLocation("jei", "textures/gui/gui_vanilla.png");
+    public static final ResourceLocation RECIPE_GUI_VANILLA = ResourceLocation.fromNamespaceAndPath("jei", "textures/gui/gui_vanilla.png");
 
     private static final Map<Class<? extends SmithingRecipe>, Extension<SmithingRecipe>> EXTENSIONS = new IdentityHashMap<>();
 

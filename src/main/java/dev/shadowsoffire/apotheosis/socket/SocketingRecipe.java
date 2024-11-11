@@ -3,11 +3,11 @@ package dev.shadowsoffire.apotheosis.socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.shadowsoffire.apotheosis.AdventureModule.ApothSmithingRecipe;
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.event.CanSocketGemEvent;
 import dev.shadowsoffire.apotheosis.event.ItemSocketingEvent;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.util.ApothSmithingRecipe;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;

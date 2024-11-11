@@ -99,7 +99,7 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
      * @param source The damage source to compare against.
      * @return How many protection points this affix is worth against this source.
      */
-    public int getDamageProtection(GemInstance inst, DamageSource source) {
+    public float getDamageProtection(GemInstance inst, DamageSource source) {
         return 0;
     }
 
@@ -127,11 +127,11 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
     /**
      * Called when an entity that has this bonus on one of its armor items is damaged.
      *
-     * @param inst     The current gem instance.
-     * @param user     The entity wearing an itme with this bonus.
-     * @param attacker The entity attacking the user.
+     * @param inst   The current gem instance.
+     * @param user   The entity wearing an item with this bonus.
+     * @param source The source of the attack.
      */
-    public void doPostHurt(GemInstance inst, LivingEntity user, @Nullable Entity attacker) {}
+    public void doPostHurt(GemInstance inst, LivingEntity user, DamageSource source) {}
 
     /**
      * Called when a user fires an arrow from a bow or crossbow with this affix on it.

@@ -24,13 +24,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 
 /**
  * An Affix Instance is a wrapper around the necessary parameters for all affix methods.
@@ -89,7 +90,7 @@ public record AffixInstance(DynamicHolder<Affix> affix, float level, DynamicHold
     /**
      * @see Affix#getDamageProtection(ItemStack, LootRarity, float, DamageSource)
      */
-    public int getDamageProtection(DamageSource source) {
+    public float getDamageProtection(DamageSource source) {
         return this.afx().getDamageProtection(this, source);
     }
 
@@ -103,15 +104,15 @@ public record AffixInstance(DynamicHolder<Affix> affix, float level, DynamicHold
     /**
      * @see Affix#doPostAttack(ItemStack, LootRarity, float, LivingEntity, Entity)
      */
-    public void doPostAttack(LivingEntity user, @Nullable Entity target) {
+    public void doPostAttack(LivingEntity user, Entity target) {
         this.afx().doPostAttack(this, user, target);
     }
 
     /**
      * @see Affix#doPostHurt(ItemStack, LootRarity, float, LivingEntity, Entity)
      */
-    public void doPostHurt(LivingEntity user, @Nullable Entity attacker) {
-        this.afx().doPostHurt(this, user, attacker);
+    public void doPostHurt(LivingEntity user, DamageSource source) {
+        this.afx().doPostHurt(this, user, source);
     }
 
     /**
@@ -172,17 +173,24 @@ public record AffixInstance(DynamicHolder<Affix> affix, float level, DynamicHold
     }
 
     /**
-     * @see Affix#getEnchantmentLevels(ItemStack, LootRarity, float, Map)
+     * @see Affix#getEnchantmentLevels(AffixInstance, Map)
      */
-    public void getEnchantmentLevels(Map<Enchantment, Integer> enchantments) {
-        this.afx().getEnchantmentLevels(this, enchantments);
+    public void getEnchantmentLevels(GetEnchantmentLevelEvent event) {
+        this.afx().getEnchantmentLevels(this, event);
     }
 
     /**
-     * @see Affix#modifyLoot(ItemStack, LootRarity, float, ObjectArrayList, LootContext)
+     * @see Affix#modifyLoot(AffixInstance, ObjectArrayList, LootContext)
      */
     public void modifyLoot(ObjectArrayList<ItemStack> loot, LootContext ctx) {
         this.afx().modifyLoot(this, loot, ctx);
+    }
+
+    /**
+     * @see Affix#modifyEntityLoot(AffixInstance, LivingDropsEvent)
+     */
+    public void modifyEntityLoot(LivingDropsEvent e) {
+        this.afx().modifyEntityLoot(this, e);
     }
 
     public AffixInstance withNewLevel(float level) {

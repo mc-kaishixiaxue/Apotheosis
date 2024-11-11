@@ -46,8 +46,8 @@ public record SocketedGems(ImmutableList<GemInstance> gems) implements List<GemI
         this.streamValidGems().forEach(inst -> inst.addModifiers(event));
     }
 
-    public int getDamageProtection(DamageSource source) {
-        return this.streamValidGems().map(inst -> inst.getDamageProtection(source)).reduce(0, Integer::sum);
+    public float getDamageProtection(DamageSource source) {
+        return this.streamValidGems().map(inst -> inst.getDamageProtection(source)).reduce(0F, Float::sum);
     }
 
     public float getDamageBonus(Entity entity) {
@@ -63,8 +63,8 @@ public record SocketedGems(ImmutableList<GemInstance> gems) implements List<GemI
         });
     }
 
-    public void doPostHurt(LivingEntity user, Entity attacker) {
-        this.streamValidGems().forEach(inst -> inst.doPostHurt(user, attacker));
+    public void doPostHurt(LivingEntity user, DamageSource source) {
+        this.streamValidGems().forEach(inst -> inst.doPostHurt(user, source));
     }
 
     public void onArrowFired(LivingEntity user, AbstractArrow arrow) {

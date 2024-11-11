@@ -1,9 +1,9 @@
 package dev.shadowsoffire.apotheosis.socket;
 
-import dev.shadowsoffire.apotheosis.AdventureModule.ApothSmithingRecipe;
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.util.ApothSmithingRecipe;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;

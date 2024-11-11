@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import dev.shadowsoffire.apotheosis.village.wanderer.WandererReplacements;
+import dev.shadowsoffire.apotheosis.AdventureConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.util.RandomSource;
@@ -40,7 +40,7 @@ public class WandererSpawnerMixin {
 
     @Inject(at = @At("HEAD"), method = "findSpawnPositionNear", cancellable = true)
     private void findSpawnPositionNear(LevelReader level, BlockPos pos, int radius, CallbackInfoReturnable<BlockPos> cir) {
-        if (WandererReplacements.undergroundTrader) {
+        if (AdventureConfig.undergroundTrader) {
             for (int i = 0; i < 10; ++i) {
                 int x = pos.getX() + this.random.nextInt(radius / 2) - radius / 4;
                 int z = pos.getZ() + this.random.nextInt(radius / 2) - radius / 4;

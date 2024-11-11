@@ -1,4 +1,4 @@
-package dev.shadowsoffire.apotheosis.loot;
+package dev.shadowsoffire.apotheosis.loot.modifiers;
 
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;

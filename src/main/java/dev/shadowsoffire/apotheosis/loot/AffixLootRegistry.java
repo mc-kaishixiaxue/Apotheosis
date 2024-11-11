@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 
-import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;

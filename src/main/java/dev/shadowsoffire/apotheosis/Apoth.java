@@ -23,18 +23,19 @@ import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingTableTile;
 import dev.shadowsoffire.apotheosis.boss.BossSpawnerBlock;
 import dev.shadowsoffire.apotheosis.boss.BossSpawnerBlock.BossSpawnerTile;
 import dev.shadowsoffire.apotheosis.boss.BossSummonerItem;
+import dev.shadowsoffire.apotheosis.gen.BlacklistModifier;
 import dev.shadowsoffire.apotheosis.gen.BossDungeonFeature;
 import dev.shadowsoffire.apotheosis.gen.BossDungeonFeature2;
 import dev.shadowsoffire.apotheosis.gen.ItemFrameGemsProcessor;
 import dev.shadowsoffire.apotheosis.gen.RogueSpawnerFeature;
-import dev.shadowsoffire.apotheosis.loot.AffixConvertLootModifier;
-import dev.shadowsoffire.apotheosis.loot.AffixHookLootModifier;
-import dev.shadowsoffire.apotheosis.loot.AffixLootModifier;
 import dev.shadowsoffire.apotheosis.loot.AffixLootPoolEntry;
-import dev.shadowsoffire.apotheosis.loot.GemLootModifier;
 import dev.shadowsoffire.apotheosis.loot.GemLootPoolEntry;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.loot.modifiers.AffixConvertLootModifier;
+import dev.shadowsoffire.apotheosis.loot.modifiers.AffixHookLootModifier;
+import dev.shadowsoffire.apotheosis.loot.modifiers.AffixLootModifier;
+import dev.shadowsoffire.apotheosis.loot.modifiers.GemLootModifier;
 import dev.shadowsoffire.apotheosis.socket.SocketingRecipe;
 import dev.shadowsoffire.apotheosis.socket.WithdrawalRecipe;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
@@ -77,6 +78,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 /**
  * Object Holder Class. For the main mod class, see {@link Apotheosis}
@@ -259,10 +261,10 @@ public class Apoth {
     }
 
     public static final class LootModifiers {
-        public static final MapCodec<GemLootModifier> GEMS = R.lootModifier("random_affix_item", GemLootModifier.CODEC);
-        public static final MapCodec<AffixLootModifier> AFFIX_LOOT = R.lootModifier("random_gem", AffixLootModifier.CODEC);
-        public static final MapCodec<AffixConvertLootModifier> AFFIX_CONVERSION = R.lootModifier("random_gem", AffixConvertLootModifier.CODEC);
-        public static final MapCodec<AffixHookLootModifier> CODE_HOOK = R.lootModifier("random_gem", AffixHookLootModifier.CODEC);
+        public static final MapCodec<GemLootModifier> GEMS = R.lootModifier("gems", GemLootModifier.CODEC);
+        public static final MapCodec<AffixLootModifier> AFFIX_LOOT = R.lootModifier("affix_loot", AffixLootModifier.CODEC);
+        public static final MapCodec<AffixConvertLootModifier> AFFIX_CONVERSION = R.lootModifier("affix_conversion", AffixConvertLootModifier.CODEC);
+        public static final MapCodec<AffixHookLootModifier> CODE_HOOK = R.lootModifier("code_hook", AffixHookLootModifier.CODEC);
 
         private static void bootstrap() {}
     }
@@ -311,6 +313,8 @@ public class Apoth {
         LootModifiers.bootstrap();
         LootPoolEntries.bootstrap();
         RecipeSerializers.bootstrap();
+
+        R.custom("blacklist", NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, () -> BlacklistModifier.CODEC);
     }
 
 }

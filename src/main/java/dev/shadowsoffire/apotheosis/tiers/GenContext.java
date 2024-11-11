@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -56,6 +57,10 @@ public record GenContext(RandomSource rand, WorldTier tier, float luck, Resource
             return new GenContext(ctx.getRandom(), WorldTier.getTier(player), ctx.getLuck(), ctx.getLevel().dimension(), ctx.getLevel().getBiome(player.blockPosition()), GameStagesCompat.getStages(player));
         }
         return null;
+    }
+
+    public static GenContext standalone(RandomSource rand, WorldTier tier, float luck, ServerLevel level, BlockPos pos) {
+        return new GenContext(rand, tier, luck, level.dimension(), level.getBiome(pos), Set.of());
     }
 
     public static GenContext dummy(RandomSource rand) {

@@ -16,7 +16,7 @@ import dev.shadowsoffire.apotheosis.loot.AffixLootEntry;
 import dev.shadowsoffire.apotheosis.loot.AffixLootRegistry;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
-import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import dev.shadowsoffire.placebo.systems.wanderer.WandererTrade;
@@ -28,7 +28,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
-import net.minecraft.world.level.ServerLevelAccessor;
 
 public class AffixTrade implements WandererTrade {
 
@@ -80,18 +79,18 @@ public class AffixTrade implements WandererTrade {
         if (trader.level().isClientSide) return null;
         Player player = trader.level().getNearestPlayer(trader, -1);
         if (player == null) return null;
-        WorldTier tier = WorldTier.getTier(player);
+        GenContext ctx = GenContext.forPlayer(rand, player);
 
         ItemStack affixItem;
         if (this.entries.isEmpty()) {
-            LootRarity selectedRarity = LootRarity.random(rand, tier, player.getLuck(), this.rarities);
-            affixItem = LootController.createRandomLootItem(rand, selectedRarity, player, (ServerLevelAccessor) trader.level());
+            LootRarity selectedRarity = LootRarity.random(ctx, this.rarities);
+            affixItem = LootController.createRandomLootItem(ctx, selectedRarity);
         }
         else {
-            List<Wrapper<AffixLootEntry>> resolved = this.entries.stream().map(this::unwrap).filter(Objects::nonNull).map(e -> e.<AffixLootEntry>wrap(tier, player.getLuck())).toList();
+            List<Wrapper<AffixLootEntry>> resolved = this.entries.stream().map(this::unwrap).filter(Objects::nonNull).map(e -> e.<AffixLootEntry>wrap(ctx.tier(), ctx.luck())).toList();
             AffixLootEntry entry = WeightedRandom.getRandomItem(rand, resolved).get().data();
-            LootRarity selectedRarity = LootRarity.random(rand, tier, player.getLuck(), this.rarities.isEmpty() ? entry.rarities() : this.rarities);
-            affixItem = LootController.createLootItem(entry.stack().copy(), selectedRarity, rand, tier, player.getLuck());
+            LootRarity selectedRarity = LootRarity.random(ctx, this.rarities.isEmpty() ? entry.rarities() : this.rarities);
+            affixItem = LootController.createLootItem(entry.stack().copy(), selectedRarity, ctx);
         }
 
         if (affixItem.isEmpty()) return null;

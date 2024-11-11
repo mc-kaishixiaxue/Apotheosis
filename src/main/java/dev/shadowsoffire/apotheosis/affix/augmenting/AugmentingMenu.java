@@ -1,9 +1,7 @@
 package dev.shadowsoffire.apotheosis.affix.augmenting;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
@@ -158,12 +156,11 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
      * Returns a sorted list of the item affixes on the given stack.
      */
     public static List<AffixInstance> computeItemAffixes(ItemStack stack) {
-        Map<DynamicHolder<Affix>, AffixInstance> affixes = AffixHelper.getAffixes(stack);
-        if (affixes.isEmpty()) {
-            return Collections.emptyList();
+        if (!stack.has(Components.AFFIXES)) {
+            return List.of();
         }
 
-        return affixes.values().stream().sorted(Comparator.comparing(inst -> inst.affix().getId())).toList();
+        return AffixHelper.streamAffixes(stack).sorted(Comparator.comparing(inst -> inst.affix().getId())).toList();
     }
 
     protected static List<DynamicHolder<Affix>> computeAlternatives(ItemStack stack, AffixInstance selected) {

@@ -1,10 +1,10 @@
 package dev.shadowsoffire.apotheosis.affix;
 
-import dev.shadowsoffire.apotheosis.AdventureModule.ApothSmithingRecipe;
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
+import dev.shadowsoffire.apotheosis.util.ApothSmithingRecipe;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;

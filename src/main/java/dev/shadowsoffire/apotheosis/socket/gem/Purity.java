@@ -70,7 +70,7 @@ public enum Purity implements StringRepresentable {
     }
 
     public static Purity random(GenContext ctx) {
-        return Purity.CRACKED; // TODO: Implement
+        return Purity.CRACKED;  // TODO: Implement purity selection via TieredWeights. Need a place to store that data.
     }
 
     public static Purity random(GenContext ctx, Set<Purity> pool) {

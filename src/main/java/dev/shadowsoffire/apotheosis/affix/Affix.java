@@ -1,7 +1,5 @@
 package dev.shadowsoffire.apotheosis.affix;
 
-import java.util.Map;
-
 import javax.annotation.Nullable;
 
 import com.mojang.datafixers.kinds.App;
@@ -34,7 +32,6 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -121,7 +118,7 @@ public abstract class Affix implements CodecProvider<Affix>, Weighted {
      * @param source The damage source to compare against.
      * @return How many protection points this affix is worth against this source.
      */
-    public int getDamageProtection(AffixInstance inst, DamageSource source) {
+    public float getDamageProtection(AffixInstance inst, DamageSource source) {
         return 0;
     }
 
@@ -144,13 +141,13 @@ public abstract class Affix implements CodecProvider<Affix>, Weighted {
      * @param user   The wielder of the weapon. The weapon stack will be in their main hand.
      * @param target The target entity being attacked.
      */
-    public void doPostAttack(AffixInstance inst, LivingEntity user, @Nullable Entity target) {}
+    public void doPostAttack(AffixInstance inst, LivingEntity user, Entity target) {}
 
     /**
      * Whenever an entity that has this affix on one of its associated items is damaged this method will be
      * called.
      */
-    public void doPostHurt(AffixInstance inst, LivingEntity user, @Nullable Entity attacker) {}
+    public void doPostHurt(AffixInstance inst, LivingEntity user, DamageSource source) {}
 
     /**
      * Called when a user fires an arrow from a bow or crossbow with this affix on it.
@@ -235,14 +232,10 @@ public abstract class Affix implements CodecProvider<Affix>, Weighted {
     /**
      * Fires during {@link GetEnchantmentLevelEvent} and allows for increasing enchantment levels.
      *
-     * @param stack    The stack with the affix.
-     * @param rarity   The rarity of the item.
-     * @param level    The level of the affix.
-     * @param ench     The enchantment being queried for.
-     * @param oldLevel The original level, before modification.
-     * @return The bonus level to be added to the current enchantment.
+     * @param inst  The affix instance.
+     * @param event The GetEnchantmentLevelEvent, which allows for modification of the levels.
      */
-    public void getEnchantmentLevels(AffixInstance inst, Map<Enchantment, Integer> enchantments) {}
+    public void getEnchantmentLevels(AffixInstance inst, GetEnchantmentLevelEvent event) {}
 
     /**
      * Fires from {@link LootModifier#apply(ObjectArrayList, LootContext)} when this affix is on the tool given by the context.

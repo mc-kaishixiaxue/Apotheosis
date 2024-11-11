@@ -17,27 +17,19 @@ import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import dev.shadowsoffire.placebo.util.CachedObject;
 import dev.shadowsoffire.placebo.util.CachedObject.CachedObjectSource;
 import dev.shadowsoffire.placebo.util.StepFunction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 
 public class AffixHelper {
 
     public static final ResourceLocation AFFIX_CACHED_OBJECT = Apotheosis.loc("affixes");
 
-    public static final String DISPLAY = "display";
-    public static final String LORE = "Lore";
-
-    public static final String AFFIX_DATA = "affix_data";
-    public static final String AFFIXES = "affixes";
-    public static final String RARITY = "rarity";
-    public static final String NAME = "name";
-
-    // Used to encode the loot category of the shooting item on arrows.
-    public static final String CATEGORY = "category";
+    // Used to encode the shooting weapon on arrows.
+    public static final String SOURCE_WEAPON = "apoth.source_weapon";
 
     /**
      * Adds this specific affix to the Item's NBT tag.
@@ -98,6 +90,10 @@ public class AffixHelper {
         return getAffixes(stack).values().stream().filter(AffixInstance::isValid);
     }
 
+    public static Stream<AffixInstance> streamAffixes(AbstractArrow arrow) {
+        return getAffixes(arrow).values().stream().filter(AffixInstance::isValid);
+    }
+
     public static boolean hasAffixes(ItemStack stack) {
         return !getAffixes(stack).isEmpty();
     }
@@ -106,43 +102,33 @@ public class AffixHelper {
         stack.set(Components.RARITY, RarityRegistry.INSTANCE.holder(rarity));
     }
 
-    public static void copyFrom(ItemStack stack, Entity entity) {
-        if (stack.hasTag() && stack.getTagElement(AFFIX_DATA) != null) {
-            CompoundTag afxData = stack.getTagElement(AFFIX_DATA).copy();
-            afxData.putString(CATEGORY, LootCategory.forItem(stack).getName());
-            entity.getPersistentData().put(AFFIX_DATA, afxData);
+    /**
+     * Copies the entire source weapon itemstack into the target entity iff relevant components are present.
+     * 
+     * @param stack  The source item stack (the ranged weapon that fired the projectile).
+     * @param entity The newly created projectile.
+     */
+    public static void copyToProjectile(ItemStack stack, Entity entity) {
+        ItemAffixes affixes = stack.get(Components.AFFIXES);
+        ItemContainerContents gems = stack.get(Components.SOCKETED_GEMS);
+        if (!affixes.isEmpty() || gems.nonEmptyStream().findAny().isPresent()) {
+            entity.getPersistentData().put(SOURCE_WEAPON, stack.save(entity.level().registryAccess()));
         }
     }
 
-    @Nullable
-    public static LootCategory getShooterCategory(Entity entity) {
-        CompoundTag afxData = entity.getPersistentData().getCompound(AFFIX_DATA);
-        if (afxData != null && afxData.contains(CATEGORY)) {
-            return LootCategory.byId(afxData.getString(CATEGORY));
+    /**
+     * Retrieves the encoded source weapon from a projectile, if one was available.
+     */
+    public static ItemStack getSourceWeapon(Entity entity) {
+        if (entity.getPersistentData().contains(SOURCE_WEAPON)) {
+            return ItemStack.parseOptional(entity.level().registryAccess(), entity.getPersistentData().getCompound(SOURCE_WEAPON));
         }
-        return null;
+        return ItemStack.EMPTY;
     }
 
-    public static Map<DynamicHolder<? extends Affix>, AffixInstance> getAffixes(AbstractArrow arrow) {
-        Map<DynamicHolder<? extends Affix>, AffixInstance> map = new HashMap<>();
-        CompoundTag afxData = arrow.getPersistentData().getCompound(AFFIX_DATA);
-
-        if (afxData != null && afxData.contains(AFFIXES)) {
-            CompoundTag affixes = afxData.getCompound(AFFIXES);
-            DynamicHolder<LootRarity> rarity = getRarity(afxData);
-            if (!rarity.isBound()) rarity = RarityRegistry.getMinRarity();
-            for (String key : affixes.getAllKeys()) {
-                DynamicHolder<Affix> affix = AffixRegistry.INSTANCE.holder(new ResourceLocation(key));
-                if (!affix.isBound()) continue;
-                float lvl = affixes.getFloat(key);
-                map.put(affix, new AffixInstance(affix, ItemStack.EMPTY, rarity, lvl));
-            }
-        }
-        return map;
-    }
-
-    public static Stream<AffixInstance> streamAffixes(AbstractArrow arrow) {
-        return getAffixes(arrow).values().stream();
+    public static Map<DynamicHolder<Affix>, AffixInstance> getAffixes(AbstractArrow arrow) {
+        ItemStack stack = getSourceWeapon(arrow);
+        return getAffixes(stack);
     }
 
     /**
@@ -150,22 +136,6 @@ public class AffixHelper {
      */
     public static DynamicHolder<LootRarity> getRarity(ItemStack stack) {
         return stack.getOrDefault(Components.RARITY, RarityRegistry.INSTANCE.emptyHolder());
-    }
-
-    /**
-     * May be unbound
-     */
-    public static DynamicHolder<LootRarity> getRarity(@Nullable CompoundTag afxData) {
-        if (afxData != null) {
-            try {
-                return RarityRegistry.byLegacyId(afxData.getString(RARITY));
-            }
-            catch (IllegalArgumentException e) {
-                afxData.remove(RARITY);
-                return RarityRegistry.byLegacyId("empty");
-            }
-        }
-        return RarityRegistry.INSTANCE.emptyHolder();
     }
 
     public static Collection<DynamicHolder<Affix>> byType(AffixType type) {

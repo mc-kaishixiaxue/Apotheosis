@@ -1,23 +1,21 @@
 package dev.shadowsoffire.apotheosis.util;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.resources.ResourceLocation;
 
-public record LootPatternMatcher(@Nullable String domain, Pattern pathRegex, float chance) {
+public record LootPatternMatcher(Optional<String> domain, Pattern pathRegex) {
+
+    public static final Codec<LootPatternMatcher> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+        Codec.STRING.optionalFieldOf("domain").forGetter(LootPatternMatcher::domain),
+        Codec.STRING.xmap(Pattern::compile, Pattern::toString).fieldOf("path_regex").forGetter(LootPatternMatcher::pathRegex))
+        .apply(inst, LootPatternMatcher::new));
 
     public boolean matches(ResourceLocation id) {
-        return (this.domain == null || this.domain.equals(id.getNamespace())) && this.pathRegex.matcher(id.getPath()).matches();
-    }
-
-    public static LootPatternMatcher parse(String s) throws Exception {
-        int pipe = s.lastIndexOf('|');
-        int colon = s.indexOf(':');
-        float chance = Float.parseFloat(s.substring(pipe + 1));
-        String domain = colon == -1 ? null : s.substring(0, colon);
-        Pattern pattern = Pattern.compile(s.substring(colon + 1, pipe));
-        return new LootPatternMatcher(domain, pattern, chance);
+        return (this.domain.isEmpty() || this.domain.get().equals(id.getNamespace())) && this.pathRegex.matcher(id.getPath()).matches();
     }
 }

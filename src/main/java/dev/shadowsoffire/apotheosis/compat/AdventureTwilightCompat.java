@@ -10,7 +10,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
-import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
@@ -25,6 +24,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -36,7 +36,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -46,8 +45,9 @@ import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import twilightforest.TwilightForestMod;
-import twilightforest.capabilities.CapabilityList;
 import twilightforest.entity.monster.Redcap;
+import twilightforest.init.TFDataAttachments;
+import twilightforest.init.TFSounds;
 
 public class AdventureTwilightCompat {
 
@@ -84,12 +84,12 @@ public class AdventureTwilightCompat {
             Player player = ctx.getPlayer();
             player.startUsingItem(ctx.getHand());
             // The ore magnet only checks that the use duration (72000 - param) is > 10
-            // https://github.com/TeamTwilight/twilightforest/blob/1.20.x/src/main/java/twilightforest/item/OreMagnetItem.java#L77
-            ORE_MAGNET.get().releaseUsing(gem, level, player, 0);
+            // https://github.com/TeamTwilight/twilightforest/blob/1.21.x/src/main/java/twilightforest/item/OreMagnetItem.java#L76
+            ORE_MAGNET.value().releaseUsing(inst.gemStack(), level, player, 0);
             player.stopUsingItem();
-            int cost = this.values.get(rarity).getInt(0);
-            ctx.getItemInHand().hurtAndBreak(cost, player, user -> user.broadcastBreakEvent(ctx.getHand()));
-            return super.onItemUse(gem, rarity, ctx);
+            int cost = this.values.get(inst.purity()).getInt(0);
+            ctx.getItemInHand().hurtAndBreak(cost, player, LivingEntity.getSlotForHand(ctx.getHand()));
+            return super.onItemUse(inst, ctx);
         }
 
         @Override
@@ -132,8 +132,8 @@ public class AdventureTwilightCompat {
 
         @Override
         public void doPostAttack(GemInstance inst, LivingEntity user, Entity target) {
-            Data d = this.values.get(rarity);
-            if (Affix.isOnCooldown(this.getCooldownId(gem), d.cooldown, user)) return;
+            Data d = this.values.get(inst.purity());
+            if (Affix.isOnCooldown(makeUniqueId(inst), d.cooldown, user)) return;
             if (user.getRandom().nextFloat() <= d.chance) {
                 Redcap goblin = REDCAP.get().create(user.level());
                 CompoundTag tag = new CompoundTag();
@@ -142,8 +142,8 @@ public class AdventureTwilightCompat {
                 goblin.getPersistentData().putBoolean("apoth.treasure_goblin", true);
                 goblin.setCustomName(Component.translatable("name.apotheosis.treasure_goblin").withStyle(s -> s.withColor(GradientColor.RAINBOW)));
                 goblin.setCustomNameVisible(true);
-                goblin.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier("apoth.very_fast", 0.2, Operation.ADDITION));
-                goblin.getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("apoth.healmth", 60, Operation.ADDITION));
+                goblin.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier(Apotheosis.loc("very_fast"), 0.2, Operation.ADD_VALUE));
+                goblin.getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier(Apotheosis.loc("healmth"), 60, Operation.ADD_VALUE));
                 goblin.setHealth(goblin.getMaxHealth());
                 for (int i = 0; i < 8; i++) {
                     int x = Mth.nextInt(goblin.getRandom(), -5, 5);
@@ -155,7 +155,7 @@ public class AdventureTwilightCompat {
                 }
                 goblin.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 0));
                 user.level().addFreshEntity(goblin);
-                Affix.startCooldown(this.getCooldownId(gem), user);
+                Affix.startCooldown(makeUniqueId(inst), user);
             }
         }
 
@@ -208,25 +208,24 @@ public class AdventureTwilightCompat {
         public static final Codec<FortificationBonus> CODEC = RecordCodecBuilder.create(inst -> inst
             .group(
                 gemClass(),
-                LootRarity.mapCodec(Data.CODEC).fieldOf("values").forGetter(a -> a.values))
+                Purity.mapCodec(Data.CODEC).fieldOf("values").forGetter(a -> a.values))
             .apply(inst, FortificationBonus::new));
 
-        protected final Map<LootRarity, Data> values;
+        protected final Map<Purity, Data> values;
 
-        public FortificationBonus(GemClass gemClass, Map<LootRarity, Data> values) {
+        public FortificationBonus(GemClass gemClass, Map<Purity, Data> values) {
             super(Apotheosis.loc("twilight_fortification"), gemClass);
             this.values = values;
         }
 
         @Override
-        public void doPostHurt(ItemStack gem, LootRarity rarity, LivingEntity user, Entity attacker) {
-            Data d = this.values.get(rarity);
-            if (Affix.isOnCooldown(this.getCooldownId(gem), d.cooldown, user)) return;
-            if (user.random.nextFloat() <= d.chance) {
-                user.getCapability(CapabilityList.SHIELDS).ifPresent(cap -> {
-                    cap.replenishShields();
-                });
-                Affix.startCooldown(this.getCooldownId(gem), user);
+        public void doPostHurt(GemInstance inst, LivingEntity user, DamageSource source) {
+            Data d = this.values.get(inst.purity());
+            if (Affix.isOnCooldown(makeUniqueId(inst), d.cooldown, user)) return;
+            if (user.hasData(TFDataAttachments.FORTIFICATION_SHIELDS) && user.getRandom().nextFloat() <= d.chance) {
+                user.getData(TFDataAttachments.FORTIFICATION_SHIELDS).setShields(user, 5, true);
+                user.playSound(TFSounds.SHIELD_ADD.get(), 1.0F, (user.getRandom().nextFloat() - user.getRandom().nextFloat()) * 0.2F + 1.0F);
+                Affix.startCooldown(makeUniqueId(inst), user);
             }
         }
 
@@ -242,14 +241,14 @@ public class AdventureTwilightCompat {
         }
 
         @Override
-        public boolean supports(LootRarity rarity) {
-            return this.values.containsKey(rarity);
+        public boolean supports(Purity purity) {
+            return this.values.containsKey(purity);
         }
 
         @Override
-        public Component getSocketBonusTooltip(ItemStack gem, LootRarity rarity) {
-            Data d = this.values.get(rarity);
-            Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown));
+        public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
+            Data d = this.values.get(inst.purity());
+            Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown, ctx.tickRate()));
             return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(d.chance * 100), cooldown).withStyle(ChatFormatting.YELLOW);
         }
 

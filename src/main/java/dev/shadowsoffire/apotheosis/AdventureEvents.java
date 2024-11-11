@@ -48,7 +48,6 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -60,6 +59,7 @@ import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.living.MobDespawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -87,8 +87,7 @@ public class AdventureEvents {
     public void affixModifiers(ItemAttributeModifierEvent e) {
         ItemStack stack = e.getItemStack();
         SocketHelper.getGems(stack).addModifiers(e);
-        var affixes = AffixHelper.getAffixes(stack);
-        affixes.forEach((afx, inst) -> inst.addModifiers(e));
+        AffixHelper.streamAffixes(stack).forEach(inst -> inst.addModifiers(e));
     }
 
     @SubscribeEvent
@@ -118,7 +117,7 @@ public class AdventureEvents {
                 AffixHelper.streamAffixes(bow).forEach(a -> {
                     a.onArrowFired(user, arrow);
                 });
-                AffixHelper.copyFrom(bow, arrow);
+                AffixHelper.copyToProjectile(bow, arrow);
             }
         }
     }
@@ -137,7 +136,7 @@ public class AdventureEvents {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void onDamage(LivingHurtEvent e) {
+    public void onDamage(LivingIncomingDamageEvent e) {
         Apoth.Affixes.MAGICAL.getOptional().ifPresent(afx -> afx.onHurt(e));
         DamageSource src = e.getSource();
         LivingEntity ent = e.getEntity();
@@ -191,6 +190,8 @@ public class AdventureEvents {
         });
     }
 
+    // TODO: Reduce to GLM, no reason for this to be a LivingDropsEvent hook.
+    // Also figure out how to staple extra loot tables to bosses to add their gem bonus.
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void dropsHigh(LivingDropsEvent e) {
         if (e.getSource().getEntity() instanceof ServerPlayer p && e.getEntity() instanceof Monster) {
@@ -199,14 +200,17 @@ public class AdventureEvents {
             if (p.getRandom().nextFloat() <= chance) {
                 Entity ent = e.getEntity();
                 e.getDrops()
-                    .add(new ItemEntity(ent.level(), ent.getX(), ent.getY(), ent.getZ(), GemRegistry.createRandomGemStack(p.random, (ServerLevel) p.level(), p.getLuck(), IDimensional.matches(p.level()), IStaged.matches(p)), 0, 0, 0));
+                    .add(new ItemEntity(ent.level(), ent.getX(), ent.getY(), ent.getZ(),
+                        GemRegistry.createRandomGemStack(p.getRandom(), (ServerLevel) p.level(), p.getLuck(), IDimensional.matches(p.level()), IStaged.matches(p)), 0, 0, 0));
             }
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void drops(LivingDropsEvent e) {
-        FestiveAffix.drops(e);
+        if (e.getSource().getEntity() instanceof Player p) {
+            AffixHelper.streamAffixes(p.getMainHandItem()).forEach(a -> a.modifyEntityLoot(e));
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -221,7 +225,7 @@ public class AdventureEvents {
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public void festive_removeMarker(LivingDropsEvent e) {
-        Apoth.Affixes.FESTIVE.getOptional().ifPresent(afx -> afx.removeMarker(e));
+        FestiveAffix.removeMarker(e);
     }
 
     @SubscribeEvent
@@ -282,7 +286,7 @@ public class AdventureEvents {
         if (isReentrant) return;
         SocketHelper.getGems(e.getStack()).getEnchantmentLevels(e.getEnchantments());
 
-        AffixHelper.streamAffixes(e.getStack()).forEach(inst -> inst.getEnchantmentLevels(e.getEnchantments()));
+        AffixHelper.streamAffixes(e.getStack()).forEach(inst -> inst.getEnchantmentLevels(e));
         reentrantLock.get().set(false);
     }
 

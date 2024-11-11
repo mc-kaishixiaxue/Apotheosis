@@ -14,7 +14,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraftforge.registries.ForgeRegistries;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -61,7 +60,7 @@ public class AdventureHwylaPlugin implements IWailaPlugin, IEntityComponentProvi
             tag.putString("apoth.rarity", living.getPersistentData().getString("apoth.rarity"));
             AttributeMap map = living.getAttributes();
             ListTag bossAttribs = new ListTag();
-            ForgeRegistries.ATTRIBUTES.getValues().stream().map(map::getInstance).filter(Predicates.notNull()).forEach(inst -> {
+            BuiltInRegistries.ATTRIBUTE.holders().map(map::getInstance).filter(Predicates.notNull()).forEach(inst -> {
                 for (AttributeModifier modif : inst.getModifiers()) {
                     if (modif.getName().startsWith("placebo_random_modifier_")) {
                         bossAttribs.add(inst.save());

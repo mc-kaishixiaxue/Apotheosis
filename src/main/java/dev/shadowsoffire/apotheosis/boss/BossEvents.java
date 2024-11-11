@@ -1,5 +1,6 @@
 package dev.shadowsoffire.apotheosis.boss;
 
+import java.util.UUID;
 import java.util.function.BiPredicate;
 
 import javax.annotation.Nullable;
@@ -9,7 +10,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
-import dev.shadowsoffire.apotheosis.AdventureModule;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.net.BossSpawnPayload;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
@@ -85,7 +85,7 @@ public class BossEvents {
                         sLevel.addFreshEntityWithPassengers(boss);
                         e.setCanceled(true);
                         e.setSpawnCancelled(true);
-                        AdventureModule.debugLog(boss.blockPosition(), "Surface Boss - " + boss.getName().getString());
+                        Apotheosis.debugLog(boss.blockPosition(), "Surface Boss - " + boss.getName().getString());
                         Component name = this.getName(boss);
                         if (name == null || name.getStyle().getColor() == null) {
                             Apotheosis.LOGGER.warn("A Boss {} ({}) has spawned without a custom name!", boss.getName().getString(), EntityType.getKey(boss.getType()));
@@ -113,7 +113,7 @@ public class BossEvents {
         return boss.getSelfAndPassengers().filter(e -> e.getPersistentData().contains(ApothBoss.BOSS_KEY)).findFirst().map(Entity::getCustomName).orElse(null);
     }
 
-    @SubscribeEvent(priority = EventPriority.LOW)
+    @SubscribeEvent
     public void minibosses(FinalizeSpawnEvent e) {
         LivingEntity entity = e.getEntity();
         RandomSource rand = e.getLevel().getRandom();
@@ -127,9 +127,11 @@ public class BossEvents {
             GenContext ctx = GenContext.forPlayerAtPos(rand, player, entity.blockPosition());
             ApothMiniboss item = MinibossRegistry.INSTANCE.getRandomItem(ctx, entity);
             if (item != null && !item.isExcluded(mob, sLevel, e.getSpawnType()) && sLevel.getRandom().nextFloat() <= item.getChance()) {
-                mob.getPersistentData().putString("apoth.miniboss", MinibossRegistry.INSTANCE.getKey(item).toString());
-                mob.getPersistentData().putFloat("apoth.miniboss.luck", player.getLuck());
-                if (!item.shouldFinalize()) e.setCanceled(true);
+                mob.getPersistentData().putString(ApothMiniboss.MINIBOSS_KEY, MinibossRegistry.INSTANCE.getKey(item).toString());
+                mob.getPersistentData().putString(ApothMiniboss.PLAYER_KEY, player.getUUID().toString());
+                if (!item.shouldFinalize()) {
+                    e.setCanceled(true);
+                }
             }
         }
     }
@@ -137,12 +139,20 @@ public class BossEvents {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void delayedMinibosses(EntityJoinLevelEvent e) {
         if (!e.getLevel().isClientSide && e.getEntity() instanceof Mob mob) {
-            String key = mob.getPersistentData().getString("apoth.miniboss");
+            String key = mob.getPersistentData().getString(ApothMiniboss.MINIBOSS_KEY);
             if (key != null) {
-                ApothMiniboss item = MinibossRegistry.INSTANCE.getValue(ResourceLocation.tryParse(key));
-                if (item != null) {
-                    // TODO: Encode the player's UUID in nbt so we can link back to them for eval
-                    item.transformMiniboss((ServerLevel) e.getLevel(), mob, e.getLevel().getRandom(), mob.getPersistentData().getFloat("apoth.miniboss.luck"));
+                UUID playerId = UUID.fromString(mob.getPersistentData().getString(ApothMiniboss.PLAYER_KEY));
+                Player player = e.getLevel().getPlayerByUUID(playerId);
+                if (player == null) {
+                    player = e.getLevel().getNearestPlayer(mob, -1);
+                }
+
+                if (player != null) {
+                    GenContext ctx = GenContext.forPlayerAtPos(e.getLevel().random, player, mob.blockPosition());
+                    ApothMiniboss item = MinibossRegistry.INSTANCE.getValue(ResourceLocation.tryParse(key));
+                    if (item != null) {
+                        item.transformMiniboss((ServerLevel) e.getLevel(), mob, ctx);
+                    }
                 }
             }
         }

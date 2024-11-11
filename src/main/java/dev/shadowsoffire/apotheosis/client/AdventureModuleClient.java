@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -25,7 +24,6 @@ import dev.shadowsoffire.apotheosis.Apoth.Menus;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
-import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.AffixRegistry;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingScreen;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingTableTileRenderer;
@@ -270,14 +268,13 @@ public class AdventureModuleClient {
         public static void affixTooltips(ItemTooltipEvent e) {
             ItemStack stack = e.getItemStack();
             if (stack.has(Components.AFFIXES)) {
-                Map<DynamicHolder<Affix>, AffixInstance> affixes = AffixHelper.getAffixes(stack);
                 List<Component> components = new ArrayList<>();
                 Consumer<Component> dotPrefixer = afxComp -> {
                     components.add(Component.translatable("text.apotheosis.dot_prefix", afxComp).withStyle(ChatFormatting.YELLOW));
                 };
 
                 AttributeTooltipContext ctx = AttributeTooltipContext.of(Minecraft.getInstance().player, e.getContext(), e.getFlags());
-                affixes.values().stream()
+                AffixHelper.streamAffixes(stack)
                     .sorted(Comparator.comparingInt(a -> a.affix().get().definition().type().ordinal()))
                     .map(a -> a.getDescription(ctx))
                     .filter(c -> c.getContents() != PlainTextContents.EMPTY)

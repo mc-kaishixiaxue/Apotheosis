@@ -60,66 +60,73 @@ public record AffixInstance(DynamicHolder<Affix> affix, float level, DynamicHold
     }
 
     /**
+     * Resolves the underlying {@link #affix}. Throws if unbound.
+     */
+    public Affix getAffix() {
+        return this.affix.get();
+    }
+
+    /**
      * @see Affix#addModifiers(ItemStack, LootRarity, float, EquipmentSlot, BiConsumer)
      */
     public void addModifiers(ItemAttributeModifierEvent event) {
-        this.afx().addModifiers(this, event);
+        this.getAffix().addModifiers(this, event);
     }
 
     /**
      * @see Affix#getDescription(ItemStack, LootRarity, float)
      */
     public MutableComponent getDescription(AttributeTooltipContext ctx) {
-        return this.afx().getDescription(this, ctx);
+        return this.getAffix().getDescription(this, ctx);
     }
 
     /**
      * @see Affix#getAugmentingText(ItemStack, LootRarity, float)
      */
     public Component getAugmentingText(AttributeTooltipContext ctx) {
-        return this.afx().getAugmentingText(this, ctx);
+        return this.getAffix().getAugmentingText(this, ctx);
     }
 
     /**
      * @see Affix#getName(boolean)
      */
     public Component getName(boolean prefix) {
-        return this.afx().getName(prefix);
+        return this.getAffix().getName(prefix);
     }
 
     /**
      * @see Affix#getDamageProtection(ItemStack, LootRarity, float, DamageSource)
      */
     public float getDamageProtection(DamageSource source) {
-        return this.afx().getDamageProtection(this, source);
+        return this.getAffix().getDamageProtection(this, source);
     }
 
     /**
      * @see Affix#getDamageBonus(ItemStack, LootRarity, float, MobType)
      */
     public float getDamageBonus(Entity entity) {
-        return this.afx().getDamageBonus(this, entity);
+        return this.getAffix().getDamageBonus(this, entity);
     }
 
     /**
      * @see Affix#doPostAttack(ItemStack, LootRarity, float, LivingEntity, Entity)
      */
     public void doPostAttack(LivingEntity user, Entity target) {
-        this.afx().doPostAttack(this, user, target);
+        this.getAffix().doPostAttack(this, user, target);
     }
 
     /**
      * @see Affix#doPostHurt(ItemStack, LootRarity, float, LivingEntity, Entity)
      */
     public void doPostHurt(LivingEntity user, DamageSource source) {
-        this.afx().doPostHurt(this, user, source);
+        this.getAffix().doPostHurt(this, user, source);
     }
 
     /**
      * @see Affix#onArrowFired(ItemStack, LootRarity, float, LivingEntity, AbstractArrow)
      */
     public void onArrowFired(LivingEntity user, AbstractArrow arrow) {
-        this.afx().onArrowFired(this, user, arrow);
+        this.getAffix().onArrowFired(this, user, arrow);
     }
 
     /**
@@ -127,70 +134,70 @@ public record AffixInstance(DynamicHolder<Affix> affix, float level, DynamicHold
      */
     @Nullable
     public InteractionResult onItemUse(UseOnContext ctx) {
-        return this.afx().onItemUse(this, ctx);
+        return this.getAffix().onItemUse(this, ctx);
     }
 
     /**
      * @see Affix#onShieldBlock(ItemStack, LootRarity, float, LivingEntity, DamageSource, float)
      */
     public float onShieldBlock(LivingEntity entity, DamageSource source, float amount) {
-        return this.afx().onShieldBlock(this, entity, source, amount);
+        return this.getAffix().onShieldBlock(this, entity, source, amount);
     }
 
     /**
      * @see Affix#onBlockBreak(ItemStack, LootRarity, float, Player, LevelAccessor, BlockPos, BlockState)
      */
     public void onBlockBreak(Player player, LevelAccessor world, BlockPos pos, BlockState state) {
-        this.afx().onBlockBreak(this, player, world, pos, state);
+        this.getAffix().onBlockBreak(this, player, world, pos, state);
     }
 
     /**
      * @see Affix#getDurabilityBonusPercentage(ItemStack, LootRarity, float, ServerPlayer)
      */
     public float getDurabilityBonusPercentage(@Nullable ServerPlayer user) {
-        return this.afx().getDurabilityBonusPercentage(this, user);
+        return this.getAffix().getDurabilityBonusPercentage(this, user);
     }
 
     /**
      * @see Affix#onArrowImpact(AbstractArrow, LootRarity, float, HitResult, net.minecraft.world.phys.HitResult.Type)
      */
     public void onArrowImpact(AbstractArrow arrow, HitResult res, HitResult.Type type) {
-        this.afx().onArrowImpact(this.level, this.getRarity(), arrow, res, type);
+        this.getAffix().onArrowImpact(this.level, this.getRarity(), arrow, res, type);
     }
 
     /**
      * @see Affix#enablesTelepathy()
      */
     public boolean enablesTelepathy() {
-        return this.afx().enablesTelepathy();
+        return this.getAffix().enablesTelepathy();
     }
 
     /**
      * @see Affix#onHurt(ItemStack, LootRarity, float, DamageSource, LivingEntity, float)
      */
     public float onHurt(DamageSource src, LivingEntity ent, float amount) {
-        return this.afx().onHurt(this, src, ent, amount);
+        return this.getAffix().onHurt(this, src, ent, amount);
     }
 
     /**
      * @see Affix#getEnchantmentLevels(AffixInstance, Map)
      */
     public void getEnchantmentLevels(GetEnchantmentLevelEvent event) {
-        this.afx().getEnchantmentLevels(this, event);
+        this.getAffix().getEnchantmentLevels(this, event);
     }
 
     /**
      * @see Affix#modifyLoot(AffixInstance, ObjectArrayList, LootContext)
      */
     public void modifyLoot(ObjectArrayList<ItemStack> loot, LootContext ctx) {
-        this.afx().modifyLoot(this, loot, ctx);
+        this.getAffix().modifyLoot(this, loot, ctx);
     }
 
     /**
      * @see Affix#modifyEntityLoot(AffixInstance, LivingDropsEvent)
      */
     public void modifyEntityLoot(LivingDropsEvent e) {
-        this.afx().modifyEntityLoot(this, e);
+        this.getAffix().modifyEntityLoot(this, e);
     }
 
     public AffixInstance withNewLevel(float level) {
@@ -203,9 +210,5 @@ public record AffixInstance(DynamicHolder<Affix> affix, float level, DynamicHold
 
     public ResourceLocation makeUniqueId() {
         return Affix.makeUniqueId(this);
-    }
-
-    private Affix afx() {
-        return this.affix.get();
     }
 }

@@ -11,7 +11,7 @@ import com.google.common.base.Predicate;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apoth.Affixes;
+import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
@@ -86,15 +86,15 @@ public class RadialAffix extends Affix {
     }
 
     // EventPriority.LOW
-    public void onBreak(BlockEvent.BreakEvent e) {
+    public static void onBreak(BlockEvent.BreakEvent e) {
         Player player = e.getPlayer();
         ItemStack tool = player.getMainHandItem();
         Level world = player.level();
-        if (!world.isClientSide && tool.hasTag()) {
-            AffixInstance inst = AffixHelper.getAffixes(tool).get(Affixes.RADIAL);
+        if (!world.isClientSide && tool.has(Components.AFFIXES)) {
+            AffixInstance inst = AffixHelper.streamAffixes(tool).filter(i -> i.getAffix() instanceof RadialAffix).findFirst().orElse(null);
             if (inst != null && inst.isValid() && RadialState.getState(player).isRadialMiningEnabled(player)) {
                 float hardness = e.getState().getDestroySpeed(e.getLevel(), e.getPos());
-                breakExtraBlocks((ServerPlayer) player, e.getPos(), tool, this.getTrueLevel(inst.rarity().get(), inst.level()), hardness);
+                breakExtraBlocks((ServerPlayer) player, e.getPos(), tool, ((RadialAffix) inst.getAffix()).getTrueLevel(inst.rarity().get(), inst.level()), hardness);
             }
         }
     }

@@ -56,9 +56,9 @@ public class OmneticAffix extends Affix {
     public static void harvest(HarvestCheck e) {
         ItemStack stack = e.getEntity().getMainHandItem();
         if (!stack.isEmpty()) {
-            AffixInstance inst = AffixHelper.streamAffixes(stack).filter(i -> i.affix().get() instanceof OmneticAffix).findFirst().orElse(null);
+            AffixInstance inst = AffixHelper.streamAffixes(stack).filter(i -> i.getAffix() instanceof OmneticAffix).findFirst().orElse(null);
             if (inst != null && inst.isValid()) {
-                OmneticData data = ((OmneticAffix) inst.affix().get()).values.get(inst.rarity().get());
+                OmneticData data = ((OmneticAffix) inst.getAffix()).values.get(inst.rarity().get());
                 for (ItemStack item : data.items()) {
                     if (item.isCorrectToolForDrops(e.getTargetBlock())) {
                         e.setCanHarvest(true);
@@ -76,7 +76,7 @@ public class OmneticAffix extends Affix {
             AffixInstance inst = AffixHelper.getAffixes(stack).values().stream().filter(OmneticAffix.class::isInstance).findFirst().orElse(null);
             if (inst != null && inst.isValid()) {
                 float speed = e.getOriginalSpeed();
-                OmneticData data = ((OmneticAffix) inst.affix().get()).values.get(inst.rarity().get());
+                OmneticData data = ((OmneticAffix) inst.getAffix()).values.get(inst.rarity().get());
                 for (ItemStack item : data.items()) {
                     speed = Math.max(getBaseSpeed(e.getEntity(), item, e.getState(), e.getPosition().orElse(BlockPos.ZERO)), speed);
                 }

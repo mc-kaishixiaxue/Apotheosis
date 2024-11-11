@@ -230,7 +230,7 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
         }
 
         AffixInstance current = this.currentItemAffixes.get(selected);
-        List<DynamicHolder<Affix>> alternatives = LootController.getAvailableAffixes(this.lastMainItem, current.rarity().get(), current.affix().get().definition().type()).toList();
+        List<DynamicHolder<Affix>> alternatives = LootController.getAvailableAffixes(this.lastMainItem, current.getRarity(), current.getAffix().definition().type()).toList();
 
         if (alternatives.isEmpty()) {
             this.alternativePages = Collections.emptyList();

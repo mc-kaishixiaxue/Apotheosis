@@ -43,7 +43,7 @@ public class MagicalArrowAffix extends Affix {
      */
     public static void modifyIncomingDamageTags(EntityInvulnerabilityCheckEvent e) {
         if (e.getSource().getDirectEntity() instanceof AbstractArrow arrow) {
-            if (AffixHelper.streamAffixes(arrow).anyMatch(a -> a.affix().get() instanceof MagicalArrowAffix)) {
+            if (AffixHelper.streamAffixes(arrow).anyMatch(a -> a.getAffix() instanceof MagicalArrowAffix)) {
                 DamageSourceExtension ext = (DamageSourceExtension) e.getSource();
                 ext.addTag(Tags.DamageTypes.IS_MAGIC);
                 ext.addTag(DamageTypeTags.BYPASSES_ARMOR);

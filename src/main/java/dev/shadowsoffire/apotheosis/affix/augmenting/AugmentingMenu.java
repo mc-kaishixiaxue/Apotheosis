@@ -164,7 +164,7 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
     }
 
     protected static List<DynamicHolder<Affix>> computeAlternatives(ItemStack stack, AffixInstance selected) {
-        return LootController.getAvailableAffixes(stack, selected.rarity().get(), selected.affix().get().definition().type()).toList();
+        return LootController.getAvailableAffixes(stack, selected.getRarity(), selected.getAffix().definition().type()).toList();
     }
 
 }

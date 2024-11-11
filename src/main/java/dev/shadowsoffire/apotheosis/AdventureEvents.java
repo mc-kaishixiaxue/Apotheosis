@@ -13,6 +13,7 @@ import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.effect.FestiveAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.MagicalArrowAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.OmneticAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.RadialAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.TelepathicAffix;
 import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingMenu;
 import dev.shadowsoffire.apotheosis.commands.AffixCommand;
@@ -245,7 +246,7 @@ public class AdventureEvents {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onBreak(BlockEvent.BreakEvent e) {
-        Apoth.Affixes.RADIAL.getOptional().ifPresent(afx -> afx.onBreak(e));
+        RadialAffix.onBreak(e);
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)

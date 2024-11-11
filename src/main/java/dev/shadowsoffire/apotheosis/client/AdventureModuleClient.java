@@ -275,7 +275,7 @@ public class AdventureModuleClient {
 
                 AttributeTooltipContext ctx = AttributeTooltipContext.of(Minecraft.getInstance().player, e.getContext(), e.getFlags());
                 AffixHelper.streamAffixes(stack)
-                    .sorted(Comparator.comparingInt(a -> a.affix().get().definition().type().ordinal()))
+                    .sorted(Comparator.comparingInt(a -> a.getAffix().definition().type().ordinal()))
                     .map(a -> a.getDescription(ctx))
                     .filter(c -> c.getContents() != PlainTextContents.EMPTY)
                     .forEach(dotPrefixer);

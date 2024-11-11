@@ -11,6 +11,7 @@ import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.effect.FestiveAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.MagicalArrowAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.OmneticAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.TelepathicAffix;
 import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingMenu;
@@ -135,9 +136,13 @@ public class AdventureEvents {
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void modifyIncomingDamageTags(EntityInvulnerabilityCheckEvent e) {
+        MagicalArrowAffix.modifyIncomingDamageTags(e);
+    }
+
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onDamage(LivingIncomingDamageEvent e) {
-        Apoth.Affixes.MAGICAL.getOptional().ifPresent(afx -> afx.onHurt(e));
         DamageSource src = e.getSource();
         LivingEntity ent = e.getEntity();
         float amount = e.getAmount();

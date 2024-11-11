@@ -7,6 +7,7 @@
     "mixins": [
         "BaseSpawnerAccessor",
         "BlockMixin",
+        "DamageSourceMixin",
         "EnchantmentHelperMixin",
         "FallingBlockEntityMixin",
         "GoldToolsHaveFortuneModuleMixin",

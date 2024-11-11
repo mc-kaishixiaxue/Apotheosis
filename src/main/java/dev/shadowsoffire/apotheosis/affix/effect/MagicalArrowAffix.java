@@ -5,16 +5,18 @@ import java.util.Set;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apoth.Affixes;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
+import dev.shadowsoffire.apotheosis.util.DamageSourceExtension;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 
 public class MagicalArrowAffix extends Affix {
 
@@ -36,11 +38,15 @@ public class MagicalArrowAffix extends Affix {
         return cat.isRanged() && this.rarities.contains(rarity);
     }
 
-    // EventPriority.HIGH
-    public void onHurt(LivingHurtEvent e) {
+    /**
+     * Applies the magical arrow affix by mutating the damage type tags of the incoming damage source at the first event in the stack.
+     */
+    public static void modifyIncomingDamageTags(EntityInvulnerabilityCheckEvent e) {
         if (e.getSource().getDirectEntity() instanceof AbstractArrow arrow) {
-            if (AffixHelper.getAffixes(arrow).containsKey(Affixes.MAGICAL)) {
-                // e.getSource().setMagic(); TODO: Forge event needs updating with a setDamageSource method.
+            if (AffixHelper.streamAffixes(arrow).anyMatch(a -> a.affix().get() instanceof MagicalArrowAffix)) {
+                DamageSourceExtension ext = (DamageSourceExtension) e.getSource();
+                ext.addTag(Tags.DamageTypes.IS_MAGIC);
+                ext.addTag(DamageTypeTags.BYPASSES_ARMOR);
             }
         }
     }

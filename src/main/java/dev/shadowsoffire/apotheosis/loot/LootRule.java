@@ -45,6 +45,7 @@ public interface LootRule extends CodecProvider<LootRule> {
         register("durability", DurabilityLootRule.CODEC);
         register("chanced", ChancedLootRule.CODEC);
         register("combined", CombinedLootRule.CODEC);
+        register("select", SelectLootRule.CODEC);
     }
 
     private static void register(String id, Codec<? extends LootRule> codec) {
@@ -198,6 +199,35 @@ public interface LootRule extends CodecProvider<LootRule> {
         public void execute(ItemStack stack, LootRarity rarity, GenContext ctx) {
             for (LootRule rule : this.rules) {
                 rule.execute(stack, rarity, ctx);
+            }
+        }
+
+    }
+
+    /**
+     * Implements a select loot rule, which rolls a chance and picks one rule if true, and another if false.
+     */
+    public static record SelectLootRule(float chance, LootRule ifTrue, LootRule ifFalse) implements LootRule {
+
+        public static Codec<SelectLootRule> CODEC = RecordCodecBuilder.create(inst -> inst
+            .group(
+                Codec.FLOAT.fieldOf("chance").forGetter(SelectLootRule::chance),
+                LootRule.CODEC.fieldOf("if_true").forGetter(SelectLootRule::ifTrue),
+                LootRule.CODEC.fieldOf("if_false").forGetter(SelectLootRule::ifFalse))
+            .apply(inst, SelectLootRule::new));
+
+        @Override
+        public Codec<SelectLootRule> getCodec() {
+            return CODEC;
+        }
+
+        @Override
+        public void execute(ItemStack stack, LootRarity rarity, GenContext ctx) {
+            if (ctx.rand().nextFloat() <= this.chance) {
+                this.ifTrue.execute(stack, rarity, ctx);
+            }
+            else {
+                this.ifFalse.execute(stack, rarity, ctx);
             }
         }
 

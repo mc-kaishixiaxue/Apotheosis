@@ -18,6 +18,7 @@ import dev.shadowsoffire.apotheosis.compat.GatewaysCompat;
 import dev.shadowsoffire.apotheosis.data.ApothLootProvider;
 import dev.shadowsoffire.apotheosis.data.ApothRecipeProvider;
 import dev.shadowsoffire.apotheosis.data.ApothTagsProvider;
+import dev.shadowsoffire.apotheosis.data.RarityProvider;
 import dev.shadowsoffire.apotheosis.loot.AffixLootRegistry;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRule;
@@ -35,9 +36,11 @@ import dev.shadowsoffire.placebo.datagen.DataGenBuilder;
 import dev.shadowsoffire.placebo.network.PayloadHelper;
 import dev.shadowsoffire.placebo.tabs.TabFillingRegistry;
 import dev.shadowsoffire.placebo.util.RunnableReloader;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.DataProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -71,15 +74,14 @@ public class Apotheosis {
         bus.register(this);
         ObfuscationReflectionHelper.setPrivateValue(RangedAttribute.class, (RangedAttribute) Attributes.ARMOR.value(), 200D, "minValue");
         ObfuscationReflectionHelper.setPrivateValue(RangedAttribute.class, (RangedAttribute) Attributes.ARMOR_TOUGHNESS.value(), 100D, "maxValue");
+        LootRule.initCodecs();
+        Exclusion.initCodecs();
+        GemBonus.initCodecs();
     }
 
     @SubscribeEvent
     public void setup(FMLCommonSetupEvent e) {
         e.enqueueWork(() -> {
-            LootRule.initCodecs();
-            Exclusion.initCodecs();
-            GemBonus.initCodecs();
-
             TabFillingRegistry.register(Apoth.Tabs.ADVENTURE.getKey(), Items.COMMON_MATERIAL, Items.UNCOMMON_MATERIAL, Items.RARE_MATERIAL, Items.EPIC_MATERIAL, Items.MYTHIC_MATERIAL, Items.GEM_DUST,
                 Items.GEM_FUSED_SLATE, Items.SIGIL_OF_SOCKETING, Items.SIGIL_OF_WITHDRAWAL, Items.SIGIL_OF_REBIRTH, Items.SIGIL_OF_ENHANCEMENT, Items.SIGIL_OF_UNNAMING, Items.BOSS_SUMMONER,
                 Items.SALVAGING_TABLE, Items.GEM_CUTTING_TABLE, Items.SIMPLE_REFORGING_TABLE, Items.REFORGING_TABLE, Items.AUGMENTING_TABLE, Items.GEM);
@@ -109,6 +111,7 @@ public class Apotheosis {
             .provider(ApothLootProvider::create)
             .provider(ApothRecipeProvider::new)
             .provider(ApothTagsProvider::new)
+            .provider(RarityProvider::new)
             .build(e);
 
         /*
@@ -119,6 +122,18 @@ public class Apotheosis {
          * 4. Gem Loot Modifier (player-only condition, entity config)
          * 5. Affix loot modifier (chest config)
          */
+
+        Object2IntOpenHashMap<String> map = (Object2IntOpenHashMap<String>) DataProvider.FIXED_ORDER_FIELDS;
+        // Ensure that TieredWeights is output in WorldTier order
+        map.put("haven", 1);
+        map.put("frontier", 2);
+        map.put("ascent", 3);
+        map.put("summit", 4);
+        map.put("apotheosis", 5);
+
+        // Place min/max in order
+        map.put("min", 1);
+        map.put("max", 2);
     }
 
     @SubscribeEvent

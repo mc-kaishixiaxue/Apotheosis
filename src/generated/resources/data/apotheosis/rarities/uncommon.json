@@ -1,0 +1,45 @@
+{
+  "color": "#33FF33",
+  "material": "apotheosis:uncommon_material",
+  "rules": [
+    {
+      "type": "apotheosis:affix",
+      "affix_type": "stat"
+    },
+    {
+      "type": "apotheosis:affix",
+      "affix_type": "stat"
+    },
+    {
+      "type": "apotheosis:chanced",
+      "chance": 0.5,
+      "rule": {
+        "type": "apotheosis:affix",
+        "affix_type": "potion"
+      }
+    },
+    {
+      "type": "apotheosis:socket",
+      "min": 0,
+      "max": 1
+    }
+  ],
+  "weights": {
+    "haven": {
+      "quality": 2.5,
+      "weight": 360
+    },
+    "frontier": {
+      "weight": 600
+    },
+    "ascent": {
+      "weight": 550
+    },
+    "summit": {
+      "weight": 350
+    },
+    "apotheosis": {
+      "weight": 0
+    }
+  }
+}

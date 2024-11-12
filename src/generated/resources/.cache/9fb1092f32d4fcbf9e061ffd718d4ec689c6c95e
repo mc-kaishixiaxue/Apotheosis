@@ -1,12 +1,12 @@
-// 1.21.1	2024-11-11T16:26:34.7094893	Recipes
+// 1.21.1	2024-11-11T19:12:21.5808939	Recipes
 a04073dadcb23f8c3efc3a514052aa52ab1e1e8e data/apotheosis/recipe/augmenting_table.json
 af418bc55f6307f5a49e502440be8abb135afdef data/apotheosis/recipe/gem_cutting_table.json
 213f4acbfea8501d355c1535453a7f78cced1d41 data/apotheosis/recipe/gem_fused_slate.json
-f348264357fe05ca8501b501ec6ad4eda3093527 data/apotheosis/recipe/reforging/common.json
+ac42e5852abf621721a320a29cfd86f3dc1b8a90 data/apotheosis/recipe/reforging/common.json
 170531ddb7ebea1fbd69c7199eed48a70c209e01 data/apotheosis/recipe/reforging/epic.json
 9dfc632ab3bad7a67f60c5b5abae6b02ff66bd6b data/apotheosis/recipe/reforging/mythic.json
-d150be5f07253fff6aa9d2b1b8b8b8f17723fdb9 data/apotheosis/recipe/reforging/rare.json
-8a4d2f26b7df0d3fd09841403c3d9a49ffd357fd data/apotheosis/recipe/reforging/uncommon.json
+d9712b72840fb80ea755cc80ba51a87f96c037fd data/apotheosis/recipe/reforging/rare.json
+733d6bcd2aeab7ab789b7b228522375e29ede9cb data/apotheosis/recipe/reforging/uncommon.json
 ed13c9389afad35e3681a094979510523d289a05 data/apotheosis/recipe/reforging_table.json
 763436c1df1158f48e6f95d7caa27066e31878a0 data/apotheosis/recipe/salvaging/chipped_gem.json
 8061d087dafdb779f9d79975e1aa4587c44d56ab data/apotheosis/recipe/salvaging/common_affix_item.json

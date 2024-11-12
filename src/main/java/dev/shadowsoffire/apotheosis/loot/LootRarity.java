@@ -38,9 +38,9 @@ public class LootRarity implements CodecProvider<LootRarity>, Weighted {
     private final Holder<Item> material;
     private final TextColor color;
     private final TieredWeights weights;
-    private final List<LootRule> rules;
+    private final List<LootRule> rules; // TODO: Map<LootCategory, List<LootRule>> to permit per-category rules
 
-    private LootRarity(TextColor color, Holder<Item> material, TieredWeights weights, List<LootRule> rules) {
+    public LootRarity(TextColor color, Holder<Item> material, TieredWeights weights, List<LootRule> rules) {
         this.color = color;
         this.material = material;
         this.weights = weights;

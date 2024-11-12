@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -62,7 +63,11 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
     }
 
     private static DataResult<TieredWeights> validate(TieredWeights weights) {
-        return weights.weights.size() == WorldTier.APOTHEOSIS.ordinal() ? DataResult.success(weights) : DataResult.error(() -> "Weights must be provided for each WorldTier.");
+        return weights.weights.size() == 5 ? DataResult.success(weights) : DataResult.error(() -> "Weights must be provided for each WorldTier.");
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public static interface Weighted {
@@ -81,6 +86,22 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
          */
         static <T extends Weighted> Wrapper<T> wrap(T item, WorldTier tier, float luck) {
             return WeightedEntry.wrap(item, Math.max(0, item.weights().getWeight(tier, luck)));
+        }
+    }
+
+    public static class Builder {
+        ImmutableMap.Builder<WorldTier, Weight> mapBuilder = ImmutableMap.builder();
+
+        public Builder() {
+        }
+
+        public Builder with(WorldTier tier, int weight, float quality) {
+            this.mapBuilder.put(tier, new Weight(weight, quality));
+            return this;
+        }
+
+        public TieredWeights build() {
+            return new TieredWeights(mapBuilder.build());
         }
     }
 }

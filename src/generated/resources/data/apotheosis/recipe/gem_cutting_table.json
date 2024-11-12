@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "apotheosis",
+  "key": {
+    "G": {
+      "item": "apotheosis:gem_dust"
+    },
+    "H": {
+      "item": "minecraft:shears"
+    },
+    "M": {
+      "item": "minecraft:smooth_basalt"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "S": {
+      "item": "minecraft:smooth_stone"
+    }
+  },
+  "pattern": [
+    "SHM",
+    "PGP",
+    "P P"
+  ],
+  "result": {
+    "count": 1,
+    "id": "apotheosis:gem_cutting_table"
+  }
+}

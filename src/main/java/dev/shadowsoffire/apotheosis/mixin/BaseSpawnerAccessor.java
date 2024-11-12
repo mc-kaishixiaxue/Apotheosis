@@ -13,7 +13,7 @@ import net.minecraft.world.level.SpawnData;
 @Mixin(BaseSpawner.class)
 public interface BaseSpawnerAccessor {
 
-    @Invoker("setNextSpawnData")
-    void setNextSpawnData(@Nullable Level level, BlockPos pos, SpawnData data);
+    @Invoker
+    void callSetNextSpawnData(@Nullable Level level, BlockPos pos, SpawnData data);
 
 }

@@ -1,5 +1,6 @@
 {
-  "color": "rainbow",
+  "type": "apotheosis:rarity",
+  "color": "#ED7014",
   "material": "apotheosis:mythic_material",
   "rules": [
     {

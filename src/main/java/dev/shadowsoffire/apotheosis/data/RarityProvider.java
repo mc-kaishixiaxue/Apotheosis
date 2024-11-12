@@ -21,7 +21,6 @@ import dev.shadowsoffire.apotheosis.loot.LootRule.SocketLootRule;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
-import dev.shadowsoffire.placebo.color.GradientColor;
 import dev.shadowsoffire.placebo.util.data.DynamicRegistryProvider;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -93,7 +92,7 @@ public class RarityProvider extends DynamicRegistryProvider<LootRarity> {
         // Starts to really appear in Summit, and is the most common rarity in Apotheosis.
         // Three stats, a potion, an ability, and a chance for a second of each non-stat.
         // Guaranteed to receive a socket, and receives a good durability bonus.
-        addRarity("epic", TextColor.fromRgb(0x5555FF), Items.EPIC_MATERIAL, b -> b
+        addRarity("epic", TextColor.fromRgb(0xBB00BB), Items.EPIC_MATERIAL, b -> b
             .weights(TieredWeights.builder()
                 .with(WorldTier.HAVEN, 0, 0)
                 .with(WorldTier.FRONTIER, 10, 0)
@@ -113,7 +112,7 @@ public class RarityProvider extends DynamicRegistryProvider<LootRarity> {
         // Mythic, the pinnacle rarity. Does not appear until summit, and has very low rarity until Apotheosis.
         // Four stats, two potions, two abilities, guaranteed sockets and high durability bonuses.
         // Has a very low chance to receive 4 sockets, and be Unbreakable.
-        addRarity("mythic", GradientColor.RAINBOW, Items.MYTHIC_MATERIAL, b -> b
+        addRarity("mythic", TextColor.fromRgb(0xED7014), Items.MYTHIC_MATERIAL, b -> b
             .weights(TieredWeights.builder()
                 .with(WorldTier.HAVEN, 0, 0)
                 .with(WorldTier.FRONTIER, 0, 0)

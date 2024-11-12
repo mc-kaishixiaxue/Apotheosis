@@ -73,7 +73,7 @@ public class RogueSpawner implements CodecProvider<RogueSpawner>, ILuckyWeighted
         if (level.getBlockEntity(pos) instanceof ApothSpawnerTile spawner) {
             this.stats.apply(spawner);
             spawner.getSpawner().spawnPotentials = this.spawnPotentials;
-            ((BaseSpawnerAccessor) spawner.getSpawner()).setNextSpawnData(null, pos, this.spawnPotentials.getRandomValue(rand).get());
+            ((BaseSpawnerAccessor) spawner.getSpawner()).callSetNextSpawnData(null, pos, this.spawnPotentials.getRandomValue(rand).get());
 
             level.setBlock(pos.below(), Blocks.CHEST.defaultBlockState(), 2);
             ResourceKey<LootTable> realLootTable = rand.nextFloat() <= AdventureConfig.spawnerValueChance ? Apoth.LootTables.CHEST_VALUABLE : this.lootTable;

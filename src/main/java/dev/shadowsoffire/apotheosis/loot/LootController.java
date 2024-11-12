@@ -53,7 +53,8 @@ public class LootController {
 
         ItemAffixes loaded = stack.getOrDefault(Components.AFFIXES, ItemAffixes.EMPTY);
         if (loaded.size() == 0) {
-            throw new RuntimeException(String.format("Failed to locate any affixes for %s{%s} with category %s and rarity %s.", stack.getItem(), stack.getComponents(), cat, rarity));
+            return stack; // TODO: Re-enable the hard error when we actually have affixes loaded.
+            //throw new RuntimeException(String.format("Failed to locate any affixes for %s{%s} with category %s and rarity %s.", stack.getItem(), stack.getComponents(), cat, rarity));
         }
 
         List<Affix> nameList = new ArrayList<>(loaded.size());

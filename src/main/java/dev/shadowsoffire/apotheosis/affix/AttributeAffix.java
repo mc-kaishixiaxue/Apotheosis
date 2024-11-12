@@ -74,10 +74,10 @@ public class AttributeAffix extends Affix {
         MutableComponent valueComp = attr.toValueComponent(this.operation, value < 0 ? -value : value, ctx.flag());
 
         if (value > 0.0D) {
-            comp = Component.translatable("attributeslib.modifier.plus", valueComp, Component.translatable(attr.getDescriptionId())).withStyle(ChatFormatting.BLUE);
+            comp = Component.translatable("neoforge.modifier.plus", valueComp, Component.translatable(attr.getDescriptionId())).withStyle(ChatFormatting.BLUE);
         }
         else {
-            comp = Component.translatable("attributeslib.modifier.take", valueComp, Component.translatable(attr.getDescriptionId())).withStyle(ChatFormatting.RED);
+            comp = Component.translatable("neoforge.modifier.take", valueComp, Component.translatable(attr.getDescriptionId())).withStyle(ChatFormatting.RED);
         }
 
         if (modif.valueFactory.get(0) != modif.valueFactory.get(1)) {

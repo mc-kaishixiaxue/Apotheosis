@@ -5,12 +5,12 @@
 	}],
 	"type": "minecraft:jigsaw",
 	"biomes": {
-        "type": "forge:and",
+        "type": "neoforge:and",
         "values":
         [
            "#apotheosis:tower_main",
            {
-               "type": "forge:not",
+               "type": "neoforge:not",
                "value": "#minecraft:is_ocean"
            }
         ]

@@ -1,4 +1,5 @@
 {
+  "type": "apotheosis:attribute",
   "attribute": "neoforge:swim_speed",
   "categories": [
     "boots"

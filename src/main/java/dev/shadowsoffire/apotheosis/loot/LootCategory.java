@@ -16,6 +16,7 @@ import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -26,6 +27,7 @@ import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TridentItem;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.neoforged.neoforge.common.ItemAbilities;
 
@@ -49,7 +51,7 @@ public final class LootCategory {
     public static final LootCategory SHIELD = register("shield", s -> s.canPerformAction(ItemAbilities.SHIELD_BLOCK), EquipmentSlotGroup.HAND);
     public static final LootCategory TRIDENT = register("trident", s -> s.getItem() instanceof TridentItem, EquipmentSlotGroup.MAINHAND);
     public static final LootCategory MELEE_WEAPON = register("melee_weapon",
-        s -> s.canPerformAction(ItemAbilities.SWORD_DIG) || s.getAttributeModifiers().compute(1, EquipmentSlot.MAINHAND) > 1, EquipmentSlotGroup.MAINHAND);
+        s -> s.canPerformAction(ItemAbilities.SWORD_DIG) || getDefaultModifiers(s).compute(1, EquipmentSlot.MAINHAND) > 1, EquipmentSlotGroup.MAINHAND);
     // TODO: Loot category for hoes? Is there even enough content for that?
     public static final LootCategory NONE = register("none", Predicates.alwaysFalse(), EquipmentSlotGroup.ANY);
 
@@ -198,5 +200,9 @@ public final class LootCategory {
 
     static final LootCategory register(String name, Predicate<ItemStack> validator, EquipmentSlotGroup slots) {
         return register(null, name, validator, slots);
+    }
+
+    private static ItemAttributeModifiers getDefaultModifiers(ItemStack stack) {
+        return stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, stack.getItem().getDefaultAttributeModifiers(stack));
     }
 }

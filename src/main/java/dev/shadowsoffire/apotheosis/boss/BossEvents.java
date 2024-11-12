@@ -139,20 +139,26 @@ public class BossEvents {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void delayedMinibosses(EntityJoinLevelEvent e) {
         if (!e.getLevel().isClientSide && e.getEntity() instanceof Mob mob) {
-            String key = mob.getPersistentData().getString(ApothMiniboss.MINIBOSS_KEY);
-            if (key != null) {
-                UUID playerId = UUID.fromString(mob.getPersistentData().getString(ApothMiniboss.PLAYER_KEY));
-                Player player = e.getLevel().getPlayerByUUID(playerId);
-                if (player == null) {
-                    player = e.getLevel().getNearestPlayer(mob, -1);
-                }
-
-                if (player != null) {
-                    GenContext ctx = GenContext.forPlayerAtPos(e.getLevel().random, player, mob.blockPosition());
-                    ApothMiniboss item = MinibossRegistry.INSTANCE.getValue(ResourceLocation.tryParse(key));
-                    if (item != null) {
-                        item.transformMiniboss((ServerLevel) e.getLevel(), mob, ctx);
+            CompoundTag data = mob.getPersistentData();
+            if (data.contains(ApothMiniboss.MINIBOSS_KEY) && data.contains(ApothMiniboss.PLAYER_KEY)) {
+                String key = data.getString(ApothMiniboss.MINIBOSS_KEY);
+                try {
+                    UUID playerId = UUID.fromString(data.getString(ApothMiniboss.PLAYER_KEY));
+                    Player player = e.getLevel().getPlayerByUUID(playerId);
+                    if (player == null) {
+                        player = e.getLevel().getNearestPlayer(mob, -1);
                     }
+
+                    if (player != null) {
+                        GenContext ctx = GenContext.forPlayerAtPos(e.getLevel().random, player, mob.blockPosition());
+                        ApothMiniboss item = MinibossRegistry.INSTANCE.getValue(ResourceLocation.tryParse(key));
+                        if (item != null) {
+                            item.transformMiniboss((ServerLevel) e.getLevel(), mob, ctx);
+                        }
+                    }
+                }
+                catch (Exception ex) {
+                    Apotheosis.LOGGER.error("Failure while initializing the Miniboss " + key, ex);
                 }
             }
         }

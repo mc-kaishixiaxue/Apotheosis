@@ -1,0 +1,12 @@
+{
+  "rarities": [],
+  "stack": {
+    "count": 1,
+    "id": "minecraft:stone_pickaxe"
+  },
+  "weights": {
+    "haven": {
+      "weight": 25
+    }
+  }
+}

@@ -15,6 +15,7 @@ import dev.shadowsoffire.apotheosis.boss.Exclusion;
 import dev.shadowsoffire.apotheosis.boss.MinibossRegistry;
 import dev.shadowsoffire.apotheosis.compat.AdventureTwilightCompat;
 import dev.shadowsoffire.apotheosis.compat.GatewaysCompat;
+import dev.shadowsoffire.apotheosis.data.AffixLootEntryProvider;
 import dev.shadowsoffire.apotheosis.data.ApothLootProvider;
 import dev.shadowsoffire.apotheosis.data.ApothRecipeProvider;
 import dev.shadowsoffire.apotheosis.data.ApothTagsProvider;
@@ -112,6 +113,7 @@ public class Apotheosis {
             .provider(ApothRecipeProvider::new)
             .provider(ApothTagsProvider::new)
             .provider(RarityProvider::new)
+            .provider(AffixLootEntryProvider::new)
             .build(e);
 
         /*

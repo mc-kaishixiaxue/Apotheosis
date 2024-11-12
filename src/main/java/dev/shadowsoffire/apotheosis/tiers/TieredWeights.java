@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -21,6 +20,11 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.util.random.WeightedEntry.Wrapper;
 
+/**
+ * TieredWeights are item weights unique for each {@link WorldTier}.
+ * <p>
+ * If a weight is not provided for a specific world tier, then {@link Weight#ZERO} will be used for that tier.
+ */
 public record TieredWeights(Map<WorldTier, Weight> weights) {
 
     /**
@@ -29,7 +33,7 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
      */
     public static MapCodec<TieredWeights> CODEC = Codec.mapEither(Weight.CODEC,
         Codec.simpleMap(WorldTier.CODEC, Weight.CODEC.codec(), StringRepresentable.keys(WorldTier.values())))
-        .xmap(e -> e.map(TieredWeights::fillAll, Function.identity()), Either::right).xmap(TieredWeights::new, TieredWeights::weights).validate(TieredWeights::validate);
+        .xmap(e -> e.map(TieredWeights::fillAll, Function.identity()), Either::right).xmap(TieredWeights::new, TieredWeights::weights);
 
     private static StreamCodec<ByteBuf, Map<WorldTier, Weight>> MAP_STREAM_CODEC = ByteBufCodecs.map(IdentityHashMap::new, WorldTier.STREAM_CODEC, Weight.STREAM_CODEC, 5);
     public static StreamCodec<ByteBuf, TieredWeights> STREAM_CODEC = MAP_STREAM_CODEC.map(TieredWeights::new, TieredWeights::weights);
@@ -55,19 +59,23 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
     }
 
     public int getWeight(WorldTier tier, float luck) {
-        return this.weights.get(tier).getWeight(luck);
+        return this.weights.getOrDefault(tier, Weight.ZERO).getWeight(luck);
     }
 
     private static Map<WorldTier, Weight> fillAll(Weight weight) {
         return Arrays.stream(WorldTier.values()).collect(Collectors.toMap(Function.identity(), v -> weight));
     }
 
-    private static DataResult<TieredWeights> validate(TieredWeights weights) {
-        return weights.weights.size() == 5 ? DataResult.success(weights) : DataResult.error(() -> "Weights must be provided for each WorldTier.");
-    }
-
     public static Builder builder() {
         return new Builder();
+    }
+
+    public static TieredWeights onlyFor(WorldTier tier, int weight, float quality) {
+        return new TieredWeights(Map.of(tier, new Weight(weight, quality)));
+    }
+
+    public static TieredWeights forAllTiers(int weight, float quality) {
+        return new TieredWeights(fillAll(new Weight(weight, quality)));
     }
 
     public static interface Weighted {
@@ -92,8 +100,7 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
     public static class Builder {
         ImmutableMap.Builder<WorldTier, Weight> mapBuilder = ImmutableMap.builder();
 
-        public Builder() {
-        }
+        public Builder() {}
 
         public Builder with(WorldTier tier, int weight, float quality) {
             this.mapBuilder.put(tier, new Weight(weight, quality));

@@ -1,0 +1,24 @@
+{
+  "rarities": [],
+  "stack": {
+    "count": 1,
+    "id": "minecraft:turtle_helmet"
+  },
+  "weights": {
+    "haven": {
+      "weight": 2
+    },
+    "frontier": {
+      "weight": 2
+    },
+    "ascent": {
+      "weight": 2
+    },
+    "summit": {
+      "weight": 2
+    },
+    "apotheosis": {
+      "weight": 2
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "rarities": [],
+  "stack": {
+    "count": 1,
+    "id": "minecraft:leather_chestplate"
+  },
+  "weights": {
+    "haven": {
+      "weight": 25
+    }
+  }
+}

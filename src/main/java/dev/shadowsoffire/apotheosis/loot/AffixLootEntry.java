@@ -32,6 +32,10 @@ public record AffixLootEntry(TieredWeights weights, Constraints constraints, Ite
             PlaceboCodecs.setOf(LootRarity.CODEC).fieldOf("rarities").forGetter(AffixLootEntry::rarities))
         .apply(inst, AffixLootEntry::new));
 
+    public AffixLootEntry(TieredWeights weights, ItemStack stack) {
+        this(weights, Constraints.EMPTY, stack, Set.of());
+    }
+
     public LootCategory getType() {
         return LootCategory.forItem(this.stack);
     }

@@ -32,7 +32,7 @@ public class BloodyArrowBonus extends GemBonus {
     protected final Map<Purity, Data> values;
 
     public BloodyArrowBonus(Map<Purity, Data> values) {
-        super(Apotheosis.loc("bloody_arrow"), new GemClass("ranged_weapon", ImmutableSet.of(LootCategory.BOW, LootCategory.CROSSBOW)));
+        super(Apotheosis.loc("bloody_arrow"), new GemClass("ranged_weapon", ImmutableSet.of(LootCategory.BOW)));
         this.values = values;
     }
 

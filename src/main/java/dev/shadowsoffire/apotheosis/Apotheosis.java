@@ -16,6 +16,7 @@ import dev.shadowsoffire.apotheosis.boss.MinibossRegistry;
 import dev.shadowsoffire.apotheosis.compat.AdventureTwilightCompat;
 import dev.shadowsoffire.apotheosis.compat.GatewaysCompat;
 import dev.shadowsoffire.apotheosis.data.AffixLootEntryProvider;
+import dev.shadowsoffire.apotheosis.data.AffixProvider;
 import dev.shadowsoffire.apotheosis.data.ApothLootProvider;
 import dev.shadowsoffire.apotheosis.data.ApothRecipeProvider;
 import dev.shadowsoffire.apotheosis.data.ApothTagsProvider;
@@ -28,8 +29,10 @@ import dev.shadowsoffire.apotheosis.net.BossSpawnPayload;
 import dev.shadowsoffire.apotheosis.net.RadialStateChangePayload;
 import dev.shadowsoffire.apotheosis.net.RerollResultPayload;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
+import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.apotheosis.spawner.RogueSpawnerRegistry;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apotheosis.util.NameHelper;
 import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
 import dev.shadowsoffire.placebo.config.Configuration;
@@ -78,6 +81,12 @@ public class Apotheosis {
         LootRule.initCodecs();
         Exclusion.initCodecs();
         GemBonus.initCodecs();
+        if (ModList.get().isLoaded("gateways")) {
+            GatewaysCompat.register();
+        }
+        if (ModList.get().isLoaded("twilightforest")) {
+            AdventureTwilightCompat.register();
+        }
     }
 
     @SubscribeEvent
@@ -86,9 +95,6 @@ public class Apotheosis {
             TabFillingRegistry.register(Apoth.Tabs.ADVENTURE.getKey(), Items.COMMON_MATERIAL, Items.UNCOMMON_MATERIAL, Items.RARE_MATERIAL, Items.EPIC_MATERIAL, Items.MYTHIC_MATERIAL, Items.GEM_DUST,
                 Items.GEM_FUSED_SLATE, Items.SIGIL_OF_SOCKETING, Items.SIGIL_OF_WITHDRAWAL, Items.SIGIL_OF_REBIRTH, Items.SIGIL_OF_ENHANCEMENT, Items.SIGIL_OF_UNNAMING, Items.BOSS_SUMMONER,
                 Items.SALVAGING_TABLE, Items.GEM_CUTTING_TABLE, Items.SIMPLE_REFORGING_TABLE, Items.REFORGING_TABLE, Items.AUGMENTING_TABLE, Items.GEM);
-
-            if (ModList.get().isLoaded("gateways")) GatewaysCompat.register();
-            if (ModList.get().isLoaded("twilightforest")) AdventureTwilightCompat.register();
         });
         PayloadHelper.registerPayload(new BossSpawnPayload.Provider());
         PayloadHelper.registerPayload(new RerollResultPayload.Provider());
@@ -114,6 +120,7 @@ public class Apotheosis {
             .provider(ApothTagsProvider::new)
             .provider(RarityProvider::new)
             .provider(AffixLootEntryProvider::new)
+            .provider(AffixProvider::new)
             .build(e);
 
         /*
@@ -126,16 +133,25 @@ public class Apotheosis {
          */
 
         Object2IntOpenHashMap<String> map = (Object2IntOpenHashMap<String>) DataProvider.FIXED_ORDER_FIELDS;
-        // Ensure that TieredWeights is output in WorldTier order
-        map.put("haven", 1);
-        map.put("frontier", 2);
-        map.put("ascent", 3);
-        map.put("summit", 4);
-        map.put("apotheosis", 5);
+        // Keep enums in ordinal order
+        for (Purity p : Purity.values()) {
+            map.put(p.getSerializedName(), p.ordinal() + 1);
+        }
+        for (WorldTier t : WorldTier.values()) {
+            map.put(t.getSerializedName(), t.ordinal() + 1);
+        }
 
         // Place min/max in order
         map.put("min", 1);
         map.put("max", 2);
+
+        // Rarity values
+        map.put("apotheosis:common", 1);
+        map.put("apotheosis:uncommon", 2);
+        map.put("apotheosis:rare", 3);
+        map.put("apotheosis:epic", 4);
+        map.put("apotheosis:mythic", 5);
+
     }
 
     @SubscribeEvent

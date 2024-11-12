@@ -39,8 +39,7 @@ public final class LootCategory {
     public static final Codec<LootCategory> CODEC = Codec.stringResolver(LootCategory::getName, LootCategory::byId);
     public static final Codec<Set<LootCategory>> SET_CODEC = PlaceboCodecs.setOf(CODEC);
 
-    public static final LootCategory BOW = register("bow", s -> s.getItem() instanceof BowItem, EquipmentSlotGroup.HAND);
-    public static final LootCategory CROSSBOW = register("crossbow", s -> s.getItem() instanceof CrossbowItem, EquipmentSlotGroup.HAND);
+    public static final LootCategory BOW = register("bow", s -> s.getItem() instanceof BowItem || s.getItem() instanceof CrossbowItem, EquipmentSlotGroup.HAND);
     public static final LootCategory PICKAXE = register("pickaxe", s -> s.canPerformAction(ItemAbilities.PICKAXE_DIG), EquipmentSlotGroup.MAINHAND);
     public static final LootCategory SHOVEL = register("shovel", s -> s.canPerformAction(ItemAbilities.SHOVEL_DIG), EquipmentSlotGroup.MAINHAND);
     public static final LootCategory HELMET = register("helmet", armorSlot(EquipmentSlot.HEAD), EquipmentSlotGroup.HEAD);
@@ -49,8 +48,9 @@ public final class LootCategory {
     public static final LootCategory BOOTS = register("boots", armorSlot(EquipmentSlot.FEET), EquipmentSlotGroup.FEET);
     public static final LootCategory SHIELD = register("shield", s -> s.canPerformAction(ItemAbilities.SHIELD_BLOCK), EquipmentSlotGroup.HAND);
     public static final LootCategory TRIDENT = register("trident", s -> s.getItem() instanceof TridentItem, EquipmentSlotGroup.MAINHAND);
-    public static final LootCategory SWORD = register("sword",
-        s -> s.canPerformAction(ItemAbilities.SWORD_DIG) || s.getItem().getDefaultAttributeModifiers(s).compute(1, EquipmentSlot.MAINHAND) > 1, EquipmentSlotGroup.MAINHAND);
+    public static final LootCategory MELEE_WEAPON = register("melee_weapon",
+        s -> s.canPerformAction(ItemAbilities.SWORD_DIG) || s.getAttributeModifiers().compute(1, EquipmentSlot.MAINHAND) > 1, EquipmentSlotGroup.MAINHAND);
+    // TODO: Loot category for hoes? Is there even enough content for that?
     public static final LootCategory NONE = register("none", Predicates.alwaysFalse(), EquipmentSlotGroup.ANY);
 
     private final String name;
@@ -96,7 +96,7 @@ public final class LootCategory {
     }
 
     public boolean isRanged() {
-        return this == BOW || this == CROSSBOW || this == TRIDENT;
+        return this == BOW || this == TRIDENT;
     }
 
     public boolean isDefensive() {
@@ -104,7 +104,7 @@ public final class LootCategory {
     }
 
     public boolean isMelee() {
-        return this == SWORD || this == TRIDENT;
+        return this == MELEE_WEAPON || this == TRIDENT;
     }
 
     public boolean isMeleeOrShield() {
@@ -164,6 +164,8 @@ public final class LootCategory {
 
     /**
      * Determines the loot category for an item, by iterating all the categories and selecting the first matching one.
+     * <p>
+     * TODO: Cache this result as a CachedObject sensitive to all component changes.
      *
      * @param item The item to find the category for.
      * @return The first valid loot category, or {@link #NONE} if no categories were valid.

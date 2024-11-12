@@ -5,25 +5,7 @@
     "id": "minecraft:crossbow"
   },
   "weights": {
-    "haven": {
-      "quality": 1.0,
-      "weight": 5
-    },
-    "frontier": {
-      "quality": 1.0,
-      "weight": 5
-    },
-    "ascent": {
-      "quality": 1.0,
-      "weight": 5
-    },
-    "summit": {
-      "quality": 1.0,
-      "weight": 5
-    },
-    "apotheosis": {
-      "quality": 1.0,
-      "weight": 5
-    }
+    "quality": 1.0,
+    "weight": 5
   }
 }

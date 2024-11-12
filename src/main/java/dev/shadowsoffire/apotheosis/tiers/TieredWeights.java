@@ -33,7 +33,8 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
      */
     public static MapCodec<TieredWeights> CODEC = Codec.mapEither(Weight.CODEC,
         Codec.simpleMap(WorldTier.CODEC, Weight.CODEC.codec(), StringRepresentable.keys(WorldTier.values())))
-        .xmap(e -> e.map(TieredWeights::fillAll, Function.identity()), Either::right).xmap(TieredWeights::new, TieredWeights::weights);
+        .xmap(e -> e.map(TieredWeights::fillAll, Function.identity()), TieredWeights::toEither)
+        .xmap(TieredWeights::new, TieredWeights::weights);
 
     private static StreamCodec<ByteBuf, Map<WorldTier, Weight>> MAP_STREAM_CODEC = ByteBufCodecs.map(IdentityHashMap::new, WorldTier.STREAM_CODEC, Weight.STREAM_CODEC, 5);
     public static StreamCodec<ByteBuf, TieredWeights> STREAM_CODEC = MAP_STREAM_CODEC.map(TieredWeights::new, TieredWeights::weights);
@@ -76,6 +77,21 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
 
     public static TieredWeights forAllTiers(int weight, float quality) {
         return new TieredWeights(fillAll(new Weight(weight, quality)));
+    }
+
+    /**
+     * Converts a weight map back into an {@link Either}.
+     * <p>
+     * If the weight map was created with {@link #forAllTiers(int, float)}, this will reduce to a single {@link Weight}.
+     */
+    private static Either<Weight, Map<WorldTier, Weight>> toEither(Map<WorldTier, Weight> value) {
+        if (value.size() == 5) {
+            Weight weight = value.getOrDefault(WorldTier.HAVEN, Weight.ZERO);
+            if (value.values().stream().allMatch(weight::equals)) {
+                return Either.left(weight);
+            }
+        }
+        return Either.right(value);
     }
 
     public static interface Weighted {

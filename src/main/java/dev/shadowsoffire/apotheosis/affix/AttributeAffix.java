@@ -1,10 +1,13 @@
 package dev.shadowsoffire.apotheosis.affix;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -37,22 +40,22 @@ public class AttributeAffix extends Affix {
             BuiltInRegistries.ATTRIBUTE.holderByNameCodec().fieldOf("attribute").forGetter(a -> a.attribute),
             PlaceboCodecs.enumCodec(Operation.class).fieldOf("operation").forGetter(a -> a.operation),
             LootRarity.mapCodec(StepFunction.CODEC).fieldOf("values").forGetter(a -> a.values),
-            LootCategory.SET_CODEC.fieldOf("types").forGetter(a -> a.types))
+            LootCategory.SET_CODEC.fieldOf("categories").forGetter(a -> a.categories))
         .apply(inst, AttributeAffix::new));
 
     protected final Holder<Attribute> attribute;
     protected final Operation operation;
     protected final Map<LootRarity, StepFunction> values;
-    protected final Set<LootCategory> types;
+    protected final Set<LootCategory> categories;
 
     protected transient final Map<LootRarity, ModifierInst> modifiers;
 
-    public AttributeAffix(AffixDefinition def, Holder<Attribute> attr, Operation op, Map<LootRarity, StepFunction> values, Set<LootCategory> types) {
+    public AttributeAffix(AffixDefinition def, Holder<Attribute> attr, Operation op, Map<LootRarity, StepFunction> values, Set<LootCategory> categories) {
         super(def);
         this.attribute = attr;
         this.operation = op;
         this.values = values;
-        this.types = types;
+        this.categories = categories;
         this.modifiers = values.entrySet().stream().map(entry -> Pair.of(entry.getKey(), new ModifierInst(attr, op, entry.getValue()))).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
@@ -104,7 +107,7 @@ public class AttributeAffix extends Affix {
     @Override
     public boolean canApplyTo(ItemStack stack, LootCategory cat, LootRarity rarity) {
         if (cat.isNone()) return false;
-        return (this.types.isEmpty() || this.types.contains(cat)) && this.modifiers.containsKey(rarity);
+        return (this.categories.isEmpty() || this.categories.contains(cat)) && this.modifiers.containsKey(rarity);
     }
 
     @Override
@@ -112,10 +115,44 @@ public class AttributeAffix extends Affix {
         return CODEC;
     }
 
-    public record ModifierInst(Holder<Attribute> attr, Operation op, StepFunction valueFactory) {
+    public static record ModifierInst(Holder<Attribute> attr, Operation op, StepFunction valueFactory) {
 
         public AttributeModifier build(AffixInstance inst) {
             return new AttributeModifier(inst.makeUniqueId(), this.valueFactory.get(inst.level()), this.op);
+        }
+    }
+
+    public static class Builder extends AffixBuilder<Builder> {
+        protected final Holder<Attribute> attribute;
+        protected final Operation operation;
+        protected final Map<LootRarity, StepFunction> values = new HashMap<>();
+        protected final Set<LootCategory> categories = new HashSet<>();
+
+        public Builder(Holder<Attribute> attribute, Operation operation) {
+            this.attribute = attribute;
+            this.operation = operation;
+        }
+
+        public Builder value(LootRarity rarity, StepFunction function) {
+            this.values.put(rarity, function);
+            return this;
+        }
+
+        public Builder category(LootCategory cat) {
+            this.categories.add(cat);
+            return this;
+        }
+
+        public Builder categories(LootCategory... cats) {
+            for (LootCategory cat : cats) {
+                this.categories.add(cat);
+            }
+            return this;
+        }
+
+        public AttributeAffix build() {
+            Preconditions.checkArgument(!values.isEmpty());
+            return new AttributeAffix(this.definition, this.attribute, this.operation, this.values, this.categories);
         }
     }
 

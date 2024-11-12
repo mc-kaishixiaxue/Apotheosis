@@ -253,8 +253,11 @@ public abstract class Affix implements CodecProvider<Affix>, Weighted {
      */
     public void modifyEntityLoot(AffixInstance inst, LivingDropsEvent event) {}
 
+    /**
+     * An affix is compatible with another affix if they aren't the name affix, and neither is exclusive with the other.
+     */
     public boolean isCompatibleWith(Affix affix) {
-        return !this.definition().exclusiveSet().contains(AffixRegistry.INSTANCE.holder(affix)) && !affix.definition().exclusiveSet().contains(AffixRegistry.INSTANCE.holder(this));
+        return this != affix && !this.definition().exclusiveSet().contains(AffixRegistry.INSTANCE.holder(affix)) && !affix.definition().exclusiveSet().contains(AffixRegistry.INSTANCE.holder(this));
     }
 
     public boolean isCompatibleWith(ItemAffixes affixes) {

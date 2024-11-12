@@ -97,10 +97,9 @@ public class LootController {
     public static Stream<DynamicHolder<Affix>> getAvailableAffixes(ItemStack stack, LootRarity rarity, AffixType type) {
         LootCategory cat = LootCategory.forItem(stack);
         ItemAffixes current = stack.getOrDefault(Components.AFFIXES, ItemAffixes.EMPTY);
-        return AffixHelper.byType(type)
-            .stream()
+        return AffixHelper.byType(type).stream()
             .filter(a -> a.get().canApplyTo(stack, cat, rarity))
-            .filter(a -> !current.keySet().contains(a) && a.get().isCompatibleWith(current));
+            .filter(a -> a.get().isCompatibleWith(current));
     }
 
     public static List<WeightedEntry.Wrapper<Affix>> getWeightedAffixes(ItemStack stack, LootRarity rarity, AffixType type, GenContext ctx) {

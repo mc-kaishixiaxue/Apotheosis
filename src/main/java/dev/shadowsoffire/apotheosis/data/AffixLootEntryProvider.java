@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.loot.AffixLootEntry;
 import dev.shadowsoffire.apotheosis.loot.AffixLootRegistry;
+import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.placebo.util.data.DynamicRegistryProvider;
@@ -84,6 +85,11 @@ public class AffixLootEntryProvider extends DynamicRegistryProvider<AffixLootEnt
         for (Item i : BuiltInRegistries.ITEM) {
             if (!BuiltInRegistries.ITEM.getKey(i).getNamespace().equals("minecraft")) {
                 continue; // We only want vanilla items for this pass, since mod items need conditions.
+            }
+
+            LootCategory cat = LootCategory.forItem(i.getDefaultInstance());
+            if (cat.isNone()) {
+                continue; // Can't generate an ALE for non-affixable items.
             }
 
             if (i instanceof TieredItem t && t.getTier() instanceof Tiers tier) {

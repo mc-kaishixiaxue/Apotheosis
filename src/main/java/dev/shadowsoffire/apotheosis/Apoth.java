@@ -1,7 +1,5 @@
 package dev.shadowsoffire.apotheosis;
 
-import java.util.function.UnaryOperator;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
@@ -37,6 +35,7 @@ import dev.shadowsoffire.apotheosis.loot.modifiers.AffixConvertLootModifier;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixHookLootModifier;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixLootModifier;
 import dev.shadowsoffire.apotheosis.loot.modifiers.GemLootModifier;
+import dev.shadowsoffire.apotheosis.socket.AddSocketsRecipe;
 import dev.shadowsoffire.apotheosis.socket.SocketingRecipe;
 import dev.shadowsoffire.apotheosis.socket.WithdrawalRecipe;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
@@ -46,6 +45,7 @@ import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingBlock;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingMenu;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingRecipe;
+import dev.shadowsoffire.apotheosis.socket.gem.cutting.PurityUpgradeRecipe;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apotheosis.util.AffixItemIngredient;
 import dev.shadowsoffire.apotheosis.util.GemIngredient;
@@ -79,6 +79,7 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -106,7 +107,7 @@ public class Apoth {
 
         public static final DataComponentType<Purity> PURITY = R.component("purity", b -> b.persistent(Purity.CODEC).networkSynchronized(Purity.STREAM_CODEC));
 
-        public static final DataComponentType<Boolean> FESTIVE_MARKER = R.component("festive_marker", UnaryOperator.identity());
+        public static final DataComponentType<Boolean> FESTIVE_MARKER = R.component("festive_marker", b -> b.networkSynchronized(ByteBufCodecs.BOOL)); // TODO: When sync can be disabled, disable it
 
         public static final DataComponentType<Float> DURABILITY_BONUS = R.component("durability_bonus", b -> b.persistent(Codec.floatRange(0, 1)).networkSynchronized(ByteBufCodecs.FLOAT));
 
@@ -254,6 +255,10 @@ public class Apoth {
         public static final Holder<RecipeSerializer<?>> WITHDRAWAL = R.recipeSerializer("withdrawal", () -> new SingletonRecipeSerializer<>(WithdrawalRecipe::new));
         public static final Holder<RecipeSerializer<?>> SOCKETING = R.recipeSerializer("socketing", () -> new SingletonRecipeSerializer<>(SocketingRecipe::new));
         public static final Holder<RecipeSerializer<?>> UNNAMING = R.recipeSerializer("unnaming", () -> new SingletonRecipeSerializer<>(UnnamingRecipe::new));
+        public static final Holder<RecipeSerializer<?>> ADD_SOCKETS = R.recipeSerializer("add_sockets", () -> AddSocketsRecipe.Serializer.INSTANCE);
+        public static final Holder<RecipeSerializer<?>> SALVAGING = R.recipeSerializer("salvaging", () -> SalvagingRecipe.Serializer.INSTANCE);
+        public static final Holder<RecipeSerializer<?>> REFORGING = R.recipeSerializer("reforging", () -> ReforgingRecipe.Serializer.INSTANCE);
+        public static final Holder<RecipeSerializer<?>> PURITY_UPGRADE = R.recipeSerializer("purity_ugprade", () -> PurityUpgradeRecipe.Serializer.INSTANCE);
 
         private static void bootstrap() {}
     }
@@ -310,7 +315,9 @@ public class Apoth {
 
     }
 
-    public static void bootstrap() {
+    public static void bootstrap(IEventBus bus) {
+        bus.register(R);
+
         Attachments.bootstrap();
         Components.bootstrap();
         Blocks.bootstrap();

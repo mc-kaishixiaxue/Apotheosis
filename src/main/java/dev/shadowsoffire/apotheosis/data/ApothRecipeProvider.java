@@ -44,7 +44,7 @@ public class ApothRecipeProvider extends LegacyRecipeProvider {
         out.accept(Apotheosis.loc("socketing"), new SocketingRecipe(), null);
         out.accept(Apotheosis.loc("unnaming"), new UnnamingRecipe(), null);
         out.accept(Apotheosis.loc("widthdrawal"), new WithdrawalRecipe(), null);
-        addSockets("sigil_add_sockets", ingredient(Items.GEM), 3);
+        addSockets("sigil_add_sockets", ingredient(Items.SIGIL_OF_SOCKETING), 3);
         addAffixSalvaging("common", Items.COMMON_MATERIAL);
         addAffixSalvaging("uncommon", Items.UNCOMMON_MATERIAL);
         addAffixSalvaging("rare", Items.RARE_MATERIAL);
@@ -78,17 +78,17 @@ public class ApothRecipeProvider extends LegacyRecipeProvider {
     private void addGemSalvaging(Purity purity, int min, int max) {
         Ingredient input = new Ingredient(new GemIngredient(purity));
         OutputData output = new OutputData(new ItemStack(Items.GEM_DUST), min, max);
-        addSalvaging("salvaging/" + purity.getSerializedName() + "_gem", input, output);
+        addSalvaging(purity.getSerializedName() + "_gem", input, output);
     }
 
     private void addAffixSalvaging(String rarity, Holder<Item> material) {
         Ingredient input = new Ingredient(new AffixItemIngredient(RarityRegistry.INSTANCE.holder(Apotheosis.loc(rarity))));
         OutputData output = new OutputData(new ItemStack(material), 1, 4);
-        addSalvaging("salvaging/" + rarity + "_affix_item", input, output);
+        addSalvaging(rarity + "_affix_item", input, output);
     }
 
     private void addSalvaging(String path, Ingredient input, OutputData output) {
-        addSalvaging(path, input, List.of(output));
+        addSalvaging("salvaging/" + path, input, List.of(output));
     }
 
     private void addSalvaging(String path, Ingredient input, List<OutputData> outputs) {

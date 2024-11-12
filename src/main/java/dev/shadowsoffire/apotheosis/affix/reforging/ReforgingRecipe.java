@@ -31,7 +31,7 @@ public record ReforgingRecipe(DynamicHolder<LootRarity> rarity, int matCost, int
     public static final MapCodec<ReforgingRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
         RarityRegistry.INSTANCE.holderCodec().fieldOf("rarity").forGetter(ReforgingRecipe::rarity),
         Codec.intRange(1, 99).fieldOf("material_cost").forGetter(ReforgingRecipe::matCost),
-        Codec.intRange(1, 99).fieldOf("sigil_cost").forGetter(ReforgingRecipe::sigilCost),
+        Codec.intRange(0, 99).fieldOf("sigil_cost").forGetter(ReforgingRecipe::sigilCost),
         Codec.intRange(0, 65536).fieldOf("level_cost").forGetter(ReforgingRecipe::levelCost),
         PlaceboCodecs.setOf(BuiltInRegistries.BLOCK.byNameCodec()).fieldOf("tables").forGetter(ReforgingRecipe::tables))
         .apply(inst, ReforgingRecipe::new));

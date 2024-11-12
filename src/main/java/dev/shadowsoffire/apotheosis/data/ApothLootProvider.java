@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import dev.shadowsoffire.apotheosis.Apoth;
-import dev.shadowsoffire.apothic_enchanting.ApothicEnchanting;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -55,7 +55,7 @@ public class ApothLootProvider extends LootTableProvider {
 
         @Override
         protected Iterable<Block> getKnownBlocks() {
-            return BuiltInRegistries.BLOCK.holders().filter(h -> h.getKey().location().getNamespace().equals(ApothicEnchanting.MODID)).map(Holder::value).toList();
+            return BuiltInRegistries.BLOCK.holders().filter(h -> h.getKey().location().getNamespace().equals(Apotheosis.MODID)).map(Holder::value).toList();
         }
 
         protected void dropSelf(Holder<Block> block) {

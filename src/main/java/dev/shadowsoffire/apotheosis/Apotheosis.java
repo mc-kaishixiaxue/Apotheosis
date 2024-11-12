@@ -30,8 +30,8 @@ import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.apotheosis.spawner.RogueSpawnerRegistry;
 import dev.shadowsoffire.apotheosis.util.NameHelper;
 import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
-import dev.shadowsoffire.apothic_enchanting.util.DataGenBuilder;
 import dev.shadowsoffire.placebo.config.Configuration;
+import dev.shadowsoffire.placebo.datagen.DataGenBuilder;
 import dev.shadowsoffire.placebo.network.PayloadHelper;
 import dev.shadowsoffire.placebo.tabs.TabFillingRegistry;
 import dev.shadowsoffire.placebo.util.RunnableReloader;
@@ -67,10 +67,10 @@ public class Apotheosis {
     static final Map<ResourceLocation, LootCategory> IMC_TYPE_OVERRIDES = new HashMap<>();
 
     public Apotheosis(IEventBus bus) {
-        Apoth.bootstrap();
+        Apoth.bootstrap(bus);
         bus.register(this);
-        ObfuscationReflectionHelper.setPrivateValue(RangedAttribute.class, (RangedAttribute) Attributes.ARMOR, 200D, "minValue");
-        ObfuscationReflectionHelper.setPrivateValue(RangedAttribute.class, (RangedAttribute) Attributes.ARMOR_TOUGHNESS, 100D, "maxValue");
+        ObfuscationReflectionHelper.setPrivateValue(RangedAttribute.class, (RangedAttribute) Attributes.ARMOR.value(), 200D, "minValue");
+        ObfuscationReflectionHelper.setPrivateValue(RangedAttribute.class, (RangedAttribute) Attributes.ARMOR_TOUGHNESS.value(), 100D, "maxValue");
     }
 
     @SubscribeEvent

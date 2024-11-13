@@ -76,7 +76,7 @@ public class Apotheosis {
     public Apotheosis(IEventBus bus) {
         Apoth.bootstrap(bus);
         bus.register(this);
-        ObfuscationReflectionHelper.setPrivateValue(RangedAttribute.class, (RangedAttribute) Attributes.ARMOR.value(), 200D, "minValue");
+        ObfuscationReflectionHelper.setPrivateValue(RangedAttribute.class, (RangedAttribute) Attributes.ARMOR.value(), 200D, "maxValue");
         ObfuscationReflectionHelper.setPrivateValue(RangedAttribute.class, (RangedAttribute) Attributes.ARMOR_TOUGHNESS.value(), 100D, "maxValue");
         LootRule.initCodecs();
         Exclusion.initCodecs();

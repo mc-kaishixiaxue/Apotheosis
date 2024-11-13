@@ -138,11 +138,6 @@ public class AttributeAffix extends Affix {
             return this;
         }
 
-        public Builder category(LootCategory cat) {
-            this.categories.add(cat);
-            return this;
-        }
-
         public Builder categories(LootCategory... cats) {
             for (LootCategory cat : cats) {
                 this.categories.add(cat);

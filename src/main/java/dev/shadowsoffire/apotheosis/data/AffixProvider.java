@@ -51,10 +51,19 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         LootRarity epic = rarity("epic");
         LootRarity mythic = rarity("mythic");
 
+        // Generic Attributes
+        addAttribute("global", "lucky", Attributes.LUCK, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.VALUES.toArray(new LootCategory[0]))
+            .value(uncommon, StepFunction.fromBounds(1F, 1.5F))
+            .value(rare, StepFunction.fromBounds(2F, 3F))
+            .value(epic, StepFunction.fromBounds(2.5F, 4F))
+            .value(mythic, StepFunction.fromBounds(3F, 6F)));
+
         // Armor Attributes
         addAttribute("armor", "aquatic", NeoForgeMod.SWIM_SPEED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
-            .category(LootCategory.BOOTS)
+            .categories(LootCategory.BOOTS)
             .value(common, StepFunction.fromBounds(0.2F, 0.3F, 0.05F))
             .value(uncommon, StepFunction.fromBounds(0.2F, 0.3F, 0.05F))
             .value(rare, StepFunction.fromBounds(0.3F, 0.5F, 0.05F))
@@ -72,7 +81,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         addAttribute("armor", "elastic", Attributes.STEP_HEIGHT, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
-            .category(LootCategory.BOOTS)
+            .categories(LootCategory.BOOTS)
             .value(common, StepFunction.constant(0.5F))
             .value(uncommon, StepFunction.constant(0.5F))
             .value(rare, StepFunction.fromBounds(0.5F, 1.5F, 0.25F))
@@ -90,7 +99,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         addAttribute("armor", "gravitational", Attributes.GRAVITY, Operation.ADD_MULTIPLIED_TOTAL, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
-            .category(LootCategory.CHESTPLATE)
+            .categories(LootCategory.CHESTPLATE)
             .value(common, StepFunction.fromBounds(-0.1F, -0.2F, -0.05F))
             .value(uncommon, StepFunction.fromBounds(-0.1F, -0.25F, -0.05F))
             .value(rare, StepFunction.fromBounds(-0.15F, -0.30F, -0.05F))
@@ -156,6 +165,65 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
                 .exclusiveWith(afx("armor/attribute/winged")))
             .categories(LootCategory.CHESTPLATE)
             .value(mythic, StepFunction.constant(1)));
+
+        addAttribute("armor", "fireproof", Attributes.BURNING_TIME, Operation.ADD_MULTIPLIED_BASE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.HELMET)
+            .value(uncommon, StepFunction.fromBounds(-0.15F, -0.25F, -0.05F))
+            .value(rare, StepFunction.fromBounds(-0.20F, -0.30F, -0.05F))
+            .value(epic, StepFunction.fromBounds(-0.25F, -0.35F, -0.05F))
+            .value(mythic, StepFunction.fromBounds(-0.30F, -0.45F, -0.05F)));
+
+        addAttribute("armor", "oxygenated", Attributes.OXYGEN_BONUS, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.HELMET)
+            .value(uncommon, StepFunction.fromBounds(0.2F, 0.3F, 0.05F))
+            .value(rare, StepFunction.fromBounds(0.35F, 0.5F, 0.05F))
+            .value(epic, StepFunction.fromBounds(0.55F, 0.7F, 0.05F))
+            .value(mythic, StepFunction.fromBounds(0.85F, 1.25F, 0.05F)));
+
+        // TODO: Potentially add offensive stats as armor affixes?
+
+        // Breaker Attributes
+
+        addAttribute("breaker", "destructive", ALObjects.Attributes.MINING_SPEED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BREAKER)
+            .value(common, StepFunction.fromBounds(0.15F, 0.3F, 0.01F))
+            .value(uncommon, StepFunction.fromBounds(0.15F, 0.3F, 0.01F))
+            .value(rare, StepFunction.fromBounds(0.25F, 0.5F, 0.01F))
+            .value(epic, StepFunction.fromBounds(0.25F, 0.7F, 0.01F))
+            .value(mythic, StepFunction.fromBounds(0.55F, 0.85F, 0.01F)));
+
+        addAttribute("breaker", "experienced", ALObjects.Attributes.EXPERIENCE_GAINED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BREAKER)
+            .value(common, StepFunction.fromBounds(0.25F, 0.4F, 0.01F))
+            .value(uncommon, StepFunction.fromBounds(0.25F, 0.4F, 0.01F))
+            .value(rare, StepFunction.fromBounds(0.35F, 0.5F, 0.01F))
+            .value(epic, StepFunction.fromBounds(0.35F, 0.6F, 0.01F))
+            .value(mythic, StepFunction.fromBounds(0.55F, 0.65F, 0.01F)));
+
+        addAttribute("breaker", "lengthy", Attributes.BLOCK_INTERACTION_RANGE, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BREAKER)
+            .value(common, StepFunction.fromBounds(0.5F, 1.5F, 0.25F))
+            .value(uncommon, StepFunction.fromBounds(0.5F, 1.5F, 0.25F))
+            .value(rare, StepFunction.fromBounds(1F, 2.5F, 0.25F))
+            .value(epic, StepFunction.fromBounds(1F, 2.5F, 0.25F))
+            .value(mythic, StepFunction.fromBounds(1.5F, 4, 0.25F)));
+
+        addAttribute("breaker", "submerged", Attributes.SUBMERGED_MINING_SPEED, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BREAKER)
+            .value(common, StepFunction.fromBounds(0.1F, 0.3F, 0.025F))
+            .value(uncommon, StepFunction.fromBounds(0.2F, 0.3F, 0.025F))
+            .value(rare, StepFunction.fromBounds(0.3F, 0.5F, 0.025F))
+            .value(epic, StepFunction.fromBounds(0.4F, 0.55F, 0.025F))
+            .value(mythic, StepFunction.fromBounds(0.5F, 0.8F, 0.025F)));
+
+        // TODO: We need more of these, the pool here is too limited.
+
     }
 
     private void addAttribute(String type, String name, Holder<Attribute> attribute, Operation op, UnaryOperator<AttributeAffix.Builder> config) {

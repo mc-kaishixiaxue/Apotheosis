@@ -1,14 +1,21 @@
-// 1.21.1	2024-11-12T01:05:10.9352104	Affixes
+// 1.21.1	2024-11-12T20:45:32.3169539	Affixes
 9325383a2a8dbbc7c5f2b1e549101c0e4807d8fa data/apotheosis/affixes/armor/attribute/adamantine.json
 6055aeb625f426f08f9fea39d70b68db4f9380ac data/apotheosis/affixes/armor/attribute/aquatic.json
 8cdebcd7a023523dac547d4be29505a3801c23b7 data/apotheosis/affixes/armor/attribute/blessed.json
 baa245ca5ae3787c6828f78a95ba92e8cdee2ee8 data/apotheosis/affixes/armor/attribute/elastic.json
+ce51479caec26ea44c922514266f96016bcb0f03 data/apotheosis/affixes/armor/attribute/fireproof.json
 312d7a9dc5a4620bcde3d1162b6c4c86693fcb2e data/apotheosis/affixes/armor/attribute/fortunate.json
 9f7c9ac854a8b3a463c20f4edf090b8ed2f4132b data/apotheosis/affixes/armor/attribute/gravitational.json
 d96f7e9d39ac3d135cf811355a02404c7bf3a04c data/apotheosis/affixes/armor/attribute/ironforged.json
+772b76aaec955351772b4a354a63fc258d995180 data/apotheosis/affixes/armor/attribute/oxygenated.json
 ee1f4d75c1f53552c81606251ddc7486374a7144 data/apotheosis/affixes/armor/attribute/spiritual.json
 38ad3d8089657bc8cacc0b44f800e2cc4bd3cac2 data/apotheosis/affixes/armor/attribute/stalwart.json
 f5ca895df34637db629290a52efadda497409c3b data/apotheosis/affixes/armor/attribute/steel_touched.json
 59fd2230302440de4efdd9a40f2b296b0f9034a8 data/apotheosis/affixes/armor/attribute/unbound.json
 e32dc173647d0ece871f107e5be8a80094df5da7 data/apotheosis/affixes/armor/attribute/windswept.json
 7ba847370596cc30a544ab5049266cec4a326173 data/apotheosis/affixes/armor/attribute/winged.json
+f2c8219386a8e5fb1591d15aa17bb30db63072ee data/apotheosis/affixes/breaker/attribute/destructive.json
+ff7541bfb5ba89142ee4afa067945d5bbe7fd4f8 data/apotheosis/affixes/breaker/attribute/experienced.json
+abcb4e7ad588a183bf99ba512f0ca6cfbe1f568a data/apotheosis/affixes/breaker/attribute/lengthy.json
+55c076973c1007110c0cdbf3b5a484576f651782 data/apotheosis/affixes/breaker/attribute/submerged.json
+447768e19b548790446ae8d01a8a847a130a3e28 data/apotheosis/affixes/global/attribute/lucky.json

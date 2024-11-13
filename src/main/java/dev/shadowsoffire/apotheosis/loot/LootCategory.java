@@ -31,6 +31,7 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.neoforged.neoforge.common.ItemAbilities;
 
+// TODO: Real registry
 public final class LootCategory {
 
     private static final Map<String, LootCategory> BY_ID_INTERNAL = new HashMap<>();
@@ -42,8 +43,7 @@ public final class LootCategory {
     public static final Codec<Set<LootCategory>> SET_CODEC = PlaceboCodecs.setOf(CODEC);
 
     public static final LootCategory BOW = register("bow", s -> s.getItem() instanceof BowItem || s.getItem() instanceof CrossbowItem, EquipmentSlotGroup.HAND);
-    public static final LootCategory PICKAXE = register("pickaxe", s -> s.canPerformAction(ItemAbilities.PICKAXE_DIG), EquipmentSlotGroup.MAINHAND);
-    public static final LootCategory SHOVEL = register("shovel", s -> s.canPerformAction(ItemAbilities.SHOVEL_DIG), EquipmentSlotGroup.MAINHAND);
+    public static final LootCategory BREAKER = register("breaker", s -> s.canPerformAction(ItemAbilities.PICKAXE_DIG) || s.canPerformAction(ItemAbilities.SHOVEL_DIG), EquipmentSlotGroup.MAINHAND);
     public static final LootCategory HELMET = register("helmet", armorSlot(EquipmentSlot.HEAD), EquipmentSlotGroup.HEAD);
     public static final LootCategory CHESTPLATE = register("chestplate", armorSlot(EquipmentSlot.CHEST), EquipmentSlotGroup.CHEST);
     public static final LootCategory LEGGINGS = register("leggings", armorSlot(EquipmentSlot.LEGS), EquipmentSlotGroup.LEGS);
@@ -94,7 +94,7 @@ public final class LootCategory {
     }
 
     public boolean isBreaker() {
-        return this == PICKAXE || this == SHOVEL;
+        return this == BREAKER;
     }
 
     public boolean isRanged() {

@@ -224,6 +224,70 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         // TODO: We need more of these, the pool here is too limited.
 
+        // Ranged Attributes
+
+        addAttribute("ranged", "agile", ALObjects.Attributes.DRAW_SPEED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BOW)
+            .value(common, StepFunction.fromBounds(0.2F, 0.4F, 0.05F))
+            .value(uncommon, StepFunction.fromBounds(0.2F, 0.4F, 0.05F))
+            .value(rare, StepFunction.fromBounds(0.3F, 0.5F, 0.05F))
+            .value(epic, StepFunction.fromBounds(0.5F, 0.6F, 0.05F))
+            .value(mythic, StepFunction.fromBounds(0.5F, 0.65F, 0.05F)));
+
+        addAttribute("ranged", "elven", ALObjects.Attributes.ARROW_DAMAGE, Operation.ADD_MULTIPLIED_TOTAL, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BOW, LootCategory.TRIDENT)
+            .value(common, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
+            .value(uncommon, StepFunction.fromBounds(0.15F, 0.25F, 0.01F))
+            .value(rare, StepFunction.fromBounds(0.20F, 0.30F, 0.01F))
+            .value(epic, StepFunction.fromBounds(0.25F, 0.35F, 0.01F))
+            .value(mythic, StepFunction.fromBounds(0.25F, 0.40F, 0.01F)));
+
+        addAttribute("ranged", "streamlined", ALObjects.Attributes.ARROW_VELOCITY, Operation.ADD_MULTIPLIED_TOTAL, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BOW, LootCategory.TRIDENT)
+            .value(common, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
+            .value(uncommon, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
+            .value(rare, StepFunction.fromBounds(0.15F, 0.25F, 0.01F))
+            .value(epic, StepFunction.fromBounds(0.15F, 0.30F, 0.01F))
+            .value(mythic, StepFunction.fromBounds(0.15F, 0.35F, 0.01F)));
+
+        addAttribute("ranged", "windswept", Attributes.MOVEMENT_SPEED, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BOW, LootCategory.TRIDENT)
+            .value(common, StepFunction.fromBounds(0.15F, 0.25F, 0.05F))    
+            .value(uncommon, StepFunction.fromBounds(0.15F, 0.3F, 0.05F))
+            .value(rare, StepFunction.fromBounds(0.15F, 0.3F, 0.05F))
+            .value(epic, StepFunction.fromBounds(0.15F, 0.35F, 0.05F))
+            .value(mythic, StepFunction.fromBounds(0.2F, 0.4F, 0.05F)));
+
+        // Shield Attributes
+
+        addAttribute("shield", "ironforged", Attributes.ARMOR, Operation.ADD_MULTIPLIED_BASE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.SHIELD)
+            .value(common, StepFunction.fromBounds(0.10F, 0.15F, 0.01F))
+            .value(uncommon, StepFunction.fromBounds(0.10F, 0.15F, 0.01F))
+            .value(rare, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
+            .value(epic, StepFunction.fromBounds(0.15F, 0.25F, 0.01F))
+            .value(mythic, StepFunction.fromBounds(0.20F, 0.30F, 0.01F)));
+
+        addAttribute("shield", "stalwart", Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.SHIELD)
+            .value(common, StepFunction.fromBounds(0.10F, 0.20F, 0.01F))
+            .value(uncommon, StepFunction.fromBounds(0.10F, 0.20F, 0.01F))
+            .value(rare, StepFunction.fromBounds(0.20F, 0.30F, 0.01F))
+            .value(epic, StepFunction.fromBounds(0.20F, 0.30F, 0.01F))
+            .value(mythic, StepFunction.fromBounds(0.25F, 0.35F, 0.01F)));
+
+        addAttribute("shield", "steel_touched", Attributes.ARMOR_TOUGHNESS, Operation.ADD_MULTIPLIED_BASE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.SHIELD)
+            .value(rare, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
+            .value(epic, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
+            .value(mythic, StepFunction.fromBounds(0.20F, 0.30F, 0.01F)));
     }
 
     private void addAttribute(String type, String name, Holder<Attribute> attribute, Operation op, UnaryOperator<AttributeAffix.Builder> config) {

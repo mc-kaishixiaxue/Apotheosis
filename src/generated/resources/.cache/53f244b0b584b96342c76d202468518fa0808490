@@ -1,4 +1,4 @@
-// 1.21.1	2024-11-12T20:45:32.3169539	Affixes
+// 1.21.1	2024-11-12T23:51:26.9870408	Affixes
 9325383a2a8dbbc7c5f2b1e549101c0e4807d8fa data/apotheosis/affixes/armor/attribute/adamantine.json
 6055aeb625f426f08f9fea39d70b68db4f9380ac data/apotheosis/affixes/armor/attribute/aquatic.json
 8cdebcd7a023523dac547d4be29505a3801c23b7 data/apotheosis/affixes/armor/attribute/blessed.json
@@ -19,3 +19,10 @@ ff7541bfb5ba89142ee4afa067945d5bbe7fd4f8 data/apotheosis/affixes/breaker/attribu
 abcb4e7ad588a183bf99ba512f0ca6cfbe1f568a data/apotheosis/affixes/breaker/attribute/lengthy.json
 55c076973c1007110c0cdbf3b5a484576f651782 data/apotheosis/affixes/breaker/attribute/submerged.json
 447768e19b548790446ae8d01a8a847a130a3e28 data/apotheosis/affixes/global/attribute/lucky.json
+727b2445bba2074b1ddc376ae4f1b4373af44ac4 data/apotheosis/affixes/ranged/attribute/agile.json
+5c721df3441c7f9c5f5c7c2664b447dcce1cc99b data/apotheosis/affixes/ranged/attribute/elven.json
+e1bc78b2d41b8282edafd68ed4584a1be1a0c898 data/apotheosis/affixes/ranged/attribute/streamlined.json
+95ad5c91b02d8b085ea36d79f562a2090956ecef data/apotheosis/affixes/ranged/attribute/windswept.json
+67f79156c6fe32833505103bb0d700bbb0b6f35b data/apotheosis/affixes/shield/attribute/ironforged.json
+4941d280748e22e7575c1a728659ab845914c1f9 data/apotheosis/affixes/shield/attribute/stalwart.json
+123d12c3cc4041d60374d52a45b71772983bee88 data/apotheosis/affixes/shield/attribute/steel_touched.json

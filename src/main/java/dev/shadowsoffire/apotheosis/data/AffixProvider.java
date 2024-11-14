@@ -17,7 +17,6 @@ import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apothic_attributes.api.ALObjects;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import dev.shadowsoffire.placebo.util.StepFunction;
 import dev.shadowsoffire.placebo.util.data.DynamicRegistryProvider;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.Provider;
@@ -55,132 +54,140 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         addAttribute("global", "lucky", Attributes.LUCK, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.VALUES.toArray(new LootCategory[0]))
-            .value(uncommon, StepFunction.fromBounds(1F, 1.5F))
-            .value(rare, StepFunction.fromBounds(2F, 3F))
-            .value(epic, StepFunction.fromBounds(2.5F, 4F))
-            .value(mythic, StepFunction.fromBounds(3F, 6F)));
+            .step(0.25F)
+            .value(uncommon, 1F, 1.5F)
+            .value(rare, 2F, 3F)
+            .value(epic, 2.5F, 4F)
+            .value(mythic, 3F, 6F));
 
         // Armor Attributes
         addAttribute("armor", "aquatic", NeoForgeMod.SWIM_SPEED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BOOTS)
-            .value(common, StepFunction.fromBounds(0.2F, 0.3F, 0.05F))
-            .value(uncommon, StepFunction.fromBounds(0.2F, 0.3F, 0.05F))
-            .value(rare, StepFunction.fromBounds(0.3F, 0.5F, 0.05F))
-            .value(epic, StepFunction.fromBounds(0.3F, 0.5F, 0.05F))
-            .value(mythic, StepFunction.fromBounds(0.4F, 0.7F, 0.05F)));
+            .value(common, 0.2F, 0.3F)
+            .value(uncommon, 0.2F, 0.3F)
+            .value(rare, 0.3F, 0.5F)
+            .value(epic, 0.3F, 0.5F)
+            .value(mythic, 0.4F, 0.7F));
 
         addAttribute("armor", "blessed", Attributes.MAX_HEALTH, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(ARMOR)
-            .value(common, StepFunction.fromBounds(2, 4))
-            .value(uncommon, StepFunction.fromBounds(2, 5))
-            .value(rare, StepFunction.fromBounds(3, 6))
-            .value(epic, StepFunction.fromBounds(3, 8))
-            .value(mythic, StepFunction.fromBounds(5, 8)));
+            .step(0.25F)
+            .value(common, 2, 4)
+            .value(uncommon, 2, 5)
+            .value(rare, 3, 6)
+            .value(epic, 3, 8)
+            .value(mythic, 5, 8));
 
         addAttribute("armor", "elastic", Attributes.STEP_HEIGHT, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BOOTS)
-            .value(common, StepFunction.constant(0.5F))
-            .value(uncommon, StepFunction.constant(0.5F))
-            .value(rare, StepFunction.fromBounds(0.5F, 1.5F, 0.25F))
-            .value(epic, StepFunction.fromBounds(0.5F, 1.5F, 0.25F))
-            .value(mythic, StepFunction.fromBounds(1, 2, 0.25F)));
+            .step(0.25F)
+            .value(common, 0.5F)
+            .value(uncommon, 0.5F)
+            .value(rare, 0.5F, 1.5F)
+            .value(epic, 0.5F, 1.5F)
+            .value(mythic, 1, 2));
 
         addAttribute("armor", "fortunate", Attributes.LUCK, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(ARMOR)
-            .value(common, StepFunction.fromBounds(0.5F, 1.5F))
-            .value(uncommon, StepFunction.fromBounds(0.5F, 1.5F))
-            .value(rare, StepFunction.fromBounds(1.5F, 3))
-            .value(epic, StepFunction.fromBounds(1.5F, 3.5F))
-            .value(mythic, StepFunction.fromBounds(3, 5)));
+            .step(0.25F)
+            .value(common, 0.5F, 1.5F)
+            .value(uncommon, 0.5F, 1.5F)
+            .value(rare, 1.5F, 3)
+            .value(epic, 1.5F, 3.5F)
+            .value(mythic, 3, 5));
 
         addAttribute("armor", "gravitational", Attributes.GRAVITY, Operation.ADD_MULTIPLIED_TOTAL, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.CHESTPLATE)
-            .value(common, StepFunction.fromBounds(-0.1F, -0.2F, -0.05F))
-            .value(uncommon, StepFunction.fromBounds(-0.1F, -0.25F, -0.05F))
-            .value(rare, StepFunction.fromBounds(-0.15F, -0.30F, -0.05F))
-            .value(epic, StepFunction.fromBounds(-0.15F, -0.35F, -0.05F))
-            .value(mythic, StepFunction.fromBounds(-0.20F, -0.5F, -0.05F)));
+            .step(-0.01F)
+            .value(common, -0.1F, -0.2F)
+            .value(uncommon, -0.1F, -0.25F)
+            .value(rare, -0.15F, -0.30F)
+            .value(epic, -0.15F, -0.35F)
+            .value(mythic, -0.20F, -0.5F));
 
         addAttribute("armor", "ironforged", Attributes.ARMOR, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(ARMOR)
-            .value(common, StepFunction.fromBounds(1, 1.5F))
-            .value(uncommon, StepFunction.fromBounds(1, 1.5F))
-            .value(rare, StepFunction.fromBounds(1.5F, 3))
-            .value(epic, StepFunction.fromBounds(2, 5))
-            .value(mythic, StepFunction.fromBounds(4, 8)));
+            .step(0.25F)
+            .value(common, 1, 1.5F)
+            .value(uncommon, 1, 1.5F)
+            .value(rare, 1.5F, 3)
+            .value(epic, 2, 5)
+            .value(mythic, 4, 8));
 
         addAttribute("armor", "adamantine", Attributes.ARMOR, Operation.ADD_MULTIPLIED_BASE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.CHESTPLATE, LootCategory.LEGGINGS)
-            .value(rare, StepFunction.fromBounds(0.15F, 0.3F, 0.05F))
-            .value(epic, StepFunction.fromBounds(0.15F, 0.3F, 0.05F))
-            .value(mythic, StepFunction.fromBounds(0.25F, 0.4F, 0.05F)));
+            .value(rare, 0.15F, 0.3F)
+            .value(epic, 0.15F, 0.3F)
+            .value(mythic, 0.25F, 0.4F));
 
         addAttribute("armor", "spiritual", ALObjects.Attributes.HEALING_RECEIVED, Operation.ADD_MULTIPLIED_BASE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.CHESTPLATE, LootCategory.LEGGINGS)
-            .value(rare, StepFunction.fromBounds(0.10F, 0.25F, 0.05F))
-            .value(epic, StepFunction.fromBounds(0.15F, 0.30F, 0.05F))
-            .value(mythic, StepFunction.fromBounds(0.20F, 0.40F, 0.05F)));
+            .value(rare, 0.10F, 0.25F)
+            .value(epic, 0.15F, 0.30F)
+            .value(mythic, 0.20F, 0.40F));
 
         addAttribute("armor", "stalwart", Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(ARMOR)
-            .value(uncommon, StepFunction.fromBounds(0.05F, 0.1F, 0.01F))
-            .value(rare, StepFunction.fromBounds(0.05F, 0.1F, 0.01F))
-            .value(epic, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
-            .value(mythic, StepFunction.fromBounds(0.25F, 0.35F, 0.01F)));
+            .value(uncommon, 0.05F, 0.1F)
+            .value(rare, 0.05F, 0.1F)
+            .value(epic, 0.15F, 0.20F)
+            .value(mythic, 0.25F, 0.35F));
 
         addAttribute("armor", "steel_touched", Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(ARMOR)
-            .value(rare, StepFunction.constant(1))
-            .value(epic, StepFunction.fromBounds(1.5F, 3F))
-            .value(mythic, StepFunction.fromBounds(2F, 6F)));
+            .step(0.25F)
+            .value(rare, 1)
+            .value(epic, 1.5F, 3F)
+            .value(mythic, 2F, 6F));
 
         addAttribute("armor", "windswept", Attributes.MOVEMENT_SPEED, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.LEGGINGS, LootCategory.BOOTS)
-            .value(common, StepFunction.fromBounds(0.1F, 0.2F, 0.05F))
-            .value(uncommon, StepFunction.fromBounds(0.1F, 0.25F, 0.05F))
-            .value(rare, StepFunction.fromBounds(0.15F, 0.3F, 0.05F))
-            .value(epic, StepFunction.fromBounds(0.15F, 0.4F, 0.05F))
-            .value(mythic, StepFunction.fromBounds(0.2F, 0.45F, 0.05F)));
+            .value(common, 0.1F, 0.2F)
+            .value(uncommon, 0.1F, 0.25F)
+            .value(rare, 0.15F, 0.3F)
+            .value(epic, 0.15F, 0.4F)
+            .value(mythic, 0.2F, 0.45F));
 
         addAttribute("armor", "winged", ALObjects.Attributes.ELYTRA_FLIGHT, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.CHESTPLATE)
-            .value(epic, StepFunction.constant(1))
-            .value(mythic, StepFunction.constant(1)));
+            .value(epic, 1)
+            .value(mythic, 1));
 
         addAttribute("armor", "unbound", NeoForgeMod.CREATIVE_FLIGHT, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, d -> d
                 .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5))
                 .exclusiveWith(afx("armor/attribute/winged")))
             .categories(LootCategory.CHESTPLATE)
-            .value(mythic, StepFunction.constant(1)));
+            .value(mythic, 1));
 
         addAttribute("armor", "fireproof", Attributes.BURNING_TIME, Operation.ADD_MULTIPLIED_BASE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.HELMET)
-            .value(uncommon, StepFunction.fromBounds(-0.15F, -0.25F, -0.05F))
-            .value(rare, StepFunction.fromBounds(-0.20F, -0.30F, -0.05F))
-            .value(epic, StepFunction.fromBounds(-0.25F, -0.35F, -0.05F))
-            .value(mythic, StepFunction.fromBounds(-0.30F, -0.45F, -0.05F)));
+            .step(-0.05F)
+            .value(uncommon, -0.15F, -0.25F)
+            .value(rare, -0.20F, -0.30F)
+            .value(epic, -0.25F, -0.35F)
+            .value(mythic, -0.30F, -0.45F));
 
         addAttribute("armor", "oxygenated", Attributes.OXYGEN_BONUS, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.HELMET)
-            .value(uncommon, StepFunction.fromBounds(0.2F, 0.3F, 0.05F))
-            .value(rare, StepFunction.fromBounds(0.35F, 0.5F, 0.05F))
-            .value(epic, StepFunction.fromBounds(0.55F, 0.7F, 0.05F))
-            .value(mythic, StepFunction.fromBounds(0.85F, 1.25F, 0.05F)));
+            .value(uncommon, 0.2F, 0.3F)
+            .value(rare, 0.35F, 0.5F)
+            .value(epic, 0.55F, 0.7F)
+            .value(mythic, 0.85F, 1.25F));
 
         // TODO: Potentially add offensive stats as armor affixes?
 
@@ -189,38 +196,39 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         addAttribute("breaker", "destructive", ALObjects.Attributes.MINING_SPEED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BREAKER)
-            .value(common, StepFunction.fromBounds(0.15F, 0.3F, 0.01F))
-            .value(uncommon, StepFunction.fromBounds(0.15F, 0.3F, 0.01F))
-            .value(rare, StepFunction.fromBounds(0.25F, 0.5F, 0.01F))
-            .value(epic, StepFunction.fromBounds(0.25F, 0.7F, 0.01F))
-            .value(mythic, StepFunction.fromBounds(0.55F, 0.85F, 0.01F)));
+            .value(common, 0.15F, 0.3F)
+            .value(uncommon, 0.15F, 0.3F)
+            .value(rare, 0.25F, 0.5F)
+            .value(epic, 0.25F, 0.7F)
+            .value(mythic, 0.55F, 0.85F));
 
         addAttribute("breaker", "experienced", ALObjects.Attributes.EXPERIENCE_GAINED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BREAKER)
-            .value(common, StepFunction.fromBounds(0.25F, 0.4F, 0.01F))
-            .value(uncommon, StepFunction.fromBounds(0.25F, 0.4F, 0.01F))
-            .value(rare, StepFunction.fromBounds(0.35F, 0.5F, 0.01F))
-            .value(epic, StepFunction.fromBounds(0.35F, 0.6F, 0.01F))
-            .value(mythic, StepFunction.fromBounds(0.55F, 0.65F, 0.01F)));
+            .value(common, 0.25F, 0.4F)
+            .value(uncommon, 0.25F, 0.4F)
+            .value(rare, 0.35F, 0.5F)
+            .value(epic, 0.35F, 0.6F)
+            .value(mythic, 0.55F, 0.65F));
 
         addAttribute("breaker", "lengthy", Attributes.BLOCK_INTERACTION_RANGE, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BREAKER)
-            .value(common, StepFunction.fromBounds(0.5F, 1.5F, 0.25F))
-            .value(uncommon, StepFunction.fromBounds(0.5F, 1.5F, 0.25F))
-            .value(rare, StepFunction.fromBounds(1F, 2.5F, 0.25F))
-            .value(epic, StepFunction.fromBounds(1F, 2.5F, 0.25F))
-            .value(mythic, StepFunction.fromBounds(1.5F, 4, 0.25F)));
+            .step(0.25F)
+            .value(common, 0.5F, 1.5F)
+            .value(uncommon, 0.5F, 1.5F)
+            .value(rare, 1F, 2.5F)
+            .value(epic, 1F, 2.5F)
+            .value(mythic, 1.5F, 4));
 
         addAttribute("breaker", "submerged", Attributes.SUBMERGED_MINING_SPEED, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BREAKER)
-            .value(common, StepFunction.fromBounds(0.1F, 0.3F, 0.025F))
-            .value(uncommon, StepFunction.fromBounds(0.2F, 0.3F, 0.025F))
-            .value(rare, StepFunction.fromBounds(0.3F, 0.5F, 0.025F))
-            .value(epic, StepFunction.fromBounds(0.4F, 0.55F, 0.025F))
-            .value(mythic, StepFunction.fromBounds(0.5F, 0.8F, 0.025F)));
+            .value(common, 0.1F, 0.3F)
+            .value(uncommon, 0.2F, 0.3F)
+            .value(rare, 0.3F, 0.5F)
+            .value(epic, 0.4F, 0.55F)
+            .value(mythic, 0.5F, 0.8F));
 
         // TODO: We need more of these, the pool here is too limited.
 
@@ -229,65 +237,195 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         addAttribute("ranged", "agile", ALObjects.Attributes.DRAW_SPEED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BOW)
-            .value(common, StepFunction.fromBounds(0.2F, 0.4F, 0.05F))
-            .value(uncommon, StepFunction.fromBounds(0.2F, 0.4F, 0.05F))
-            .value(rare, StepFunction.fromBounds(0.3F, 0.5F, 0.05F))
-            .value(epic, StepFunction.fromBounds(0.5F, 0.6F, 0.05F))
-            .value(mythic, StepFunction.fromBounds(0.5F, 0.65F, 0.05F)));
+            .value(common, 0.2F, 0.4F)
+            .value(uncommon, 0.2F, 0.4F)
+            .value(rare, 0.3F, 0.5F)
+            .value(epic, 0.5F, 0.6F)
+            .value(mythic, 0.5F, 0.65F));
 
         addAttribute("ranged", "elven", ALObjects.Attributes.ARROW_DAMAGE, Operation.ADD_MULTIPLIED_TOTAL, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BOW, LootCategory.TRIDENT)
-            .value(common, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
-            .value(uncommon, StepFunction.fromBounds(0.15F, 0.25F, 0.01F))
-            .value(rare, StepFunction.fromBounds(0.20F, 0.30F, 0.01F))
-            .value(epic, StepFunction.fromBounds(0.25F, 0.35F, 0.01F))
-            .value(mythic, StepFunction.fromBounds(0.25F, 0.40F, 0.01F)));
+            .value(common, 0.15F, 0.20F)
+            .value(uncommon, 0.15F, 0.25F)
+            .value(rare, 0.20F, 0.30F)
+            .value(epic, 0.25F, 0.35F)
+            .value(mythic, 0.25F, 0.40F));
 
         addAttribute("ranged", "streamlined", ALObjects.Attributes.ARROW_VELOCITY, Operation.ADD_MULTIPLIED_TOTAL, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BOW, LootCategory.TRIDENT)
-            .value(common, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
-            .value(uncommon, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
-            .value(rare, StepFunction.fromBounds(0.15F, 0.25F, 0.01F))
-            .value(epic, StepFunction.fromBounds(0.15F, 0.30F, 0.01F))
-            .value(mythic, StepFunction.fromBounds(0.15F, 0.35F, 0.01F)));
+            .value(common, 0.15F, 0.20F)
+            .value(uncommon, 0.15F, 0.20F)
+            .value(rare, 0.15F, 0.25F)
+            .value(epic, 0.15F, 0.30F)
+            .value(mythic, 0.15F, 0.35F));
 
         addAttribute("ranged", "windswept", Attributes.MOVEMENT_SPEED, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BOW, LootCategory.TRIDENT)
-            .value(common, StepFunction.fromBounds(0.15F, 0.25F, 0.05F))    
-            .value(uncommon, StepFunction.fromBounds(0.15F, 0.3F, 0.05F))
-            .value(rare, StepFunction.fromBounds(0.15F, 0.3F, 0.05F))
-            .value(epic, StepFunction.fromBounds(0.15F, 0.35F, 0.05F))
-            .value(mythic, StepFunction.fromBounds(0.2F, 0.4F, 0.05F)));
+            .value(common, 0.15F, 0.25F)
+            .value(uncommon, 0.15F, 0.3F)
+            .value(rare, 0.15F, 0.3F)
+            .value(epic, 0.15F, 0.35F)
+            .value(mythic, 0.2F, 0.4F));
 
         // Shield Attributes
 
         addAttribute("shield", "ironforged", Attributes.ARMOR, Operation.ADD_MULTIPLIED_BASE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.SHIELD)
-            .value(common, StepFunction.fromBounds(0.10F, 0.15F, 0.01F))
-            .value(uncommon, StepFunction.fromBounds(0.10F, 0.15F, 0.01F))
-            .value(rare, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
-            .value(epic, StepFunction.fromBounds(0.15F, 0.25F, 0.01F))
-            .value(mythic, StepFunction.fromBounds(0.20F, 0.30F, 0.01F)));
+            .value(common, 0.10F, 0.15F)
+            .value(uncommon, 0.10F, 0.15F)
+            .value(rare, 0.15F, 0.20F)
+            .value(epic, 0.15F, 0.25F)
+            .value(mythic, 0.20F, 0.30F));
 
         addAttribute("shield", "stalwart", Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.SHIELD)
-            .value(common, StepFunction.fromBounds(0.10F, 0.20F, 0.01F))
-            .value(uncommon, StepFunction.fromBounds(0.10F, 0.20F, 0.01F))
-            .value(rare, StepFunction.fromBounds(0.20F, 0.30F, 0.01F))
-            .value(epic, StepFunction.fromBounds(0.20F, 0.30F, 0.01F))
-            .value(mythic, StepFunction.fromBounds(0.25F, 0.35F, 0.01F)));
+            .value(common, 0.10F, 0.20F)
+            .value(uncommon, 0.10F, 0.20F)
+            .value(rare, 0.20F, 0.30F)
+            .value(epic, 0.20F, 0.30F)
+            .value(mythic, 0.25F, 0.35F));
 
         addAttribute("shield", "steel_touched", Attributes.ARMOR_TOUGHNESS, Operation.ADD_MULTIPLIED_BASE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.SHIELD)
-            .value(rare, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
-            .value(epic, StepFunction.fromBounds(0.15F, 0.20F, 0.01F))
-            .value(mythic, StepFunction.fromBounds(0.20F, 0.30F, 0.01F)));
+            .value(rare, 0.15F, 0.20F)
+            .value(epic, 0.15F, 0.20F)
+            .value(mythic, 0.20F, 0.30F));
+
+        // Melee Weapon Attributes
+
+        addAttribute("melee", "vampiric", ALObjects.Attributes.LIFE_STEAL, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, d -> d
+                .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
+                .exclusiveWith(afx("armor/attribute/berserking")))
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .value(common, 0.15F, 0.20F)
+            .value(uncommon, 0.15F, 0.20F)
+            .value(rare, 0.15F, 0.25F)
+            .value(epic, 0.15F, 0.30F)
+            .value(mythic, 0.25F, 0.40F));
+
+        addAttribute("melee", "murderous", Attributes.ATTACK_DAMAGE, Operation.ADD_MULTIPLIED_BASE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .value(rare, 0.15F, 0.43F)
+            .value(epic, 0.18F, 0.48F)
+            .value(mythic, 0.25F, 0.55F));
+
+        addAttribute("melee", "violent", Attributes.ATTACK_DAMAGE, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .step(0.25F)
+            .value(common, 2F, 3F)
+            .value(uncommon, 2F, 3F)
+            .value(rare, 3F, 5F)
+            .value(epic, 4F, 6F)
+            .value(mythic, 5F, 8F));
+
+        addAttribute("melee", "piercing", ALObjects.Attributes.ARMOR_PIERCE, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .step(0.25F)
+            .value(common, 2F, 4F)
+            .value(uncommon, 2F, 4F)
+            .value(rare, 4F, 8F)
+            .value(epic, 5F, 10F)
+            .value(mythic, 5F, 12F));
+
+        addAttribute("melee", "lacerating", ALObjects.Attributes.CRIT_DAMAGE, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .value(common, 0.10F, 0.20F)
+            .value(uncommon, 0.10F, 0.20F)
+            .value(rare, 0.15F, 0.25F)
+            .value(epic, 0.15F, 0.25F)
+            .value(mythic, 0.25F, 0.40F));
+
+        addAttribute("melee", "intricate", ALObjects.Attributes.CRIT_DAMAGE, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .value(common, 0.10F, 0.20F)
+            .value(uncommon, 0.10F, 0.20F)
+            .value(rare, 0.10F, 0.25F)
+            .value(epic, 0.15F, 0.35F)
+            .value(mythic, 0.25F, 0.55F));
+
+        addAttribute("melee", "infernal", ALObjects.Attributes.FIRE_DAMAGE, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, d -> d
+                .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
+                .exclusiveWith(afx("armor/attribute/glacial")))
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .step(0.25F)
+            .value(uncommon, 2F, 4F)
+            .value(rare, 2F, 5F)
+            .value(epic, 4F, 6F)
+            .value(mythic, 4F, 10F));
+
+        addAttribute("melee", "graceful", Attributes.ATTACK_SPEED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .value(common, 0.15F, 0.25F)
+            .value(uncommon, 0.20F, 0.30F)
+            .value(rare, 0.20F, 0.35F)
+            .value(epic, 0.25F, 0.50F)
+            .value(mythic, 0.40F, 0.85F));
+
+        addAttribute("melee", "glacial", ALObjects.Attributes.COLD_DAMAGE, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, d -> d
+                .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
+                .exclusiveWith(afx("armor/attribute/infernal")))
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .step(0.25F)
+            .value(uncommon, 2F, 4F)
+            .value(rare, 2F, 5F)
+            .value(epic, 4F, 6F)
+            .value(mythic, 4F, 10F));
+
+        addAttribute("melee", "lengthy", Attributes.ENTITY_INTERACTION_RANGE, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .step(0.25F)
+            .value(common, 0.5F, 1.5F)
+            .value(uncommon, 0.5F, 1.5F)
+            .value(rare, 0.75F, 2.5F)
+            .value(epic, 1F, 2.5F)
+            .value(mythic, 1.5F, 3));
+
+        addAttribute("melee", "forceful", Attributes.ENTITY_INTERACTION_RANGE, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON)
+            .step(0.25F)
+            .value(common, 0.5F, 1F)
+            .value(uncommon, 0.5F, 1.5F)
+            .value(rare, 0.75F, 2.5F)
+            .value(epic, 1F, 2.5F)
+            .value(mythic, 1.5F, 3));
+
+        addAttribute("melee", "berserking", ALObjects.Attributes.OVERHEAL, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, d -> d
+                .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
+                .exclusiveWith(afx("armor/attribute/vampiric")))
+            .categories(LootCategory.MELEE_WEAPON)
+            .value(common, 0.10F, 0.20F)
+            .value(uncommon, 0.10F, 0.20F)
+            .value(rare, 0.15F, 0.25F)
+            .value(epic, 0.15F, 0.30F)
+            .value(mythic, 0.20F, 0.45F));
+
+        addAttribute("melee", "giant_slaying", ALObjects.Attributes.CURRENT_HP_DAMAGE, Operation.ADD_VALUE, b -> b
+            .definition(AffixType.STAT, d -> d
+                .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5)))
+            .categories(LootCategory.MELEE_WEAPON)
+            .value(epic, 0.15F, 0.25F)
+            .value(mythic, 0.15F, 0.35F));
+
+        // TODO: Armor Shred and Prot Shred affixes for melee + bow
+
     }
 
     private void addAttribute(String type, String name, Holder<Attribute> attribute, Operation op, UnaryOperator<AttributeAffix.Builder> config) {

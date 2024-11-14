@@ -1,9 +1,9 @@
 {
   "type": "apotheosis:attribute",
-  "attribute": "apothic_attributes:healing_received",
+  "attribute": "minecraft:generic.attack_damage",
   "categories": [
-    "chestplate",
-    "leggings"
+    "trident",
+    "melee_weapon"
   ],
   "definition": {
     "affix_type": "stat",
@@ -15,16 +15,16 @@
   "operation": "add_multiplied_base",
   "values": {
     "apotheosis:rare": {
-      "min": 0.1,
-      "max": 0.25
+      "min": 0.15,
+      "max": 0.43
     },
     "apotheosis:epic": {
-      "min": 0.15,
-      "max": 0.3
+      "min": 0.18,
+      "max": 0.48
     },
     "apotheosis:mythic": {
-      "min": 0.2,
-      "max": 0.4
+      "min": 0.25,
+      "max": 0.55
     }
   }
 }

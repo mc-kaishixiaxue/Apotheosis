@@ -127,10 +127,24 @@ public class AttributeAffix extends Affix {
         protected final Operation operation;
         protected final Map<LootRarity, StepFunction> values = new HashMap<>();
         protected final Set<LootCategory> categories = new HashSet<>();
+        protected float step = 0.01F;
 
         public Builder(Holder<Attribute> attribute, Operation operation) {
             this.attribute = attribute;
             this.operation = operation;
+        }
+
+        public Builder step(float step) {
+            this.step = step;
+            return this;
+        }
+
+        public Builder value(LootRarity rarity, float min, float max) {
+            return value(rarity, StepFunction.fromBounds(min, max, this.step));
+        }
+
+        public Builder value(LootRarity rarity, float value) {
+            return value(rarity, StepFunction.constant(value));
         }
 
         public Builder value(LootRarity rarity, StepFunction function) {

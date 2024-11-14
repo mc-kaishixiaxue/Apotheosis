@@ -1,30 +1,28 @@
 {
   "type": "apotheosis:attribute",
-  "attribute": "minecraft:generic.armor",
+  "attribute": "apothic_attributes:current_hp_damage",
   "categories": [
-    "chestplate",
-    "leggings"
+    "melee_weapon"
   ],
   "definition": {
     "affix_type": "stat",
     "exclusive_set": [],
     "weights": {
-      "weight": 25
+      "apotheosis": {
+        "quality": 5.0,
+        "weight": 20
+      }
     }
   },
-  "operation": "add_multiplied_base",
+  "operation": "add_value",
   "values": {
-    "apotheosis:rare": {
-      "min": 0.15,
-      "max": 0.3
-    },
     "apotheosis:epic": {
       "min": 0.15,
-      "max": 0.3
+      "max": 0.25
     },
     "apotheosis:mythic": {
-      "min": 0.25,
-      "max": 0.4
+      "min": 0.15,
+      "max": 0.35
     }
   }
 }

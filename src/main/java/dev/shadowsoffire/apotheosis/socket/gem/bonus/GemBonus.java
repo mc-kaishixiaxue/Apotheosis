@@ -259,7 +259,7 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
         register("all_stats", AllStatsBonus.CODEC);
         register("drop_transform", DropTransformBonus.CODEC);
         register("mageslayer", MageSlayerBonus.CODEC);
-        register("mob_effect", PotionBonus.CODEC);
+        register("mob_effect", MobEffectBonus.CODEC);
     }
 
     protected static <T extends GemBonus> App<RecordCodecBuilder.Mu<T>, GemClass> gemClass() {

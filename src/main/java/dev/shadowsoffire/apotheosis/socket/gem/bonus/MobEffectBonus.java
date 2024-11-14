@@ -8,7 +8,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
-import dev.shadowsoffire.apotheosis.affix.effect.PotionAffix.Target;
+import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
@@ -34,23 +34,23 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
-public class PotionBonus extends GemBonus {
+public class MobEffectBonus extends GemBonus {
 
-    public static final Codec<PotionBonus> CODEC = RecordCodecBuilder.create(inst -> inst
+    public static final Codec<MobEffectBonus> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
             gemClass(),
             BuiltInRegistries.MOB_EFFECT.holderByNameCodec().fieldOf("mob_effect").forGetter(a -> a.effect),
             Target.CODEC.fieldOf("target").forGetter(a -> a.target),
             Purity.mapCodec(EffectData.CODEC).fieldOf("values").forGetter(a -> a.values),
             Codec.BOOL.optionalFieldOf("stack_on_reapply", false).forGetter(a -> a.stackOnReapply))
-        .apply(inst, PotionBonus::new));
+        .apply(inst, MobEffectBonus::new));
 
     protected final Holder<MobEffect> effect;
     protected final Target target;
     protected final Map<Purity, EffectData> values;
     protected final boolean stackOnReapply;
 
-    public PotionBonus(GemClass gemClass, Holder<MobEffect> effect, Target target, Map<Purity, EffectData> values, boolean stackOnReapply) {
+    public MobEffectBonus(GemClass gemClass, Holder<MobEffect> effect, Target target, Map<Purity, EffectData> values, boolean stackOnReapply) {
         super(Apotheosis.loc("mob_effect"), gemClass);
         this.effect = effect;
         this.target = target;
@@ -187,7 +187,7 @@ public class PotionBonus extends GemBonus {
     }
 
     @Override
-    public PotionBonus validate() {
+    public MobEffectBonus validate() {
         Preconditions.checkNotNull(this.effect, "Null mob effect");
         Preconditions.checkNotNull(this.target, "Null target");
         Preconditions.checkNotNull(this.values, "Null values map");

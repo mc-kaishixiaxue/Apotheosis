@@ -12,7 +12,7 @@ import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.affix.AttributeAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
-import dev.shadowsoffire.apotheosis.affix.effect.PotionAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
@@ -492,8 +492,8 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
     }
 
-    private void addPotion(String type, String name, Holder<MobEffect> effect, PotionAffix.Target target, UnaryOperator<PotionAffix.Builder> config) {
-        var builder = new PotionAffix.Builder(effect, target);
+    private void addPotion(String type, String name, Holder<MobEffect> effect, MobEffectAffix.Target target, UnaryOperator<MobEffectAffix.Builder> config) {
+        var builder = new MobEffectAffix.Builder(effect, target);
         config.apply(builder);
         this.add(Apotheosis.loc(type + "/mob_effect/" + name), builder.build());
     }

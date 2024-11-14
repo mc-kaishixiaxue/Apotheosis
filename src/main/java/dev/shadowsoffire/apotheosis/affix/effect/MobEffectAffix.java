@@ -40,9 +40,9 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
-public class PotionAffix extends Affix {
+public class MobEffectAffix extends Affix {
 
-    public static final Codec<PotionAffix> CODEC = RecordCodecBuilder.create(inst -> inst
+    public static final Codec<MobEffectAffix> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
             affixDef(),
             BuiltInRegistries.MOB_EFFECT.holderByNameCodec().fieldOf("mob_effect").forGetter(a -> a.effect),
@@ -50,7 +50,7 @@ public class PotionAffix extends Affix {
             LootRarity.mapCodec(EffectData.CODEC).fieldOf("values").forGetter(a -> a.values),
             LootCategory.SET_CODEC.fieldOf("types").forGetter(a -> a.types),
             Codec.BOOL.optionalFieldOf("stack_on_reapply", false).forGetter(a -> a.stackOnReapply))
-        .apply(inst, PotionAffix::new));
+        .apply(inst, MobEffectAffix::new));
 
     protected final Holder<MobEffect> effect;
     protected final Target target;
@@ -58,7 +58,7 @@ public class PotionAffix extends Affix {
     protected final Set<LootCategory> types;
     protected final boolean stackOnReapply;
 
-    public PotionAffix(AffixDefinition def, Holder<MobEffect> effect, Target target, Map<LootRarity, EffectData> values, Set<LootCategory> types, boolean stackOnReapply) {
+    public MobEffectAffix(AffixDefinition def, Holder<MobEffect> effect, Target target, Map<LootRarity, EffectData> values, Set<LootCategory> types, boolean stackOnReapply) {
         super(def);
         this.effect = effect;
         this.target = target;
@@ -300,9 +300,9 @@ public class PotionAffix extends Affix {
             return this;
         }
 
-        public PotionAffix build() {
+        public MobEffectAffix build() {
             Preconditions.checkArgument(!values.isEmpty());
-            return new PotionAffix(this.definition, this.effect, this.target, this.values, this.categories, this.stacking);
+            return new MobEffectAffix(this.definition, this.effect, this.target, this.values, this.categories, this.stacking);
         }
     }
 

@@ -20,7 +20,7 @@ import dev.shadowsoffire.apotheosis.commands.AffixCommand;
 import dev.shadowsoffire.apotheosis.commands.BossCommand;
 import dev.shadowsoffire.apotheosis.commands.CategoryCheckCommand;
 import dev.shadowsoffire.apotheosis.commands.GemCommand;
-import dev.shadowsoffire.apotheosis.commands.LootifyCommand;
+import dev.shadowsoffire.apotheosis.commands.ReforgeCommand;
 import dev.shadowsoffire.apotheosis.commands.RarityCommand;
 import dev.shadowsoffire.apotheosis.commands.SocketCommand;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
@@ -73,7 +73,7 @@ public class AdventureEvents {
     public void cmds(ApotheosisCommandEvent e) {
         RarityCommand.register(e.getRoot());
         CategoryCheckCommand.register(e.getRoot());
-        LootifyCommand.register(e.getRoot());
+        ReforgeCommand.register(e.getRoot());
         GemCommand.register(e.getRoot());
         SocketCommand.register(e.getRoot());
         BossCommand.register(e.getRoot());

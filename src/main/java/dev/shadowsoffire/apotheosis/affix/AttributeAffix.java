@@ -1,6 +1,5 @@
 package dev.shadowsoffire.apotheosis.affix;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +12,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
+import dev.shadowsoffire.apotheosis.affix.AffixBuilder.ValuedAffixBuilder;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
@@ -122,34 +122,14 @@ public class AttributeAffix extends Affix {
         }
     }
 
-    public static class Builder extends AffixBuilder<Builder> {
+    public static class Builder extends ValuedAffixBuilder<Builder> {
         protected final Holder<Attribute> attribute;
         protected final Operation operation;
-        protected final Map<LootRarity, StepFunction> values = new HashMap<>();
         protected final Set<LootCategory> categories = new HashSet<>();
-        protected float step = 0.01F;
 
         public Builder(Holder<Attribute> attribute, Operation operation) {
             this.attribute = attribute;
             this.operation = operation;
-        }
-
-        public Builder step(float step) {
-            this.step = step;
-            return this;
-        }
-
-        public Builder value(LootRarity rarity, float min, float max) {
-            return value(rarity, StepFunction.fromBounds(min, max, this.step));
-        }
-
-        public Builder value(LootRarity rarity, float value) {
-            return value(rarity, StepFunction.constant(value));
-        }
-
-        public Builder value(LootRarity rarity, StepFunction function) {
-            this.values.put(rarity, function);
-            return this;
         }
 
         public Builder categories(LootCategory... cats) {

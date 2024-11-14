@@ -10,6 +10,8 @@ import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.AffixRegistry;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.affix.AttributeAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
@@ -426,6 +428,69 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         // TODO: Armor Shred and Prot Shred affixes for melee + bow
 
+        // Damage Reduction Affixes
+
+        addDamageReduction("armor", "blast_forged", DamageType.EXPLOSION, b -> b
+            .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.CHESTPLATE, LootCategory.LEGGINGS)
+            .value(common, 0.05F, 0.10F)
+            .value(uncommon, 0.10F, 0.15F)
+            .value(rare, 0.15F, 0.20F)
+            .value(epic, 0.15F, 0.25F)
+            .value(mythic, 0.15F, 0.35F));
+
+        addDamageReduction("armor", "blockading", DamageType.PHYSICAL, b -> b
+            .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.CHESTPLATE, LootCategory.LEGGINGS)
+            .value(common, 0.01F, 0.05F)
+            .value(uncommon, 0.01F, 0.05F)
+            .value(rare, 0.05F, 0.10F)
+            .value(epic, 0.05F, 0.10F)
+            .value(mythic, 0.05F, 0.15F));
+
+        addDamageReduction("armor", "runed", DamageType.MAGIC, b -> b
+            .definition(AffixType.ABILITY, d -> d
+                .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
+                .exclusiveWith(afx("armor/dmg_reduction/blockading")))
+            .categories(LootCategory.HELMET, LootCategory.CHESTPLATE, LootCategory.LEGGINGS, LootCategory.BOOTS)
+            .value(common, 0.01F, 0.05F)
+            .value(uncommon, 0.01F, 0.05F)
+            .value(rare, 0.05F, 0.10F)
+            .value(epic, 0.05F, 0.10F)
+            .value(mythic, 0.05F, 0.15F));
+
+        addDamageReduction("armor", "feathery", DamageType.FALL, b -> b
+            .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BOOTS)
+            .value(common, 0.05F, 0.10F)
+            .value(uncommon, 0.10F, 0.15F)
+            .value(rare, 0.15F, 0.25F)
+            .value(epic, 0.15F, 0.25F)
+            .value(mythic, 0.15F, 0.40F));
+
+        addDamageReduction("armor", "deflective", DamageType.PROJECTILE, b -> b
+            .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.HELMET)
+            .value(common, 0.05F, 0.10F)
+            .value(uncommon, 0.10F, 0.15F)
+            .value(rare, 0.15F, 0.20F)
+            .value(epic, 0.15F, 0.20F)
+            .value(mythic, 0.15F, 0.30F));
+
+        addDamageReduction("armor", "grounded", DamageType.LIGHTNING, b -> b
+            .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.HELMET, LootCategory.BOOTS)
+            .value(common, 0.05F, 0.10F)
+            .value(uncommon, 0.10F, 0.15F)
+            .value(rare, 0.15F, 0.25F)
+            .value(epic, 0.15F, 0.25F)
+            .value(mythic, 0.15F, 0.40F));
+    }
+
+    private void addDamageReduction(String type, String name, DamageReductionAffix.DamageType dType, UnaryOperator<DamageReductionAffix.Builder> config) {
+        var builder = new DamageReductionAffix.Builder(dType);
+        config.apply(builder);
+        this.add(Apotheosis.loc(type + "/dmg_reduction/" + name), builder.build());
     }
 
     private void addAttribute(String type, String name, Holder<Attribute> attribute, Operation op, UnaryOperator<AttributeAffix.Builder> config) {

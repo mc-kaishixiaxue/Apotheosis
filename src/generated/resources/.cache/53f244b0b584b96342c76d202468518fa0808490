@@ -1,4 +1,4 @@
-// 1.21.1	2024-11-13T22:12:21.1492301	Affixes
+// 1.21.1	2024-11-14T00:02:49.2802678	Affixes
 69ce8a2b8998248dc9984c75c5e4fe02f4edb5dc data/apotheosis/affixes/armor/attribute/adamantine.json
 53af88ccfc729c4a9c4d98471a5adf9534622aa8 data/apotheosis/affixes/armor/attribute/aquatic.json
 5b511f389e9c82f6053c4c819976dd5e802b0986 data/apotheosis/affixes/armor/attribute/blessed.json
@@ -14,6 +14,12 @@ e2897bc85764e7028295bf46bfbaf5f08b2feb1f data/apotheosis/affixes/armor/attribute
 59fd2230302440de4efdd9a40f2b296b0f9034a8 data/apotheosis/affixes/armor/attribute/unbound.json
 10c5837854cc2b008347827f847be2717c677ed3 data/apotheosis/affixes/armor/attribute/windswept.json
 7ba847370596cc30a544ab5049266cec4a326173 data/apotheosis/affixes/armor/attribute/winged.json
+833c83f4e611b2552e0406ac399055afca27a072 data/apotheosis/affixes/armor/dmg_reduction/blast_forged.json
+b11e68fc51af1fcb203de5959fdbf30757b8d224 data/apotheosis/affixes/armor/dmg_reduction/blockading.json
+a319bb4a6dfc8a1e5fe5ae88b0aa1fafa15ceb6e data/apotheosis/affixes/armor/dmg_reduction/deflective.json
+7ab16fbc43bfc2e3cc1df65980c58eef45c7f437 data/apotheosis/affixes/armor/dmg_reduction/feathery.json
+ab91b73c7c1bdb3416933fad0e7885f678aafc14 data/apotheosis/affixes/armor/dmg_reduction/grounded.json
+e4e4bee3001edb17e12bb31784abc96dcb46b3a8 data/apotheosis/affixes/armor/dmg_reduction/runed.json
 680d83d261ecff25b7ea53cc51822dd7df1b0d22 data/apotheosis/affixes/breaker/attribute/destructive.json
 eb6ae8a9d8bf60b18ed7ccffa182bc28069ac6e7 data/apotheosis/affixes/breaker/attribute/experienced.json
 a793f1b64a24750ca65843fecc8a7ca5b44aaf7c data/apotheosis/affixes/breaker/attribute/lengthy.json

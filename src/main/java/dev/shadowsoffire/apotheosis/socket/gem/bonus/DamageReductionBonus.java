@@ -41,7 +41,7 @@ public class DamageReductionBonus extends GemBonus {
     @Override
     public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
         float level = this.values.get(gem.purity());
-        return Component.translatable("affix.apotheosis:damage_reduction.desc", Component.translatable("misc.apotheosis." + this.type.getId()), Affix.fmt(100 * level)).withStyle(ChatFormatting.YELLOW);
+        return Component.translatable("affix.apotheosis:damage_reduction.desc", Component.translatable("misc.apotheosis." + this.type.getSerializedName()), Affix.fmt(100 * level)).withStyle(ChatFormatting.YELLOW);
     }
 
     @Override

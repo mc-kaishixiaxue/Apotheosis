@@ -56,7 +56,9 @@ public class ItemFrameGemsProcessor extends StructureProcessor {
         Player player = level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), -1, true);
         GenContext ctx = player != null ? GenContext.forPlayerAtPos(rand, player, pos) : GenContext.standalone(rand, WorldTier.HAVEN, 0, level, pos);
         ItemStack stack = GemRegistry.createRandomGemStack(ctx);
-        nbt.put("Item", stack.save(level.registryAccess()));
+        if (!stack.isEmpty()) {
+            nbt.put("Item", stack.save(level.registryAccess()));
+        }
         nbt.putInt("TileX", pos.getX());
         nbt.putInt("TileY", pos.getY());
         nbt.putInt("TileZ", pos.getZ());

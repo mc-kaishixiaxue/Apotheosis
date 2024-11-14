@@ -109,8 +109,8 @@ public class AffixHelper {
      * @param entity The newly created projectile.
      */
     public static void copyToProjectile(ItemStack stack, Entity entity) {
-        ItemAffixes affixes = stack.get(Components.AFFIXES);
-        ItemContainerContents gems = stack.get(Components.SOCKETED_GEMS);
+        ItemAffixes affixes = stack.getOrDefault(Components.AFFIXES, ItemAffixes.EMPTY);
+        ItemContainerContents gems = stack.getOrDefault(Components.SOCKETED_GEMS, ItemContainerContents.EMPTY);
         if (!affixes.isEmpty() || gems.nonEmptyStream().findAny().isPresent()) {
             entity.getPersistentData().put(SOURCE_WEAPON, stack.save(entity.level().registryAccess()));
         }

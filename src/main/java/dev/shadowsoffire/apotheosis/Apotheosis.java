@@ -152,6 +152,8 @@ public class Apotheosis {
         map.put("apotheosis:epic", 4);
         map.put("apotheosis:mythic", 5);
 
+        // Force duration above amp/cooldown for mob effect affixes
+        map.put("duration", 1);
     }
 
     @SubscribeEvent

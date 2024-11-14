@@ -13,6 +13,7 @@ import dev.shadowsoffire.apotheosis.affix.AttributeAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
@@ -20,11 +21,13 @@ import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apothic_attributes.api.ALObjects;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
+import dev.shadowsoffire.placebo.util.StepFunction;
 import dev.shadowsoffire.placebo.util.data.DynamicRegistryProvider;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -488,11 +491,47 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(epic, 0.15F, 0.25F)
             .value(mythic, 0.15F, 0.40F));
 
-        // Armor Potions
+        // Armor Mob Effects
 
+        addMobEffect("armor", "revitalizing", MobEffects.HEAL, Target.HURT_SELF, b -> b
+            .definition(AffixType.POTION, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.CHESTPLATE, LootCategory.LEGGINGS)
+            .value(epic, 1, 0, 300)
+            .value(mythic, StepFunction.constant(1), StepFunction.fromBounds(0, 1F, 0.25F), 240));
+
+        addMobEffect("armor", "nimble", MobEffects.MOVEMENT_SPEED, Target.HURT_SELF, b -> b
+            .definition(AffixType.POTION, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.LEGGINGS, LootCategory.BOOTS)
+            .value(rare, 200, 400, 0, 800)
+            .value(epic, 200, 400, StepFunction.fromBounds(0, 2, 0.25F), 700)
+            .value(mythic, 200, 400, StepFunction.fromBounds(0, 2, 0.5F), 600));
+
+        addMobEffect("armor", "bursting", ALObjects.MobEffects.VITALITY, Target.HURT_SELF, b -> b
+            .definition(AffixType.POTION, d -> d
+                .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
+                .exclusiveWith(afx("armor/mob_effect/revitalizing")))
+            .categories(LootCategory.CHESTPLATE, LootCategory.LEGGINGS)
+            .value(epic, 200, 0, 300)
+            .value(mythic, StepFunction.constant(200), StepFunction.fromBounds(0, 1F, 0.25F), 300));
+
+        addMobEffect("armor", "bolstering", MobEffects.DAMAGE_RESISTANCE, Target.HURT_SELF, b -> b
+            .definition(AffixType.POTION, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.CHESTPLATE, LootCategory.LEGGINGS)
+            .value(rare, 80, 120, 0, 240)
+            .value(epic, 80, 140, StepFunction.fromBounds(0, 1, 0.2F), 240)
+            .value(mythic, 80, 160, StepFunction.fromBounds(0, 1, 0.5F), 240));
+
+        addMobEffect("armor", "blinding", MobEffects.BLINDNESS, Target.HURT_ATTACKER, b -> b
+            .definition(AffixType.POTION, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.HELMET)
+            .value(rare, 40, 80, 0, 240)
+            .value(epic, 40, 80, 0, 240)
+            .value(mythic, 60, 100, 0, 200));
+
+        // TODO : Grievous, Regeneration, Fire Res / Water Breathing, Slow Fall (maybe), Invisibility, Weakness
     }
 
-    private void addPotion(String type, String name, Holder<MobEffect> effect, MobEffectAffix.Target target, UnaryOperator<MobEffectAffix.Builder> config) {
+    private void addMobEffect(String type, String name, Holder<MobEffect> effect, MobEffectAffix.Target target, UnaryOperator<MobEffectAffix.Builder> config) {
         var builder = new MobEffectAffix.Builder(effect, target);
         config.apply(builder);
         this.add(Apotheosis.loc(type + "/mob_effect/" + name), builder.build());

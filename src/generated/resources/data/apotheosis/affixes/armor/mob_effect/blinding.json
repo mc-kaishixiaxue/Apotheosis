@@ -1,0 +1,44 @@
+{
+  "type": "apotheosis:mob_effect",
+  "definition": {
+    "affix_type": "potion",
+    "exclusive_set": [],
+    "weights": {
+      "weight": 25
+    }
+  },
+  "mob_effect": "minecraft:blindness",
+  "target": "hurt_attacker",
+  "types": [
+    "helmet"
+  ],
+  "values": {
+    "apotheosis:rare": {
+      "duration": {
+        "min": 40.0,
+        "max": 80.0,
+        "step": 20.0
+      },
+      "amplifier": 0.0,
+      "cooldown": 240
+    },
+    "apotheosis:epic": {
+      "duration": {
+        "min": 40.0,
+        "max": 80.0,
+        "step": 20.0
+      },
+      "amplifier": 0.0,
+      "cooldown": 240
+    },
+    "apotheosis:mythic": {
+      "duration": {
+        "min": 60.0,
+        "max": 100.0,
+        "step": 20.0
+      },
+      "amplifier": 0.0,
+      "cooldown": 200
+    }
+  }
+}

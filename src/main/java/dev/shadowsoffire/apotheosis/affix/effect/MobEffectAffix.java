@@ -278,6 +278,10 @@ public class MobEffectAffix extends Affix {
             return this;
         }
 
+        public Builder value(LootRarity rarity, int duration, int amplifier, int cooldown) {
+            return value(rarity, StepFunction.constant(duration), StepFunction.constant(amplifier), cooldown);
+        }
+
         public Builder value(LootRarity rarity, int minDuration, int maxDuration, int amplifier, int cooldown) {
             return value(rarity, minDuration, maxDuration, StepFunction.constant(amplifier), cooldown);
         }

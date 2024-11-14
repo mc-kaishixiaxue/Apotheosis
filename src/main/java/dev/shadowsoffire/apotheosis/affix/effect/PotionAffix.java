@@ -1,12 +1,17 @@
 package dev.shadowsoffire.apotheosis.affix.effect;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixBuilder;
 import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
@@ -43,7 +48,6 @@ public class PotionAffix extends Affix {
             BuiltInRegistries.MOB_EFFECT.holderByNameCodec().fieldOf("mob_effect").forGetter(a -> a.effect),
             Target.CODEC.fieldOf("target").forGetter(a -> a.target),
             LootRarity.mapCodec(EffectData.CODEC).fieldOf("values").forGetter(a -> a.values),
-            Codec.INT.optionalFieldOf("cooldown", 0).forGetter(a -> a.cooldown),
             LootCategory.SET_CODEC.fieldOf("types").forGetter(a -> a.types),
             Codec.BOOL.optionalFieldOf("stack_on_reapply", false).forGetter(a -> a.stackOnReapply))
         .apply(inst, PotionAffix::new));
@@ -51,17 +55,14 @@ public class PotionAffix extends Affix {
     protected final Holder<MobEffect> effect;
     protected final Target target;
     protected final Map<LootRarity, EffectData> values;
-    @Deprecated(forRemoval = true, since = "6.3.0")
-    protected final int cooldown;
     protected final Set<LootCategory> types;
     protected final boolean stackOnReapply;
 
-    public PotionAffix(AffixDefinition def, Holder<MobEffect> effect, Target target, Map<LootRarity, EffectData> values, int cooldown, Set<LootCategory> types, boolean stackOnReapply) {
+    public PotionAffix(AffixDefinition def, Holder<MobEffect> effect, Target target, Map<LootRarity, EffectData> values, Set<LootCategory> types, boolean stackOnReapply) {
         super(def);
         this.effect = effect;
         this.target = target;
         this.values = values;
-        this.cooldown = cooldown;
         this.types = types;
         this.stackOnReapply = stackOnReapply;
     }
@@ -174,8 +175,7 @@ public class PotionAffix extends Affix {
 
     protected int getCooldown(LootRarity rarity) {
         EffectData data = this.values.get(rarity);
-        if (data.cooldown != -1) return data.cooldown;
-        return this.cooldown;
+        return data.cooldown;
     }
 
     private void applyEffect(LivingEntity target, LootRarity rarity, float level) {
@@ -223,7 +223,7 @@ public class PotionAffix extends Affix {
             .group(
                 StepFunction.CODEC.fieldOf("duration").forGetter(EffectData::duration),
                 StepFunction.CODEC.fieldOf("amplifier").forGetter(EffectData::amplifier),
-                Codec.INT.optionalFieldOf("cooldown", -1).forGetter(EffectData::cooldown))
+                Codec.INT.optionalFieldOf("cooldown", 0).forGetter(EffectData::cooldown))
             .apply(inst, EffectData::new));
 
         public MobEffectInstance build(Holder<MobEffect> effect, float level) {
@@ -256,6 +256,53 @@ public class PotionAffix extends Affix {
 
         public MutableComponent toComponent(Object... args) {
             return Component.translatable("affix.apotheosis.target." + this.id, args);
+        }
+    }
+
+    public static class Builder extends AffixBuilder<Builder> {
+        protected final Holder<MobEffect> effect;
+        protected final Target target;
+        protected final Map<LootRarity, EffectData> values = new HashMap<>();
+        protected final Set<LootCategory> categories = new HashSet<>();
+        protected boolean stacking = false;
+
+        public Builder(Holder<MobEffect> effect, Target target) {
+            this.effect = effect;
+            this.target = target;
+        }
+
+        public Builder categories(LootCategory... cats) {
+            for (LootCategory cat : cats) {
+                this.categories.add(cat);
+            }
+            return this;
+        }
+
+        public Builder value(LootRarity rarity, int minDuration, int maxDuration, int amplifier, int cooldown) {
+            return value(rarity, minDuration, maxDuration, StepFunction.constant(amplifier), cooldown);
+        }
+
+        public Builder value(LootRarity rarity, int minDuration, int maxDuration, StepFunction amplifier, int cooldown) {
+            return value(rarity, StepFunction.fromBounds(minDuration, maxDuration, 20), amplifier, cooldown);
+        }
+
+        public Builder value(LootRarity rarity, StepFunction duration, StepFunction amplifier, int cooldown) {
+            return value(rarity, new EffectData(duration, amplifier, cooldown));
+        }
+
+        public Builder value(LootRarity rarity, EffectData value) {
+            this.values.put(rarity, value);
+            return this;
+        }
+
+        public Builder stacking() {
+            this.stacking = true;
+            return this;
+        }
+
+        public PotionAffix build() {
+            Preconditions.checkArgument(!values.isEmpty());
+            return new PotionAffix(this.definition, this.effect, this.target, this.values, this.categories, this.stacking);
         }
     }
 

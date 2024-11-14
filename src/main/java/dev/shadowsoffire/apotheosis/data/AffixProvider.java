@@ -12,6 +12,7 @@ import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.affix.AttributeAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
+import dev.shadowsoffire.apotheosis.affix.effect.PotionAffix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
@@ -23,6 +24,7 @@ import dev.shadowsoffire.placebo.util.data.DynamicRegistryProvider;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -152,7 +154,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(epic, 1.5F, 3F)
             .value(mythic, 2F, 6F));
 
-        addAttribute("armor", "windswept", Attributes.MOVEMENT_SPEED, Operation.ADD_VALUE, b -> b
+        addAttribute("armor", "windswept", Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.LEGGINGS, LootCategory.BOOTS)
             .value(common, 0.1F, 0.2F)
@@ -263,7 +265,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(epic, 0.15F, 0.30F)
             .value(mythic, 0.15F, 0.35F));
 
-        addAttribute("ranged", "windswept", Attributes.MOVEMENT_SPEED, Operation.ADD_VALUE, b -> b
+        addAttribute("ranged", "windswept", Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BOW, LootCategory.TRIDENT)
             .value(common, 0.15F, 0.25F)
@@ -485,6 +487,15 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(rare, 0.15F, 0.25F)
             .value(epic, 0.15F, 0.25F)
             .value(mythic, 0.15F, 0.40F));
+
+        // Armor Potions
+
+    }
+
+    private void addPotion(String type, String name, Holder<MobEffect> effect, PotionAffix.Target target, UnaryOperator<PotionAffix.Builder> config) {
+        var builder = new PotionAffix.Builder(effect, target);
+        config.apply(builder);
+        this.add(Apotheosis.loc(type + "/mob_effect/" + name), builder.build());
     }
 
     private void addDamageReduction(String type, String name, DamageReductionAffix.DamageType dType, UnaryOperator<DamageReductionAffix.Builder> config) {

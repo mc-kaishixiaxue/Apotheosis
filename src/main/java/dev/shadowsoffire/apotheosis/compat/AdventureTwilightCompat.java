@@ -3,7 +3,6 @@ package dev.shadowsoffire.apotheosis.compat;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -98,12 +97,6 @@ public class AdventureTwilightCompat {
         }
 
         @Override
-        public GemBonus validate() {
-            Preconditions.checkArgument(!this.values.isEmpty(), "No values provided!");
-            return this;
-        }
-
-        @Override
         public boolean supports(Purity purity) {
             return this.values.containsKey(purity);
         }
@@ -162,12 +155,6 @@ public class AdventureTwilightCompat {
         @Override
         public Codec<? extends GemBonus> getCodec() {
             return CODEC;
-        }
-
-        @Override
-        public GemBonus validate() {
-            Preconditions.checkArgument(!this.values.isEmpty(), "No values provided!");
-            return this;
         }
 
         @Override
@@ -232,12 +219,6 @@ public class AdventureTwilightCompat {
         @Override
         public Codec<? extends GemBonus> getCodec() {
             return CODEC;
-        }
-
-        @Override
-        public GemBonus validate() {
-            Preconditions.checkArgument(!this.values.isEmpty(), "No values provided!");
-            return this;
         }
 
         @Override

@@ -32,7 +32,6 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -54,15 +53,6 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
         this.id = id;
         this.gemClass = gemClass;
     }
-
-    /**
-     * Validates that this gem bonus has been deserialized into a valid state.
-     * If not, throws an error.
-     *
-     * @return this
-     * @apiNote Overriders should strongly-type to their class.
-     */
-    public abstract GemBonus validate();
 
     /**
      * Checks if this bonus supports the quality.
@@ -206,11 +196,10 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
     /**
      * Fires during {@link GetEnchantmentLevelEvent} and allows for increasing enchantment levels.
      *
-     * @param inst The current gem instance.
-     * @param ench The enchantment being queried for.
-     * @return The bonus level to be added to the current enchantment.
+     * @param inst  The current gem instance.
+     * @param event The {@link GetEnchantmentLevelEvent}, which allows for modification of enchantment levels.
      */
-    public void getEnchantmentLevels(GemInstance inst, ItemEnchantments.Mutable enchantments) {}
+    public void getEnchantmentLevels(GemInstance inst, GetEnchantmentLevelEvent event) {}
 
     /**
      * Fires from {@link LootModifier#apply(ObjectArrayList, LootContext)} when this bonus is active on the tool given by the context.

@@ -21,11 +21,11 @@
     },
     {
       "type": "apotheosis:affix",
-      "affix_type": "potion"
+      "affix_type": "basic_effect"
     },
     {
       "type": "apotheosis:affix",
-      "affix_type": "potion"
+      "affix_type": "basic_effect"
     },
     {
       "type": "apotheosis:affix",

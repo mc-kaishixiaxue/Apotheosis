@@ -20,8 +20,8 @@ import dev.shadowsoffire.apotheosis.commands.AffixCommand;
 import dev.shadowsoffire.apotheosis.commands.BossCommand;
 import dev.shadowsoffire.apotheosis.commands.CategoryCheckCommand;
 import dev.shadowsoffire.apotheosis.commands.GemCommand;
-import dev.shadowsoffire.apotheosis.commands.ReforgeCommand;
 import dev.shadowsoffire.apotheosis.commands.RarityCommand;
+import dev.shadowsoffire.apotheosis.commands.ReforgeCommand;
 import dev.shadowsoffire.apotheosis.commands.SocketCommand;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootController;
@@ -269,7 +269,7 @@ public class AdventureEvents {
     public void enchLevels(GetEnchantmentLevelEvent e) {
         boolean isReentrant = reentrantLock.get().getAndSet(true);
         if (isReentrant) return;
-        SocketHelper.getGems(e.getStack()).getEnchantmentLevels(e.getEnchantments());
+        SocketHelper.getGems(e.getStack()).getEnchantmentLevels(e);
 
         AffixHelper.streamAffixes(e.getStack()).forEach(inst -> inst.getEnchantmentLevels(e));
         reentrantLock.get().set(false);

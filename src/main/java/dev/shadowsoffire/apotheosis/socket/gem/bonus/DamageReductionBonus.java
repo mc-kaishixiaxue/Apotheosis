@@ -1,9 +1,7 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
 import java.util.Map;
-import java.util.Objects;
 
-import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -51,17 +49,6 @@ public class DamageReductionBonus extends GemBonus {
             return amount * (1 - level);
         }
         return super.onHurt(gem, src, user, amount);
-    }
-
-    @Override
-    public GemBonus validate() {
-        Preconditions.checkNotNull(this.type, "Invalid DamageReductionBonus with null type");
-        Preconditions.checkNotNull(this.values, "Invalid DamageReductionBonus with null values");
-        Preconditions.checkArgument(this.values.entrySet().stream().mapMulti((entry, consumer) -> {
-            consumer.accept(entry.getKey());
-            consumer.accept(entry.getValue());
-        }).allMatch(Objects::nonNull), "Invalid DamageReductionBonus with invalid values");
-        return this;
     }
 
     @Override

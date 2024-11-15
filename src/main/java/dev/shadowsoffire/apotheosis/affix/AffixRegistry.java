@@ -7,12 +7,13 @@ import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.effect.CatalyzingAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.CleavingAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.EnchantmentAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.EnlightenedAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.ExecutingAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.FestiveAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.MagicalArrowAffix;
-import dev.shadowsoffire.apotheosis.affix.effect.OmneticAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.OmneticAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.PsychicAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.RadialAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.RetreatingAffix;
@@ -69,6 +70,7 @@ public class AffixRegistry extends TieredDynamicRegistry<Affix> {
         this.registerCodec(Apotheosis.loc("spectral"), SpectralShotAffix.CODEC);
         this.registerCodec(Apotheosis.loc("telepathic"), TelepathicAffix.CODEC);
         this.registerCodec(Apotheosis.loc("thunderstruck"), ThunderstruckAffix.CODEC);
+        this.registerCodec(Apotheosis.loc("enchantment"), EnchantmentAffix.CODEC);
     }
 
     public Multimap<AffixType, DynamicHolder<Affix>> getTypeMap() {

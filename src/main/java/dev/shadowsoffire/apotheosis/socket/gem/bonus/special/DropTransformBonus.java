@@ -3,7 +3,6 @@ package dev.shadowsoffire.apotheosis.socket.gem.bonus.special;
 import java.util.Map;
 import java.util.Optional;
 
-import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -96,16 +95,6 @@ public class DropTransformBonus extends GemBonus {
                 }
             }
         }
-    }
-
-    @Override
-    public DropTransformBonus validate() {
-        Preconditions.checkNotNull(this.values);
-        this.values.forEach((k, v) -> {
-            Preconditions.checkNotNull(k);
-            Preconditions.checkNotNull(v);
-        });
-        return this;
     }
 
     @Override

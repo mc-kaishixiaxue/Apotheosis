@@ -2,7 +2,6 @@ package dev.shadowsoffire.apotheosis.socket.gem.bonus.special;
 
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -54,16 +53,6 @@ public class LeechBlockBonus extends GemBonus {
         Data d = this.values.get(inst.purity());
         Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown, ctx.tickRate()));
         return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(d.healFactor * 100), cooldown).withStyle(ChatFormatting.YELLOW);
-    }
-
-    @Override
-    public LeechBlockBonus validate() {
-        Preconditions.checkNotNull(this.values);
-        this.values.forEach((k, v) -> {
-            Preconditions.checkNotNull(k);
-            Preconditions.checkNotNull(v);
-        });
-        return this;
     }
 
     @Override

@@ -1,4 +1,4 @@
-// 1.21.1	2024-11-14T01:04:46.1229542	Affixes
+// 1.21.1	2024-11-15T02:54:44.3200681	Affixes
 69ce8a2b8998248dc9984c75c5e4fe02f4edb5dc data/apotheosis/affixes/armor/attribute/adamantine.json
 53af88ccfc729c4a9c4d98471a5adf9534622aa8 data/apotheosis/affixes/armor/attribute/aquatic.json
 5b511f389e9c82f6053c4c819976dd5e802b0986 data/apotheosis/affixes/armor/attribute/blessed.json
@@ -20,18 +20,21 @@ a319bb4a6dfc8a1e5fe5ae88b0aa1fafa15ceb6e data/apotheosis/affixes/armor/dmg_reduc
 7ab16fbc43bfc2e3cc1df65980c58eef45c7f437 data/apotheosis/affixes/armor/dmg_reduction/feathery.json
 ab91b73c7c1bdb3416933fad0e7885f678aafc14 data/apotheosis/affixes/armor/dmg_reduction/grounded.json
 e4e4bee3001edb17e12bb31784abc96dcb46b3a8 data/apotheosis/affixes/armor/dmg_reduction/runed.json
-0868598cddfe857b6c76cc761271101ba35b3822 data/apotheosis/affixes/armor/mob_effect/blinding.json
-c4022bc7d65ba2b86f10e528527b441c8e44553c data/apotheosis/affixes/armor/mob_effect/bolstering.json
-d7132c38718dee1ced5b61826cb10c4a6895d2e1 data/apotheosis/affixes/armor/mob_effect/bursting.json
-dddd5f7c1f065d909ac8b32842c4e2c1c8f2c84f data/apotheosis/affixes/armor/mob_effect/nimble.json
-993f0fac8e1b73794784dd09ae62dd86d07acdb0 data/apotheosis/affixes/armor/mob_effect/revitalizing.json
+f12db31b6debf1e478703c902954a9bae2fabfb7 data/apotheosis/affixes/armor/mob_effect/blinding.json
+8561e7060ab1fa70e9f930d832bb05492b4c75d1 data/apotheosis/affixes/armor/mob_effect/bolstering.json
+48604817098cf4b5e5fd3e00a56a4dabe47ea976 data/apotheosis/affixes/armor/mob_effect/bursting.json
+8102113cd31615ac8f9328049e62072e31da6c6c data/apotheosis/affixes/armor/mob_effect/nimble.json
+ef92761169e36ca0b847033673c444170aa3b9f9 data/apotheosis/affixes/armor/mob_effect/revitalizing.json
 680d83d261ecff25b7ea53cc51822dd7df1b0d22 data/apotheosis/affixes/breaker/attribute/destructive.json
 eb6ae8a9d8bf60b18ed7ccffa182bc28069ac6e7 data/apotheosis/affixes/breaker/attribute/experienced.json
 a793f1b64a24750ca65843fecc8a7ca5b44aaf7c data/apotheosis/affixes/breaker/attribute/lengthy.json
 a56acb6bf681732e2f0bf0796eda5428d37e13cb data/apotheosis/affixes/breaker/attribute/submerged.json
+23221746478c1573c9ff44f801d0910e063d7bab data/apotheosis/affixes/breaker/enchantment/prosperous.json
+34cdd0816c9190e95c5a3b477a40d771c02d3216 data/apotheosis/affixes/breaker/mob_effect/spelunkers.json
+9380620c1a3ced17d53b61163de034703f2acbd2 data/apotheosis/affixes/breaker/mob_effect/swift.json
 c278ce3e89a19e3478211fd57cf67717ee41ca86 data/apotheosis/affixes/global/attribute/lucky.json
 badf7bea22127d2f8d8a8e156566271c0b1e9b9a data/apotheosis/affixes/melee/attribute/berserking.json
-21de844f10043d36ad8a5c73ba744edfcfc1678d data/apotheosis/affixes/melee/attribute/forceful.json
+28d08fc1669f7d8b0c0f419d5ed58d91cd2feb1a data/apotheosis/affixes/melee/attribute/forceful.json
 35570de60010b122703a9963d6797695446c15a7 data/apotheosis/affixes/melee/attribute/giant_slaying.json
 91526f0bf38014f66269a972de6b6ce5948de6b2 data/apotheosis/affixes/melee/attribute/glacial.json
 68e71b7d2c2dc3c32dd73057f22a253bf65991df data/apotheosis/affixes/melee/attribute/graceful.json

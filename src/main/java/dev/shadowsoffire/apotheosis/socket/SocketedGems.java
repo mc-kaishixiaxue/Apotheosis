@@ -24,11 +24,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 
 /**
  * Live instance of socketed gems on an item. The size of the list is equal to the number of sockets on the object.
@@ -102,8 +102,8 @@ public record SocketedGems(ImmutableList<GemInstance> gems) implements List<GemI
         return amount;
     }
 
-    public void getEnchantmentLevels(ItemEnchantments.Mutable enchantments) {
-        this.streamValidGems().forEach(inst -> inst.getEnchantmentLevels(enchantments));
+    public void getEnchantmentLevels(GetEnchantmentLevelEvent event) {
+        this.streamValidGems().forEach(inst -> inst.getEnchantmentLevels(event));
     }
 
     public void modifyLoot(ObjectArrayList<ItemStack> loot, LootContext ctx) {

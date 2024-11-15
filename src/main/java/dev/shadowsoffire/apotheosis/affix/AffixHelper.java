@@ -142,6 +142,7 @@ public class AffixHelper {
         return AffixRegistry.INSTANCE.getTypeMap().get(type);
     }
 
+    @Deprecated
     public static StepFunction step(float min, int steps, float step) {
         return new StepFunction(min, steps, step);
     }

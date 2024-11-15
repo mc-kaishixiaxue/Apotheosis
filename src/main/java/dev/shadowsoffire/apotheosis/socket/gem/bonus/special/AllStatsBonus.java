@@ -2,7 +2,6 @@ package dev.shadowsoffire.apotheosis.socket.gem.bonus.special;
 
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -62,12 +61,6 @@ public class AllStatsBonus extends GemBonus {
     public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
         float value = this.values.get(inst.purity());
         return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(value * 100)).withStyle(ChatFormatting.YELLOW);
-    }
-
-    @Override
-    public AllStatsBonus validate() {
-        Preconditions.checkNotNull(this.attributes.size() > 0, "An all_stats bonus must have at least one attribute.");
-        return this;
     }
 
     @Override

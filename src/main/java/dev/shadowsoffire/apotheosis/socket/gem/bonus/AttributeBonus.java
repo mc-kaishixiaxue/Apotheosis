@@ -2,7 +2,6 @@ package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -49,14 +48,6 @@ public class AttributeBonus extends GemBonus {
     @Override
     public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
         return this.attribute.value().toComponent(this.createModifier(gem), ctx.flag());
-    }
-
-    @Override
-    public AttributeBonus validate() {
-        Preconditions.checkNotNull(this.attribute, "Invalid AttributeBonus with null attribute");
-        Preconditions.checkNotNull(this.operation, "Invalid AttributeBonus with null operation");
-        Preconditions.checkNotNull(this.values, "Invalid AttributeBonus with null values");
-        return this;
     }
 
     @Override

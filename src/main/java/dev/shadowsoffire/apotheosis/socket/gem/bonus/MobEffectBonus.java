@@ -2,7 +2,6 @@ package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -184,14 +183,6 @@ public class MobEffectBonus extends GemBonus {
         public MobEffectInstance build(Holder<MobEffect> effect) {
             return new MobEffectInstance(effect, this.duration, this.amplifier);
         }
-    }
-
-    @Override
-    public MobEffectBonus validate() {
-        Preconditions.checkNotNull(this.effect, "Null mob effect");
-        Preconditions.checkNotNull(this.target, "Null target");
-        Preconditions.checkNotNull(this.values, "Null values map");
-        return this;
     }
 
 }

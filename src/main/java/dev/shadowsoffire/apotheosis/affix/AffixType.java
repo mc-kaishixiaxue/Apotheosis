@@ -12,7 +12,7 @@ import net.minecraft.util.StringRepresentable;
 
 public enum AffixType implements StringRepresentable {
     STAT("stat"),
-    POTION("potion"),
+    BASIC_EFFECT("basic_effect"),
     ABILITY("ability");
 
     public static final IntFunction<AffixType> BY_ID = ByIdMap.continuous(Enum::ordinal, values(), ByIdMap.OutOfBoundsStrategy.CLAMP);

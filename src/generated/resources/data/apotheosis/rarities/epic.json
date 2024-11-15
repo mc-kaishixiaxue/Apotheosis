@@ -17,14 +17,14 @@
     },
     {
       "type": "apotheosis:affix",
-      "affix_type": "potion"
+      "affix_type": "basic_effect"
     },
     {
       "type": "apotheosis:chanced",
       "chance": 0.25,
       "rule": {
         "type": "apotheosis:affix",
-        "affix_type": "potion"
+        "affix_type": "basic_effect"
       }
     },
     {

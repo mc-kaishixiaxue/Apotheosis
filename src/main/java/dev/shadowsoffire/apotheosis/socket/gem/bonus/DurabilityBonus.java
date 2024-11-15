@@ -2,7 +2,6 @@ package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -40,12 +39,6 @@ public class DurabilityBonus extends GemBonus {
     @Override
     public float getDurabilityBonusPercentage(GemInstance gem, ServerPlayer user) {
         return this.values.get(gem.purity());
-    }
-
-    @Override
-    public GemBonus validate() {
-        Preconditions.checkNotNull(this.values, "Invalid AttributeBonus with null values");
-        return this;
     }
 
     @Override

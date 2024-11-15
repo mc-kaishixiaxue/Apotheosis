@@ -2,7 +2,6 @@ package dev.shadowsoffire.apotheosis.socket.gem.bonus.special;
 
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -54,16 +53,6 @@ public class MageSlayerBonus extends GemBonus {
     public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
         float value = this.values.get(inst.purity());
         return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(value * 100)).withStyle(ChatFormatting.YELLOW);
-    }
-
-    @Override
-    public MageSlayerBonus validate() {
-        Preconditions.checkNotNull(this.values);
-        this.values.forEach((k, v) -> {
-            Preconditions.checkNotNull(k);
-            Preconditions.checkNotNull(v);
-        });
-        return this;
     }
 
     @Override

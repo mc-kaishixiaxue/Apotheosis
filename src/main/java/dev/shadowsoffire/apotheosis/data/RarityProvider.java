@@ -68,7 +68,7 @@ public class RarityProvider extends DynamicRegistryProvider<LootRarity> {
                 .with(WorldTier.APOTHEOSIS, 0, 0))
             .rule(new AffixLootRule(AffixType.STAT))
             .rule(new AffixLootRule(AffixType.STAT))
-            .rule(new ChancedLootRule(0.5F, new AffixLootRule(AffixType.POTION)))
+            .rule(new ChancedLootRule(0.5F, new AffixLootRule(AffixType.BASIC_EFFECT)))
             .rule(new SocketLootRule(0, 1)));
 
         // Rare - always available, but starts out with very low frequency.
@@ -83,7 +83,7 @@ public class RarityProvider extends DynamicRegistryProvider<LootRarity> {
                 .with(WorldTier.APOTHEOSIS, 100, 0))
             .rule(new AffixLootRule(AffixType.STAT))
             .rule(new AffixLootRule(AffixType.STAT))
-            .rule(new AffixLootRule(AffixType.POTION))
+            .rule(new AffixLootRule(AffixType.BASIC_EFFECT))
             .rule(new ChancedLootRule(0.35F, new AffixLootRule(AffixType.ABILITY)))
             .rule(new SocketLootRule(0, 2))
             .rule(new DurabilityLootRule(0.1F, 0.25F)));
@@ -102,8 +102,8 @@ public class RarityProvider extends DynamicRegistryProvider<LootRarity> {
             .rule(new AffixLootRule(AffixType.STAT))
             .rule(new AffixLootRule(AffixType.STAT))
             .rule(new AffixLootRule(AffixType.STAT))
-            .rule(new AffixLootRule(AffixType.POTION))
-            .rule(new ChancedLootRule(0.25F, new AffixLootRule(AffixType.POTION)))
+            .rule(new AffixLootRule(AffixType.BASIC_EFFECT))
+            .rule(new ChancedLootRule(0.25F, new AffixLootRule(AffixType.BASIC_EFFECT)))
             .rule(new AffixLootRule(AffixType.ABILITY))
             .rule(new ChancedLootRule(0.35F, new AffixLootRule(AffixType.ABILITY)))
             .rule(new SocketLootRule(1, 3))
@@ -123,8 +123,8 @@ public class RarityProvider extends DynamicRegistryProvider<LootRarity> {
             .rule(new AffixLootRule(AffixType.STAT))
             .rule(new AffixLootRule(AffixType.STAT))
             .rule(new AffixLootRule(AffixType.STAT))
-            .rule(new AffixLootRule(AffixType.POTION))
-            .rule(new AffixLootRule(AffixType.POTION))
+            .rule(new AffixLootRule(AffixType.BASIC_EFFECT))
+            .rule(new AffixLootRule(AffixType.BASIC_EFFECT))
             .rule(new AffixLootRule(AffixType.ABILITY))
             .rule(new AffixLootRule(AffixType.ABILITY))
             .rule(new SelectLootRule(0.95F, // 95% chance for 1-3 sockets, 5% chance for guaranteed 4 sockets.

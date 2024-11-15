@@ -16,7 +16,7 @@
       "chance": 0.5,
       "rule": {
         "type": "apotheosis:affix",
-        "affix_type": "potion"
+        "affix_type": "basic_effect"
       }
     },
     {

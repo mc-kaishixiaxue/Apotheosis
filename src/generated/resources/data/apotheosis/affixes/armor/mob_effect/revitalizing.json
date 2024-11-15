@@ -1,7 +1,7 @@
 {
   "type": "apotheosis:mob_effect",
   "definition": {
-    "affix_type": "potion",
+    "affix_type": "basic_effect",
     "exclusive_set": [],
     "weights": {
       "weight": 25

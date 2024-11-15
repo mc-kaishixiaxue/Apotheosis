@@ -25,13 +25,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 
 /**
  * A Gem Instance is a live copy of a Gem with all context needed to call Gem methods.<br>
@@ -230,8 +230,8 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity 
     /**
      * @see GemBonus#getEnchantmentLevels(ItemStack, LootRarity, Map)
      */
-    public void getEnchantmentLevels(ItemEnchantments.Mutable enchantments) {
-        this.ifPresent(b -> b.getEnchantmentLevels(this, enchantments));
+    public void getEnchantmentLevels(GetEnchantmentLevelEvent event) {
+        this.ifPresent(b -> b.getEnchantmentLevels(this, event));
     }
 
     /**

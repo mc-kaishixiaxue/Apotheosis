@@ -2,9 +2,7 @@ package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -60,14 +58,6 @@ public class MultiAttrBonus extends GemBonus {
             i++;
         }
         return Component.translatable(this.desc, values).withStyle(ChatFormatting.YELLOW);
-    }
-
-    @Override
-    public MultiAttrBonus validate() {
-        Set<Purity> supported = this.modifiers.get(0).values.keySet();
-        boolean allMatch = this.modifiers.stream().map(inst -> inst.values.keySet()).allMatch(supported::equals);
-        Preconditions.checkArgument(allMatch, "Each modifier in a multi_attribute bonus must support the same purity levels.");
-        return this;
     }
 
     @Override

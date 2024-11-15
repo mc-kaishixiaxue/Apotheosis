@@ -12,6 +12,8 @@ import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.affix.AttributeAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
+import dev.shadowsoffire.apotheosis.affix.effect.EnchantmentAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.EnchantmentAffix.Mode;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
@@ -25,12 +27,16 @@ import dev.shadowsoffire.placebo.util.StepFunction;
 import dev.shadowsoffire.placebo.util.data.DynamicRegistryProvider;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.core.HolderLookup.RegistryLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class AffixProvider extends DynamicRegistryProvider<Affix> {
@@ -56,6 +62,8 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         LootRarity rare = rarity("rare");
         LootRarity epic = rarity("epic");
         LootRarity mythic = rarity("mythic");
+
+        RegistryLookup<Enchantment> enchants = this.lookupProvider.join().lookup(Registries.ENCHANTMENT).get();
 
         // Generic Attributes
         addAttribute("global", "lucky", Attributes.LUCK, Operation.ADD_VALUE, b -> b
@@ -403,7 +411,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(epic, 1F, 2.5F)
             .value(mythic, 1.5F, 3));
 
-        addAttribute("melee", "forceful", Attributes.ENTITY_INTERACTION_RANGE, Operation.ADD_VALUE, b -> b
+        addAttribute("melee", "forceful", Attributes.ATTACK_KNOCKBACK, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.MELEE_WEAPON)
             .step(0.25F)
@@ -494,20 +502,21 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         // Armor Mob Effects
 
         addMobEffect("armor", "revitalizing", MobEffects.HEAL, Target.HURT_SELF, b -> b
-            .definition(AffixType.POTION, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.CHESTPLATE, LootCategory.LEGGINGS)
             .value(epic, 1, 0, 300)
             .value(mythic, StepFunction.constant(1), StepFunction.fromBounds(0, 1F, 0.25F), 240));
 
         addMobEffect("armor", "nimble", MobEffects.MOVEMENT_SPEED, Target.HURT_SELF, b -> b
-            .definition(AffixType.POTION, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.LEGGINGS, LootCategory.BOOTS)
+            .value(uncommon, 100, 300, 0, 800)
             .value(rare, 200, 400, 0, 800)
             .value(epic, 200, 400, StepFunction.fromBounds(0, 2, 0.25F), 700)
             .value(mythic, 200, 400, StepFunction.fromBounds(0, 2, 0.5F), 600));
 
         addMobEffect("armor", "bursting", ALObjects.MobEffects.VITALITY, Target.HURT_SELF, b -> b
-            .definition(AffixType.POTION, d -> d
+            .definition(AffixType.BASIC_EFFECT, d -> d
                 .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
                 .exclusiveWith(afx("armor/mob_effect/revitalizing")))
             .categories(LootCategory.CHESTPLATE, LootCategory.LEGGINGS)
@@ -515,20 +524,59 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(mythic, StepFunction.constant(200), StepFunction.fromBounds(0, 1F, 0.25F), 300));
 
         addMobEffect("armor", "bolstering", MobEffects.DAMAGE_RESISTANCE, Target.HURT_SELF, b -> b
-            .definition(AffixType.POTION, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.CHESTPLATE, LootCategory.LEGGINGS)
+            .value(uncommon, 40, 100, 0, 240)
             .value(rare, 80, 120, 0, 240)
             .value(epic, 80, 140, StepFunction.fromBounds(0, 1, 0.2F), 240)
             .value(mythic, 80, 160, StepFunction.fromBounds(0, 1, 0.5F), 240));
 
         addMobEffect("armor", "blinding", MobEffects.BLINDNESS, Target.HURT_ATTACKER, b -> b
-            .definition(AffixType.POTION, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.HELMET)
+            .value(uncommon, 40, 80, 0, 300)
             .value(rare, 40, 80, 0, 240)
             .value(epic, 40, 80, 0, 240)
             .value(mythic, 60, 100, 0, 200));
 
         // TODO : Grievous, Regeneration, Fire Res / Water Breathing, Slow Fall (maybe), Invisibility, Weakness
+
+        // TODO: Add some way to validate that all created DynamicHolder(s) are "real" after datagen.
+
+        // Breaker Mob Effects
+
+        addMobEffect("breaker", "swift", MobEffects.DIG_SPEED, Target.BREAK_SELF, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BREAKER)
+            .value(uncommon, 100, 200, 0, 600)
+            .value(rare, 200, 300, 0, 600)
+            .value(epic, 200, 360, StepFunction.fromBounds(0, 1, 0.25F), 600)
+            .value(mythic, 240, 400, StepFunction.fromBounds(0, 2, 0.25F), 600));
+
+        addMobEffect("breaker", "spelunkers", MobEffects.MOVEMENT_SPEED, Target.BREAK_SELF, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BREAKER)
+            .value(uncommon, 200, 300, 0, 600)
+            .value(rare, 300, 400, 0, 600)
+            .value(epic, 300, 460, StepFunction.fromBounds(0, 1, 0.25F), 600)
+            .value(mythic, 340, 500, StepFunction.fromBounds(0, 2, 0.25F), 600));
+
+        Holder<Enchantment> fortune = enchants.getOrThrow(Enchantments.FORTUNE);
+        addEnchantment("breaker", "prosperous", fortune, Mode.EXISTING, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BREAKER)
+            .step(0.5F)
+            .value(uncommon, 1)
+            .value(rare, 1, 2)
+            .value(epic, 1, 3)
+            .value(mythic, 2, 4));
+    }
+
+    private void addEnchantment(String type, String name, Holder<Enchantment> enchantment, EnchantmentAffix.Mode mode, UnaryOperator<EnchantmentAffix.Builder> config) {
+        var builder = new EnchantmentAffix.Builder(enchantment, mode);
+        config.apply(builder);
+        this.add(Apotheosis.loc(type + "/enchantment/" + name), builder.build());
+
     }
 
     private void addMobEffect(String type, String name, Holder<MobEffect> effect, MobEffectAffix.Target target, UnaryOperator<MobEffectAffix.Builder> config) {

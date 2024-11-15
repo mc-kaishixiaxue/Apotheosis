@@ -1,6 +1,6 @@
-// 1.21.1	2024-11-12T01:05:10.9342105	Rarities
+// 1.21.1	2024-11-15T02:45:13.8368578	Rarities
 d7afe88ac17fed136d6bad488edf2a566e5c5ad6 data/apotheosis/rarities/common.json
-0a92f6825c9984b540da4506f46e66cad3c4b263 data/apotheosis/rarities/epic.json
-1ef6b720eb6774904cb1fdc7363ea6126dae3076 data/apotheosis/rarities/mythic.json
-83a90897f9e8bd8e5c82f41d37d1efaeffc557cb data/apotheosis/rarities/rare.json
-bfed51cc5ede19e296a2537b6375e4d3121c6ea3 data/apotheosis/rarities/uncommon.json
+4b6cc6267a1959fdbaabab321f4fe011d52b5ae4 data/apotheosis/rarities/epic.json
+ccf690d4acfb50f6cbe54b77b8e29ab7dbbaa8f0 data/apotheosis/rarities/mythic.json
+edb56fd034eefd75c97650ed889f85b251369cc4 data/apotheosis/rarities/rare.json
+7e99e6db3b51653f4450986c2312e9e5561f81c8 data/apotheosis/rarities/uncommon.json

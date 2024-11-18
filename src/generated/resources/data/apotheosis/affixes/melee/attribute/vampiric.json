@@ -8,7 +8,7 @@
   "definition": {
     "affix_type": "stat",
     "exclusive_set": [
-      "apotheosis:armor/attribute/berserking"
+      "apotheosis:melee/attribute/berserking"
     ],
     "weights": {
       "weight": 25

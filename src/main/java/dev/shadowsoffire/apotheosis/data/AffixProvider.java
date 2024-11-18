@@ -317,7 +317,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         this.addAttribute("melee", "vampiric", ALObjects.Attributes.LIFE_STEAL, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, d -> d
                 .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
-                .exclusiveWith(afx("armor/attribute/berserking")))
+                .exclusiveWith(afx("melee/attribute/berserking")))
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .value(common, 0.15F, 0.20F)
             .value(uncommon, 0.15F, 0.20F)
@@ -373,7 +373,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         this.addAttribute("melee", "infernal", ALObjects.Attributes.FIRE_DAMAGE, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, d -> d
                 .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
-                .exclusiveWith(afx("armor/attribute/glacial")))
+                .exclusiveWith(afx("melee/attribute/glacial")))
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .step(0.25F)
             .value(uncommon, 2F, 4F)
@@ -393,7 +393,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         this.addAttribute("melee", "glacial", ALObjects.Attributes.COLD_DAMAGE, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, d -> d
                 .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
-                .exclusiveWith(afx("armor/attribute/infernal")))
+                .exclusiveWith(afx("melee/attribute/infernal")))
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .step(0.25F)
             .value(uncommon, 2F, 4F)
@@ -424,7 +424,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         this.addAttribute("melee", "berserking", ALObjects.Attributes.OVERHEAL, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, d -> d
                 .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
-                .exclusiveWith(afx("armor/attribute/vampiric")))
+                .exclusiveWith(afx("melee/attribute/vampiric")))
             .categories(LootCategory.MELEE_WEAPON)
             .value(common, 0.10F, 0.20F)
             .value(uncommon, 0.10F, 0.20F)
@@ -442,15 +442,6 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         // TODO: Armor Shred and Prot Shred affixes for melee + bow
 
         // Damage Reduction Affixes
-
-        this.addDamageReduction("armor", "blast_forged", DamageType.EXPLOSION, b -> b
-            .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
-            .categories(LootCategory.CHESTPLATE, LootCategory.LEGGINGS)
-            .value(common, 0.05F, 0.10F)
-            .value(uncommon, 0.10F, 0.15F)
-            .value(rare, 0.15F, 0.20F)
-            .value(epic, 0.15F, 0.25F)
-            .value(mythic, 0.15F, 0.35F));
 
         this.addDamageReduction("armor", "blockading", DamageType.PHYSICAL, b -> b
             .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
@@ -472,8 +463,19 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(epic, 0.05F, 0.10F)
             .value(mythic, 0.05F, 0.15F));
 
+        // Armor Basic Effects
+
+        this.addDamageReduction("armor", "blast_forged", DamageType.EXPLOSION, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.CHESTPLATE, LootCategory.LEGGINGS)
+            .value(common, 0.05F, 0.10F)
+            .value(uncommon, 0.10F, 0.15F)
+            .value(rare, 0.15F, 0.20F)
+            .value(epic, 0.15F, 0.25F)
+            .value(mythic, 0.15F, 0.35F));
+
         this.addDamageReduction("armor", "feathery", DamageType.FALL, b -> b
-            .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BOOTS)
             .value(common, 0.05F, 0.10F)
             .value(uncommon, 0.10F, 0.15F)
@@ -482,7 +484,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(mythic, 0.15F, 0.40F));
 
         this.addDamageReduction("armor", "deflective", DamageType.PROJECTILE, b -> b
-            .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.HELMET)
             .value(common, 0.05F, 0.10F)
             .value(uncommon, 0.10F, 0.15F)
@@ -491,15 +493,13 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(mythic, 0.15F, 0.30F));
 
         this.addDamageReduction("armor", "grounded", DamageType.LIGHTNING, b -> b
-            .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.HELMET, LootCategory.BOOTS)
             .value(common, 0.05F, 0.10F)
             .value(uncommon, 0.10F, 0.15F)
             .value(rare, 0.15F, 0.25F)
             .value(epic, 0.15F, 0.25F)
             .value(mythic, 0.15F, 0.40F));
-
-        // Armor Basic Effects
 
         this.addMobEffect("armor", "revitalizing", MobEffects.HEAL, Target.HURT_SELF, b -> b
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)

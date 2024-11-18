@@ -8,7 +8,7 @@
   "definition": {
     "affix_type": "stat",
     "exclusive_set": [
-      "apotheosis:armor/attribute/glacial"
+      "apotheosis:melee/attribute/glacial"
     ],
     "weights": {
       "weight": 25

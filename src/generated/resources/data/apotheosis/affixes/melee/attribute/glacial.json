@@ -8,7 +8,7 @@
   "definition": {
     "affix_type": "stat",
     "exclusive_set": [
-      "apotheosis:armor/attribute/infernal"
+      "apotheosis:melee/attribute/infernal"
     ],
     "weights": {
       "weight": 25

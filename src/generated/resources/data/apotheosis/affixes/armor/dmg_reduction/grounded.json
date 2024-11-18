@@ -6,7 +6,7 @@
   ],
   "damage_type": "lightning",
   "definition": {
-    "affix_type": "ability",
+    "affix_type": "basic_effect",
     "exclusive_set": [],
     "weights": {
       "weight": 25

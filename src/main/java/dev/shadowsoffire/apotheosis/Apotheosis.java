@@ -70,7 +70,7 @@ public class Apotheosis {
     public static final boolean DEBUG_WORLDGEN = "on".equalsIgnoreCase(System.getenv("apotheosis.debug_worldgen"));
     public static final boolean STAGES_LOADED = ModList.get().isLoaded("gamestages");
 
-    private static final Map<ResourceLocation, LootCategory> IMC_TYPE_OVERRIDES = new HashMap<>();
+    static final Map<ResourceLocation, LootCategory> IMC_TYPE_OVERRIDES = new HashMap<>();
 
     public static boolean isRunningInDatagen = false;
 

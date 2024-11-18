@@ -1,11 +1,16 @@
 package dev.shadowsoffire.apotheosis.affix.effect;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
+
+import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import com.google.common.base.Predicate;
 import com.mojang.serialization.Codec;
@@ -14,6 +19,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixBuilder;
 import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
@@ -254,6 +260,42 @@ public class RadialAffix extends Affix {
 
         public static void setState(Player player, RadialState state) {
             player.getPersistentData().putString("apoth.radial_state", state.name());
+        }
+    }
+
+    public static class Builder extends AffixBuilder<Builder> {
+
+        protected final Map<LootRarity, List<RadialData>> values = new HashMap<>();
+
+        public Builder value(LootRarity rarity, UnaryOperator<DataListBuilder> config) {
+            List<RadialData> list = new ArrayList<>();
+            config.apply(new DataListBuilder(){
+
+                @Override
+                public DataListBuilder radii(int x, int y, int xOffset, int yOffset) {
+                    list.add(new RadialData(x, y, xOffset, yOffset));
+                    return this;
+                }
+
+            });
+
+            values.put(rarity, list);
+            return this;
+        }
+
+        public RadialAffix build() {
+            Preconditions.checkNotNull(this.definition);
+            Preconditions.checkArgument(this.values.size() > 0);
+            return new RadialAffix(this.definition, this.values);
+        }
+
+        public static interface DataListBuilder {
+
+            DataListBuilder radii(int x, int y, int xOffset, int yOffset);
+
+            default DataListBuilder radii(int x, int y) {
+                return radii(x, y, 0, 0);
+            }
         }
     }
 

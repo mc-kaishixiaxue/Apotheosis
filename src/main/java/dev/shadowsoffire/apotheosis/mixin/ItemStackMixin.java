@@ -46,7 +46,7 @@ public class ItemStackMixin {
 
         DynamicHolder<LootRarity> rarity = AffixHelper.getRarity(ths);
         if (rarity.isBound()) {
-            Component recolored = cir.getReturnValue().copy().withStyle(s -> s.withColor(rarity.get().getColor()));
+            Component recolored = cir.getReturnValue().copy().withStyle(s -> s.withColor(rarity.get().color()));
             cir.setReturnValue(recolored);
         }
     }

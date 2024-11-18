@@ -68,9 +68,9 @@ public class RarityRegistry extends TieredDynamicRegistry<LootRarity> {
     @Override
     protected void validateItem(ResourceLocation key, LootRarity item) {
         super.validateItem(key, item);
-        Preconditions.checkNotNull(item.getColor());
+        Preconditions.checkNotNull(item.color());
         Preconditions.checkArgument(item.getMaterial() != null && item.getMaterial() != Items.AIR);
-        Preconditions.checkArgument(!item.getRules().isEmpty(), "A rarity may not have no rules!");
+        Preconditions.checkArgument(!item.rules().isEmpty(), "A rarity must provide base rules.");
     }
 
 }

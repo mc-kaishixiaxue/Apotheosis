@@ -21,13 +21,14 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class LootRarity implements CodecProvider<LootRarity>, Weighted {
+public record LootRarity(TextColor color, Holder<Item> material, TieredWeights weights, List<LootRule> rules, Map<LootCategory, List<LootRule>> overrides) implements CodecProvider<LootRarity>, Weighted {
 
     public static final Codec<LootRarity> LOAD_CODEC = RecordCodecBuilder.create(inst -> inst.group(
-        TextColor.CODEC.fieldOf("color").forGetter(LootRarity::getColor),
-        ItemStack.ITEM_NON_AIR_CODEC.fieldOf("material").forGetter(r -> r.material),
+        TextColor.CODEC.fieldOf("color").forGetter(LootRarity::color),
+        ItemStack.ITEM_NON_AIR_CODEC.fieldOf("material").forGetter(LootRarity::material),
         TieredWeights.CODEC.fieldOf("weights").forGetter(Weighted::weights),
-        LootRule.CODEC.listOf().fieldOf("rules").forGetter(LootRarity::getRules))
+        LootRule.CODEC.listOf().fieldOf("rules").forGetter(LootRarity::rules),
+        LootCategory.mapCodec(LootRule.CODEC.listOf()).fieldOf("overrides").forGetter(LootRarity::overrides))
         .apply(inst, LootRarity::new));
 
     /**
@@ -35,32 +36,11 @@ public class LootRarity implements CodecProvider<LootRarity>, Weighted {
      */
     public static final Codec<LootRarity> CODEC = Codec.lazyInitialized(() -> RarityRegistry.INSTANCE.holderCodec().xmap(DynamicHolder::get, RarityRegistry.INSTANCE::holder));
 
-    private final Holder<Item> material;
-    private final TextColor color;
-    private final TieredWeights weights;
-    private final List<LootRule> rules; // TODO: Map<LootCategory, List<LootRule>> to permit per-category rules
-
-    public LootRarity(TextColor color, Holder<Item> material, TieredWeights weights, List<LootRule> rules) {
-        this.color = color;
-        this.material = material;
-        this.weights = weights;
-        this.rules = rules;
-    }
-
     public Item getMaterial() {
         return this.material.value();
     }
 
-    public TextColor getColor() {
-        return this.color;
-    }
-
-    @Override
-    public TieredWeights weights() {
-        return this.weights;
-    }
-
-    public List<LootRule> getRules() {
+    public List<LootRule> getRules(LootCategory category) {
         return this.rules;
     }
 
@@ -74,7 +54,7 @@ public class LootRarity implements CodecProvider<LootRarity>, Weighted {
     }
 
     @Override
-    public Codec<? extends LootRarity> getCodec() {
+    public Codec<LootRarity> getCodec() {
         return LOAD_CODEC;
     }
 

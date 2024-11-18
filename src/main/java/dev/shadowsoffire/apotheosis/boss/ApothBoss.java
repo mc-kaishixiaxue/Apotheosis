@@ -239,7 +239,7 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
             if (s.ordinal() == guaranteed) entity.setDropChance(s, 2F);
             if (s.ordinal() == guaranteed) {
                 entity.setItemSlot(s, modifyBossItem(stack, name, ctx, rarity, stats, entity.level().registryAccess()));
-                entity.setCustomName(((MutableComponent) entity.getCustomName()).withStyle(Style.EMPTY.withColor(rarity.getColor())));
+                entity.setCustomName(((MutableComponent) entity.getCustomName()).withStyle(Style.EMPTY.withColor(rarity.color())));
             }
             else if (rand.nextFloat() < stats.enchantChance()) {
                 enchantBossItem(rand, stack, stats.enchLevels().secondary(), true, entity.level().registryAccess());

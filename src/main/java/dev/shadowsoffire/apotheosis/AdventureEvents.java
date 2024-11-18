@@ -23,6 +23,7 @@ import dev.shadowsoffire.apotheosis.commands.GemCommand;
 import dev.shadowsoffire.apotheosis.commands.RarityCommand;
 import dev.shadowsoffire.apotheosis.commands.ReforgeCommand;
 import dev.shadowsoffire.apotheosis.commands.SocketCommand;
+import dev.shadowsoffire.apotheosis.commands.WorldTierCommand;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
@@ -78,6 +79,7 @@ public class AdventureEvents {
         SocketCommand.register(e.getRoot());
         BossCommand.register(e.getRoot());
         AffixCommand.register(e.getRoot());
+        WorldTierCommand.register(e.getRoot());
     }
 
     @SubscribeEvent

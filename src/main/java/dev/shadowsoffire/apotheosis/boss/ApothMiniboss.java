@@ -307,7 +307,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
 
             var rarity = LootRarity.random(ctx, this.afxData.rarities());
             ApothBoss.modifyBossItem(temp, mob.hasCustomName() ? mob.getCustomName().getString() : "", ctx, rarity, this.stats, mob.level().registryAccess());
-            mob.setCustomName(((MutableComponent) mob.getCustomName()).withStyle(Style.EMPTY.withColor(rarity.getColor())));
+            mob.setCustomName(((MutableComponent) mob.getCustomName()).withStyle(Style.EMPTY.withColor(rarity.color())));
             mob.setDropChance(EquipmentSlot.values()[guaranteed], 2F);
         }
 

@@ -1,5 +1,6 @@
 package dev.shadowsoffire.apotheosis.data;
 
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.UnaryOperator;
 
@@ -7,6 +8,8 @@ import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixBuilder;
+import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixRegistry;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.affix.AttributeAffix;
@@ -14,8 +17,12 @@ import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
 import dev.shadowsoffire.apotheosis.affix.effect.EnchantmentAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.EnchantmentAffix.Mode;
+import dev.shadowsoffire.apotheosis.affix.effect.EnlightenedAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
+import dev.shadowsoffire.apotheosis.affix.effect.OmneticAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.RadialAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.TelepathicAffix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
@@ -35,6 +42,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -66,7 +74,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         RegistryLookup<Enchantment> enchants = this.lookupProvider.join().lookup(Registries.ENCHANTMENT).get();
 
         // Generic Attributes
-        this.addAttribute("global", "lucky", Attributes.LUCK, Operation.ADD_VALUE, b -> b
+        this.addAttribute("generic", "lucky", Attributes.LUCK, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.VALUES.toArray(new LootCategory[0]))
             .step(0.25F)
@@ -74,6 +82,12 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(rare, 2F, 3F)
             .value(epic, 2.5F, 4F)
             .value(mythic, 3F, 6F));
+
+        // Telepathic, which applies to a bunch of categories
+        this.add(Apotheosis.loc("generic/telepathic"),
+            new TelepathicAffix(
+                AffixDefinition.builder(AffixType.BASIC_EFFECT).weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY)).build(),
+                Set.of(rare, epic, mythic)));
 
         // Armor Attributes
         this.addAttribute("armor", "aquatic", NeoForgeMod.SWIM_SPEED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
@@ -485,7 +499,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         this.addDamageReduction("armor", "deflective", DamageType.PROJECTILE, b -> b
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
-            .categories(LootCategory.HELMET)
+            .categories(LootCategory.HELMET, LootCategory.CHESTPLATE)
             .value(common, 0.05F, 0.10F)
             .value(uncommon, 0.10F, 0.15F)
             .value(rare, 0.15F, 0.20F)
@@ -570,6 +584,34 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(rare, 1, 2)
             .value(epic, 1, 3)
             .value(mythic, 2, 4));
+
+        this.add(Apotheosis.loc("breaker/effect/omnetic"),
+            new OmneticAffix.Builder()
+                .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, 5)
+                .value(rare, "iron", Items.IRON_AXE, Items.IRON_SHOVEL, Items.IRON_PICKAXE, Items.IRON_SWORD, Items.IRON_HOE)
+                .value(epic, "diamond", Items.DIAMOND_AXE, Items.DIAMOND_SHOVEL, Items.DIAMOND_PICKAXE, Items.DIAMOND_SWORD, Items.DIAMOND_HOE)
+                .value(mythic, "netherite", Items.NETHERITE_AXE, Items.NETHERITE_SHOVEL, Items.NETHERITE_PICKAXE, Items.NETHERITE_SWORD, Items.NETHERITE_HOE)
+                .build());
+
+        this.add(Apotheosis.loc("breaker/effect/radial"),
+            new RadialAffix.Builder()
+                .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, 5)
+                .value(uncommon, c -> c
+                    .radii(1, 2, 0, 1)
+                    .radii(1, 3)
+                    .radii(3, 2, 0, 1))
+                .value(rare, c -> c
+                    .radii(1, 3)
+                    .radii(3, 2, 0, 1))
+                .value(epic, c -> c
+                    .radii(3, 2, 0, 1)
+                    .radii(3, 3)
+                    .radii(5, 3))
+                .value(mythic, c -> c
+                    .radii(3, 3)
+                    .radii(5, 3)
+                    .radii(5, 5))
+                .build());
 
         // Ranged Basic Effects
 
@@ -726,6 +768,28 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .stacking()
             .value(mythic, 100, 160, StepFunction.fromBounds(0, 1, 0.125F), 80));
 
+        // Breaker Abilities
+
+        this.add(Apotheosis.loc("breaker/ability/enlightened"),
+            AffixBuilder.simple(EnlightenedAffix::new)
+                .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+                .step(-1)
+                .value(rare, 12, 8)
+                .value(epic, 10, 5)
+                .value(mythic, 5, 0)
+                .build());
+
+        this.add(Apotheosis.loc("breaker/ability/supermassive"),
+            new RadialAffix.Builder()
+                .definition(AffixType.ABILITY, c -> c
+                    .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5))
+                    .exclusiveWith(afx("breaker/effect/radial")))
+                .value(mythic, c -> c
+                    .radii(7, 7))
+                .build());
+
+        this.futures.add(CompletableFuture.runAsync(RarityRegistry.INSTANCE::validateExistingHolders));
+        this.futures.add(CompletableFuture.runAsync(AffixRegistry.INSTANCE::validateExistingHolders));
     }
 
     private void addEnchantment(String type, String name, Holder<Enchantment> enchantment, EnchantmentAffix.Mode mode, UnaryOperator<EnchantmentAffix.Builder> config) {

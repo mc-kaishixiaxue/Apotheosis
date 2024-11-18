@@ -3,7 +3,10 @@ package dev.shadowsoffire.apotheosis.affix;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
+
+import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
@@ -27,6 +30,10 @@ public class AffixBuilder<T extends AffixBuilder<T>> {
         return (T) this;
     }
 
+    public static <T extends Affix> SimpleAffixBuilder<T> simple(BiFunction<AffixDefinition, Map<LootRarity, StepFunction>, T> factory) {
+        return new SimpleAffixBuilder<>(factory);
+    }
+
     public static class ValuedAffixBuilder<T extends ValuedAffixBuilder<T>> extends AffixBuilder<T> {
         protected final Map<LootRarity, StepFunction> values = new HashMap<>();
         protected float step = 0.01F;
@@ -47,6 +54,22 @@ public class AffixBuilder<T extends AffixBuilder<T>> {
         public T value(LootRarity rarity, StepFunction function) {
             this.values.put(rarity, function);
             return (T) this;
+        }
+
+    }
+
+    public static class SimpleAffixBuilder<T extends Affix> extends ValuedAffixBuilder<SimpleAffixBuilder<T>> {
+
+        private final BiFunction<AffixDefinition, Map<LootRarity, StepFunction>, T> factory;
+
+        public SimpleAffixBuilder(BiFunction<AffixDefinition, Map<LootRarity, StepFunction>, T> factory) {
+            this.factory = factory;
+        }
+
+        public T build() {
+            Preconditions.checkArgument(this.definition != null);
+            Preconditions.checkArgument(!this.values.isEmpty());
+            return this.factory.apply(this.definition, this.values);
         }
 
     }

@@ -1,12 +1,16 @@
 package dev.shadowsoffire.apotheosis.affix.effect;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
+
+import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixBuilder;
 import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
@@ -19,6 +23,7 @@ import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -132,6 +137,23 @@ public class OmneticAffix extends Affix {
                 Codec.STRING.fieldOf("name").forGetter(OmneticData::name),
                 Codec.list(ItemStack.CODEC).xmap(l -> l.toArray(new ItemStack[0]), Arrays::asList).fieldOf("items").forGetter(OmneticData::items))
             .apply(inst, OmneticData::new));
+
+    }
+
+    public static class Builder extends AffixBuilder<Builder> {
+
+        private final Map<LootRarity, OmneticData> values = new HashMap<>();
+
+        public Builder value(LootRarity rarity, String name, Item... items) {
+            OmneticData data = new OmneticData(name, Arrays.stream(items).map(Item::getDefaultInstance).toArray(ItemStack[]::new));
+            this.values.put(rarity, data);
+            return this;
+        }
+
+        public OmneticAffix build() {
+            Preconditions.checkNotNull(this.definition);
+            return new OmneticAffix(this.definition, this.values);
+        }
 
     }
 

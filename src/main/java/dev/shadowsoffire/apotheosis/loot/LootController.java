@@ -47,7 +47,7 @@ public class LootController {
         stack.set(Components.AFFIXES, ItemAffixes.EMPTY);
         AffixHelper.setRarity(stack, rarity);
 
-        for (LootRule rule : rarity.getRules()) {
+        for (LootRule rule : rarity.getRules(cat)) {
             rule.execute(stack, rarity, ctx);
         }
 
@@ -65,7 +65,7 @@ public class LootController {
         jRand.setSeed(ctx.rand().nextLong());
         Collections.shuffle(nameList, jRand);
         String key = nameList.size() > 1 ? "misc.apotheosis.affix_name.three" : "misc.apotheosis.affix_name.two";
-        MutableComponent name = Component.translatable(key, nameList.get(0).getName(true), "", nameList.size() > 1 ? nameList.get(1).getName(false) : "").withStyle(Style.EMPTY.withColor(rarity.getColor()));
+        MutableComponent name = Component.translatable(key, nameList.get(0).getName(true), "", nameList.size() > 1 ? nameList.get(1).getName(false) : "").withStyle(Style.EMPTY.withColor(rarity.color()));
         AffixHelper.setName(stack, name);
 
         return stack;

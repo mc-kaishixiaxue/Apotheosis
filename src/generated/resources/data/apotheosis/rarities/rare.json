@@ -2,6 +2,7 @@
   "type": "apotheosis:rarity",
   "color": "#5555FF",
   "material": "apotheosis:rare_material",
+  "overrides": {},
   "rules": [
     {
       "type": "apotheosis:affix",
@@ -20,7 +21,7 @@
       "chance": 0.35,
       "rule": {
         "type": "apotheosis:affix",
-        "affix_type": "ability"
+        "affix_type": "basic_effect"
       }
     },
     {

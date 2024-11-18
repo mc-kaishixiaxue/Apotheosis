@@ -22,6 +22,10 @@ public record AffixDefinition(AffixType type, Set<DynamicHolder<Affix>> exclusiv
         TieredWeights.CODEC.fieldOf("weights").forGetter(AffixDefinition::weights))
         .apply(inst, AffixDefinition::new)));
 
+    public static Builder builder(AffixType type) {
+        return new Builder(type);
+    }
+
     public static class Builder {
         private final AffixType type;
         private final Set<DynamicHolder<Affix>> exclusiveSet = new HashSet<>();

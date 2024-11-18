@@ -2,6 +2,7 @@
   "type": "apotheosis:rarity",
   "color": "#BB00BB",
   "material": "apotheosis:epic_material",
+  "overrides": {},
   "rules": [
     {
       "type": "apotheosis:affix",
@@ -30,14 +31,6 @@
     {
       "type": "apotheosis:affix",
       "affix_type": "ability"
-    },
-    {
-      "type": "apotheosis:chanced",
-      "chance": 0.35,
-      "rule": {
-        "type": "apotheosis:affix",
-        "affix_type": "ability"
-      }
     },
     {
       "type": "apotheosis:socket",

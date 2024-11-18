@@ -2,6 +2,7 @@
   "type": "apotheosis:rarity",
   "color": "#ED7014",
   "material": "apotheosis:mythic_material",
+  "overrides": {},
   "rules": [
     {
       "type": "apotheosis:affix",
@@ -26,10 +27,6 @@
     {
       "type": "apotheosis:affix",
       "affix_type": "basic_effect"
-    },
-    {
-      "type": "apotheosis:affix",
-      "affix_type": "ability"
     },
     {
       "type": "apotheosis:affix",

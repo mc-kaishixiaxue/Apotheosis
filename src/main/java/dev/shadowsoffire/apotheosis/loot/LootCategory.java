@@ -13,6 +13,8 @@ import javax.annotation.Nullable;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.Keyable;
+import com.mojang.serialization.MapCodec;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
@@ -204,5 +206,9 @@ public final class LootCategory {
 
     private static ItemAttributeModifiers getDefaultModifiers(ItemStack stack) {
         return stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, stack.getItem().getDefaultAttributeModifiers(stack));
+    }
+
+    public static <T> MapCodec<Map<LootCategory, T>> mapCodec(Codec<T> codec) {
+        return Codec.simpleMap(LootCategory.CODEC, codec, Keyable.forStrings(() -> VALUES.stream().map(LootCategory::getName)));
     }
 }

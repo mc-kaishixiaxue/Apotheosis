@@ -27,7 +27,7 @@
             "faces": {
                 "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#top_lit"}
             },
-            "forge_data": {
+            "neoforge_data": {
                 "block_light": 15,
                 "sky_light": 15
             }

@@ -16,7 +16,7 @@
 				"up":    {"uv": [0, 0, 6, 6], "texture": "#main"},
 				"down":  {"uv": [0, 0, 6, 6], "texture": "#main"}
 			},
-            "forge_data": {
+            "neoforge_data": {
                 "block_light": 5,
                 "sky_light": 5
             }
@@ -32,7 +32,7 @@
 				"up":    {"uv": [0, 0, 6, 6], "texture": "#main_lit"},
 				"down":  {"uv": [0, 0, 6, 6], "texture": "#main_lit"}
 			},
-            "forge_data": {
+            "neoforge_data": {
                 "block_light": 15,
                 "sky_light": 15
             }

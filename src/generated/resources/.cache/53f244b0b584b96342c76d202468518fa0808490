@@ -1,4 +1,4 @@
-// 1.21.1	2024-11-17T19:37:03.2980776	Affixes
+// 1.21.1	2024-11-17T20:38:34.1851276	Affixes
 69ce8a2b8998248dc9984c75c5e4fe02f4edb5dc data/apotheosis/affixes/armor/attribute/adamantine.json
 53af88ccfc729c4a9c4d98471a5adf9534622aa8 data/apotheosis/affixes/armor/attribute/aquatic.json
 5b511f389e9c82f6053c4c819976dd5e802b0986 data/apotheosis/affixes/armor/attribute/blessed.json
@@ -67,3 +67,8 @@ c9ed3c3279a59c00d65c9586c2836b0c4b803c7e data/apotheosis/affixes/ranged/mob_effe
 d193812d5e2557bed2e5c7b8c5bd15337ead4306 data/apotheosis/affixes/shield/attribute/ironforged.json
 24facd55139ec4765199409a986601863788672d data/apotheosis/affixes/shield/attribute/stalwart.json
 1c62e3eec9165f69d958414cf84e60f465ae7a42 data/apotheosis/affixes/shield/attribute/steel_touched.json
+0abfd0927d57e8086ee1a90472cdb3204b0a97df data/apotheosis/affixes/shield/mob_effect/devilish.json
+7f134730d157e436d84d10439fbeecddb1bed60a data/apotheosis/affixes/shield/mob_effect/galvanizing.json
+4661b13dc62352e3c85338276ff8fc74945fd36b data/apotheosis/affixes/shield/mob_effect/reinforcing.json
+8b17b31836ebead7571ea82a0ec7fed2ef2a2825 data/apotheosis/affixes/shield/mob_effect/venomous.json
+8a388cb88984de22c7cc8780ef99607f9d21ab05 data/apotheosis/affixes/shield/mob_effect/withering.json

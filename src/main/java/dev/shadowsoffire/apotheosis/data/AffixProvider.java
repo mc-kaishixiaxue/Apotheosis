@@ -685,6 +685,47 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(epic, 200, 600, StepFunction.fromBounds(0, 1, 0.25F), 600)
             .value(mythic, 200, 800, StepFunction.fromBounds(0, 2, 0.25F), 600));
 
+        // Shield basic effects
+
+        this.addMobEffect("shield", "devilish", ALObjects.MobEffects.BLEEDING, Target.BLOCK_ATTACKER, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.SHIELD)
+            .stacking()
+            .value(uncommon, 100, 100, 0, 60)
+            .value(rare, 100, 120, 0, 60)
+            .value(epic, 100, 140, StepFunction.fromBounds(0, 1, 0.125F), 60)
+            .value(mythic, 100, 140, StepFunction.fromBounds(0, 1, 0.25F), 60));
+
+        this.addMobEffect("shield", "venomous", MobEffects.MOVEMENT_SPEED, Target.BLOCK_ATTACKER, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.SHIELD)
+            .stacking()
+            .value(uncommon, 120, 120, 0, 300)
+            .value(rare, 120, 180, 0, 300)
+            .value(epic, 120, 200, StepFunction.fromBounds(0, 1, 0.25F), 300)
+            .value(mythic, 160, 240, StepFunction.fromBounds(0, 1, 0.5F), 300));
+
+        this.addMobEffect("shield", "withering", MobEffects.MOVEMENT_SPEED, Target.BLOCK_ATTACKER, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.SHIELD)
+            .value(epic, 40, 100, StepFunction.fromBounds(0, 1, 0.5F), 0)
+            .value(mythic, 60, 160, StepFunction.fromBounds(0, 2, 0.25F), 0));
+
+        this.addMobEffect("shield", "reinforcing", MobEffects.DAMAGE_RESISTANCE, Target.BLOCK_SELF, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.SHIELD)
+            .value(rare, 120, 180, 0, 200)
+            .value(epic, 120, 200, StepFunction.fromBounds(0, 1, 0.25F), 200)
+            .value(mythic, 160, 240, StepFunction.fromBounds(0, 1, 0.5F), 200));
+
+        this.addMobEffect("shield", "galvanizing", MobEffects.DAMAGE_RESISTANCE, Target.BLOCK_SELF, b -> b
+            .definition(AffixType.BASIC_EFFECT, d -> d
+                .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5))
+                .exclusiveWith(afx("shield/mob_effect/reinforcing")))
+            .categories(LootCategory.SHIELD)
+            .stacking()
+            .value(mythic, 100, 160, StepFunction.fromBounds(0, 1, 0.125F), 80));
+
     }
 
     private void addEnchantment(String type, String name, Holder<Enchantment> enchantment, EnchantmentAffix.Mode mode, UnaryOperator<EnchantmentAffix.Builder> config) {

@@ -4,7 +4,5 @@
   "material_cost": 3,
   "rarity": "apotheosis:mythic",
   "sigil_cost": 5,
-  "tables": [
-    "apotheosis:reforging_table"
-  ]
+  "tables": "apotheosis:reforging_table"
 }

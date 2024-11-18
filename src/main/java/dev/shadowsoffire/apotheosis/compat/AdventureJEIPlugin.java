@@ -3,12 +3,12 @@ package dev.shadowsoffire.apotheosis.compat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apoth.RecipeTypes;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe;
-import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe.OutputData;
 import dev.shadowsoffire.apotheosis.socket.AddSocketsRecipe;
 import dev.shadowsoffire.apotheosis.socket.ReactiveSmithingRecipe;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
@@ -61,21 +61,25 @@ public class AdventureJEIPlugin implements IModPlugin {
     @SuppressWarnings("removal")
     public void registerRecipes(IRecipeRegistration reg) {
         ItemStack gem = new ItemStack(Apoth.Items.GEM);
-        Gem gemObj = GemRegistry.INSTANCE.getValues().stream().findAny().get();
-        GemItem.setGem(gem, gemObj);
-        GemItem.setPurity(gem, Purity.PERFECT);
-        reg.addIngredientInfo(gem, VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.socketing"));
-        reg.addIngredientInfo(new ItemStack(Apoth.Items.GEM_DUST), VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.gem_crushing"));
-        reg.addIngredientInfo(new ItemStack(Apoth.Items.SIGIL_OF_UNNAMING), VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.unnaming"));
-        ApothSmithingCategory.registerExtension(AddSocketsRecipe.class, new AddSocketsExtension());
+        Optional<Gem> gemObj = GemRegistry.INSTANCE.getValues().stream().findAny();
+        if (gemObj.isPresent()) {
+            GemItem.setGem(gem, gemObj.get());
+            GemItem.setPurity(gem, Purity.PERFECT);
+            reg.addIngredientInfo(gem, VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.socketing"));
+            reg.addIngredientInfo(new ItemStack(Apoth.Items.GEM_DUST), VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.gem_crushing"));
+            reg.addIngredientInfo(new ItemStack(Apoth.Items.SIGIL_OF_UNNAMING), VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.unnaming"));
+            ApothSmithingCategory.registerExtension(AddSocketsRecipe.class, new AddSocketsExtension());
+        }
 
         reg.addRecipes(APO_SMITHING, Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType.SMITHING).stream()
             .map(RecipeHolder::value)
             .filter(ReactiveSmithingRecipe.class::isInstance)
             .toList());
 
-        List<SalvagingRecipe> salvagingRecipes = Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(RecipeTypes.SALVAGING).stream().map(RecipeHolder::value).toList();
-        salvagingRecipes.sort(Comparator.comparingInt(recipe -> recipe.getOutputs().stream().mapToInt(OutputData::max).max().orElse(0)));
+        List<SalvagingRecipe> salvagingRecipes = Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(RecipeTypes.SALVAGING).stream()
+            .sorted(Comparator.comparing(RecipeHolder::id)) // TODO: Prioritize apoth recipes so that the main affix/gem salvaging is always first.
+            .map(RecipeHolder::value)
+            .toList();
         reg.addRecipes(SALVAGING, salvagingRecipes);
 
         reg.addRecipes(PURITY_UPGRADE, Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(RecipeTypes.GEM_CUTTING).stream()

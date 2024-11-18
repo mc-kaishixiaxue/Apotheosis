@@ -36,7 +36,7 @@ config="apotheosis.mixins.json"
 [[dependencies.apotheosis]]
     modId="placebo"
     type="required"
-    versionRange="[9.5.5-beta12,)"
+    versionRange="[9.5.5-beta14,)"
     ordering="AFTER"
     side="BOTH"
 
@@ -57,6 +57,6 @@ config="apotheosis.mixins.json"
 [[dependencies.apotheosis]]
     modId="apothic_enchanting"
     type="required"
-    versionRange="[1.2.2,)"
+    versionRange="[1.2.4-beta0,)"
     ordering="AFTER"
     side="BOTH"

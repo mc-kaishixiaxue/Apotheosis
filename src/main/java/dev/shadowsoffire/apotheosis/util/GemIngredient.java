@@ -27,6 +27,9 @@ public record GemIngredient(Purity purity) implements ICustomIngredient {
 
     @Override
     public Stream<ItemStack> getItems() {
+        if (GemRegistry.INSTANCE.getValues().size() == 0) {
+            return Stream.of(ItemStack.EMPTY);
+        }
         return GemRegistry.INSTANCE.getValues().stream().map(g -> GemRegistry.createGemStack(g, this.purity));
     }
 

@@ -159,7 +159,7 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
             altText.add(Component.translatable("text.apotheosis.upgraded_form").withStyle(ChatFormatting.GOLD, ChatFormatting.UNDERLINE));
             altText.add(Component.translatable("%s", upgraded.getAugmentingText(this.tooltipCtx)).withStyle(ChatFormatting.YELLOW));
 
-            this.drawOnLeft(gfx, altText, top + 33); // maxWidth=150
+            this.drawOnLeft(gfx, altText, top + 33, 150);
         }
     }
 
@@ -273,7 +273,7 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
 
                 this.alternativePage = 0;
                 this.alternativePages = pages;
-                this.alternativeXPos = this.ths().getGuiLeft() - 16 - maxWidth;
+                this.alternativeXPos = this.getGuiLeft() - 16 - maxWidth;
                 this.alternativeWidth = maxWidth;
             }
 
@@ -293,7 +293,7 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
         return this.list == null ? DropDownList.NO_SELECTION : this.list.getSelected();
     }
 
-    public static void handleRerollResult(DynamicHolder<? extends Affix> newAffix) {
+    public static void handleRerollResult(DynamicHolder<Affix> newAffix) {
         if (Minecraft.getInstance().screen instanceof AugmentingScreen scn) {
             scn.updateCachedState();
             for (int i = 0; i < scn.currentItemAffixes.size(); i++) {
@@ -304,6 +304,21 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
                 }
             }
         }
+    }
+
+    /**
+     * Renders a list of text as a tooltip attached to the left edge of the currently open container screen.
+     */
+    void drawOnLeft(GuiGraphics gfx, List<Component> list, int y, int maxWidth) {
+        if (list.isEmpty()) {
+            return;
+        }
+
+        List<FormattedText> split = new ArrayList<>();
+        list.forEach(comp -> split.addAll(this.font.getSplitter().splitLines(comp, maxWidth, comp.getStyle())));
+
+        int xPos = this.getGuiLeft() - 16 - split.stream().map(this.font::width).max(Integer::compare).get();
+        gfx.renderComponentTooltip(this.font, split, xPos, y, ItemStack.EMPTY);
     }
 
     public class AffixDropList extends DropDownList<AffixInstance> {
@@ -330,7 +345,7 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
                 list.add(inst.getName(true).copy().withStyle(Style.EMPTY.withColor(0xFFFF80).withUnderlined(true)));
                 list.add(Component.translatable("%s", inst.getAugmentingText(AugmentingScreen.this.tooltipCtx)).withStyle(ChatFormatting.YELLOW));
 
-                AugmentingScreen.this.drawOnLeft(gfx, list, AugmentingScreen.this.getGuiTop() + 33); // maxWidth=150
+                AugmentingScreen.this.drawOnLeft(gfx, list, AugmentingScreen.this.getGuiTop() + 33, 150);
             }
 
             gfx.blit(TEXTURE, this.getX() + this.width - 15, this.getY(), 123 + (this.isOpen ? 15 : 0), 239, 15, 14, 256, 307);

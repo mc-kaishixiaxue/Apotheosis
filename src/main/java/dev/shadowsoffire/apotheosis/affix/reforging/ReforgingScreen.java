@@ -110,8 +110,8 @@ public class ReforgingScreen extends AdventureContainerScreen<ReforgingMenu> {
         }
 
         if (this.hasMainItem) {
-            float delta = Mth.clamp((MAX_ANIMATION_TIME - this.animationTick - partials) / MAX_ANIMATION_TIME, 0, 1);
-            int frame = Mth.lerpInt(delta, 0, 20);
+            float delta = Mth.clamp((MAX_ANIMATION_TIME - (float) this.animationTick) / MAX_ANIMATION_TIME, 0, 1);
+            int frame = Mth.lerpInt(delta, 0, 19);
             gfx.blit(ANIMATED_TEXTURE, left + 26, top + 15, 127, 112, 0, frame * 112, 127, 112, 127, 2240);
         }
 

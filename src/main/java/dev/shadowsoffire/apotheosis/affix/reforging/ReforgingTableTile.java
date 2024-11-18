@@ -53,11 +53,12 @@ public class ReforgingTableTile extends BlockEntity implements TickingBlockEntit
     }
 
     @Nullable
+    @SuppressWarnings("deprecation")
     public ReforgingRecipe getRecipeFor(LootRarity rarity) {
         return this.level.getRecipeManager().getAllRecipesFor(RecipeTypes.REFORGING)
             .stream()
             .map(RecipeHolder::value)
-            .filter(r -> r.rarity().get() == rarity && r.tables().contains(this.getBlockState().getBlock()))
+            .filter(r -> r.rarity().get() == rarity && r.tables().contains(this.getBlockState().getBlock().builtInRegistryHolder()))
             .findFirst()
             .orElse(null);
     }

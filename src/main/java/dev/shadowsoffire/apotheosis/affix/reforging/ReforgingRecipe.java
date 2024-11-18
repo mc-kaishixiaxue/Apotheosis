@@ -1,8 +1,5 @@
 package dev.shadowsoffire.apotheosis.affix.reforging;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -10,10 +7,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.shadowsoffire.apotheosis.Apoth.RecipeTypes;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
-import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.core.HolderLookup.Provider;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -26,14 +23,14 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
-public record ReforgingRecipe(DynamicHolder<LootRarity> rarity, int matCost, int sigilCost, int levelCost, Set<Block> tables) implements Recipe<RecipeInput> {
+public record ReforgingRecipe(DynamicHolder<LootRarity> rarity, int matCost, int sigilCost, int levelCost, HolderSet<Block> tables) implements Recipe<RecipeInput> {
 
     public static final MapCodec<ReforgingRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
         RarityRegistry.INSTANCE.holderCodec().fieldOf("rarity").forGetter(ReforgingRecipe::rarity),
         Codec.intRange(1, 99).fieldOf("material_cost").forGetter(ReforgingRecipe::matCost),
         Codec.intRange(0, 99).fieldOf("sigil_cost").forGetter(ReforgingRecipe::sigilCost),
         Codec.intRange(0, 65536).fieldOf("level_cost").forGetter(ReforgingRecipe::levelCost),
-        PlaceboCodecs.setOf(BuiltInRegistries.BLOCK.byNameCodec()).fieldOf("tables").forGetter(ReforgingRecipe::tables))
+        RegistryCodecs.homogeneousList(Registries.BLOCK).fieldOf("tables").forGetter(ReforgingRecipe::tables))
         .apply(inst, ReforgingRecipe::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ReforgingRecipe> STREAM_CODEC = StreamCodec.composite(
@@ -41,7 +38,7 @@ public record ReforgingRecipe(DynamicHolder<LootRarity> rarity, int matCost, int
         ByteBufCodecs.VAR_INT, ReforgingRecipe::matCost,
         ByteBufCodecs.VAR_INT, ReforgingRecipe::sigilCost,
         ByteBufCodecs.VAR_INT, ReforgingRecipe::levelCost,
-        ByteBufCodecs.collection(HashSet::new, ByteBufCodecs.registry(Registries.BLOCK)), ReforgingRecipe::tables,
+        ByteBufCodecs.holderSet(Registries.BLOCK), ReforgingRecipe::tables,
         ReforgingRecipe::new);
 
     @Override

@@ -15,6 +15,7 @@ import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.AffixBuilder.ValuedAffixBuilder;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
+import dev.shadowsoffire.apothic_attributes.client.AttributesGui;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.util.StepFunction;
 import net.minecraft.ChatFormatting;
@@ -71,13 +72,14 @@ public class AttributeAffix extends Affix {
         Attribute attr = this.attribute.value();
 
         MutableComponent comp;
-        MutableComponent valueComp = attr.toValueComponent(this.operation, value < 0 ? -value : value, ctx.flag());
+        MutableComponent valueComp = attr.toValueComponent(this.operation, value, ctx.flag());
+        ChatFormatting color = attr.getStyle(value > 0);
 
         if (value > 0.0D) {
-            comp = Component.translatable("neoforge.modifier.plus", valueComp, Component.translatable(attr.getDescriptionId())).withStyle(ChatFormatting.BLUE);
+            comp = Component.translatable("neoforge.modifier.plus", valueComp, Component.translatable(attr.getDescriptionId())).withStyle(color);
         }
         else {
-            comp = Component.translatable("neoforge.modifier.take", valueComp, Component.translatable(attr.getDescriptionId())).withStyle(ChatFormatting.RED);
+            comp = Component.translatable("neoforge.modifier.take", valueComp, Component.translatable(attr.getDescriptionId())).withStyle(color);
         }
 
         if (modif.valueFactory.get(0) != modif.valueFactory.get(1)) {

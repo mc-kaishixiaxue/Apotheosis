@@ -205,7 +205,7 @@ public class Apoth {
     public static final class Tiles {
         public static final BlockEntityType<BossSpawnerTile> BOSS_SPAWNER = R.tickingBlockEntity("boss_spawner", BossSpawnerTile::new, TickSide.SERVER, Blocks.BOSS_SPAWNER);
         public static final BlockEntityType<ReforgingTableTile> REFORGING_TABLE = R.tickingBlockEntity("reforging_table", ReforgingTableTile::new, TickSide.CLIENT, Blocks.REFORGING_TABLE, Blocks.SIMPLE_REFORGING_TABLE);
-        public static final BlockEntityType<SalvagingTableTile> SALVAGING_TABLE = R.blockEntity("salvaging_table", SalvagingTableTile::new, Blocks.BOSS_SPAWNER);
+        public static final BlockEntityType<SalvagingTableTile> SALVAGING_TABLE = R.blockEntity("salvaging_table", SalvagingTableTile::new, Blocks.SALVAGING_TABLE);
         public static final BlockEntityType<AugmentingTableTile> AUGMENTING_TABLE = R.tickingBlockEntity("augmenting_table", AugmentingTableTile::new, TickSide.CLIENT, Blocks.AUGMENTING_TABLE);
 
         private static void bootstrap() {}

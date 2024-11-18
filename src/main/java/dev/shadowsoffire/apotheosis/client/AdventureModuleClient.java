@@ -166,6 +166,8 @@ public class AdventureModuleClient {
     }
 
     public static void checkAffixLangKeys() {
+        if (Apotheosis.isRunningInDatagen) return; // TODO: Load the lang file, somehow
+
         StringBuilder sb = new StringBuilder("Missing Affix Lang Keys:\n");
         boolean any = false;
         String json = "\"%s\": \"\",";

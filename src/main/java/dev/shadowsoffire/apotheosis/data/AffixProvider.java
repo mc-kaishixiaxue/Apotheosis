@@ -631,10 +631,60 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .categories(LootCategory.BOW, LootCategory.TRIDENT)
             .stacking()
             .value(mythic, 100, 200, 1, 40));
-        
-        
-        
+
         // Melee Basic Effects
+
+        addMobEffect("melee", "bloodletting", ALObjects.MobEffects.BLEEDING, Target.ATTACK_TARGET, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .stacking()
+            .value(uncommon, 100, 100, 0, 80)
+            .value(rare, 100, 120, 0, 80)
+            .value(epic, 100, 120, 0, 80)
+            .value(mythic, 100, 120, StepFunction.fromBounds(0, 1, 0.125F), 80));
+
+        addMobEffect("melee", "caustic", ALObjects.MobEffects.SUNDERING, Target.ATTACK_TARGET, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .stacking()
+            .value(rare, 100, 200, 0, 30)
+            .value(epic, 100, 200, StepFunction.fromBounds(0, 1, 0.125F), 300)
+            .value(mythic, 200, 400, StepFunction.fromBounds(0, 1, 0.25F), 300));
+
+        addMobEffect("melee", "sophisticated", ALObjects.MobEffects.KNOWLEDGE, Target.ATTACK_SELF, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .stacking()
+            .value(uncommon, 400, 600, 0, 1200)
+            .value(rare, 400, 800, 0, 1200)
+            .value(epic, 400, 800, StepFunction.fromBounds(0, 1, 0.25F), 1200)
+            .value(mythic, 400, 1000, StepFunction.fromBounds(0, 2, 0.25F), 1200));
+
+        addMobEffect("melee", "omniscient", ALObjects.MobEffects.KNOWLEDGE, Target.ATTACK_SELF, b -> b
+            .definition(AffixType.BASIC_EFFECT, d -> d
+                .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5))
+                .exclusiveWith(afx("melee/mob_effect/sophisticated")))
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .stacking()
+            .value(mythic, 100, 160, StepFunction.fromBounds(0, 1, 0.125F), 80));
+
+        addMobEffect("melee", "weakening", MobEffects.WEAKNESS, Target.ATTACK_TARGET, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .value(uncommon, 80, 140, 0, 300)
+            .value(rare, 80, 160, 0, 300)
+            .value(epic, 80, 180, StepFunction.fromBounds(0, 1, 0.25F), 300)
+            .value(mythic, 80, 200, StepFunction.fromBounds(0, 2, 0.125F), 300));
+
+        addMobEffect("melee", "elusive", MobEffects.MOVEMENT_SPEED, Target.ATTACK_SELF, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
+            .stacking()
+            .value(uncommon, 200, 400, 0, 600)
+            .value(rare, 200, 600, 0, 600)
+            .value(epic, 200, 600, StepFunction.fromBounds(0, 1, 0.25F), 600)
+            .value(mythic, 200, 800, StepFunction.fromBounds(0, 2, 0.25F), 600));
+        
     }
 
     private void addEnchantment(String type, String name, Holder<Enchantment> enchantment, EnchantmentAffix.Mode mode, UnaryOperator<EnchantmentAffix.Builder> config) {

@@ -67,11 +67,12 @@ public class Apotheosis {
 
     public static final String MODID = "apotheosis";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
-
     public static final boolean DEBUG_WORLDGEN = "on".equalsIgnoreCase(System.getenv("apotheosis.debug_worldgen"));
-
     public static final boolean STAGES_LOADED = ModList.get().isLoaded("gamestages");
-    static final Map<ResourceLocation, LootCategory> IMC_TYPE_OVERRIDES = new HashMap<>();
+
+    private static final Map<ResourceLocation, LootCategory> IMC_TYPE_OVERRIDES = new HashMap<>();
+
+    public static boolean isRunningInDatagen = false;
 
     public Apotheosis(IEventBus bus) {
         Apoth.bootstrap(bus);
@@ -114,6 +115,7 @@ public class Apotheosis {
 
     @SubscribeEvent
     public void data(GatherDataEvent e) {
+        isRunningInDatagen = true;
         DataGenBuilder.create(Apotheosis.MODID)
             .provider(ApothLootProvider::create)
             .provider(ApothRecipeProvider::new)

@@ -1,4 +1,4 @@
-// 1.21.1	2024-11-17T16:40:05.6728216	Affixes
+// 1.21.1	2024-11-17T19:37:03.2980776	Affixes
 69ce8a2b8998248dc9984c75c5e4fe02f4edb5dc data/apotheosis/affixes/armor/attribute/adamantine.json
 53af88ccfc729c4a9c4d98471a5adf9534622aa8 data/apotheosis/affixes/armor/attribute/aquatic.json
 5b511f389e9c82f6053c4c819976dd5e802b0986 data/apotheosis/affixes/armor/attribute/blessed.json
@@ -46,6 +46,12 @@ a9884d6a39788b384b0b7bd6d7d425342f95e5e0 data/apotheosis/affixes/melee/attribute
 1fef28913a998b1c6754568b73761b7d8c360ad3 data/apotheosis/affixes/melee/attribute/piercing.json
 7a92a0d177ee4e9fad7c18b81877609222ed791d data/apotheosis/affixes/melee/attribute/vampiric.json
 a9c5a86e9d468c61afd3a7447eea0d5d0017887e data/apotheosis/affixes/melee/attribute/violent.json
+e0eecc50cf5b781220adb382cfdf5a660bd355f9 data/apotheosis/affixes/melee/mob_effect/bloodletting.json
+6ef34fb36694b139567e80ef26f319252d8bf40d data/apotheosis/affixes/melee/mob_effect/caustic.json
+aee9985136af3dc829d4cdec396870248a8dcbf4 data/apotheosis/affixes/melee/mob_effect/elusive.json
+8dae5c9f3fafaab899d13009c1ca89ec01183007 data/apotheosis/affixes/melee/mob_effect/omniscient.json
+60c4cbfa4b798da94ddbea77048986c4239b7640 data/apotheosis/affixes/melee/mob_effect/sophisticated.json
+e63edba804d19bc4ffc57b6b8f5c1121c7e29c83 data/apotheosis/affixes/melee/mob_effect/weakening.json
 caae797c9f9c5060e32142220c118cf9a09f4709 data/apotheosis/affixes/ranged/attribute/agile.json
 373562616004ff8b50590b22770032fe2b8175bc data/apotheosis/affixes/ranged/attribute/elven.json
 a912265bb58b56a3ef65a7ba13ecd39e75a9ee9f data/apotheosis/affixes/ranged/attribute/streamlined.json

@@ -1,4 +1,4 @@
-// 1.21.1	2024-11-15T02:54:44.3200681	Affixes
+// 1.21.1	2024-11-17T16:40:05.6728216	Affixes
 69ce8a2b8998248dc9984c75c5e4fe02f4edb5dc data/apotheosis/affixes/armor/attribute/adamantine.json
 53af88ccfc729c4a9c4d98471a5adf9534622aa8 data/apotheosis/affixes/armor/attribute/aquatic.json
 5b511f389e9c82f6053c4c819976dd5e802b0986 data/apotheosis/affixes/armor/attribute/blessed.json
@@ -50,6 +50,14 @@ caae797c9f9c5060e32142220c118cf9a09f4709 data/apotheosis/affixes/ranged/attribut
 373562616004ff8b50590b22770032fe2b8175bc data/apotheosis/affixes/ranged/attribute/elven.json
 a912265bb58b56a3ef65a7ba13ecd39e75a9ee9f data/apotheosis/affixes/ranged/attribute/streamlined.json
 c44f14818f6d01b95f6c8c6cad9e10c3b4e54d28 data/apotheosis/affixes/ranged/attribute/windswept.json
+202a56bb10e22bcc1f9d8a214b7321917d0251ea data/apotheosis/affixes/ranged/mob_effect/acidic.json
+1a69bf5022f222b4470ac2ed99d9ccd0b9909cd3 data/apotheosis/affixes/ranged/mob_effect/blighted.json
+405f4d93325200b61857561c8d34e3729bf2bd4a data/apotheosis/affixes/ranged/mob_effect/deathbound.json
+a7a1b143516af0467db42215d8783329cccaae2e data/apotheosis/affixes/ranged/mob_effect/ensnaring.json
+c9ed3c3279a59c00d65c9586c2836b0c4b803c7e data/apotheosis/affixes/ranged/mob_effect/fleeting.json
+598fc566b65bfd53bd66dbecff183e4064a5ad03 data/apotheosis/affixes/ranged/mob_effect/grievous.json
+4c9f80984ce059eb6229d829926601ec7cf05484 data/apotheosis/affixes/ranged/mob_effect/ivy_laced.json
+2a3d36d1ec071400e88e6dccdc6f7b7a48e336c7 data/apotheosis/affixes/ranged/mob_effect/shulkers.json
 d193812d5e2557bed2e5c7b8c5bd15337ead4306 data/apotheosis/affixes/shield/attribute/ironforged.json
 24facd55139ec4765199409a986601863788672d data/apotheosis/affixes/shield/attribute/stalwart.json
 1c62e3eec9165f69d958414cf84e60f465ae7a42 data/apotheosis/affixes/shield/attribute/steel_touched.json

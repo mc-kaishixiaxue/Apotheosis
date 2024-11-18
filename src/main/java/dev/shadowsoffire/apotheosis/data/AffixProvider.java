@@ -499,7 +499,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(epic, 0.15F, 0.25F)
             .value(mythic, 0.15F, 0.40F));
 
-        // Armor Mob Effects
+        // Armor Basic Effects
 
         addMobEffect("armor", "revitalizing", MobEffects.HEAL, Target.HURT_SELF, b -> b
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
@@ -543,7 +543,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         // TODO: Add some way to validate that all created DynamicHolder(s) are "real" after datagen.
 
-        // Breaker Mob Effects
+        // Breaker Basic Effects
 
         addMobEffect("breaker", "swift", MobEffects.DIG_SPEED, Target.BREAK_SELF, b -> b
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
@@ -570,6 +570,71 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(rare, 1, 2)
             .value(epic, 1, 3)
             .value(mythic, 2, 4));
+        
+        // Ranged Basic Effects
+
+        addMobEffect("ranged", "shulkers", MobEffects.LEVITATION, Target.ARROW_TARGET, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BOW)
+            .value(epic, 20, 80, StepFunction.fromBounds(0, 1, 0.25F), 140)
+            .value(mythic, 20, 100, StepFunction.fromBounds(0, 2, 0.25F), 140));
+
+        addMobEffect("ranged", "acidic", ALObjects.MobEffects.SUNDERING, Target.ARROW_TARGET, b -> b
+            .definition(AffixType.BASIC_EFFECT, d -> d
+                .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5)))
+            .categories(LootCategory.BOW)
+            .stacking()
+            .value(mythic, 80, 160, 0, 60));
+
+        addMobEffect("ranged", "ensnaring", MobEffects.MOVEMENT_SLOWDOWN, Target.ARROW_TARGET, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BOW, LootCategory.TRIDENT)
+            .value(uncommon, 40, 80, 0, 160)
+            .value(rare, 40, 100, 0, 160)
+            .value(epic, 40, 120, StepFunction.fromBounds(0, 1, 0.25F), 160)
+            .value(mythic, 80, 160, StepFunction.fromBounds(0, 2, 0.25F), 160));
+
+        addMobEffect("ranged", "fleeting", MobEffects.MOVEMENT_SPEED, Target.ARROW_SELF, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BOW, LootCategory.TRIDENT)
+            .value(uncommon, 100, 200, 0, 0)
+            .value(rare, 100, 200, 0, 0)
+            .value(epic, 100, 200, StepFunction.fromBounds(0, 1, 0.25F), 0)
+            .value(mythic, 100, 300, StepFunction.fromBounds(0, 2, 0.25F), 0));
+
+        addMobEffect("ranged", "grievous", ALObjects.MobEffects.GRIEVOUS, Target.ARROW_TARGET, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BOW, LootCategory.TRIDENT)
+            .value(uncommon, 200, 200, 0, 500)
+            .value(rare, 200, 300, 0, 500)
+            .value(epic, 200, 300, StepFunction.fromBounds(0, 1, 0.25F), 400)
+            .value(mythic, 200, 300, StepFunction.fromBounds(0, 2, 0.25F), 400));
+
+        addMobEffect("ranged", "ivy_laced", MobEffects.POISON, Target.ARROW_TARGET, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BOW, LootCategory.TRIDENT)
+            .stacking()
+            .value(rare, 100, 160, 0, 40)
+            .value(epic, 100, 160, StepFunction.fromBounds(0, 1, 0.25F), 40)
+            .value(mythic, 100, 200, StepFunction.fromBounds(0, 2, 0.25F), 40));
+
+        addMobEffect("ranged", "blighted", MobEffects.WITHER, Target.ARROW_TARGET, b -> b
+            .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BOW, LootCategory.TRIDENT)
+            .value(epic, 160, 200, StepFunction.fromBounds(0, 1, 0.25F), 300)
+            .value(mythic, 160, 200, StepFunction.fromBounds(0, 3, 0.25F), 300));
+
+        addMobEffect("ranged", "deathbound", MobEffects.WITHER, Target.ARROW_TARGET, b -> b
+            .definition(AffixType.BASIC_EFFECT, d -> d
+                .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5))
+                .exclusiveWith(afx("ranged/mob_effect/blighted")))
+            .categories(LootCategory.BOW, LootCategory.TRIDENT)
+            .stacking()
+            .value(mythic, 100, 200, 1, 40));
+        
+        
+        
+        // Melee Basic Effects
     }
 
     private void addEnchantment(String type, String name, Holder<Enchantment> enchantment, EnchantmentAffix.Mode mode, UnaryOperator<EnchantmentAffix.Builder> config) {

@@ -1,0 +1,33 @@
+{
+  "type": "apotheosis:mob_effect",
+  "definition": {
+    "affix_type": "basic_effect",
+    "exclusive_set": [
+      "apotheosis:ranged/mob_effect/blighted"
+    ],
+    "weights": {
+      "apotheosis": {
+        "quality": 5.0,
+        "weight": 20
+      }
+    }
+  },
+  "mob_effect": "minecraft:wither",
+  "stack_on_reapply": true,
+  "target": "arrow_target",
+  "types": [
+    "trident",
+    "bow"
+  ],
+  "values": {
+    "apotheosis:mythic": {
+      "duration": {
+        "min": 100.0,
+        "max": 200.0,
+        "step": 20.0
+      },
+      "amplifier": 1.0,
+      "cooldown": 40
+    }
+  }
+}

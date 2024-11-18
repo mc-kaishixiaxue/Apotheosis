@@ -32,9 +32,10 @@ public class AffixLootRegistry extends TieredDynamicRegistry<AffixLootEntry> {
         Preconditions.checkArgument(!item.getType().isNone(), "Items without a valid loot category are not permitted.");
     }
 
+    @Override
     @Nullable
     public AffixLootEntry getRandomItem(GenContext ctx) {
-        return getRandomItem(ctx, Constraints.eval(ctx));
+        return this.getRandomItem(ctx, Constraints.eval(ctx));
     }
 
 }

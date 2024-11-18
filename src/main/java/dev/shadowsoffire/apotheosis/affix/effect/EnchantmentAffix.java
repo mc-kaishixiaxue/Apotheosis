@@ -67,7 +67,7 @@ public class EnchantmentAffix extends Affix {
 
     @Override
     public Component getAugmentingText(AffixInstance inst, AttributeTooltipContext ctx) {
-        MutableComponent comp = (MutableComponent) this.getDescription(inst, ctx);
+        MutableComponent comp = this.getDescription(inst, ctx);
         StepFunction value = this.values.get(inst.getRarity());
         return comp.append(valueBounds(Component.literal("" + (int) value.min()), Component.literal("" + (int) value.max())));
     }
@@ -132,7 +132,7 @@ public class EnchantmentAffix extends Affix {
         }
 
         public EnchantmentAffix build() {
-            Preconditions.checkArgument(!values.isEmpty());
+            Preconditions.checkArgument(!this.values.isEmpty());
             return new EnchantmentAffix(this.definition, this.enchantment, this.mode, this.values, this.categories);
         }
     }

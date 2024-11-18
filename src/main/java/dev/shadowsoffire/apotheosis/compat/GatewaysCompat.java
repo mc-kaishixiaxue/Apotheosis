@@ -19,7 +19,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.ServerLevelAccessor;
 
 public class GatewaysCompat {
 
@@ -47,7 +46,7 @@ public class GatewaysCompat {
             GenContext ctx = GenContext.forPlayer(gate.summonerOrClosest());
             ApothBoss realBoss = this.bossId.isEmpty() ? BossRegistry.INSTANCE.getRandomItem(ctx) : this.boss.get();
             if (realBoss == null) return null; // error condition
-            return realBoss.createBoss((ServerLevelAccessor) level, BlockPos.ZERO, ctx);
+            return realBoss.createBoss(level, BlockPos.ZERO, ctx);
         }
 
         @Override

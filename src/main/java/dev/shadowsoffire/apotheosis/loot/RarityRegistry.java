@@ -53,7 +53,7 @@ public class RarityRegistry extends TieredDynamicRegistry<LootRarity> {
     protected void onReload() {
         super.onReload();
         for (LootRarity r : this.getValues()) {
-            DynamicHolder<LootRarity> old = this.materialMap.put(r.getMaterial(), holder(r));
+            DynamicHolder<LootRarity> old = this.materialMap.put(r.getMaterial(), this.holder(r));
             if (old != null) {
                 throw new RuntimeException("Two rarities may not share the same rarity material: " + this.getKey(r) + " conflicts with " + old.getId());
             }

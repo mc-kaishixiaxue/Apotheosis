@@ -23,12 +23,12 @@ public class SingletonRecipeSerializer<T extends Recipe<?>> implements RecipeSer
 
     @Override
     public MapCodec<T> codec() {
-        return codec;
+        return this.codec;
     }
 
     @Override
     public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
-        return streamCodec;
+        return this.streamCodec;
     }
 
 }

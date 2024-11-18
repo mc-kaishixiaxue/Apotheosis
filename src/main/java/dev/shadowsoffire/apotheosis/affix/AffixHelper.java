@@ -104,7 +104,7 @@ public class AffixHelper {
 
     /**
      * Copies the entire source weapon itemstack into the target entity iff relevant components are present.
-     * 
+     *
      * @param stack  The source item stack (the ranged weapon that fired the projectile).
      * @param entity The newly created projectile.
      */

@@ -43,7 +43,7 @@ public record AffixDefinition(AffixType type, Set<DynamicHolder<Affix>> exclusiv
 
         public AffixDefinition build() {
             Preconditions.checkNotNull(this.weights);
-            return new AffixDefinition(type, exclusiveSet, weights);
+            return new AffixDefinition(this.type, this.exclusiveSet, this.weights);
         }
     }
 

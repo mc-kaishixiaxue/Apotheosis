@@ -40,7 +40,7 @@ public class AffixLootPoolEntry extends ContextualLootPoolEntry {
 
     /**
      * Creates a new affix loot pool entry.
-     * 
+     *
      * @param rarities   A set of rarities. If non-empty, this set overrides the rarities specified by the selected affix loot entry.
      * @param entries    A set of entries. If non-empty, this set specifies the subset of affix loot entries that may be used, otherwise all entries are tested.
      * @param weight     The weight of this entry, relative to others in the pool.

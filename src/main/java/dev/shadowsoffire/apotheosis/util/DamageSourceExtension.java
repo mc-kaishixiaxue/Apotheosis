@@ -6,7 +6,6 @@ import net.minecraft.world.damagesource.DamageType;
 /**
  * TODO: Find a better scheme for this.
  * Since many damage sources are singletons, this may need a copy-on-write setup.
- * 
  * For now, I only use it for entity-based damage sources, which are not singletons, but this is a potential issue...
  */
 public interface DamageSourceExtension {

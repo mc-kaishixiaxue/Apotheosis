@@ -47,9 +47,10 @@ public class GemRegistry extends TieredDynamicRegistry<Gem> {
         }
     }
 
+    @Override
     @Nullable
     public Gem getRandomItem(GenContext ctx) {
-        return getRandomItem(ctx, Constraints.eval(ctx));
+        return this.getRandomItem(ctx, Constraints.eval(ctx));
     }
 
     /**

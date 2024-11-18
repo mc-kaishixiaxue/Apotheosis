@@ -314,7 +314,7 @@ public final class ApothMiniboss implements CodecProvider<ApothMiniboss>, Constr
         for (EquipmentSlot s : EquipmentSlot.values()) {
             ItemStack stack = mob.getItemBySlot(s);
             if (!stack.isEmpty() && s.ordinal() != guaranteed && rand.nextFloat() < this.stats.enchantChance()) {
-                ApothBoss.enchantBossItem(rand, stack, stats.enchLevels().secondary(), true, mob.level().registryAccess());
+                ApothBoss.enchantBossItem(rand, stack, this.stats.enchLevels().secondary(), true, mob.level().registryAccess());
                 mob.setItemSlot(s, stack);
             }
         }

@@ -83,7 +83,7 @@ public class AffixLootEntryProvider extends DynamicRegistryProvider<AffixLootEnt
         // Summit spawns Diamond items, with a low chance for Iron or Netherite.
         // Apotheosis spawns mostly Netherite items, with a chance for Diamond.
         for (Item i : BuiltInRegistries.ITEM) {
-            if (!BuiltInRegistries.ITEM.getKey(i).getNamespace().equals("minecraft")) {
+            if (!"minecraft".equals(BuiltInRegistries.ITEM.getKey(i).getNamespace())) {
                 continue; // We only want vanilla items for this pass, since mod items need conditions.
             }
 
@@ -94,27 +94,27 @@ public class AffixLootEntryProvider extends DynamicRegistryProvider<AffixLootEnt
 
             if (i instanceof TieredItem t && t.getTier() instanceof Tiers tier) {
                 switch (tier) {
-                    case STONE -> addEntry(new AffixLootEntry(STONE, new ItemStack(i)));
-                    case GOLD -> addEntry(new AffixLootEntry(GOLD, new ItemStack(i)));
-                    case IRON -> addEntry(new AffixLootEntry(IRON, new ItemStack(i)));
-                    case DIAMOND -> addEntry(new AffixLootEntry(DIAMOND, new ItemStack(i)));
-                    case NETHERITE -> addEntry(new AffixLootEntry(NETHERITE, new ItemStack(i)));
+                    case STONE -> this.addEntry(new AffixLootEntry(STONE, new ItemStack(i)));
+                    case GOLD -> this.addEntry(new AffixLootEntry(GOLD, new ItemStack(i)));
+                    case IRON -> this.addEntry(new AffixLootEntry(IRON, new ItemStack(i)));
+                    case DIAMOND -> this.addEntry(new AffixLootEntry(DIAMOND, new ItemStack(i)));
+                    case NETHERITE -> this.addEntry(new AffixLootEntry(NETHERITE, new ItemStack(i)));
                     default -> {}
                 }
             }
             else if (i instanceof ArmorItem a && a.getType() != ArmorItem.Type.BODY) {
                 TieredWeights weights = armorWeights.get(a.getMaterial());
                 if (weights != null) {
-                    addEntry(new AffixLootEntry(weights, new ItemStack(i)));
+                    this.addEntry(new AffixLootEntry(weights, new ItemStack(i)));
                 }
             }
         }
 
-        addEntry(new AffixLootEntry(TieredWeights.forAllTiers(5, 1), new ItemStack(Items.BOW)));
-        addEntry(new AffixLootEntry(TieredWeights.forAllTiers(5, 1), new ItemStack(Items.CROSSBOW)));
-        addEntry(new AffixLootEntry(TieredWeights.forAllTiers(5, 1), new ItemStack(Items.SHIELD)));
-        addEntry(new AffixLootEntry(TRIDENT, new ItemStack(Items.TRIDENT)));
-        addEntry(new AffixLootEntry(TieredWeights.forAllTiers(2, 0), new ItemStack(Items.TURTLE_HELMET)));
+        this.addEntry(new AffixLootEntry(TieredWeights.forAllTiers(5, 1), new ItemStack(Items.BOW)));
+        this.addEntry(new AffixLootEntry(TieredWeights.forAllTiers(5, 1), new ItemStack(Items.CROSSBOW)));
+        this.addEntry(new AffixLootEntry(TieredWeights.forAllTiers(5, 1), new ItemStack(Items.SHIELD)));
+        this.addEntry(new AffixLootEntry(TRIDENT, new ItemStack(Items.TRIDENT)));
+        this.addEntry(new AffixLootEntry(TieredWeights.forAllTiers(2, 0), new ItemStack(Items.TURTLE_HELMET)));
 
     }
 

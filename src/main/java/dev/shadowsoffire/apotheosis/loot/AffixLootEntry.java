@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 /**
  * A loot entry represents a possible item that can come out of a loot roll.
  * It is classified into a type, which is used to determine possible affixes.
- * 
+ *
  * @param weights     The weights for selecting this loot entry.
  * @param constraints Restrictions on when this loot entry may appear.
  * @param stack       The item stack that will be generated.

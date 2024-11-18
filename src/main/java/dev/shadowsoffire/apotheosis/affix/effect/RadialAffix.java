@@ -100,7 +100,7 @@ public class RadialAffix extends Affix {
     }
 
     private RadialData getTrueLevel(AffixInstance inst) {
-        return getTrueLevel(inst.getRarity(), inst.level());
+        return this.getTrueLevel(inst.getRarity(), inst.level());
     }
 
     private RadialData getTrueLevel(LootRarity rarity, float level) {

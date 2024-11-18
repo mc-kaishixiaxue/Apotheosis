@@ -279,19 +279,19 @@ public class MobEffectAffix extends Affix {
         }
 
         public Builder value(LootRarity rarity, int duration, int amplifier, int cooldown) {
-            return value(rarity, StepFunction.constant(duration), StepFunction.constant(amplifier), cooldown);
+            return this.value(rarity, StepFunction.constant(duration), StepFunction.constant(amplifier), cooldown);
         }
 
         public Builder value(LootRarity rarity, int minDuration, int maxDuration, int amplifier, int cooldown) {
-            return value(rarity, minDuration, maxDuration, StepFunction.constant(amplifier), cooldown);
+            return this.value(rarity, minDuration, maxDuration, StepFunction.constant(amplifier), cooldown);
         }
 
         public Builder value(LootRarity rarity, int minDuration, int maxDuration, StepFunction amplifier, int cooldown) {
-            return value(rarity, StepFunction.fromBounds(minDuration, maxDuration, 20), amplifier, cooldown);
+            return this.value(rarity, StepFunction.fromBounds(minDuration, maxDuration, 20), amplifier, cooldown);
         }
 
         public Builder value(LootRarity rarity, StepFunction duration, StepFunction amplifier, int cooldown) {
-            return value(rarity, new EffectData(duration, amplifier, cooldown));
+            return this.value(rarity, new EffectData(duration, amplifier, cooldown));
         }
 
         public Builder value(LootRarity rarity, EffectData value) {
@@ -305,7 +305,7 @@ public class MobEffectAffix extends Affix {
         }
 
         public MobEffectAffix build() {
-            Preconditions.checkArgument(!values.isEmpty());
+            Preconditions.checkArgument(!this.values.isEmpty());
             return new MobEffectAffix(this.definition, this.effect, this.target, this.values, this.categories, this.stacking);
         }
     }

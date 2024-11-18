@@ -11,7 +11,7 @@ import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 
 /**
  * Affix data for {@link ApothMiniboss}.
- * 
+ *
  * @param enabled  If one of the miniboss's items (from the selected gear set) will become affixes.
  * @param rarities A pool of rarities; if empty, all rarities will be used.
  */

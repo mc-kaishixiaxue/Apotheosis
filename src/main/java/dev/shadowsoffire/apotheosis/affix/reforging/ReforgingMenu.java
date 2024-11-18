@@ -131,7 +131,7 @@ public class ReforgingMenu extends BlockEntityMenu<ReforgingTableTile> {
             if (!input.isEmpty() && rarity != null) {
                 RandomSource rand = this.random;
                 rand.setSeed(this.seed ^ BuiltInRegistries.ITEM.getKey(input.getItem()).hashCode() + slot);
-                GenContext ctx = GenContext.forPlayer(rand, player);
+                GenContext ctx = GenContext.forPlayer(rand, this.player);
                 ItemStack output = LootController.createLootItem(input.copy(), rarity, ctx);
                 this.choicesInv.setStackInSlot(slot, output);
             }

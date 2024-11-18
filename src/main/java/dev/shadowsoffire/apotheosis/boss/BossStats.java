@@ -28,7 +28,7 @@ public record BossStats(float enchantChance, EnchantmentLevels enchLevels, List<
 
     /**
      * Enchantment levels for boss equipment.
-     * 
+     *
      * @param primary   The enchantment level to use for the primary (affixed) item.
      * @param secondary The enchantment level to use for all other items.
      */

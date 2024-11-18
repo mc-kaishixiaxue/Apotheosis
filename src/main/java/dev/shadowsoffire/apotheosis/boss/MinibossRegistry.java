@@ -28,7 +28,7 @@ public class MinibossRegistry extends TieredDynamicRegistry<ApothMiniboss> {
 
     @Nullable
     public ApothMiniboss getRandomItem(GenContext ctx, Entity target) {
-        return getRandomItem(ctx, Constraints.eval(ctx), IEntityMatch.matches(target));
+        return this.getRandomItem(ctx, Constraints.eval(ctx), IEntityMatch.matches(target));
     }
 
     /**

@@ -99,7 +99,7 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity 
 
     /**
      * If this gem instance {@linkplain #isValidUnsocketed() is valid}, returns the stored {@link Gem}.
-     * 
+     *
      * @throws NullPointerException if this gem instance is invalid.
      */
     public Gem getGem() {

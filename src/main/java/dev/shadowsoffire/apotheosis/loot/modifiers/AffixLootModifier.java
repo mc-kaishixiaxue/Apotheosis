@@ -89,7 +89,7 @@ public class AffixLootModifier extends ContextualLootModifier {
 
     /**
      * Represents a single table + application chance + an optional set of rarities for the {@link AffixConvertLootModifier}.
-     * 
+     *
      * @param pattern  The loot pattern matcher that determines which tables this entry applies to.
      * @param chance   The chance of this entry applying, when a table is matched.
      * @param entries  A pool of potential entries; if empty, all entries may be queried.

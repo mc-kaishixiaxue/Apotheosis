@@ -17,7 +17,7 @@ public abstract class ContextualLootModifier extends LootModifier {
     protected final ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> loot, LootContext ctx) {
         var gCtx = GenContext.forLoot(ctx);
         if (gCtx != null) {
-            return doApply(loot, ctx, gCtx);
+            return this.doApply(loot, ctx, gCtx);
         }
         return loot;
     }

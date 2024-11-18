@@ -41,7 +41,7 @@ public class GemLootModifier extends ContextualLootModifier {
 
     @Override
     protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext ctx, GenContext gCtx) {
-        for (GemTableEntry entry : entries) {
+        for (GemTableEntry entry : this.entries) {
             if (entry.pattern.matches(ctx.getQueriedLootTableId())) {
                 if (ctx.getRandom().nextFloat() <= entry.chance()) {
                     Purity purity = Purity.random(gCtx, entry.purities);
@@ -82,7 +82,7 @@ public class GemLootModifier extends ContextualLootModifier {
 
     /**
      * Represents a single table + application chance + optional sets of purities and gems for the {@link GemLootModifier}.
-     * 
+     *
      * @param pattern  The loot pattern matcher that determines which tables this entry applies to.
      * @param chance   The chance of this entry applying, when a table is matched.
      * @param gems     A pool of potential gems; if empty, all gems may be queried.

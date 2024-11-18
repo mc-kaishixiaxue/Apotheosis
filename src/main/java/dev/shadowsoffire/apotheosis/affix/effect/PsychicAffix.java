@@ -76,7 +76,7 @@ public class PsychicAffix extends Affix {
     }
 
     private float getTrueLevel(AffixInstance inst) {
-        return getTrueLevel(inst.getRarity(), inst.level());
+        return this.getTrueLevel(inst.getRarity(), inst.level());
     }
 
     private float getTrueLevel(LootRarity rarity, float level) {

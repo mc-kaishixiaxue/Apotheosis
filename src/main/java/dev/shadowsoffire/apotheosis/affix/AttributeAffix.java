@@ -140,7 +140,7 @@ public class AttributeAffix extends Affix {
         }
 
         public AttributeAffix build() {
-            Preconditions.checkArgument(!values.isEmpty());
+            Preconditions.checkArgument(!this.values.isEmpty());
             return new AttributeAffix(this.definition, this.attribute, this.operation, this.values, this.categories);
         }
     }

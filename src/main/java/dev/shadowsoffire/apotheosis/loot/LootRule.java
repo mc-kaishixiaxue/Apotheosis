@@ -29,7 +29,7 @@ public interface LootRule extends CodecProvider<LootRule> {
 
     /**
      * Executes this loot rule, applying the changes to the passed item stack.
-     * 
+     *
      * @param stack  The item stack being modified.
      * @param rand   The random source.
      * @param rarity The current loot rarity (which owns this rule).

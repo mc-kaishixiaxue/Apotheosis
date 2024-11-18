@@ -56,10 +56,10 @@ public class GemCuttingMenu extends PlaceboContainerMenu {
         this.addSlot(new UpdatingSlot(this.inv, RIGHT_SLOT, 90, 64, this::isValidRight));
 
         this.addPlayerSlots(playerInv, 8, 98);
-        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && isValidBase(stack), BASE_SLOT, TOP_SLOT);
-        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && isValidTop(stack), TOP_SLOT, LEFT_SLOT);
-        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && isValidLeft(stack), LEFT_SLOT, RIGHT_SLOT);
-        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && isValidRight(stack), RIGHT_SLOT, RIGHT_SLOT + 1);
+        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && this.isValidBase(stack), BASE_SLOT, TOP_SLOT);
+        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && this.isValidTop(stack), TOP_SLOT, LEFT_SLOT);
+        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && this.isValidLeft(stack), LEFT_SLOT, RIGHT_SLOT);
+        this.mover.registerRule((stack, slot) -> slot >= this.playerInvStart && this.isValidRight(stack), RIGHT_SLOT, RIGHT_SLOT + 1);
         this.mover.registerRule((stack, slot) -> slot < this.playerInvStart, this.playerInvStart, this.hotbarStart + 9);
         this.registerInvShuffleRules();
     }
@@ -85,7 +85,7 @@ public class GemCuttingMenu extends PlaceboContainerMenu {
     public boolean isValidBase(ItemStack stack) {
         for (RecipeHolder<GemCuttingRecipe> holder : getRecipes(this.level)) {
             GemCuttingRecipe r = holder.value();
-            if (r.isValidBaseItem(rInput, stack)) return true;
+            if (r.isValidBaseItem(this.rInput, stack)) return true;
         }
         return false;
     }
@@ -93,7 +93,7 @@ public class GemCuttingMenu extends PlaceboContainerMenu {
     public boolean isValidTop(ItemStack stack) {
         for (RecipeHolder<GemCuttingRecipe> holder : getRecipes(this.level)) {
             GemCuttingRecipe r = holder.value();
-            if (r.isValidTopItem(rInput, stack)) return true;
+            if (r.isValidTopItem(this.rInput, stack)) return true;
         }
         return false;
     }
@@ -101,7 +101,7 @@ public class GemCuttingMenu extends PlaceboContainerMenu {
     public boolean isValidLeft(ItemStack stack) {
         for (RecipeHolder<GemCuttingRecipe> holder : getRecipes(this.level)) {
             GemCuttingRecipe r = holder.value();
-            if (r.isValidLeftItem(rInput, stack)) return true;
+            if (r.isValidLeftItem(this.rInput, stack)) return true;
         }
         return false;
     }
@@ -109,7 +109,7 @@ public class GemCuttingMenu extends PlaceboContainerMenu {
     public boolean isValidRight(ItemStack stack) {
         for (RecipeHolder<GemCuttingRecipe> holder : getRecipes(this.level)) {
             GemCuttingRecipe r = holder.value();
-            if (r.isValidRightItem(rInput, stack)) return true;
+            if (r.isValidRightItem(this.rInput, stack)) return true;
         }
         return false;
     }

@@ -31,19 +31,19 @@ public class DamageSourceMixin implements DamageSourceExtension {
 
     @Override
     public void addTag(TagKey<DamageType> tag) {
-        getOrCreateExtraTypes().add(tag);
+        this.getOrCreateExtraTypes().add(tag);
     }
 
     @Override
     public void removeTag(TagKey<DamageType> tag) {
-        getOrCreateExtraTypes().remove(tag);
+        this.getOrCreateExtraTypes().remove(tag);
     }
 
     private Set<TagKey<DamageType>> getOrCreateExtraTypes() {
-        if (extraTypes == null) {
-            extraTypes = new HashSet<>();
+        if (this.extraTypes == null) {
+            this.extraTypes = new HashSet<>();
         }
-        return extraTypes;
+        return this.extraTypes;
     }
 
 }

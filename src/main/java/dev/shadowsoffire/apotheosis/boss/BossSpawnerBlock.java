@@ -61,7 +61,7 @@ public class BossSpawnerBlock extends Block implements TickingEntityBlock {
                 opt.ifPresent(player -> {
                     this.level.setBlockAndUpdate(this.worldPosition, Blocks.AIR.defaultBlockState());
 
-                    GenContext ctx = GenContext.forPlayerAtPos(level.random, player, pos);
+                    GenContext ctx = GenContext.forPlayerAtPos(this.level.random, player, pos);
                     ApothBoss bossItem = !this.item.isBound() ? BossRegistry.INSTANCE.getRandomItem(ctx) : this.item.get();
                     if (bossItem == null) {
                         Apotheosis.LOGGER.error("A boss spawner attempted to spawn a boss at {} in {}, but no bosses were available!", this.getBlockPos(), this.level.dimension().location());

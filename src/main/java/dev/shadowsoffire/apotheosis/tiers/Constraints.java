@@ -21,7 +21,7 @@ import net.minecraft.world.level.biome.Biome;
 
 /**
  * Generic constraints that can be applied to various object types (affix loot entries, bosses, gems, etc).
- * 
+ *
  * @param dimensions A set of dimensions that this object is applicable in.
  * @param biomes     A set of biomes that this object is applicable in.
  * @param gameStages A set of gamestages that this object is applicable in.
@@ -43,10 +43,10 @@ public record Constraints(Set<ResourceKey<Level>> dimensions, HolderSet<Biome> b
         Constraints::new);
 
     public boolean test(GenContext ctx) {
-        if (!dimensions.isEmpty() && !dimensions.contains(ctx.dimension())) {
+        if (!this.dimensions.isEmpty() && !this.dimensions.contains(ctx.dimension())) {
             return false;
         }
-        if (biomes.size() != 0 && !biomes.contains(ctx.biome())) {
+        if (this.biomes.size() != 0 && !this.biomes.contains(ctx.biome())) {
             return false;
         }
         return this.gameStages.isEmpty() || this.gameStages.stream().anyMatch(ctx.stages()::contains);

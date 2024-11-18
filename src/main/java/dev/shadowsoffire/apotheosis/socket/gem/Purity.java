@@ -45,11 +45,11 @@ public enum Purity implements StringRepresentable {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public TextColor getColor() {
-        return color;
+        return this.color;
     }
 
     @Override

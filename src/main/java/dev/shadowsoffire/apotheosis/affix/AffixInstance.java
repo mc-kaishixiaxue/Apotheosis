@@ -36,7 +36,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 /**
  * An Affix Instance is a wrapper around the necessary parameters for all affix methods.
  * Prefer using this over directly invoking methods on {@link Affix}.
- * 
+ *
  * @param affix  The affix this instance is for.
  * @param level  The level of the affix.
  * @param rarity The rarity of the source item.
@@ -45,7 +45,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 public record AffixInstance(DynamicHolder<Affix> affix, float level, DynamicHolder<LootRarity> rarity, ItemStack stack) {
 
     public LootCategory category() {
-        return LootCategory.forItem(stack);
+        return LootCategory.forItem(this.stack);
     }
 
     public boolean isValid() {

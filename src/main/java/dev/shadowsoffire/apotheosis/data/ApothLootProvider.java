@@ -55,7 +55,7 @@ public class ApothLootProvider extends LootTableProvider {
 
         @Override
         protected Iterable<Block> getKnownBlocks() {
-            return BuiltInRegistries.BLOCK.holders().filter(h -> h.getKey().location().getNamespace().equals(Apotheosis.MODID)).map(Holder::value).toList();
+            return BuiltInRegistries.BLOCK.holders().filter(h -> Apotheosis.MODID.equals(h.getKey().location().getNamespace())).map(Holder::value).toList();
         }
 
         protected void dropSelf(Holder<Block> block) {

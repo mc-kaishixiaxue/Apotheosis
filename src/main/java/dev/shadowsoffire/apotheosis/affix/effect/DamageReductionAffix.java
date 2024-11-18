@@ -138,7 +138,7 @@ public class DamageReductionAffix extends Affix {
         }
 
         public DamageReductionAffix build() {
-            Preconditions.checkArgument(!values.isEmpty());
+            Preconditions.checkArgument(!this.values.isEmpty());
             return new DamageReductionAffix(this.definition, this.type, this.values, this.categories);
         }
     }

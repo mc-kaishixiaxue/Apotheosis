@@ -222,7 +222,7 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
      * Generates a deterministic {@link ResourceLocation} that is unique for a given socketed gem instance.
      * <p>
      * Can be used to generate attribute modifiers, track cooldowns, and other things that need to be unique per-gem-in-slot.
-     * 
+     *
      * @param inst The owning gem instance for the bonus
      * @param salt A salt value, which can be used if the bonus needs multiple modifiers.
      */

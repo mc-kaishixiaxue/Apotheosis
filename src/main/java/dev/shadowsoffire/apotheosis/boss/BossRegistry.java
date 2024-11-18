@@ -35,9 +35,10 @@ public class BossRegistry extends TieredDynamicRegistry<ApothBoss> {
         this.registerDefaultCodec(Apotheosis.loc("boss"), ApothBoss.CODEC);
     }
 
+    @Override
     @Nullable
     public ApothBoss getRandomItem(GenContext ctx) {
-        return getRandomItem(ctx, Constraints.eval(ctx));
+        return this.getRandomItem(ctx, Constraints.eval(ctx));
     }
 
 }

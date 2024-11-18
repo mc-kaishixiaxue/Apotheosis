@@ -18,6 +18,6 @@ public record RarityItemPredicate(Set<DynamicHolder<LootRarity>> rarities) imple
 
     @Override
     public boolean matches(ItemStack stack, DynamicHolder<LootRarity> rarity) {
-        return rarity.isBound() && rarities.contains(rarity);
+        return rarity.isBound() && this.rarities.contains(rarity);
     }
 }

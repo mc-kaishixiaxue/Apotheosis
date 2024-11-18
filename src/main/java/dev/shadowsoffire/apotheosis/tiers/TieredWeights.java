@@ -124,7 +124,7 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
         }
 
         public TieredWeights build() {
-            return new TieredWeights(mapBuilder.build());
+            return new TieredWeights(this.mapBuilder.build());
         }
     }
 }

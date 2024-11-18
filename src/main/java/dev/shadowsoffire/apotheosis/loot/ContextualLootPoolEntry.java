@@ -20,7 +20,7 @@ public abstract class ContextualLootPoolEntry extends LootPoolSingletonContainer
     protected final void createItemStack(Consumer<ItemStack> stackConsumer, LootContext ctx) {
         var gCtx = GenContext.forLoot(ctx);
         if (gCtx != null) {
-            createItemStack(stackConsumer, ctx, gCtx);
+            this.createItemStack(stackConsumer, ctx, gCtx);
         }
     }
 

@@ -7,7 +7,6 @@ import com.google.common.base.Predicates;
 import dev.shadowsoffire.apotheosis.boss.ApothBoss;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
-import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;

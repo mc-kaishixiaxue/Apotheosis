@@ -205,7 +205,7 @@ public class Apotheosis {
 
     /**
      * Constructs a mutable component with a lang key of the form "type.modid.path", using {@link Apotheosis#MODID}.
-     * 
+     *
      * @param type The type of language key, "misc", "info", "title", etc...
      * @param path The path of the language key.
      * @param args Translation arguments passed to the created translatable component.

@@ -21,7 +21,7 @@ import net.neoforged.neoforge.common.CommonHooks;
 
 /**
  * Generation context for random objects which are sensitive to the current world tier and luck levels.
- * 
+ *
  * @param random The random source
  * @param tier   The relevant (or closest) player's world tier.
  * @param luck   The relevant (or closest) player's luck level.

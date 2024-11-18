@@ -37,11 +37,11 @@ public class AffixBuilder<T extends AffixBuilder<T>> {
         }
 
         public T value(LootRarity rarity, float min, float max) {
-            return value(rarity, StepFunction.fromBounds(min, max, this.step));
+            return this.value(rarity, StepFunction.fromBounds(min, max, this.step));
         }
 
         public T value(LootRarity rarity, float value) {
-            return value(rarity, StepFunction.constant(value));
+            return this.value(rarity, StepFunction.constant(value));
         }
 
         public T value(LootRarity rarity, StepFunction function) {

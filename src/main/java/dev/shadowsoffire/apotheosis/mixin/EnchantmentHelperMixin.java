@@ -8,12 +8,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
+import dev.shadowsoffire.apotheosis.util.ApothMiscUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -91,6 +93,42 @@ public class EnchantmentHelperMixin {
                 }
             }
         }
+    }
+
+    @Inject(at = @At("RETURN"), method = "processDurabilityChange(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;I)I", cancellable = true)
+    private static void apoth_processAffixDurability(ServerLevel level, ItemStack stack, int damage, CallbackInfoReturnable<Integer> cir) {
+        if (cir.getReturnValueI() <= 0) {
+            return;
+        }
+
+        int amount = cir.getReturnValueI();
+        double chance = stack.getOrDefault(Components.DURABILITY_BONUS, 0F);
+
+        if (stack.has(Components.SOCKETED_GEMS)) {
+            double socketBonus = SocketHelper.getGems(stack).getDurabilityBonusPercentage().reduce(0, ApothMiscUtil::duraProd);
+            chance = ApothMiscUtil.duraProd(chance, socketBonus);
+        }
+
+        if (stack.has(Components.AFFIXES)) {
+            double afxBonus = AffixHelper.streamAffixes(stack).mapToDouble(AffixInstance::getDurabilityBonusPercentage).reduce(0, ApothMiscUtil::duraProd);
+            chance = ApothMiscUtil.duraProd(chance, afxBonus);
+        }
+
+        int delta = 1;
+        int blocked = 0;
+
+        if (chance < 0) {
+            delta = -1;
+            chance = -chance;
+        }
+
+        if (chance > 0) {
+            for (int i = 0; i < amount; i++) {
+                if (level.getRandom().nextFloat() <= chance) blocked += delta;
+            }
+        }
+
+        cir.setReturnValue(amount - blocked);
     }
 
 }

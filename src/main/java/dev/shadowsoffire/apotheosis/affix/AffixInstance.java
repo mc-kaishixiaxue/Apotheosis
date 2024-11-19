@@ -154,8 +154,8 @@ public record AffixInstance(DynamicHolder<Affix> affix, float level, DynamicHold
     /**
      * @see Affix#getDurabilityBonusPercentage(ItemStack, LootRarity, float, ServerPlayer)
      */
-    public float getDurabilityBonusPercentage(@Nullable ServerPlayer user) {
-        return this.getAffix().getDurabilityBonusPercentage(this, user);
+    public float getDurabilityBonusPercentage() {
+        return this.getAffix().getDurabilityBonusPercentage(this);
     }
 
     /**

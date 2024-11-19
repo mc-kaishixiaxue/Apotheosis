@@ -12,7 +12,6 @@ import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class DurabilityBonus extends GemBonus {
@@ -37,7 +36,7 @@ public class DurabilityBonus extends GemBonus {
     }
 
     @Override
-    public float getDurabilityBonusPercentage(GemInstance gem, ServerPlayer user) {
+    public float getDurabilityBonusPercentage(GemInstance gem) {
         return this.values.get(gem.purity());
     }
 

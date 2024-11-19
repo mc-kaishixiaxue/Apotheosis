@@ -55,6 +55,18 @@ public class ApothMiscUtil {
         return FMLEnvironment.dist.isClient() ? ClientInternal.getClientPlayer() : null;
     }
 
+    /**
+     * A reduction that computes the diminishing return value of multiple durability bonuses.<br>
+     * For this computation, the first bonus is applied in full, but further bonuses are only applied to the reduced value.
+     *
+     * @param result  The current result value.
+     * @param element The next element.
+     * @return The updated result, after applying the element.
+     */
+    public static double duraProd(double result, double element) {
+        return result + (1 - result) * element;
+    }
+
     private static class ClientInternal {
 
         public static LocalPlayer getClientPlayer() {

@@ -4,8 +4,6 @@ import java.util.Objects;
 import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
-import com.google.common.collect.ImmutableList;
-
 import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
@@ -14,6 +12,7 @@ import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.placebo.util.CachedObject;
 import dev.shadowsoffire.placebo.util.CachedObject.CachedObjectSource;
+import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -85,24 +84,19 @@ public class SocketHelper {
         LootCategory cat = LootCategory.forItem(stack);
         if (cat.isNone()) return SocketedGems.EMPTY;
 
-        ImmutableList.Builder<GemInstance> builder = ImmutableList.builderWithExpectedSize(size);
-        int gemsFound = 0;
+        NonNullList<GemInstance> list = NonNullList.withSize(size, GemInstance.EMPTY);
         ItemContainerContents socketedGems = stack.getOrDefault(Components.SOCKETED_GEMS, ItemContainerContents.EMPTY);
 
-        for (int i = 0; i < socketedGems.getSlots(); i++) {
+        for (int i = 0; i < Math.min(size, socketedGems.getSlots()); i++) {
             ItemStack gem = socketedGems.getStackInSlot(i);
             if (!gem.isEmpty()) {
                 gem.setCount(1);
                 GemInstance inst = GemInstance.socketed(stack, gem, i);
-                if (inst.isValid()) {
-                    builder.add(inst);
-                    gemsFound++;
-                }
-                if (gemsFound >= size) break;
+                list.set(i, inst);
             }
         }
 
-        return new SocketedGems(builder.build());
+        return new SocketedGems(list);
     }
 
     /**

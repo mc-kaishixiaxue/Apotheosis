@@ -282,6 +282,10 @@ public class AdventureModuleClient {
                     .filter(c -> c.getContents() != PlainTextContents.EMPTY)
                     .forEach(dotPrefixer);
 
+                if (stack.has(Components.DURABILITY_BONUS)) {
+                    dotPrefixer.accept(Component.translatable("affix.apotheosis:durable.desc", Math.round(100 * stack.get(Components.DURABILITY_BONUS))));
+                }
+
                 e.getToolTip().addAll(1, components);
             }
         }

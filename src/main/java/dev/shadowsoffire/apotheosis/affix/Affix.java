@@ -21,7 +21,6 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
@@ -202,7 +201,7 @@ public abstract class Affix implements CodecProvider<Affix>, Weighted {
      * @param user   The user of the item, if applicable.
      * @return The percentage [0, 1] of durability damage to ignore. This value will be summed with all other affixes that increase it.
      */
-    public float getDurabilityBonusPercentage(AffixInstance inst, @Nullable ServerPlayer user) {
+    public float getDurabilityBonusPercentage(AffixInstance inst) {
         return 0;
     }
 

@@ -21,7 +21,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -172,10 +171,9 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
      * Allows an affix to reduce durability damage to an item.
      *
      * @param inst The current gem instance.
-     * @param user The user of the item, if applicable.
      * @return The percentage [0, 1] of durability damage to ignore. This value will be summed with all other affixes that increase it.
      */
-    public float getDurabilityBonusPercentage(GemInstance inst, @Nullable ServerPlayer user) {
+    public float getDurabilityBonusPercentage(GemInstance inst) {
         return 0;
     }
 

@@ -216,8 +216,8 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity 
     /**
      * @see GemBonus#getDurabilityBonusPercentage(ItemStack, LootRarity, ServerPlayer)
      */
-    public float getDurabilityBonusPercentage(ServerPlayer user) {
-        return this.map(b -> b.getDurabilityBonusPercentage(this, user)).orElse(0F);
+    public float getDurabilityBonusPercentage() {
+        return this.map(b -> b.getDurabilityBonusPercentage(this)).orElse(0F);
     }
 
     /**

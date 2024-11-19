@@ -15,7 +15,6 @@ import com.google.common.collect.ImmutableList;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -89,8 +88,8 @@ public record SocketedGems(ImmutableList<GemInstance> gems) implements List<GemI
         this.streamValidGems().forEach(inst -> inst.onBlockBreak(player, world, pos, state));
     }
 
-    public DoubleStream getDurabilityBonusPercentage(ServerPlayer user) {
-        return this.streamValidGems().mapToDouble(inst -> inst.getDurabilityBonusPercentage(user));
+    public DoubleStream getDurabilityBonusPercentage() {
+        return this.streamValidGems().mapToDouble(GemInstance::getDurabilityBonusPercentage);
     }
 
     public float onHurt(DamageSource src, LivingEntity ent, float amount) {

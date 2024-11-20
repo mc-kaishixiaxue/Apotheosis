@@ -145,7 +145,7 @@ public class SocketHelper {
      */
     public static Stream<GemInstance> getGemInstances(AbstractArrow arrow) {
         ItemStack stack = AffixHelper.getSourceWeapon(arrow);
-        return getGems(stack).stream();
+        return getGems(stack).stream().filter(GemInstance::isValid);
     }
 
 }

@@ -18,10 +18,12 @@ import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType
 import dev.shadowsoffire.apotheosis.affix.effect.EnchantmentAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.EnchantmentAffix.Mode;
 import dev.shadowsoffire.apotheosis.affix.effect.EnlightenedAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.MagicalArrowAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
 import dev.shadowsoffire.apotheosis.affix.effect.OmneticAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.RadialAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.SpectralShotAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.TelepathicAffix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -787,6 +789,29 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
                 .value(mythic, c -> c
                     .radii(7, 7))
                 .build());
+
+        // Ranged Abilities
+
+        this.add(Apotheosis.loc("ranged/ability/magical"), new MagicalArrowAffix(
+            AffixDefinition.builder(AffixType.ABILITY)
+                .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
+                .build(),
+            Set.of(epic, mythic)));
+
+        this.add(Apotheosis.loc("ranged/ability/spectral"),
+            AffixBuilder.simple(SpectralShotAffix::new)
+                .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+                .value(epic, 0.2F, 0.5F)
+                .value(mythic, 0.3F, 0.7F)
+                .build());
+
+        Holder<Enchantment> looting = enchants.getOrThrow(Enchantments.LOOTING);
+        this.addEnchantment("ranged", "prosperous", looting, Mode.SINGLE, b -> b
+            .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+            .categories(LootCategory.BOW)
+            .step(0.25F)
+            .value(epic, 6, 8)
+            .value(mythic, 8, 10));
 
         this.futures.add(CompletableFuture.runAsync(RarityRegistry.INSTANCE::validateExistingHolders));
         this.futures.add(CompletableFuture.runAsync(AffixRegistry.INSTANCE::validateExistingHolders));

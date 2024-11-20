@@ -1,7 +1,7 @@
 {
-  "type": "apotheosis:telepathic",
+  "type": "apotheosis:magical",
   "definition": {
-    "affix_type": "basic_effect",
+    "affix_type": "ability",
     "exclusive_set": [],
     "weights": {
       "weight": 25
@@ -9,7 +9,6 @@
   },
   "rarities": [
     "apotheosis:mythic",
-    "apotheosis:rare",
     "apotheosis:epic"
   ]
 }

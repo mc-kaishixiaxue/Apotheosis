@@ -306,21 +306,6 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
         }
     }
 
-    /**
-     * Renders a list of text as a tooltip attached to the left edge of the currently open container screen.
-     */
-    void drawOnLeft(GuiGraphics gfx, List<Component> list, int y, int maxWidth) {
-        if (list.isEmpty()) {
-            return;
-        }
-
-        List<FormattedText> split = new ArrayList<>();
-        list.forEach(comp -> split.addAll(this.font.getSplitter().splitLines(comp, maxWidth, comp.getStyle())));
-
-        int xPos = this.getGuiLeft() - 16 - split.stream().map(this.font::width).max(Integer::compare).get();
-        gfx.renderComponentTooltip(this.font, split, xPos, y, ItemStack.EMPTY);
-    }
-
     public class AffixDropList extends DropDownList<AffixInstance> {
 
         public AffixDropList(int x, int y, int width, int height, Component narrationMsg, List<AffixInstance> entries, int maxDisplayedEntries) {

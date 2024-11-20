@@ -109,7 +109,6 @@ public class Apoth {
 
         public static final DataComponentType<Boolean> FESTIVE_MARKER = R.component("festive_marker", b -> b.networkSynchronized(ByteBufCodecs.BOOL)); // TODO: When sync can be disabled, disable it
 
-        // TODO: Implement, nothing is checking this atm, and it needs to show in tooltips
         public static final DataComponentType<Float> DURABILITY_BONUS = R.component("durability_bonus", b -> b.persistent(Codec.floatRange(0, 1)).networkSynchronized(ByteBufCodecs.FLOAT));
 
         public static final DataComponentType<Boolean> FROM_CHEST = R.component("from_chest", b -> b.persistent(Codec.BOOL));

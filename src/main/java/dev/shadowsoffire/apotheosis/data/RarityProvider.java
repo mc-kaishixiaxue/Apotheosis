@@ -9,6 +9,7 @@ import java.util.function.UnaryOperator;
 
 import org.spongepowered.include.com.google.common.base.Preconditions;
 
+import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
@@ -133,7 +134,10 @@ public class RarityProvider extends DynamicRegistryProvider<LootRarity> {
                 new SocketLootRule(4, 4)))
             .rule(new SelectLootRule(0.99F, // 99% chance to roll a durability bonus, 1% to be unbreakable.
                 new DurabilityLootRule(0.45F, 0.75F),
-                componentRule(DataComponents.UNBREAKABLE, new Unbreakable(true)))));
+                new ComponentLootRule(DataComponentPatch.builder()
+                    .set(DataComponents.UNBREAKABLE, new Unbreakable(true))
+                    .set(Components.DURABILITY_BONUS, 0F)
+                    .build()))));
     }
 
     static <T> LootRule componentRule(DataComponentType<T> type, T value) {

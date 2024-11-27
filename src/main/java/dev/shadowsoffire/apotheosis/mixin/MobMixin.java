@@ -12,7 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 
-@Mixin(Mob.class)
+@Mixin(value = Mob.class, remap = false)
 public abstract class MobMixin extends LivingEntity {
 
     protected MobMixin(EntityType<? extends LivingEntity> entityType, Level level) {

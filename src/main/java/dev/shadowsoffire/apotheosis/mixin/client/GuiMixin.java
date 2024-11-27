@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import net.minecraft.client.gui.Gui;
 
-@Mixin(Gui.class)
+@Mixin(value = Gui.class, remap = false)
 public class GuiMixin {
 
     /**

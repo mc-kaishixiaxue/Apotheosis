@@ -17,7 +17,7 @@ import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.npc.WanderingTraderSpawner;
 import net.minecraft.world.level.LevelReader;
 
-@Mixin(WanderingTraderSpawner.class)
+@Mixin(value = WanderingTraderSpawner.class, remap = false)
 public class WandererSpawnerMixin {
 
     @Shadow

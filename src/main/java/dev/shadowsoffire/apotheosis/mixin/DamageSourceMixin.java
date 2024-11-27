@@ -15,7 +15,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 
-@Mixin(DamageSource.class)
+@Mixin(value = DamageSource.class, remap = false)
 public class DamageSourceMixin implements DamageSourceExtension {
 
     @Unique

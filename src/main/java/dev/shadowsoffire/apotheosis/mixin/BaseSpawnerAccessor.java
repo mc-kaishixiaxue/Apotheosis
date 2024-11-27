@@ -10,7 +10,7 @@ import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.SpawnData;
 
-@Mixin(BaseSpawner.class)
+@Mixin(value = BaseSpawner.class, remap = false)
 public interface BaseSpawnerAccessor {
 
     @Invoker

@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 
-@Mixin(SmithingMenu.class)
+@Mixin(value = SmithingMenu.class, remap = false)
 public abstract class SmithingMenuMixin extends ItemCombinerMenu {
 
     public SmithingMenuMixin(MenuType<?> p_39773_, int p_39774_, Inventory p_39775_, ContainerLevelAccess p_39776_) {

@@ -20,7 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
  * MaxHealthFix is marked as a required dependency on CF and should be installed alongside Apotheosis.
  * This is just a "backup" so I stop receiving bug reports about it.
  */
-@Mixin(LivingEntity.class)
+@Mixin(value = LivingEntity.class, remap = false)
 public abstract class MHFMixinLivingEntity {
 
     /**

@@ -1,0 +1,14 @@
+{
+  "type": "apotheosis:retreating",
+  "definition": {
+    "affix_type": "ability",
+    "exclusive_set": [],
+    "weights": {
+      "weight": 25
+    }
+  },
+  "rarities": [
+    "apotheosis:mythic",
+    "apotheosis:epic"
+  ]
+}

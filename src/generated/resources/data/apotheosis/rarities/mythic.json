@@ -52,6 +52,7 @@
       "if_false": {
         "type": "apotheosis:component",
         "components": {
+          "apotheosis:durability_bonus": 0.0,
           "minecraft:unbreakable": {}
         }
       },

@@ -1,4 +1,4 @@
-// 1.21.1	2024-11-18T20:46:12.1408124	Affixes
+// 1.21.1	2024-11-28T13:06:34.4156654	Affixes
 69ce8a2b8998248dc9984c75c5e4fe02f4edb5dc data/apotheosis/affixes/armor/attribute/adamantine.json
 53af88ccfc729c4a9c4d98471a5adf9534622aa8 data/apotheosis/affixes/armor/attribute/aquatic.json
 5b511f389e9c82f6053c4c819976dd5e802b0986 data/apotheosis/affixes/armor/attribute/blessed.json
@@ -37,7 +37,7 @@ a56acb6bf681732e2f0bf0796eda5428d37e13cb data/apotheosis/affixes/breaker/attribu
 34cdd0816c9190e95c5a3b477a40d771c02d3216 data/apotheosis/affixes/breaker/mob_effect/spelunkers.json
 9380620c1a3ced17d53b61163de034703f2acbd2 data/apotheosis/affixes/breaker/mob_effect/swift.json
 c278ce3e89a19e3478211fd57cf67717ee41ca86 data/apotheosis/affixes/generic/attribute/lucky.json
-0da1308805a3947873132a0e4d964c04d150c273 data/apotheosis/affixes/generic/telepathic.json
+562939115e4da06b842eadabdaa28f62d5edc72f data/apotheosis/affixes/generic/telepathic.json
 0e5f8bed842f59fa47c90e4613dec5e589e038d9 data/apotheosis/affixes/melee/attribute/berserking.json
 28d08fc1669f7d8b0c0f419d5ed58d91cd2feb1a data/apotheosis/affixes/melee/attribute/forceful.json
 35570de60010b122703a9963d6797695446c15a7 data/apotheosis/affixes/melee/attribute/giant_slaying.json
@@ -51,19 +51,22 @@ a9884d6a39788b384b0b7bd6d7d425342f95e5e0 data/apotheosis/affixes/melee/attribute
 1fef28913a998b1c6754568b73761b7d8c360ad3 data/apotheosis/affixes/melee/attribute/piercing.json
 8e5d13dc050670570dfd0daad0ab261e01abf187 data/apotheosis/affixes/melee/attribute/vampiric.json
 a9c5a86e9d468c61afd3a7447eea0d5d0017887e data/apotheosis/affixes/melee/attribute/violent.json
+fc019f503da25b0da980799236c6a7a5daa9a395 data/apotheosis/affixes/melee/cleaving.json
+e0b515b7b0c610a58b1e1efaf40075ef5ee75301 data/apotheosis/affixes/melee/executing.json
+350faa7f9b846d97ed3cc217c8c6303451e2fd51 data/apotheosis/affixes/melee/festive.json
 e0eecc50cf5b781220adb382cfdf5a660bd355f9 data/apotheosis/affixes/melee/mob_effect/bloodletting.json
 6ef34fb36694b139567e80ef26f319252d8bf40d data/apotheosis/affixes/melee/mob_effect/caustic.json
 aee9985136af3dc829d4cdec396870248a8dcbf4 data/apotheosis/affixes/melee/mob_effect/elusive.json
 8dae5c9f3fafaab899d13009c1ca89ec01183007 data/apotheosis/affixes/melee/mob_effect/omniscient.json
 60c4cbfa4b798da94ddbea77048986c4239b7640 data/apotheosis/affixes/melee/mob_effect/sophisticated.json
 e63edba804d19bc4ffc57b6b8f5c1121c7e29c83 data/apotheosis/affixes/melee/mob_effect/weakening.json
-3f4ab841499746e7954c3fb5c6ad384c64e58b60 data/apotheosis/affixes/ranged/ability/magical.json
-d272c738fa0e89de57010e47524f4d3ffe93b067 data/apotheosis/affixes/ranged/ability/spectral.json
+071dc75298de520ffce9ecbe0a2b88a7e4a56305 data/apotheosis/affixes/melee/thunderstruck.json
 caae797c9f9c5060e32142220c118cf9a09f4709 data/apotheosis/affixes/ranged/attribute/agile.json
 373562616004ff8b50590b22770032fe2b8175bc data/apotheosis/affixes/ranged/attribute/elven.json
 a912265bb58b56a3ef65a7ba13ecd39e75a9ee9f data/apotheosis/affixes/ranged/attribute/streamlined.json
 c44f14818f6d01b95f6c8c6cad9e10c3b4e54d28 data/apotheosis/affixes/ranged/attribute/windswept.json
 eb00afb76bc01aba4c3e0f25b13bdf845a9a5ffa data/apotheosis/affixes/ranged/enchantment/prosperous.json
+f29eab69dd0b92540f3097a78d87e40ec07f961f data/apotheosis/affixes/ranged/magical.json
 202a56bb10e22bcc1f9d8a214b7321917d0251ea data/apotheosis/affixes/ranged/mob_effect/acidic.json
 1a69bf5022f222b4470ac2ed99d9ccd0b9909cd3 data/apotheosis/affixes/ranged/mob_effect/blighted.json
 405f4d93325200b61857561c8d34e3729bf2bd4a data/apotheosis/affixes/ranged/mob_effect/deathbound.json
@@ -72,6 +75,7 @@ c9ed3c3279a59c00d65c9586c2836b0c4b803c7e data/apotheosis/affixes/ranged/mob_effe
 598fc566b65bfd53bd66dbecff183e4064a5ad03 data/apotheosis/affixes/ranged/mob_effect/grievous.json
 4c9f80984ce059eb6229d829926601ec7cf05484 data/apotheosis/affixes/ranged/mob_effect/ivy_laced.json
 2a3d36d1ec071400e88e6dccdc6f7b7a48e336c7 data/apotheosis/affixes/ranged/mob_effect/shulkers.json
+d272c738fa0e89de57010e47524f4d3ffe93b067 data/apotheosis/affixes/ranged/spectral.json
 d193812d5e2557bed2e5c7b8c5bd15337ead4306 data/apotheosis/affixes/shield/attribute/ironforged.json
 24facd55139ec4765199409a986601863788672d data/apotheosis/affixes/shield/attribute/stalwart.json
 1c62e3eec9165f69d958414cf84e60f465ae7a42 data/apotheosis/affixes/shield/attribute/steel_touched.json

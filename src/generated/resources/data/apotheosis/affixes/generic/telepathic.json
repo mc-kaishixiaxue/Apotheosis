@@ -8,8 +8,8 @@
     }
   },
   "rarities": [
-    "apotheosis:mythic",
     "apotheosis:rare",
-    "apotheosis:epic"
+    "apotheosis:epic",
+    "apotheosis:mythic"
   ]
 }

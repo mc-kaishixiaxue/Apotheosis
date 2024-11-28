@@ -13,11 +13,14 @@ import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixRegistry;
 import dev.shadowsoffire.apotheosis.affix.AffixType;
 import dev.shadowsoffire.apotheosis.affix.AttributeAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.CleavingAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
 import dev.shadowsoffire.apotheosis.affix.effect.EnchantmentAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.EnchantmentAffix.Mode;
 import dev.shadowsoffire.apotheosis.affix.effect.EnlightenedAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.ExecutingAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.FestiveAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.MagicalArrowAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
@@ -25,6 +28,7 @@ import dev.shadowsoffire.apotheosis.affix.effect.OmneticAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.RadialAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.SpectralShotAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.TelepathicAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.ThunderstruckAffix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
@@ -557,8 +561,6 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         // TODO : Grievous, Regeneration, Fire Res / Water Breathing, Slow Fall (maybe), Invisibility, Weakness
 
-        // TODO: Add some way to validate that all created DynamicHolder(s) are "real" after datagen.
-
         // Breaker Basic Effects
 
         this.addMobEffect("breaker", "swift", MobEffects.DIG_SPEED, Target.BREAK_SELF, b -> b
@@ -792,13 +794,13 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         // Ranged Abilities
 
-        this.add(Apotheosis.loc("ranged/ability/magical"), new MagicalArrowAffix(
+        this.add(Apotheosis.loc("ranged/magical"), new MagicalArrowAffix(
             AffixDefinition.builder(AffixType.ABILITY)
                 .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
                 .build(),
             Set.of(epic, mythic)));
 
-        this.add(Apotheosis.loc("ranged/ability/spectral"),
+        this.add(Apotheosis.loc("ranged/spectral"),
             AffixBuilder.simple(SpectralShotAffix::new)
                 .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
                 .value(epic, 0.2F, 0.5F)
@@ -812,6 +814,38 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .step(0.25F)
             .value(epic, 6, 8)
             .value(mythic, 8, 10));
+
+        // Melee Abilities
+
+        this.add(Apotheosis.loc("melee/festive"),
+            AffixBuilder.simple(FestiveAffix::new)
+                .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+                .step(0.005F)
+                .value(epic, 0.02F, 0.05F)
+                .value(mythic, 0.03F, 0.06F)
+                .build());
+
+        this.add(Apotheosis.loc("melee/thunderstruck"),
+            AffixBuilder.simple(ThunderstruckAffix::new)
+                .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+                .step(1)
+                .value(epic, 3, 6)
+                .value(mythic, 4, 8)
+                .build());
+
+        this.add(Apotheosis.loc("melee/cleaving"),
+            new CleavingAffix.Builder()
+                .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+                .value(epic, 0.3F, 0.5F, 2, 5)
+                .value(mythic, 0.4F, 0.6F, 3, 6)
+                .build());
+
+        this.add(Apotheosis.loc("melee/executing"),
+            AffixBuilder.simple(ExecutingAffix::new)
+                .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
+                .value(epic, 0.10F, 0.20F)
+                .value(mythic, 0.15F, 0.25F)
+                .build());
 
         this.futures.add(CompletableFuture.runAsync(RarityRegistry.INSTANCE::validateExistingHolders));
         this.futures.add(CompletableFuture.runAsync(AffixRegistry.INSTANCE::validateExistingHolders));

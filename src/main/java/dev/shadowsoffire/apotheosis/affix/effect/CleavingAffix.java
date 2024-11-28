@@ -1,7 +1,10 @@
 package dev.shadowsoffire.apotheosis.affix.effect;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import com.google.common.base.Predicate;
 import com.mojang.serialization.Codec;
@@ -9,6 +12,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.affix.AffixBuilder;
 import dev.shadowsoffire.apotheosis.affix.AffixDefinition;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
@@ -125,6 +129,24 @@ public class CleavingAffix extends Affix {
         public static final Codec<CleaveValues> CODEC = RecordCodecBuilder
             .create(inst -> inst.group(StepFunction.CODEC.fieldOf("chance").forGetter(c -> c.chance), StepFunction.CODEC.fieldOf("targets").forGetter(c -> c.targets)).apply(inst, CleaveValues::new));
 
+    }
+
+    public static class Builder extends AffixBuilder<Builder> {
+
+        protected final Map<LootRarity, CleaveValues> values = new HashMap<>();
+
+        public Builder value(LootRarity rarity, float minChance, float maxChance, int minTargets, int maxTargets) {
+            StepFunction chance = StepFunction.fromBounds(minChance, maxChance, 0.05F);
+            StepFunction targets = StepFunction.fromBounds(minTargets, maxTargets, 1);
+            values.put(rarity, new CleaveValues(chance, targets));
+            return this;
+        }
+
+        public CleavingAffix build() {
+            Preconditions.checkNotNull(this.definition);
+            Preconditions.checkArgument(this.values.size() > 0);
+            return new CleavingAffix(this.definition, this.values);
+        }
     }
 
 }

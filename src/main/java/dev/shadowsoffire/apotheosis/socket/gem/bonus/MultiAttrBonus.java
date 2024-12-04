@@ -1,12 +1,12 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
@@ -35,7 +35,7 @@ public class MultiAttrBonus extends GemBonus {
     protected final String desc;
 
     public MultiAttrBonus(GemClass gemClass, List<ModifierInst> modifiers, String desc) {
-        super(Apotheosis.loc("multi_attribute"), gemClass);
+        super(gemClass);
         this.modifiers = modifiers;
         this.desc = desc;
     }
@@ -83,6 +83,35 @@ public class MultiAttrBonus extends GemBonus {
             return new AttributeModifier(id, this.values.get(purity), this.op);
         }
 
+    }
+
+    public static class Builder {
+        private GemClass gemClass;
+        private List<ModifierInst> modifiers;
+        private String desc;
+
+        public Builder() {
+            this.modifiers = new ArrayList<>();
+        }
+
+        public Builder gemClass(GemClass gemClass) {
+            this.gemClass = gemClass;
+            return this;
+        }
+
+        public Builder addModifier(ModifierInst modifier) {
+            this.modifiers.add(modifier);
+            return this;
+        }
+
+        public Builder desc(String desc) {
+            this.desc = desc;
+            return this;
+        }
+
+        public MultiAttrBonus build() {
+            return new MultiAttrBonus(gemClass, modifiers, desc);
+        }
     }
 
 }

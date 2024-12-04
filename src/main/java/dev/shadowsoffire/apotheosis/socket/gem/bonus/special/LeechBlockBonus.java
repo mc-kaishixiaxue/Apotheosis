@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
@@ -30,7 +29,7 @@ public class LeechBlockBonus extends GemBonus {
     protected final Map<Purity, Data> values;
 
     public LeechBlockBonus(Map<Purity, Data> values) {
-        super(Apotheosis.loc("leech_block"), new GemClass("shield", ImmutableSet.of(LootCategory.SHIELD)));
+        super(new GemClass("shield", ImmutableSet.of(LootCategory.SHIELD)));
         this.values = values;
     }
 
@@ -52,7 +51,7 @@ public class LeechBlockBonus extends GemBonus {
     public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
         Data d = this.values.get(inst.purity());
         Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown, ctx.tickRate()));
-        return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(d.healFactor * 100), cooldown).withStyle(ChatFormatting.YELLOW);
+        return Component.translatable("bonus." + this.getTypeKey() + ".desc", Affix.fmt(d.healFactor * 100), cooldown).withStyle(ChatFormatting.YELLOW);
     }
 
     @Override

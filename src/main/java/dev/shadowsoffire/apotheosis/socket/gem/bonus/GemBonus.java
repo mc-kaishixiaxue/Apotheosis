@@ -45,11 +45,9 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
     // TODO: Convert to Registry<Codec<?>> instead of using a raw codec map.
     public static final CodecMap<GemBonus> CODEC = new CodecMap<>("Gem Bonus");
 
-    protected final ResourceLocation id;
     protected final GemClass gemClass;
 
-    public GemBonus(ResourceLocation id, GemClass gemClass) {
-        this.id = id;
+    public GemBonus(GemClass gemClass) {
         this.gemClass = gemClass;
     }
 
@@ -208,8 +206,13 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
      */
     public void modifyLoot(GemInstance inst, ObjectArrayList<ItemStack> loot, LootContext ctx) {}
 
-    public ResourceLocation getId() {
-        return this.id;
+    /**
+     * Returns the serialization key for this GemBonus.
+     * <p>
+     * This is unique on a per-type basis, rather than per-instance basis.
+     */
+    public ResourceLocation getTypeKey() {
+        return GemBonus.CODEC.getKey(this.getCodec());
     }
 
     public GemClass getGemClass() {
@@ -255,6 +258,11 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
 
     private static void register(String id, Codec<? extends GemBonus> codec) {
         CODEC.register(Apotheosis.loc(id), codec);
+    }
+
+    public static abstract class Builder {
+
+        public abstract GemBonus build(GemClass gClass);
     }
 
 }

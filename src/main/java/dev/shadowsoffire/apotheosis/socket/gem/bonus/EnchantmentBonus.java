@@ -1,5 +1,6 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.mojang.serialization.Codec;
@@ -33,7 +34,7 @@ public class EnchantmentBonus extends GemBonus {
     protected final Map<Purity, Integer> values;
 
     public EnchantmentBonus(GemClass gemClass, Holder<Enchantment> ench, Mode mode, Map<Purity, Integer> values) {
-        super(Apotheosis.loc("enchantment"), gemClass);
+        super(gemClass);
         this.ench = ench;
         this.values = values;
         this.mode = mode;
@@ -42,7 +43,7 @@ public class EnchantmentBonus extends GemBonus {
     @Override
     public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
         int level = this.values.get(gem.purity());
-        String desc = "bonus." + this.getId() + ".desc";
+        String desc = "bonus." + this.getTypeKey() + ".desc";
         if (this.mode == Mode.GLOBAL) {
             desc += ".global";
         }
@@ -92,6 +93,45 @@ public class EnchantmentBonus extends GemBonus {
         GLOBAL;
 
         public static final Codec<Mode> CODEC = PlaceboCodecs.enumCodec(Mode.class);
+    }
+
+    public static class Builder {
+        private GemClass gemClass;
+        private Holder<Enchantment> enchantment;
+        private Mode mode;
+        private Map<Purity, Integer> values;
+
+        public Builder() {
+            this.values = new HashMap<>();
+            this.mode = Mode.SINGLE;
+        }
+
+        public Builder gemClass(GemClass gemClass) {
+            this.gemClass = gemClass;
+            return this;
+        }
+
+        public Builder enchantment(Holder<Enchantment> enchantment) {
+            this.enchantment = enchantment;
+            return this;
+        }
+
+        public Builder mode(Mode mode) {
+            this.mode = mode;
+            return this;
+        }
+
+        public Builder addValue(Purity purity, int value) {
+            if (value < 1 || value > 127) {
+                throw new IllegalArgumentException("Value must be between 1 and 127");
+            }
+            this.values.put(purity, value);
+            return this;
+        }
+
+        public EnchantmentBonus build() {
+            return new EnchantmentBonus(gemClass, enchantment, mode, values);
+        }
     }
 
 }

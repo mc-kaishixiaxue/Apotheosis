@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
@@ -30,7 +29,7 @@ public class MageSlayerBonus extends GemBonus {
     protected final Map<Purity, Float> values;
 
     public MageSlayerBonus(Map<Purity, Float> values) {
-        super(Apotheosis.loc("mageslayer"), new GemClass("helmet", ImmutableSet.of(LootCategory.HELMET)));
+        super(new GemClass("helmet", ImmutableSet.of(LootCategory.HELMET)));
         this.values = values;
     }
 
@@ -52,7 +51,7 @@ public class MageSlayerBonus extends GemBonus {
     @Override
     public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
         float value = this.values.get(inst.purity());
-        return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(value * 100)).withStyle(ChatFormatting.YELLOW);
+        return Component.translatable("bonus." + this.getTypeKey() + ".desc", Affix.fmt(value * 100)).withStyle(ChatFormatting.YELLOW);
     }
 
     @Override

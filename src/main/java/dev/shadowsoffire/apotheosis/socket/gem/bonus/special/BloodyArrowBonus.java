@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
@@ -31,7 +30,7 @@ public class BloodyArrowBonus extends GemBonus {
     protected final Map<Purity, Data> values;
 
     public BloodyArrowBonus(Map<Purity, Data> values) {
-        super(Apotheosis.loc("bloody_arrow"), new GemClass("ranged_weapon", ImmutableSet.of(LootCategory.BOW)));
+        super(new GemClass("ranged_weapon", ImmutableSet.of(LootCategory.BOW)));
         this.values = values;
     }
 
@@ -53,7 +52,7 @@ public class BloodyArrowBonus extends GemBonus {
     public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
         Data d = this.values.get(inst.purity());
         Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown, ctx.tickRate()));
-        return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(d.healthCost * 100), Affix.fmt(100 * d.dmgMultiplier), cooldown).withStyle(ChatFormatting.YELLOW);
+        return Component.translatable("bonus." + this.getTypeKey() + ".desc", Affix.fmt(d.healthCost * 100), Affix.fmt(100 * d.dmgMultiplier), cooldown).withStyle(ChatFormatting.YELLOW);
     }
 
     @Override

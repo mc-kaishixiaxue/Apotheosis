@@ -5,7 +5,6 @@ import java.util.Map;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
@@ -41,7 +40,7 @@ public class AllStatsBonus extends GemBonus {
     protected final HolderSet<Attribute> attributes;
 
     public AllStatsBonus(GemClass gemClass, Operation op, Map<Purity, Float> values, HolderSet<Attribute> attributes) {
-        super(Apotheosis.loc("all_stats"), gemClass);
+        super(gemClass);
         this.operation = op;
         this.values = values;
         this.attributes = attributes;
@@ -60,7 +59,7 @@ public class AllStatsBonus extends GemBonus {
     @Override
     public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
         float value = this.values.get(inst.purity());
-        return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(value * 100)).withStyle(ChatFormatting.YELLOW);
+        return Component.translatable("bonus." + this.getTypeKey() + ".desc", Affix.fmt(value * 100)).withStyle(ChatFormatting.YELLOW);
     }
 
     @Override

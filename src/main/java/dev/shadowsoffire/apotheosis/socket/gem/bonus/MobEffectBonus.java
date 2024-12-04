@@ -1,11 +1,11 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
@@ -50,7 +50,7 @@ public class MobEffectBonus extends GemBonus {
     protected final boolean stackOnReapply;
 
     public MobEffectBonus(GemClass gemClass, Holder<MobEffect> effect, Target target, Map<Purity, EffectData> values, boolean stackOnReapply) {
-        super(Apotheosis.loc("mob_effect"), gemClass);
+        super(gemClass);
         this.effect = effect;
         this.target = target;
         this.values = values;
@@ -182,6 +182,40 @@ public class MobEffectBonus extends GemBonus {
 
         public MobEffectInstance build(Holder<MobEffect> effect) {
             return new MobEffectInstance(effect, this.duration, this.amplifier);
+        }
+    }
+
+    public static class Builder {
+        private GemClass gemClass;
+        private final Holder<MobEffect> effect;
+        private final Target target;
+        private Map<Purity, EffectData> values;
+        private boolean stacking;
+
+        public Builder(Holder<MobEffect> effect, Target target) {
+            this.values = new HashMap<>();
+            this.stacking = false;
+            this.effect = effect;
+            this.target = target;
+        }
+
+        public Builder gemClass(GemClass gemClass) {
+            this.gemClass = gemClass;
+            return this;
+        }
+
+        public Builder addValue(Purity purity, EffectData effectData) {
+            this.values.put(purity, effectData);
+            return this;
+        }
+
+        public Builder stacking() {
+            this.stacking = true;
+            return this;
+        }
+
+        public MobEffectBonus build() {
+            return new MobEffectBonus(gemClass, effect, target, values, stacking);
         }
     }
 

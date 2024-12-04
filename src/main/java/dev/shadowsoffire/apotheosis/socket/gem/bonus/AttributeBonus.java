@@ -1,11 +1,11 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
@@ -34,7 +34,7 @@ public class AttributeBonus extends GemBonus {
     protected final Map<Purity, Double> values;
 
     public AttributeBonus(GemClass gemClass, Holder<Attribute> attr, Operation op, Map<Purity, Double> values) {
-        super(Apotheosis.loc("attribute"), gemClass);
+        super(gemClass);
         this.attribute = attr;
         this.operation = op;
         this.values = values;
@@ -63,6 +63,41 @@ public class AttributeBonus extends GemBonus {
     @Override
     public Codec<? extends GemBonus> getCodec() {
         return CODEC;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder extends GemBonus.Builder {
+        private final Map<Purity, Double> values;
+
+        private Holder<Attribute> attribute;
+        private Operation operation;
+
+        private Builder() {
+            this.values = new HashMap<>();
+        }
+
+        public Builder attr(Holder<Attribute> attribute) {
+            this.attribute = attribute;
+            return this;
+        }
+
+        public Builder op(Operation operation) {
+            this.operation = operation;
+            return this;
+        }
+
+        public Builder value(Purity purity, double value) {
+            this.values.put(purity, value);
+            return this;
+        }
+
+        @Override
+        public AttributeBonus build(GemClass gClass) {
+            return new AttributeBonus(gClass, attribute, operation, values);
+        }
     }
 
 }

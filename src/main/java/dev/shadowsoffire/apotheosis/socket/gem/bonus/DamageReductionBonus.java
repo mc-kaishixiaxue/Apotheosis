@@ -1,11 +1,11 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
@@ -31,7 +31,7 @@ public class DamageReductionBonus extends GemBonus {
         .apply(inst, DamageReductionBonus::new));
 
     public DamageReductionBonus(GemClass gemClass, DamageType type, Map<Purity, Float> values) {
-        super(Apotheosis.loc("damage_reduction"), gemClass);
+        super(gemClass);
         this.type = type;
         this.values = values;
     }
@@ -59,6 +59,38 @@ public class DamageReductionBonus extends GemBonus {
     @Override
     public Codec<? extends GemBonus> getCodec() {
         return CODEC;
+    }
+
+    public static class Builder {
+        private GemClass gemClass;
+        private DamageType type;
+        private Map<Purity, Float> values;
+
+        public Builder() {
+            this.values = new HashMap<>();
+        }
+
+        public Builder gemClass(GemClass gemClass) {
+            this.gemClass = gemClass;
+            return this;
+        }
+
+        public Builder damageType(DamageType type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder addValue(Purity purity, float value) {
+            if (value < 0 || value > 1) {
+                throw new IllegalArgumentException("Value must be between 0 and 1");
+            }
+            this.values.put(purity, value);
+            return this;
+        }
+
+        public DamageReductionBonus build() {
+            return new DamageReductionBonus(gemClass, type, values);
+        }
     }
 
 }

@@ -6,7 +6,6 @@ import java.util.Optional;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
@@ -60,7 +59,7 @@ public class DropTransformBonus extends GemBonus {
     protected final String descKey;
 
     public DropTransformBonus(GemClass gemClass, Optional<TagKey<Block>> tag, Ingredient inputs, ItemStack output, Map<Purity, Float> values, String descKey) {
-        super(Apotheosis.loc("drop_transform"), gemClass);
+        super(gemClass);
         this.tag = tag;
         this.inputs = inputs;
         this.output = output;

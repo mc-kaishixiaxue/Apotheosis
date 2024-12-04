@@ -11,6 +11,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
+import dev.shadowsoffire.apotheosis.util.ApothMiscUtil;
 import net.minecraft.network.FriendlyByteBuf;
 
 /**
@@ -23,6 +24,10 @@ public record GemClass(String key, Set<LootCategory> types) {
         Codec.STRING.fieldOf("key").forGetter(GemClass::key),
         LootCategory.SET_CODEC.fieldOf("types").forGetter(GemClass::types))
         .apply(inst, GemClass::new));
+
+    public GemClass(String key, LootCategory... types) {
+        this(key, ApothMiscUtil.linkedSet(types));
+    }
 
     public GemClass(String key, Set<LootCategory> types) {
         this.key = key;

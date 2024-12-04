@@ -37,6 +37,7 @@ import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.util.ApothMiscUtil;
 import dev.shadowsoffire.apothic_attributes.api.ALObjects;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import dev.shadowsoffire.placebo.util.StepFunction;
@@ -96,7 +97,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         this.add(Apotheosis.loc("generic/telepathic"),
             new TelepathicAffix(
                 AffixDefinition.builder(AffixType.BASIC_EFFECT).weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY)).build(),
-                Set.of(rare, epic, mythic)));
+                linkedSet(rare, epic, mythic)));
 
         // Armor Attributes
         this.addAttribute("armor", "aquatic", NeoForgeMod.SWIM_SPEED, Operation.ADD_MULTIPLIED_TOTAL, b -> b
@@ -801,7 +802,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             AffixDefinition.builder(AffixType.ABILITY)
                 .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
                 .build(),
-            Set.of(epic, mythic)));
+            linkedSet(epic, mythic)));
 
         this.add(Apotheosis.loc("ranged/spectral"),
             AffixBuilder.simple(SpectralShotAffix::new)
@@ -854,7 +855,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         this.add(Apotheosis.loc("shield/retreating"), new RetreatingAffix(
             AffixDefinition.builder(AffixType.ABILITY).weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY)).build(),
-            Set.of(epic, mythic)));
+            linkedSet(epic, mythic)));
 
         this.add(Apotheosis.loc("shield/psychic"), AffixBuilder.simple(PsychicAffix::new)
             .definition(AffixType.ABILITY, DEFAULT_WEIGHT, DEFAULT_QUALITY)
@@ -903,6 +904,10 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
     private static DynamicHolder<Affix> afx(String path) {
         return AffixRegistry.INSTANCE.holder(Apotheosis.loc(path));
+    }
+
+    private static Set<LootRarity> linkedSet(LootRarity... rarities) {
+        return ApothMiscUtil.linkedSet(rarities);
     }
 
 }

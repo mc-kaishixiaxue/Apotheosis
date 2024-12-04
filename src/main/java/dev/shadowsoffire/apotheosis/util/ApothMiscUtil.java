@@ -1,5 +1,8 @@
 package dev.shadowsoffire.apotheosis.util;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.jetbrains.annotations.Nullable;
 
 import dev.shadowsoffire.placebo.color.GradientColor;
@@ -65,6 +68,15 @@ public class ApothMiscUtil {
      */
     public static double duraProd(double result, double element) {
         return result + (1 - result) * element;
+    }
+
+    @SafeVarargs
+    public static <T> Set<T> linkedSet(T... objects) {
+        var set = new LinkedHashSet<T>();
+        for (T t : objects) {
+            set.add(t);
+        }
+        return set;
     }
 
     private static class ClientInternal {

@@ -71,7 +71,7 @@ public class AdventureTwilightCompat {
         protected final Map<Purity, StepFunction> values;
 
         public OreMagnetBonus(GemClass gemClass, Map<Purity, StepFunction> values) {
-            super(Apotheosis.loc("twilight_ore_magnet"), gemClass);
+            super(gemClass);
             this.values = values;
         }
 
@@ -103,7 +103,7 @@ public class AdventureTwilightCompat {
 
         @Override
         public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
-            return Component.translatable("bonus." + this.getId() + ".desc", this.values.get(gem.purity()).getInt(0)).withStyle(ChatFormatting.YELLOW);
+            return Component.translatable("bonus." + this.getTypeKey() + ".desc", this.values.get(gem.purity()).getInt(0)).withStyle(ChatFormatting.YELLOW);
         }
 
     }
@@ -119,7 +119,7 @@ public class AdventureTwilightCompat {
         protected final Map<Purity, Data> values;
 
         public TreasureGoblinBonus(GemClass gemClass, Map<Purity, Data> values) {
-            super(Apotheosis.loc("twilight_treasure_goblin"), gemClass);
+            super(gemClass);
             this.values = values;
         }
 
@@ -166,7 +166,7 @@ public class AdventureTwilightCompat {
         public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
             Data d = this.values.get(inst.purity());
             Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown, ctx.tickRate()));
-            return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(d.chance * 100), cooldown).withStyle(ChatFormatting.YELLOW);
+            return Component.translatable("bonus." + this.getTypeKey() + ".desc", Affix.fmt(d.chance * 100), cooldown).withStyle(ChatFormatting.YELLOW);
         }
 
         protected static record Data(float chance, int cooldown) {
@@ -201,7 +201,7 @@ public class AdventureTwilightCompat {
         protected final Map<Purity, Data> values;
 
         public FortificationBonus(GemClass gemClass, Map<Purity, Data> values) {
-            super(Apotheosis.loc("twilight_fortification"), gemClass);
+            super(gemClass);
             this.values = values;
         }
 
@@ -230,7 +230,7 @@ public class AdventureTwilightCompat {
         public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
             Data d = this.values.get(inst.purity());
             Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown, ctx.tickRate()));
-            return Component.translatable("bonus." + this.getId() + ".desc", Affix.fmt(d.chance * 100), cooldown).withStyle(ChatFormatting.YELLOW);
+            return Component.translatable("bonus." + this.getTypeKey() + ".desc", Affix.fmt(d.chance * 100), cooldown).withStyle(ChatFormatting.YELLOW);
         }
 
         protected static record Data(float chance, int cooldown) {

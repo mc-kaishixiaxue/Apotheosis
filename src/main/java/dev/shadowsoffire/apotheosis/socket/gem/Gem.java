@@ -1,5 +1,6 @@
 package dev.shadowsoffire.apotheosis.socket.gem;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ public class Gem implements CodecProvider<Gem>, Weighted, Constrained {
         this.bonuses = bonuses;
         this.unique = unique;
         Preconditions.checkArgument(!bonuses.isEmpty(), "No bonuses were provided.");
+        // TODO: Improve error reporting when gem class overlaps are detected.
         this.bonusMap = bonuses.stream().<Pair<LootCategory, GemBonus>>mapMulti((gemData, mapper) -> {
             for (LootCategory c : gemData.getGemClass().types()) {
                 mapper.accept(Pair.of(c, gemData));
@@ -191,6 +193,43 @@ public class Gem implements CodecProvider<Gem>, Weighted, Constrained {
         }
         else {
             list.accept(Component.translatable("text.apotheosis.dot_prefix", Component.translatable("text.apotheosis.anything")).withStyle(style));
+        }
+    }
+
+    public static class Builder {
+
+        protected final TieredWeights weights;
+        protected Constraints constraints = Constraints.EMPTY;
+        protected Purity minPurity = Purity.CRACKED;
+        protected List<GemBonus> bonuses = new ArrayList<>();
+        protected boolean unique = false;
+
+        public Builder(TieredWeights weights) {
+            this.weights = weights;
+        }
+
+        public Builder contstraints(Constraints constraints) {
+            this.constraints = constraints;
+            return this;
+        }
+
+        public Builder minPurity(Purity purity) {
+            this.minPurity = purity;
+            return this;
+        }
+
+        public Builder bonus(GemClass gClass, GemBonus.Builder builder) {
+            this.bonuses.add(builder.build(gClass));
+            return this;
+        }
+
+        public Builder unique() {
+            this.unique = true;
+            return this;
+        }
+
+        public Gem build() {
+            return new Gem(this.weights, this.constraints, this.minPurity, this.bonuses, this.unique);
         }
     }
 

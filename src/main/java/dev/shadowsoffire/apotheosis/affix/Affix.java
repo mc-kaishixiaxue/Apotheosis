@@ -292,7 +292,7 @@ public abstract class Affix implements CodecProvider<Affix>, Weighted {
     /**
      * Records the current time as a cooldown tracker. Used in conjunction with {@link #isOnCooldown(Affix, int, LivingEntity)}
      * <p>
-     * Use of this method is problematic if the id is not unique for the effect, as is the case with {@link Gem#getId()} and {@link GemBonus#getId()}.
+     * Use of this method is problematic if the id is not unique for the effect, as is the case with {@link Gem#getId()} and {@link GemBonus#getTypeKey()}.
      */
     public static void startCooldown(ResourceLocation id, LivingEntity entity) {
         entity.getPersistentData().putLong("apoth.affix_cooldown." + id.toString(), entity.level().getGameTime());

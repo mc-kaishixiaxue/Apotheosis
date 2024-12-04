@@ -20,6 +20,7 @@ import dev.shadowsoffire.apotheosis.data.AffixProvider;
 import dev.shadowsoffire.apotheosis.data.ApothLootProvider;
 import dev.shadowsoffire.apotheosis.data.ApothRecipeProvider;
 import dev.shadowsoffire.apotheosis.data.ApothTagsProvider;
+import dev.shadowsoffire.apotheosis.data.GemProvider;
 import dev.shadowsoffire.apotheosis.data.RarityProvider;
 import dev.shadowsoffire.apotheosis.loot.AffixLootRegistry;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
@@ -123,6 +124,7 @@ public class Apotheosis {
             .provider(RarityProvider::new)
             .provider(AffixLootEntryProvider::new)
             .provider(AffixProvider::new)
+            .provider(GemProvider::new)
             .build(e);
 
         /*
@@ -139,6 +141,7 @@ public class Apotheosis {
         for (Purity p : Purity.values()) {
             map.put(p.getSerializedName(), p.ordinal() + 1);
         }
+
         for (WorldTier t : WorldTier.values()) {
             map.put(t.getSerializedName(), t.ordinal() + 1);
         }
@@ -156,6 +159,9 @@ public class Apotheosis {
 
         // Force duration above amp/cooldown for mob effect affixes
         map.put("duration", 1);
+
+        // Place gem bonus lists below everything else in the gem file.
+        map.put("bonuses", 5);
     }
 
     @SubscribeEvent

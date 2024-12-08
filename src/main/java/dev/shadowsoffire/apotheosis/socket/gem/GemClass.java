@@ -3,10 +3,12 @@ package dev.shadowsoffire.apotheosis.socket.gem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -20,10 +22,17 @@ import net.minecraft.network.FriendlyByteBuf;
  */
 public record GemClass(String key, Set<LootCategory> types) {
 
-    public static Codec<GemClass> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+    public static Codec<GemClass> EXPLICIT_CODEC = RecordCodecBuilder.create(inst -> inst.group(
         Codec.STRING.fieldOf("key").forGetter(GemClass::key),
         LootCategory.SET_CODEC.fieldOf("types").forGetter(GemClass::types))
         .apply(inst, GemClass::new));
+
+    public static Codec<GemClass> CODEC = Codec.either(EXPLICIT_CODEC, LootCategory.CODEC)
+        .xmap(e -> e.map(Function.identity(), GemClass::new), GemClass::toEither);
+
+    public GemClass(LootCategory category) {
+        this(category.getName(), category);
+    }
 
     public GemClass(String key, LootCategory... types) {
         this(key, ApothMiscUtil.linkedSet(types));
@@ -50,5 +59,12 @@ public record GemClass(String key, Set<LootCategory> types) {
             list.add(LootCategory.byId(buf.readUtf()));
         }
         return new GemClass(key, ImmutableSet.copyOf(list));
+    }
+
+    private static Either<GemClass, LootCategory> toEither(GemClass gc) {
+        if (gc.types.size() == 1) {
+            return Either.right(gc.types.iterator().next());
+        }
+        return Either.left(gc);
     }
 }

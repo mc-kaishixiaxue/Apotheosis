@@ -218,6 +218,10 @@ public class Gem implements CodecProvider<Gem>, Weighted, Constrained {
             return this;
         }
 
+        public Builder bonus(LootCategory cat, GemBonus.Builder builder) {
+            return bonus(new GemClass(cat), builder);
+        }
+
         public Builder bonus(GemClass gClass, GemBonus.Builder builder) {
             this.bonuses.add(builder.build(gClass));
             return this;

@@ -8,7 +8,7 @@
       "type": "apotheosis:attribute",
       "attribute": "minecraft:generic.attack_damage",
       "gem_class": {
-        "key": "melee_weapon",
+        "key": "light_weapon",
         "types": [
           "melee_weapon",
           "trident"
@@ -26,12 +26,7 @@
     },
     {
       "type": "apotheosis:durability",
-      "gem_class": {
-        "key": "breaker",
-        "types": [
-          "breaker"
-        ]
-      },
+      "gem_class": "breaker",
       "values": {
         "cracked": 0.1,
         "chipped": 0.15,

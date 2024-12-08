@@ -1,4 +1,8 @@
-// 1.21.1	2024-12-03T20:18:53.7064626	Gems
-85e3330c7999380cd80421c17aff43794eed6ace data/apotheosis/gems/core/ballast.json
-afd5ba6a0b16f02dc006b1dcc05c88d36ab7c770 data/apotheosis/gems/core/brawlers.json
-a80fa5fdce71d21ce3a0084e56535e118a1153af data/apotheosis/gems/core/breach.json
+// 1.21.1	2024-12-08T01:51:41.3142384	Gems
+5b35c77d0c392ed899aa4ec4b1334b5aa94d4665 data/apotheosis/gems/core/ballast.json
+a5b197b31160e2ddb4778acaac23c0ac24a323b6 data/apotheosis/gems/core/brawlers.json
+271b87823272afc1ce3bc342ba04673a81e43d31 data/apotheosis/gems/core/breach.json
+37047ac885d073caee6e8660c7ce66ea32f38ff9 data/apotheosis/gems/core/combatant.json
+9cc20cad03a2b7aea9b4431345456b9ec4434191 data/apotheosis/gems/core/guardian.json
+b39bacf05d0dda4ff5c039d9b43ec9ddba9bd8ad data/apotheosis/gems/core/lightning.json
+e931b3b422d8364406cd88d9eae4d5c95000ec87 data/apotheosis/gems/core/lunar.json

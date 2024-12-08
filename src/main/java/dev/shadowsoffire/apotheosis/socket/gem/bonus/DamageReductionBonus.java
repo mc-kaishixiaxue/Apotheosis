@@ -61,8 +61,11 @@ public class DamageReductionBonus extends GemBonus {
         return CODEC;
     }
 
-    public static class Builder {
-        private GemClass gemClass;
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder extends GemBonus.Builder {
         private DamageType type;
         private Map<Purity, Float> values;
 
@@ -70,17 +73,12 @@ public class DamageReductionBonus extends GemBonus {
             this.values = new HashMap<>();
         }
 
-        public Builder gemClass(GemClass gemClass) {
-            this.gemClass = gemClass;
-            return this;
-        }
-
         public Builder damageType(DamageType type) {
             this.type = type;
             return this;
         }
 
-        public Builder addValue(Purity purity, float value) {
+        public Builder value(Purity purity, float value) {
             if (value < 0 || value > 1) {
                 throw new IllegalArgumentException("Value must be between 0 and 1");
             }
@@ -88,7 +86,7 @@ public class DamageReductionBonus extends GemBonus {
             return this;
         }
 
-        public DamageReductionBonus build() {
+        public DamageReductionBonus build(GemClass gemClass) {
             return new DamageReductionBonus(gemClass, type, values);
         }
     }

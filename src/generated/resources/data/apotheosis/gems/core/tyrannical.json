@@ -1,0 +1,82 @@
+{
+  "type": "apotheosis:gem",
+  "unique": true,
+  "weights": {
+    "weight": 10
+  },
+  "bonuses": [
+    {
+      "type": "apotheosis:attribute",
+      "attribute": "minecraft:generic.knockback_resistance",
+      "gem_class": {
+        "key": "light_weapon",
+        "types": [
+          "melee_weapon",
+          "trident"
+        ]
+      },
+      "operation": "add_value",
+      "values": {
+        "cracked": 0.5,
+        "chipped": 1.0,
+        "flawed": 1.5,
+        "normal": 2.0,
+        "flawless": 3.0,
+        "perfect": 3.5
+      }
+    },
+    {
+      "type": "apotheosis:attribute",
+      "attribute": "minecraft:generic.armor_toughness",
+      "gem_class": {
+        "key": "core_armor",
+        "types": [
+          "chestplate",
+          "leggings"
+        ]
+      },
+      "operation": "add_value",
+      "values": {
+        "cracked": 0.5,
+        "chipped": 1.0,
+        "flawed": 2.0,
+        "normal": 3.0,
+        "flawless": 4.0,
+        "perfect": 6.0
+      }
+    },
+    {
+      "type": "apotheosis:attribute",
+      "attribute": "minecraft:generic.armor_toughness",
+      "gem_class": "shield",
+      "operation": "add_multiplied_base",
+      "values": {
+        "cracked": 0.05,
+        "chipped": 0.15,
+        "flawed": 0.225,
+        "normal": 0.3,
+        "flawless": 0.375,
+        "perfect": 0.5
+      }
+    },
+    {
+      "type": "apotheosis:mob_effect",
+      "gem_class": "bow",
+      "mob_effect": "apothic_attributes:bleeding",
+      "stack_on_reapply": true,
+      "target": "arrow_target",
+      "values": {
+        "flawless": {
+          "duration": 160,
+          "amplifier": 0,
+          "cooldown": 40
+        },
+        "perfect": {
+          "duration": 160,
+          "amplifier": 1,
+          "cooldown": 40
+        }
+      }
+    }
+  ]
+}

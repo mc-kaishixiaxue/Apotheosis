@@ -5,6 +5,7 @@ import java.util.function.UnaryOperator;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
+import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
@@ -13,11 +14,13 @@ import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.AttributeBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.DamageReductionBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.DurabilityBonus;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.MobEffectBonus;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apothic_attributes.api.ALObjects;
 import dev.shadowsoffire.placebo.util.data.DynamicRegistryProvider;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -31,6 +34,9 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
     public static final GemClass CORE_ARMOR = new GemClass("core_armor", LootCategory.CHESTPLATE, LootCategory.LEGGINGS);
     public static final GemClass RANGED_WEAPON = new GemClass("ranged_weapon", LootCategory.BOW, LootCategory.TRIDENT);
     public static final GemClass LOWER_ARMOR = new GemClass("lower_armor", LootCategory.LEGGINGS, LootCategory.BOOTS);
+    public static final GemClass WEAPONS = new GemClass("weapons", LootCategory.MELEE_WEAPON, LootCategory.TRIDENT, LootCategory.BOW);
+    public static final GemClass WEAPON_OR_TOOL = new GemClass("weapon_or_tool", LootCategory.MELEE_WEAPON, LootCategory.TRIDENT, LootCategory.BOW, LootCategory.BREAKER);
+    public static final GemClass NON_TRIDENT_WEAPONS = new GemClass("weapons", LootCategory.MELEE_WEAPON, LootCategory.BOW);
 
     public GemProvider(PackOutput output, CompletableFuture<Provider> registries) {
         super(output, registries, GemRegistry.INSTANCE);
@@ -242,6 +248,204 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                 .value(Purity.NORMAL, 0.45)
                 .value(Purity.FLAWLESS, 0.60)
                 .value(Purity.PERFECT, 0.80)));
+
+        addGem("core/samurai", c -> c
+            .unique()
+            .bonus(WEAPONS, AttributeBonus.builder()
+                .attr(ALObjects.Attributes.CRIT_CHANCE)
+                .op(Operation.ADD_VALUE)
+                .value(Purity.CRACKED, 0.05)
+                .value(Purity.CHIPPED, 0.15)
+                .value(Purity.FLAWED, 0.25)
+                .value(Purity.NORMAL, 0.35)
+                .value(Purity.FLAWLESS, 0.4)
+                .value(Purity.PERFECT, 0.5))
+            .bonus(LOWER_ARMOR, AttributeBonus.builder()
+                .attr(Attributes.MOVEMENT_SPEED)
+                .op(Operation.ADD_MULTIPLIED_TOTAL)
+                .value(Purity.CRACKED, 0.10)
+                .value(Purity.CHIPPED, 0.15)
+                .value(Purity.FLAWED, 0.25)
+                .value(Purity.NORMAL, 0.35)
+                .value(Purity.FLAWLESS, 0.45)
+                .value(Purity.PERFECT, 0.65))
+            .bonus(LootCategory.HELMET, AttributeBonus.builder()
+                .attr(ALObjects.Attributes.ARROW_VELOCITY)
+                .op(Operation.ADD_MULTIPLIED_TOTAL)
+                .value(Purity.CRACKED, 0.075)
+                .value(Purity.CHIPPED, 0.15)
+                .value(Purity.FLAWED, 0.25)
+                .value(Purity.NORMAL, 0.375)
+                .value(Purity.FLAWLESS, 0.425)
+                .value(Purity.PERFECT, 0.50))
+            .bonus(LootCategory.SHIELD, AttributeBonus.builder()
+                .attr(ALObjects.Attributes.DODGE_CHANCE)
+                .op(Operation.ADD_VALUE)
+                .value(Purity.CRACKED, 0.01)
+                .value(Purity.CHIPPED, 0.02)
+                .value(Purity.FLAWED, 0.04)
+                .value(Purity.NORMAL, 0.06)
+                .value(Purity.FLAWLESS, 0.08)
+                .value(Purity.PERFECT, 0.10)));
+
+        addGem("core/slipstream", c -> c
+            .unique()
+            .bonus(LootCategory.BOW, AttributeBonus.builder()
+                .attr(ALObjects.Attributes.DRAW_SPEED)
+                .op(Operation.ADD_MULTIPLIED_BASE)
+                .value(Purity.CRACKED, 0.10)
+                .value(Purity.CHIPPED, 0.25)
+                .value(Purity.FLAWED, 0.35)
+                .value(Purity.NORMAL, 0.45)
+                .value(Purity.FLAWLESS, 0.5)
+                .value(Purity.PERFECT, 0.60))
+            .bonus(LootCategory.BREAKER, AttributeBonus.builder()
+                .attr(ALObjects.Attributes.MINING_SPEED)
+                .op(Operation.ADD_MULTIPLIED_BASE)
+                .value(Purity.CRACKED, 0.10)
+                .value(Purity.CHIPPED, 0.15)
+                .value(Purity.FLAWED, 0.225)
+                .value(Purity.NORMAL, 0.30)
+                .value(Purity.FLAWLESS, 0.375)
+                .value(Purity.PERFECT, 0.45))
+            .bonus(LootCategory.BOOTS, AttributeBonus.builder()
+                .attr(ALObjects.Attributes.DODGE_CHANCE)
+                .op(Operation.ADD_VALUE)
+                .value(Purity.CRACKED, 0.025)
+                .value(Purity.CHIPPED, 0.05)
+                .value(Purity.FLAWED, 0.075)
+                .value(Purity.NORMAL, 0.10)
+                .value(Purity.FLAWLESS, 0.125)
+                .value(Purity.PERFECT, 0.15)));
+
+        addGem("core/solar", c -> c
+            .bonus(LIGHT_WEAPON, AttributeBonus.builder()
+                .attr(ALObjects.Attributes.FIRE_DAMAGE)
+                .op(Operation.ADD_VALUE)
+                .value(Purity.CRACKED, 1)
+                .value(Purity.CHIPPED, 1.5)
+                .value(Purity.FLAWED, 2.5)
+                .value(Purity.NORMAL, 4)
+                .value(Purity.FLAWLESS, 6)
+                .value(Purity.PERFECT, 8))
+            .bonus(CORE_ARMOR, AttributeBonus.builder()
+                .attr(Attributes.GRAVITY)
+                .op(Operation.ADD_MULTIPLIED_TOTAL)
+                .value(Purity.CRACKED, 0.10)
+                .value(Purity.CHIPPED, 0.25)
+                .value(Purity.FLAWED, 0.45)
+                .value(Purity.NORMAL, 0.65)
+                .value(Purity.FLAWLESS, 0.85)
+                .value(Purity.PERFECT, 1.04))
+            .bonus(LootCategory.BOOTS, AttributeBonus.builder()
+                .attr(Attributes.STEP_HEIGHT)
+                .op(Operation.ADD_VALUE)
+                .value(Purity.CRACKED, 0.25)
+                .value(Purity.CHIPPED, 0.5)
+                .value(Purity.FLAWED, 1)
+                .value(Purity.NORMAL, 1.5)
+                .value(Purity.FLAWLESS, 2)
+                .value(Purity.PERFECT, 3)));
+
+        addGem("core/splendor", c -> c
+            .bonus(CORE_ARMOR, AttributeBonus.builder()
+                .attr(Attributes.LUCK)
+                .op(Operation.ADD_VALUE)
+                .value(Purity.CRACKED, 0.5)
+                .value(Purity.CHIPPED, 1.5)
+                .value(Purity.FLAWED, 2.5)
+                .value(Purity.NORMAL, 3.5)
+                .value(Purity.FLAWLESS, 4.5)
+                .value(Purity.PERFECT, 6))
+            .bonus(WEAPON_OR_TOOL, AttributeBonus.builder()
+                .attr(ALObjects.Attributes.EXPERIENCE_GAINED)
+                .op(Operation.ADD_MULTIPLIED_BASE)
+                .value(Purity.CRACKED, 0.075)
+                .value(Purity.CHIPPED, 0.15)
+                .value(Purity.FLAWED, 0.225)
+                .value(Purity.NORMAL, 0.3)
+                .value(Purity.FLAWLESS, 0.40)
+                .value(Purity.PERFECT, 0.60))
+            .bonus(LootCategory.BOOTS, AttributeBonus.builder()
+                .attr(Attributes.MOVEMENT_SPEED)
+                .op(Operation.ADD_MULTIPLIED_TOTAL)
+                .value(Purity.CRACKED, 0.10)
+                .value(Purity.CHIPPED, 0.25)
+                .value(Purity.FLAWED, 0.35)
+                .value(Purity.NORMAL, 0.45)
+                .value(Purity.FLAWLESS, 0.55)
+                .value(Purity.PERFECT, 0.70)));
+
+        addGem("core/tyrannical", c -> c
+            .unique()
+            .bonus(LIGHT_WEAPON, AttributeBonus.builder()
+                .attr(Attributes.KNOCKBACK_RESISTANCE)
+                .op(Operation.ADD_VALUE)
+                .value(Purity.CRACKED, 0.5)
+                .value(Purity.CHIPPED, 1)
+                .value(Purity.FLAWED, 1.5)
+                .value(Purity.NORMAL, 2)
+                .value(Purity.FLAWLESS, 3)
+                .value(Purity.PERFECT, 3.5))
+            .bonus(CORE_ARMOR, AttributeBonus.builder()
+                .attr(Attributes.ARMOR_TOUGHNESS)
+                .op(Operation.ADD_VALUE)
+                .value(Purity.CRACKED, 0.5)
+                .value(Purity.CHIPPED, 1)
+                .value(Purity.FLAWED, 2)
+                .value(Purity.NORMAL, 3)
+                .value(Purity.FLAWLESS, 4)
+                .value(Purity.PERFECT, 6))
+            .bonus(LootCategory.SHIELD, AttributeBonus.builder()
+                .attr(Attributes.ARMOR_TOUGHNESS)
+                .op(Operation.ADD_MULTIPLIED_BASE)
+                .value(Purity.CRACKED, 0.05)
+                .value(Purity.CHIPPED, 0.15)
+                .value(Purity.FLAWED, 0.225)
+                .value(Purity.NORMAL, 0.30)
+                .value(Purity.FLAWLESS, 0.375)
+                .value(Purity.PERFECT, 0.5))
+            .bonus(LootCategory.BOW, MobEffectBonus.builder()
+                .effect(ALObjects.MobEffects.BLEEDING)
+                .target(Target.ARROW_TARGET)
+                .stacking()
+                .value(Purity.FLAWLESS, 160, 0, 40)
+                .value(Purity.PERFECT, 160, 1, 40)));
+
+        addGem("core/warlord", c -> c
+            .bonus(NON_TRIDENT_WEAPONS, AttributeBonus.builder()
+                .attr(ALObjects.Attributes.CRIT_DAMAGE)
+                .op(Operation.ADD_MULTIPLIED_BASE)
+                .value(Purity.CRACKED, 0.10)
+                .value(Purity.CHIPPED, 0.20)
+                .value(Purity.FLAWED, 0.35)
+                .value(Purity.NORMAL, 0.45)
+                .value(Purity.FLAWLESS, 0.55)
+                .value(Purity.PERFECT, 0.70))
+            .bonus(LootCategory.CHESTPLATE, AttributeBonus.builder()
+                .attr(Attributes.MAX_HEALTH)
+                .op(Operation.ADD_MULTIPLIED_BASE)
+                .value(Purity.CRACKED, 0.05)
+                .value(Purity.CHIPPED, 0.10)
+                .value(Purity.FLAWED, 0.15)
+                .value(Purity.NORMAL, 0.20)
+                .value(Purity.FLAWLESS, 0.25)
+                .value(Purity.PERFECT, 0.35))
+            .bonus(LootCategory.HELMET, AttributeBonus.builder()
+                .attr(Attributes.ATTACK_DAMAGE)
+                .op(Operation.ADD_MULTIPLIED_TOTAL)
+                .value(Purity.CRACKED, 0.05)
+                .value(Purity.CHIPPED, 0.10)
+                .value(Purity.FLAWED, 0.125)
+                .value(Purity.NORMAL, 0.15)
+                .value(Purity.FLAWLESS, 0.175)
+                .value(Purity.PERFECT, 0.225))
+            .bonus(LootCategory.TRIDENT, MobEffectBonus.builder()
+                .effect(MobEffects.DAMAGE_BOOST)
+                .target(Target.ARROW_TARGET)
+                .stacking()
+                .value(Purity.FLAWLESS, 200, 0, 40)
+                .value(Purity.PERFECT, 200, 1, 40)));
     }
 
     private void addGem(String name, UnaryOperator<Gem.Builder> config) {

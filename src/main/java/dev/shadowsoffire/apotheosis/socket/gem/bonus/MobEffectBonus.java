@@ -171,6 +171,10 @@ public class MobEffectBonus extends GemBonus {
         return mutablecomponent.withStyle(mobeffect.value().getCategory().getTooltipFormatting());
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static record EffectData(int duration, int amplifier, int cooldown) {
 
         private static Codec<EffectData> CODEC = RecordCodecBuilder.create(inst -> inst
@@ -185,27 +189,37 @@ public class MobEffectBonus extends GemBonus {
         }
     }
 
-    public static class Builder {
-        private GemClass gemClass;
-        private final Holder<MobEffect> effect;
-        private final Target target;
-        private Map<Purity, EffectData> values;
+    public static class Builder extends GemBonus.Builder {
+        private final Map<Purity, EffectData> values;
+        private Holder<MobEffect> effect;
+        private Target target;
         private boolean stacking;
 
-        public Builder(Holder<MobEffect> effect, Target target) {
+        public Builder() {
             this.values = new HashMap<>();
             this.stacking = false;
-            this.effect = effect;
-            this.target = target;
         }
 
-        public Builder gemClass(GemClass gemClass) {
-            this.gemClass = gemClass;
+        public Builder effect(Holder<MobEffect> effect) {
+            this.effect = effect;
             return this;
         }
 
-        public Builder addValue(Purity purity, EffectData effectData) {
-            this.values.put(purity, effectData);
+        public Builder target(Target target) {
+            this.target = target;
+            return this;
+        }
+
+        public Builder value(Purity purity, int duration, int amplifier) {
+            return this.value(purity, duration, amplifier, 0);
+        }
+
+        public Builder value(Purity purity, int duration, int amplifier, int cooldown) {
+            return this.value(purity, new EffectData(duration, amplifier, cooldown));
+        }
+
+        public Builder value(Purity purity, EffectData value) {
+            this.values.put(purity, value);
             return this;
         }
 
@@ -214,7 +228,8 @@ public class MobEffectBonus extends GemBonus {
             return this;
         }
 
-        public MobEffectBonus build() {
+        @Override
+        public MobEffectBonus build(GemClass gemClass) {
             return new MobEffectBonus(gemClass, effect, target, values, stacking);
         }
     }

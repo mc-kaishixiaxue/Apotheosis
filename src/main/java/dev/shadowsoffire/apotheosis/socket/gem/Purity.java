@@ -33,11 +33,12 @@ public enum Purity implements StringRepresentable {
     public static final Codec<Purity> CODEC = StringRepresentable.fromValues(Purity::values);
     public static final StreamCodec<ByteBuf, Purity> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Enum::ordinal);
 
-    private String name;
-    private TextColor color;
+    private final String name;
+    private final TextColor color;
 
     private Purity(String name, TextColor color) {
         this.name = name;
+        this.color = color;
     }
 
     private Purity(String name, int color) {

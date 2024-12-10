@@ -42,7 +42,7 @@ public class GemModel implements BakedModel {
     public BakedModel resolve(BakedModel original, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
         DynamicHolder<Gem> gem = GemItem.getGem(stack);
         if (gem.isBound()) {
-            return Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.inventory(Apotheosis.loc("item/gems/" + gem.getId().getPath())));
+            return Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(Apotheosis.loc("item/gems/" + gem.getId().getPath())));
         }
         return original;
     }

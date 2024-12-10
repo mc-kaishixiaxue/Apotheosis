@@ -1,4 +1,4 @@
-// 1.21.1	2024-12-08T01:51:41.3142384	Gems
+// 1.21.1	2024-12-09T23:34:23.7438087	Gems
 5b35c77d0c392ed899aa4ec4b1334b5aa94d4665 data/apotheosis/gems/core/ballast.json
 a5b197b31160e2ddb4778acaac23c0ac24a323b6 data/apotheosis/gems/core/brawlers.json
 271b87823272afc1ce3bc342ba04673a81e43d31 data/apotheosis/gems/core/breach.json
@@ -6,3 +6,9 @@ a5b197b31160e2ddb4778acaac23c0ac24a323b6 data/apotheosis/gems/core/brawlers.json
 9cc20cad03a2b7aea9b4431345456b9ec4434191 data/apotheosis/gems/core/guardian.json
 b39bacf05d0dda4ff5c039d9b43ec9ddba9bd8ad data/apotheosis/gems/core/lightning.json
 e931b3b422d8364406cd88d9eae4d5c95000ec87 data/apotheosis/gems/core/lunar.json
+b6a913781765ccbb75651032fd1e8968d53048ab data/apotheosis/gems/core/samurai.json
+19f647bc944c25ec2efc45a930a1a85b1a96c3e0 data/apotheosis/gems/core/slipstream.json
+92c9bdb5aa5eda516f7fd9742a20f92bcf4b34de data/apotheosis/gems/core/solar.json
+e0b43ed3e21ac35e042379afbbc2c546dda1e21d data/apotheosis/gems/core/splendor.json
+a7afc58b1dfd2a7c1714938f69922cffc7e18482 data/apotheosis/gems/core/tyrannical.json
+06853229726574f42748b48528f1e7eeb834b452 data/apotheosis/gems/core/warlord.json

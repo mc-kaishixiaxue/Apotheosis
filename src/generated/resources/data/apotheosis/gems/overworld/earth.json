@@ -8,8 +8,22 @@
   "min_purity": "flawed",
   "unique": true,
   "weights": {
-    "quality": 1.5,
-    "weight": 5
+    "frontier": {
+      "quality": 1.5,
+      "weight": 5
+    },
+    "ascent": {
+      "quality": 1.5,
+      "weight": 5
+    },
+    "summit": {
+      "quality": 1.5,
+      "weight": 5
+    },
+    "apotheosis": {
+      "quality": 1.5,
+      "weight": 5
+    }
   },
   "bonuses": [
     {

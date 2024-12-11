@@ -1,0 +1,45 @@
+{
+  "type": "apotheosis:gem",
+  "constraints": {
+    "dimensions": [
+      "minecraft:the_end"
+    ]
+  },
+  "min_purity": "flawless",
+  "unique": true,
+  "weights": {
+    "summit": {
+      "quality": 1.5,
+      "weight": 5
+    },
+    "apotheosis": {
+      "quality": 1.5,
+      "weight": 5
+    }
+  },
+  "bonuses": [
+    {
+      "type": "apotheosis:enchantment",
+      "enchantment": "minecraft:sharpness",
+      "gem_class": {
+        "key": "anything",
+        "types": [
+          "bow",
+          "breaker",
+          "helmet",
+          "chestplate",
+          "leggings",
+          "boots",
+          "shield",
+          "trident",
+          "melee_weapon"
+        ]
+      },
+      "mode": "global",
+      "values": {
+        "flawless": 1,
+        "perfect": 2
+      }
+    }
+  ]
+}

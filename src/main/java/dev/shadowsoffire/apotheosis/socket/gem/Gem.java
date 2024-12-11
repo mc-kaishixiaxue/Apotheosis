@@ -227,6 +227,11 @@ public class Gem implements CodecProvider<Gem>, Weighted, Constrained {
             return this;
         }
 
+        public Builder bonus(GemBonus bonus) {
+            this.bonuses.add(bonus);
+            return this;
+        }
+
         public Builder unique() {
             this.unique = true;
             return this;

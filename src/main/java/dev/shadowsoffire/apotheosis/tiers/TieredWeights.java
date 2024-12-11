@@ -1,6 +1,7 @@
 package dev.shadowsoffire.apotheosis.tiers;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -73,6 +74,15 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
 
     public static TieredWeights onlyFor(WorldTier tier, int weight, float quality) {
         return new TieredWeights(Map.of(tier, new Weight(weight, quality)));
+    }
+
+    public static TieredWeights forTiersAbove(WorldTier tier, int weight, float quality) {
+        Map<WorldTier, Weight> map = new HashMap<>();
+        Weight _weight = new Weight(weight, quality);
+        for (int i = tier.ordinal(); i < WorldTier.values().length; i++) {
+            map.put(WorldTier.BY_ID.apply(i), _weight);
+        }
+        return new TieredWeights(map);
     }
 
     public static TieredWeights forAllTiers(int weight, float quality) {

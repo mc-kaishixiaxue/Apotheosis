@@ -1,5 +1,6 @@
 package dev.shadowsoffire.apotheosis.data;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.UnaryOperator;
 
@@ -21,8 +22,10 @@ import dev.shadowsoffire.apotheosis.socket.gem.bonus.MobEffectBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.MultiAttrBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.AllStatsBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.DropTransformBonus;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.MageSlayerBonus;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apothic_attributes.api.ALObjects;
 import dev.shadowsoffire.placebo.util.data.DynamicRegistryProvider;
 import net.minecraft.core.HolderLookup.Provider;
@@ -54,6 +57,7 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
     public static final GemClass WEAPONS = new GemClass("weapons", LootCategory.MELEE_WEAPON, LootCategory.TRIDENT, LootCategory.BOW);
     public static final GemClass WEAPON_OR_TOOL = new GemClass("weapon_or_tool", LootCategory.MELEE_WEAPON, LootCategory.TRIDENT, LootCategory.BOW, LootCategory.BREAKER);
     public static final GemClass NON_TRIDENT_WEAPONS = new GemClass("weapons", LootCategory.MELEE_WEAPON, LootCategory.BOW);
+    public static final GemClass ANYTHING = new GemClass("anything", LootCategory.VALUES.stream().filter(lc -> lc != LootCategory.NONE).toArray(LootCategory[]::new));
 
     public GemProvider(PackOutput output, CompletableFuture<Provider> registries) {
         super(output, registries, GemRegistry.INSTANCE);
@@ -466,7 +470,7 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                 .value(Purity.FLAWLESS, 200, 0, 40)
                 .value(Purity.PERFECT, 200, 1, 40)));
 
-        addGem("overworld/earth", TieredWeights.forAllTiers(5, 1.5F), c -> c
+        addGem("overworld/earth", TieredWeights.forTiersAbove(WorldTier.FRONTIER, 5, 1.5F), c -> c
             .unique()
             .minPurity(Purity.FLAWED)
             .contstraints(Constraints.forDimension(Level.OVERWORLD))
@@ -492,7 +496,7 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                 .value(Purity.FLAWLESS, 3)
                 .value(Purity.PERFECT, 4)));
 
-        addGem("overworld/royalty", TieredWeights.forAllTiers(5, 1.5F), c -> c
+        addGem("overworld/royalty", TieredWeights.forTiersAbove(WorldTier.FRONTIER, 5, 1.5F), c -> c
             .unique()
             .minPurity(Purity.FLAWED)
             .contstraints(Constraints.forDimension(Level.OVERWORLD))
@@ -582,6 +586,45 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                     .value(Purity.NORMAL, -0.30F)
                     .value(Purity.FLAWLESS, -0.35F)
                     .value(Purity.PERFECT, -0.40F))));
+
+        addGem("the_end/endersurge", TieredWeights.forTiersAbove(WorldTier.SUMMIT, 5, 1.5F), c -> c
+            .unique()
+            .minPurity(Purity.FLAWLESS)
+            .contstraints(Constraints.forDimension(Level.END))
+            .bonus(ANYTHING, EnchantmentBonus.builder()
+                .enchantment(enchants.getOrThrow(Enchantments.SHARPNESS))
+                .mode(Mode.GLOBAL)
+                .value(Purity.FLAWLESS, 1)
+                .value(Purity.PERFECT, 2)));
+
+        addGem("the_end/mageslayer", TieredWeights.forTiersAbove(WorldTier.SUMMIT, 5, 1.5F), c -> c
+            .unique()
+            .minPurity(Purity.NORMAL)
+            .contstraints(Constraints.forDimension(Level.END))
+            .bonus(LIGHT_WEAPON, MultiAttrBonus.builder()
+                .desc("bonus.apotheosis:multi_attr.desc.and")
+                .modifier(b -> b
+                    .attr(ALObjects.Attributes.PROT_SHRED)
+                    .op(Operation.ADD_VALUE)
+                    .value(Purity.NORMAL, 0.30F)
+                    .value(Purity.FLAWLESS, 0.55F)
+                    .value(Purity.PERFECT, 0.75F))
+                .modifier(b -> b
+                    .attr(ALObjects.Attributes.ARMOR_SHRED)
+                    .op(Operation.ADD_MULTIPLIED_BASE)
+                    .value(Purity.NORMAL, -0.20F)
+                    .value(Purity.FLAWLESS, -0.35F)
+                    .value(Purity.PERFECT, -0.55F)))
+            .bonus(new MageSlayerBonus(Map.of(
+                Purity.NORMAL, 0.15F,
+                Purity.FLAWLESS, 0.225F,
+                Purity.PERFECT, 0.35F)))
+            .bonus(LootCategory.SHIELD, MobEffectBonus.builder()
+                .effect(MobEffects.DAMAGE_RESISTANCE)
+                .target(Target.BLOCK_SELF)
+                .value(Purity.NORMAL, 200, 0, 400)
+                .value(Purity.FLAWLESS, 300, 0, 400)
+                .value(Purity.PERFECT, 300, 1, 400)));
 
     }
 

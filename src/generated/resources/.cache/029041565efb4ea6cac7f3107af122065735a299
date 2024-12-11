@@ -1,4 +1,4 @@
-// 1.21.1	2024-12-09T23:34:23.7438087	Gems
+// 1.21.1	2024-12-10T22:41:44.7107337	Gems
 5b35c77d0c392ed899aa4ec4b1334b5aa94d4665 data/apotheosis/gems/core/ballast.json
 a5b197b31160e2ddb4778acaac23c0ac24a323b6 data/apotheosis/gems/core/brawlers.json
 271b87823272afc1ce3bc342ba04673a81e43d31 data/apotheosis/gems/core/breach.json
@@ -12,3 +12,5 @@ b6a913781765ccbb75651032fd1e8968d53048ab data/apotheosis/gems/core/samurai.json
 e0b43ed3e21ac35e042379afbbc2c546dda1e21d data/apotheosis/gems/core/splendor.json
 a7afc58b1dfd2a7c1714938f69922cffc7e18482 data/apotheosis/gems/core/tyrannical.json
 06853229726574f42748b48528f1e7eeb834b452 data/apotheosis/gems/core/warlord.json
+07d53e4f36f54fd56c076b95ba6c9b749d24fe77 data/apotheosis/gems/overworld/earth.json
+f33adc826266ca566d9184b5ea5931c60fac8f46 data/apotheosis/gems/overworld/royalty.json

@@ -6,7 +6,6 @@ import java.util.Map;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
@@ -87,6 +86,10 @@ public class EnchantmentBonus extends GemBonus {
         return CODEC;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static enum Mode {
         SINGLE,
         EXISTING,
@@ -95,8 +98,7 @@ public class EnchantmentBonus extends GemBonus {
         public static final Codec<Mode> CODEC = PlaceboCodecs.enumCodec(Mode.class);
     }
 
-    public static class Builder {
-        private GemClass gemClass;
+    public static class Builder extends GemBonus.Builder {
         private Holder<Enchantment> enchantment;
         private Mode mode;
         private Map<Purity, Integer> values;
@@ -104,11 +106,6 @@ public class EnchantmentBonus extends GemBonus {
         public Builder() {
             this.values = new HashMap<>();
             this.mode = Mode.SINGLE;
-        }
-
-        public Builder gemClass(GemClass gemClass) {
-            this.gemClass = gemClass;
-            return this;
         }
 
         public Builder enchantment(Holder<Enchantment> enchantment) {
@@ -121,15 +118,16 @@ public class EnchantmentBonus extends GemBonus {
             return this;
         }
 
-        public Builder addValue(Purity purity, int value) {
+        public Builder value(Purity purity, int value) {
             if (value < 1 || value > 127) {
-                throw new IllegalArgumentException("Value must be between 1 and 127");
+                throw new IllegalArgumentException("EnchantmentBonus is limited to values between 1 and 127 (inclusive).");
             }
             this.values.put(purity, value);
             return this;
         }
 
-        public EnchantmentBonus build() {
+        @Override
+        public EnchantmentBonus build(GemClass gemClass) {
             return new EnchantmentBonus(gemClass, enchantment, mode, values);
         }
     }

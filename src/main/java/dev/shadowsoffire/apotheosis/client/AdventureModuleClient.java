@@ -241,8 +241,9 @@ public class AdventureModuleClient {
         public static void ignoreSocketUUIDS(GatherSkippedAttributeTooltipsEvent e) {
             ItemStack stack = e.getStack();
             for (GemInstance gem : SocketHelper.getGems(stack)) {
-                // TODO: Figure out how to hook this back up. Need to have gems report back their used RLs, somehow.
-                // gem.getUUIDs().forEach(e::skipUUID);
+                if (gem.isValid()) {
+                    gem.skipModifierIds(e::skipId);
+                }
             }
         }
 

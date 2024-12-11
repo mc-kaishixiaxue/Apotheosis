@@ -42,6 +42,10 @@ public record Constraints(Set<ResourceKey<Level>> dimensions, HolderSet<Biome> b
         ByteBufCodecs.collection(HashSet::new, ByteBufCodecs.stringUtf8(256)), Constraints::gameStages,
         Constraints::new);
 
+    public static Constraints forDimension(ResourceKey<Level> key) {
+        return new Constraints(Set.of(key), HolderSet.empty(), Set.of());
+    }
+
     public boolean test(GenContext ctx) {
         if (!this.dimensions.isEmpty() && !this.dimensions.contains(ctx.dimension())) {
             return false;

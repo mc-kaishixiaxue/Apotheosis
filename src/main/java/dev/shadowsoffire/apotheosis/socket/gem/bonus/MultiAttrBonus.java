@@ -1,8 +1,11 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -41,10 +44,17 @@ public class MultiAttrBonus extends GemBonus {
     }
 
     @Override
-    public void addModifiers(GemInstance gem, ItemAttributeModifierEvent event) {
+    public void addModifiers(GemInstance inst, ItemAttributeModifierEvent event) {
         int i = 0;
         for (ModifierInst modifier : this.modifiers) {
-            event.addModifier(modifier.attr, modifier.build(makeUniqueId(gem, "" + i), gem.purity()), gem.category().getSlots());
+            event.addModifier(modifier.attr, modifier.build(makeUniqueId(inst, "" + i), inst.purity()), inst.category().getSlots());
+        }
+    }
+
+    @Override
+    public void skipModifierIds(GemInstance inst, Consumer<ResourceLocation> skip) {
+        for (int i = 0; i < this.modifiers.size(); i++) {
+            skip.accept(makeUniqueId(inst, "" + i));
         }
     }
 
@@ -70,7 +80,11 @@ public class MultiAttrBonus extends GemBonus {
         return CODEC;
     }
 
-    protected static record ModifierInst(Holder<Attribute> attr, Operation op, Map<Purity, Float> values) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static record ModifierInst(Holder<Attribute> attr, Operation op, Map<Purity, Float> values) {
 
         public static Codec<ModifierInst> CODEC = RecordCodecBuilder.create(inst -> inst
             .group(
@@ -83,10 +97,34 @@ public class MultiAttrBonus extends GemBonus {
             return new AttributeModifier(id, this.values.get(purity), this.op);
         }
 
+        public static class Builder {
+            private Holder<Attribute> attr;
+            private Operation op;
+            private Map<Purity, Float> values = new HashMap<>();
+
+            public Builder attr(Holder<Attribute> attr) {
+                this.attr = attr;
+                return this;
+            }
+
+            public Builder op(Operation op) {
+                this.op = op;
+                return this;
+            }
+
+            public Builder value(Purity purity, float value) {
+                this.values.put(purity, value);
+                return this;
+            }
+
+            public ModifierInst build() {
+                return new ModifierInst(attr, op, values);
+            }
+        }
+
     }
 
-    public static class Builder {
-        private GemClass gemClass;
+    public static class Builder extends GemBonus.Builder {
         private List<ModifierInst> modifiers;
         private String desc;
 
@@ -94,13 +132,8 @@ public class MultiAttrBonus extends GemBonus {
             this.modifiers = new ArrayList<>();
         }
 
-        public Builder gemClass(GemClass gemClass) {
-            this.gemClass = gemClass;
-            return this;
-        }
-
-        public Builder addModifier(ModifierInst modifier) {
-            this.modifiers.add(modifier);
+        public Builder modifier(UnaryOperator<ModifierInst.Builder> config) {
+            this.modifiers.add(config.apply(new ModifierInst.Builder()).build());
             return this;
         }
 
@@ -109,7 +142,8 @@ public class MultiAttrBonus extends GemBonus {
             return this;
         }
 
-        public MultiAttrBonus build() {
+        @Override
+        public MultiAttrBonus build(GemClass gemClass) {
             return new MultiAttrBonus(gemClass, modifiers, desc);
         }
     }

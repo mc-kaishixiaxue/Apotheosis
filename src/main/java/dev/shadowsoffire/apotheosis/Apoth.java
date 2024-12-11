@@ -31,6 +31,7 @@ import dev.shadowsoffire.apotheosis.loot.AffixLootPoolEntry;
 import dev.shadowsoffire.apotheosis.loot.GemLootPoolEntry;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.loot.conditions.MatchesBlockCondition;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixConvertLootModifier;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixHookLootModifier;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixLootModifier;
@@ -79,6 +80,7 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.crafting.IngredientType;
@@ -284,6 +286,12 @@ public class Apoth {
         private static void bootstrap() {}
     }
 
+    public static final class LootConditions {
+        public static final LootItemConditionType MATCHES_BLOCK = R.lootCondition("matches_block", MatchesBlockCondition.CODEC);
+
+        private static void bootstrap() {}
+    }
+
     public static final class Triggers {
         public static final GemCutTrigger GEM_CUTTING = R.criteriaTrigger("gem_cutting", new GemCutTrigger());
 
@@ -329,6 +337,7 @@ public class Apoth {
         Ingredients.bootstrap();
         RecipeTypes.bootstrap();
         LootModifiers.bootstrap();
+        LootConditions.bootstrap();
         LootPoolEntries.bootstrap();
         RecipeSerializers.bootstrap();
 

@@ -1,5 +1,7 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
+import java.util.function.Consumer;
+
 import javax.annotation.Nullable;
 
 import com.mojang.datafixers.kinds.App;
@@ -35,6 +37,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.HitResult;
+import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
@@ -207,15 +210,25 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
     public void modifyLoot(GemInstance inst, ObjectArrayList<ItemStack> loot, LootContext ctx) {}
 
     /**
+     * Fires from the {@link GatherSkippedAttributeTooltipsEvent} to allow the gem to hide any relevant attribute modifiers.
+     * <p>
+     * If a bonus implements {@link #addModifiers(GemInstance, ItemAttributeModifierEvent)}, it should override this method as well to hide the modifiers.
+     * 
+     * @param inst The current gem instance.
+     * @param skip A consumer that accepts resource locations to skip.
+     */
+    public void skipModifierIds(GemInstance inst, Consumer<ResourceLocation> skip) {}
+
+    /**
      * Returns the serialization key for this GemBonus.
      * <p>
      * This is unique on a per-type basis, rather than per-instance basis.
      */
-    public ResourceLocation getTypeKey() {
+    public final ResourceLocation getTypeKey() {
         return GemBonus.CODEC.getKey(this.getCodec());
     }
 
-    public GemClass getGemClass() {
+    public final GemClass getGemClass() {
         return this.gemClass;
     }
 

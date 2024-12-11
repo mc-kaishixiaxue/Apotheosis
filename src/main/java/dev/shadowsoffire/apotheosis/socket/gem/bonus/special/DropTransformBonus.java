@@ -1,7 +1,9 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus.special;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,15 +15,12 @@ import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.network.chat.Component;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class DropTransformBonus extends GemBonus {
@@ -29,18 +28,14 @@ public class DropTransformBonus extends GemBonus {
     public static Codec<DropTransformBonus> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
             gemClass(),
-            TagKey.codec(Registries.BLOCK).optionalFieldOf("blocks").forGetter(a -> a.tag),
+            ContextAwarePredicate.CODEC.fieldOf("conditions").forGetter(a -> a.conditions),
             Ingredient.CODEC_NONEMPTY.fieldOf("inputs").forGetter(a -> a.inputs),
             ItemStack.CODEC.fieldOf("output").forGetter(a -> a.output),
             Purity.mapCodec(Codec.floatRange(0, 1)).fieldOf("values").forGetter(a -> a.values),
             Codec.STRING.fieldOf("desc").forGetter(a -> a.descKey))
         .apply(inst, DropTransformBonus::new));
 
-    /**
-     * Input blocks this transformation triggers on.<br>
-     * If no tag is provided, this works on all blocks, as long as a block was broken.
-     */
-    protected final Optional<TagKey<Block>> tag;
+    protected final ContextAwarePredicate conditions;
 
     /**
      * List of input items merged as an ingredient.
@@ -58,9 +53,9 @@ public class DropTransformBonus extends GemBonus {
     protected final Map<Purity, Float> values;
     protected final String descKey;
 
-    public DropTransformBonus(GemClass gemClass, Optional<TagKey<Block>> tag, Ingredient inputs, ItemStack output, Map<Purity, Float> values, String descKey) {
+    public DropTransformBonus(GemClass gemClass, ContextAwarePredicate conditions, Ingredient inputs, ItemStack output, Map<Purity, Float> values, String descKey) {
         super(gemClass);
-        this.tag = tag;
+        this.conditions = conditions;
         this.inputs = inputs;
         this.output = output;
         this.values = values;
@@ -80,9 +75,7 @@ public class DropTransformBonus extends GemBonus {
 
     @Override
     public void modifyLoot(GemInstance inst, ObjectArrayList<ItemStack> loot, LootContext ctx) {
-        if (ctx.hasParam(LootContextParams.BLOCK_STATE)) {
-            BlockState state = ctx.getParam(LootContextParams.BLOCK_STATE);
-            if (this.tag.isPresent() && !state.is(this.tag.get())) return;
+        if (this.conditions.matches(ctx)) {
             if (ctx.getRandom().nextFloat() <= this.values.get(inst.purity())) {
                 for (int i = 0; i < loot.size(); i++) {
                     ItemStack stack = loot.get(i);
@@ -99,6 +92,52 @@ public class DropTransformBonus extends GemBonus {
     @Override
     public boolean supports(Purity purity) {
         return this.values.containsKey(purity);
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder extends GemBonus.Builder {
+        private final List<LootItemCondition> conditions = new ArrayList<>();
+        private final Map<Purity, Float> values = new HashMap<>();
+        private Ingredient inputs;
+        private ItemStack output;
+        private String descKey;
+
+        public Builder condition(LootItemCondition condition) {
+            this.conditions.add(condition);
+            return this;
+        }
+
+        public Builder inputs(Ingredient inputs) {
+            this.inputs = inputs;
+            return this;
+        }
+
+        public Builder output(ItemStack output) {
+            this.output = output.copy();
+            return this;
+        }
+
+        public Builder value(Purity purity, float chance) {
+            if (chance < 0 || chance > 1) {
+                throw new IllegalArgumentException("Chance must be between 0 and 1");
+            }
+            this.values.put(purity, chance);
+            return this;
+        }
+
+        public Builder desc(String descKey) {
+            this.descKey = descKey;
+            return this;
+        }
+
+        @Override
+        public DropTransformBonus build(GemClass gemClass) {
+            ContextAwarePredicate predicate = ContextAwarePredicate.create(this.conditions.toArray(new LootItemCondition[0]));
+            return new DropTransformBonus(gemClass, predicate, inputs, output, values, descKey);
+        }
     }
 
 }

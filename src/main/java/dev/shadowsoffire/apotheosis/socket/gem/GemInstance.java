@@ -16,6 +16,7 @@ import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -239,6 +240,13 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity 
      */
     public void modifyLoot(ObjectArrayList<ItemStack> loot, LootContext ctx) {
         this.ifPresent(b -> b.modifyLoot(this, loot, ctx));
+    }
+
+    /**
+     * @see GemBonus#skipModifierIds(GemInstance, Consumer)
+     */
+    public void skipModifierIds(Consumer<ResourceLocation> skip) {
+        this.ifPresent(b -> b.skipModifierIds(this, skip));
     }
 
     /**

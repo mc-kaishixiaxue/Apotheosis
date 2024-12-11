@@ -20,6 +20,7 @@ import dev.shadowsoffire.apotheosis.data.AffixProvider;
 import dev.shadowsoffire.apotheosis.data.ApothLootProvider;
 import dev.shadowsoffire.apotheosis.data.ApothRecipeProvider;
 import dev.shadowsoffire.apotheosis.data.ApothTagsProvider;
+import dev.shadowsoffire.apotheosis.data.GLMProvider;
 import dev.shadowsoffire.apotheosis.data.GemProvider;
 import dev.shadowsoffire.apotheosis.data.RarityProvider;
 import dev.shadowsoffire.apotheosis.loot.AffixLootRegistry;
@@ -125,6 +126,7 @@ public class Apotheosis {
             .provider(AffixLootEntryProvider::new)
             .provider(AffixProvider::new)
             .provider(GemProvider::new)
+            .provider(GLMProvider::new)
             .build(e);
 
         /*

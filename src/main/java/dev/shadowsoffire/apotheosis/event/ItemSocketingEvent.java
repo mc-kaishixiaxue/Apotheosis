@@ -17,6 +17,7 @@ public class ItemSocketingEvent extends Event {
     public ItemSocketingEvent(ItemStack stack, ItemStack gem, ItemStack output) {
         this.stack = stack.copy();
         this.gem = gem.copy();
+        this.output = output;
     }
 
     /**

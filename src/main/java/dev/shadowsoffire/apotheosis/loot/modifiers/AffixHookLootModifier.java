@@ -16,7 +16,7 @@ public class AffixHookLootModifier extends LootModifier {
 
     public static final MapCodec<AffixHookLootModifier> CODEC = MapCodec.unit(AffixHookLootModifier::new);
 
-    protected AffixHookLootModifier() {
+    public AffixHookLootModifier() {
         super(new LootItemCondition[0]);
     }
 

@@ -1,6 +1,10 @@
 package dev.shadowsoffire.apotheosis.socket.gem.bonus.special;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -57,6 +61,13 @@ public class AllStatsBonus extends GemBonus {
     }
 
     @Override
+    public void skipModifierIds(GemInstance inst, Consumer<ResourceLocation> skip) {
+        for (int i = 0; i < this.attributes.size(); i++) {
+            skip.accept(makeUniqueId(inst, "" + i));
+        }
+    }
+
+    @Override
     public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
         float value = this.values.get(inst.purity());
         return Component.translatable("bonus." + this.getTypeKey() + ".desc", Affix.fmt(value * 100)).withStyle(ChatFormatting.YELLOW);
@@ -70,6 +81,45 @@ public class AllStatsBonus extends GemBonus {
     @Override
     public Codec<? extends GemBonus> getCodec() {
         return CODEC;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder extends GemBonus.Builder {
+        private final Map<Purity, Float> values;
+        private final List<Holder<Attribute>> attributes;
+
+        private Operation operation;
+
+        private Builder() {
+            this.values = new HashMap<>();
+            this.attributes = new ArrayList<>();
+        }
+
+        @SafeVarargs
+        public final Builder attributes(Holder<Attribute>... attributes) {
+            for (Holder<Attribute> a : attributes) {
+                this.attributes.add(a);
+            }
+            return this;
+        }
+
+        public Builder op(Operation operation) {
+            this.operation = operation;
+            return this;
+        }
+
+        public Builder value(Purity purity, float value) {
+            this.values.put(purity, value);
+            return this;
+        }
+
+        @Override
+        public AllStatsBonus build(GemClass gClass) {
+            return new AllStatsBonus(gClass, operation, values, HolderSet.direct(this.attributes));
+        }
     }
 
 }

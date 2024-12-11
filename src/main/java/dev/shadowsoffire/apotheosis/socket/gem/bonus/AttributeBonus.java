@@ -2,6 +2,7 @@ package dev.shadowsoffire.apotheosis.socket.gem.bonus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,6 +14,7 @@ import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
@@ -43,6 +45,11 @@ public class AttributeBonus extends GemBonus {
     @Override
     public void addModifiers(GemInstance gem, ItemAttributeModifierEvent event) {
         event.addModifier(this.attribute, this.createModifier(gem), gem.category().getSlots());
+    }
+
+    @Override
+    public void skipModifierIds(GemInstance gem, Consumer<ResourceLocation> skip) {
+        skip.accept(makeUniqueId(gem));
     }
 
     @Override

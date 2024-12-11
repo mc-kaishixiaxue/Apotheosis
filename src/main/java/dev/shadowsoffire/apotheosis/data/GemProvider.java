@@ -7,6 +7,7 @@ import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
+import dev.shadowsoffire.apotheosis.loot.conditions.MatchesBlockCondition;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
@@ -14,16 +15,32 @@ import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.AttributeBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.DamageReductionBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.DurabilityBonus;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.EnchantmentBonus;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.EnchantmentBonus.Mode;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.MobEffectBonus;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.MultiAttrBonus;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.AllStatsBonus;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.DropTransformBonus;
+import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apothic_attributes.api.ALObjects;
 import dev.shadowsoffire.placebo.util.data.DynamicRegistryProvider;
 import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.core.HolderLookup.RegistryLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.Tags;
 
 public class GemProvider extends DynamicRegistryProvider<Gem> {
 
@@ -49,6 +66,8 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
 
     @Override
     public void generate() {
+        RegistryLookup<Enchantment> enchants = this.lookupProvider.join().lookup(Registries.ENCHANTMENT).get();
+
         addGem("core/ballast", c -> c
             .bonus(LIGHT_WEAPON, AttributeBonus.builder()
                 .attr(Attributes.ATTACK_DAMAGE)
@@ -446,6 +465,124 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                 .stacking()
                 .value(Purity.FLAWLESS, 200, 0, 40)
                 .value(Purity.PERFECT, 200, 1, 40)));
+
+        addGem("overworld/earth", TieredWeights.forAllTiers(5, 1.5F), c -> c
+            .unique()
+            .minPurity(Purity.FLAWED)
+            .contstraints(Constraints.forDimension(Level.OVERWORLD))
+            .bonus(LIGHT_WEAPON, EnchantmentBonus.builder()
+                .enchantment(enchants.getOrThrow(Enchantments.SHARPNESS))
+                .mode(Mode.EXISTING)
+                .value(Purity.FLAWED, 1)
+                .value(Purity.NORMAL, 2)
+                .value(Purity.FLAWLESS, 3)
+                .value(Purity.PERFECT, 4))
+            .bonus(CORE_ARMOR, EnchantmentBonus.builder()
+                .enchantment(enchants.getOrThrow(Enchantments.PROTECTION))
+                .mode(Mode.EXISTING)
+                .value(Purity.FLAWED, 1)
+                .value(Purity.NORMAL, 2)
+                .value(Purity.FLAWLESS, 3)
+                .value(Purity.PERFECT, 4))
+            .bonus(LootCategory.BREAKER, EnchantmentBonus.builder()
+                .enchantment(enchants.getOrThrow(Enchantments.FORTUNE))
+                .mode(Mode.EXISTING)
+                .value(Purity.FLAWED, 1)
+                .value(Purity.NORMAL, 2)
+                .value(Purity.FLAWLESS, 3)
+                .value(Purity.PERFECT, 4)));
+
+        addGem("overworld/royalty", TieredWeights.forAllTiers(5, 1.5F), c -> c
+            .unique()
+            .minPurity(Purity.FLAWED)
+            .contstraints(Constraints.forDimension(Level.OVERWORLD))
+            .bonus(LootCategory.HELMET, AllStatsBonus.builder()
+                .op(Operation.ADD_MULTIPLIED_TOTAL)
+                .value(Purity.FLAWED, 0.05F)
+                .value(Purity.NORMAL, 0.075F)
+                .value(Purity.FLAWLESS, 0.10F)
+                .value(Purity.PERFECT, 0.15F)
+                .attributes(
+                    Attributes.MAX_HEALTH,
+                    Attributes.KNOCKBACK_RESISTANCE,
+                    Attributes.MOVEMENT_SPEED,
+                    Attributes.ATTACK_DAMAGE,
+                    Attributes.ATTACK_KNOCKBACK,
+                    Attributes.ATTACK_SPEED,
+                    Attributes.ARMOR,
+                    Attributes.ARMOR_TOUGHNESS,
+                    Attributes.LUCK,
+                    Attributes.STEP_HEIGHT,
+                    Attributes.BLOCK_INTERACTION_RANGE,
+                    Attributes.ENTITY_INTERACTION_RANGE,
+                    ALObjects.Attributes.ARMOR_PIERCE,
+                    ALObjects.Attributes.ARMOR_SHRED,
+                    ALObjects.Attributes.ARROW_DAMAGE,
+                    ALObjects.Attributes.ARROW_VELOCITY,
+                    ALObjects.Attributes.COLD_DAMAGE,
+                    ALObjects.Attributes.CRIT_CHANCE,
+                    ALObjects.Attributes.CRIT_DAMAGE,
+                    ALObjects.Attributes.CURRENT_HP_DAMAGE,
+                    ALObjects.Attributes.DODGE_CHANCE,
+                    ALObjects.Attributes.EXPERIENCE_GAINED,
+                    ALObjects.Attributes.FIRE_DAMAGE,
+                    ALObjects.Attributes.GHOST_HEALTH,
+                    ALObjects.Attributes.HEALING_RECEIVED,
+                    ALObjects.Attributes.LIFE_STEAL,
+                    ALObjects.Attributes.MINING_SPEED,
+                    ALObjects.Attributes.OVERHEAL,
+                    ALObjects.Attributes.PROT_PIERCE,
+                    ALObjects.Attributes.PROT_SHRED,
+                    NeoForgeMod.SWIM_SPEED))
+            .bonus(LootCategory.BREAKER, DropTransformBonus.builder()
+                .condition(new MatchesBlockCondition(BuiltInRegistries.BLOCK.getOrCreateTag(Tags.Blocks.ORES_COPPER)))
+                .inputs(Ingredient.of(Tags.Items.RAW_MATERIALS_COPPER))
+                .desc("gem.apotheosis:overworld/royalty.bonus.pickaxe")
+                .output(new ItemStack(Items.RAW_GOLD))
+                .value(Purity.FLAWED, 0.15F)
+                .value(Purity.NORMAL, 0.20F)
+                .value(Purity.FLAWLESS, 0.25F)
+                .value(Purity.PERFECT, 0.40F))
+            .bonus(LootCategory.BOW, MultiAttrBonus.builder()
+                .desc("bonus.apotheosis:multi_attr.desc.and")
+                .modifier(b -> b
+                    .attr(ALObjects.Attributes.PROT_SHRED)
+                    .op(Operation.ADD_VALUE)
+                    .value(Purity.FLAWED, 0.25F)
+                    .value(Purity.NORMAL, 0.30F)
+                    .value(Purity.FLAWLESS, 0.35F)
+                    .value(Purity.PERFECT, 0.40F))
+                .modifier(b -> b
+                    .attr(ALObjects.Attributes.DRAW_SPEED)
+                    .op(Operation.ADD_MULTIPLIED_TOTAL)
+                    .value(Purity.FLAWED, -0.35F)
+                    .value(Purity.NORMAL, -0.45F)
+                    .value(Purity.FLAWLESS, -0.55F)
+                    .value(Purity.PERFECT, -0.65F)))
+            .bonus(LootCategory.SHIELD, MultiAttrBonus.builder()
+                .desc("bonus.apotheosis:multi_attr.desc.and_but")
+                .modifier(b -> b
+                    .attr(Attributes.ARMOR)
+                    .op(Operation.ADD_MULTIPLIED_BASE)
+                    .value(Purity.FLAWED, 0.15F)
+                    .value(Purity.NORMAL, 0.25F)
+                    .value(Purity.FLAWLESS, 0.35F)
+                    .value(Purity.PERFECT, 0.50F))
+                .modifier(b -> b
+                    .attr(Attributes.ARMOR_TOUGHNESS)
+                    .op(Operation.ADD_MULTIPLIED_BASE)
+                    .value(Purity.FLAWED, 0.075F)
+                    .value(Purity.NORMAL, 0.125F)
+                    .value(Purity.FLAWLESS, 0.225F)
+                    .value(Purity.PERFECT, 0.30F))
+                .modifier(b -> b
+                    .attr(Attributes.MOVEMENT_SPEED)
+                    .op(Operation.ADD_MULTIPLIED_TOTAL)
+                    .value(Purity.FLAWED, -0.25F)
+                    .value(Purity.NORMAL, -0.30F)
+                    .value(Purity.FLAWLESS, -0.35F)
+                    .value(Purity.PERFECT, -0.40F))));
+
     }
 
     private void addGem(String name, UnaryOperator<Gem.Builder> config) {

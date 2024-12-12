@@ -1,64 +1,64 @@
 {
-  "type": "apotheosis:gem",
-  "weights": {
-    "weight": 10
-  },
-  "bonuses": [
-    {
-      "type": "apotheosis:attribute",
-      "attribute": "minecraft:generic.luck",
-      "gem_class": {
-        "key": "core_armor",
-        "types": [
-          "chestplate",
-          "leggings"
-        ]
-      },
-      "operation": "add_value",
-      "values": {
-        "cracked": 0.5,
-        "chipped": 1.5,
-        "flawed": 2.5,
-        "normal": 3.5,
-        "flawless": 4.5,
-        "perfect": 6.0
-      }
+    "type": "apotheosis:gem",
+    "weights": {
+        "weight": 10
     },
-    {
-      "type": "apotheosis:attribute",
-      "attribute": "apothic_attributes:experience_gained",
-      "gem_class": {
-        "key": "weapon_or_tool",
-        "types": [
-          "melee_weapon",
-          "trident",
-          "bow",
-          "breaker"
-        ]
-      },
-      "operation": "add_multiplied_base",
-      "values": {
-        "cracked": 0.075,
-        "chipped": 0.15,
-        "flawed": 0.225,
-        "normal": 0.3,
-        "flawless": 0.4,
-        "perfect": 0.6
-      }
-    },
-    {
-      "type": "apotheosis:attribute",
-      "attribute": "minecraft:generic.movement_speed",
-      "gem_class": "boots",
-      "operation": "add_multiplied_total",
-      "values": {
-        "cracked": 0.1,
-        "chipped": 0.25,
-        "flawed": 0.35,
-        "normal": 0.45,
-        "flawless": 0.55,
-        "perfect": 0.7
-      }
-    }
-  ]
+    "bonuses": [
+        {
+            "type": "apotheosis:attribute",
+            "attribute": "minecraft:generic.luck",
+            "gem_class": {
+                "key": "core_armor",
+                "types": [
+                    "chestplate",
+                    "leggings"
+                ]
+            },
+            "operation": "add_value",
+            "values": {
+                "cracked": 0.5,
+                "chipped": 1.5,
+                "flawed": 2.5,
+                "normal": 3.5,
+                "flawless": 4.5,
+                "perfect": 6.0
+            }
+        },
+        {
+            "type": "apotheosis:attribute",
+            "attribute": "apothic_attributes:experience_gained",
+            "gem_class": {
+                "key": "weapon_or_tool",
+                "types": [
+                    "melee_weapon",
+                    "trident",
+                    "bow",
+                    "breaker"
+                ]
+            },
+            "operation": "add_multiplied_base",
+            "values": {
+                "cracked": 0.075,
+                "chipped": 0.15,
+                "flawed": 0.225,
+                "normal": 0.3,
+                "flawless": 0.4,
+                "perfect": 0.6
+            }
+        },
+        {
+            "type": "apotheosis:attribute",
+            "attribute": "minecraft:generic.movement_speed",
+            "gem_class": "boots",
+            "operation": "add_multiplied_total",
+            "values": {
+                "cracked": 0.1,
+                "chipped": 0.25,
+                "flawed": 0.35,
+                "normal": 0.45,
+                "flawless": 0.55,
+                "perfect": 0.7
+            }
+        }
+    ]
 }

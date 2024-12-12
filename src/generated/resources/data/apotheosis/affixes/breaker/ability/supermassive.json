@@ -1,25 +1,25 @@
 {
-  "type": "apotheosis:radial",
-  "definition": {
-    "affix_type": "ability",
-    "exclusive_set": [
-      "apotheosis:breaker/effect/radial"
-    ],
-    "weights": {
-      "apotheosis": {
-        "quality": 5.0,
-        "weight": 20
-      }
+    "type": "apotheosis:radial",
+    "definition": {
+        "affix_type": "ability",
+        "exclusive_set": [
+            "apotheosis:breaker/effect/radial"
+        ],
+        "weights": {
+            "apotheosis": {
+                "quality": 5.0,
+                "weight": 20
+            }
+        }
+    },
+    "values": {
+        "apotheosis:mythic": [
+            {
+                "x": 7,
+                "xOff": 0,
+                "y": 7,
+                "yOff": 0
+            }
+        ]
     }
-  },
-  "values": {
-    "apotheosis:mythic": [
-      {
-        "x": 7,
-        "xOff": 0,
-        "y": 7,
-        "yOff": 0
-      }
-    ]
-  }
 }

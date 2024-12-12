@@ -1,18 +1,18 @@
 {
-  "type": "apotheosis:affix_loot_entry",
-  "rarities": [],
-  "stack": {
-    "count": 1,
-    "id": "minecraft:netherite_sword"
-  },
-  "weights": {
-    "summit": {
-      "quality": 1.0,
-      "weight": 5
+    "type": "apotheosis:affix_loot_entry",
+    "rarities": [],
+    "stack": {
+        "count": 1,
+        "id": "minecraft:netherite_sword"
     },
-    "apotheosis": {
-      "quality": 2.0,
-      "weight": 25
+    "weights": {
+        "summit": {
+            "quality": 1.0,
+            "weight": 5
+        },
+        "apotheosis": {
+            "quality": 2.0,
+            "weight": 25
+        }
     }
-  }
 }

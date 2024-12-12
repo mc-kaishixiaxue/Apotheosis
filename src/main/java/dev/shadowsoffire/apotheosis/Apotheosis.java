@@ -118,6 +118,7 @@ public class Apotheosis {
     @SubscribeEvent
     public void data(GatherDataEvent e) {
         isRunningInDatagen = true;
+        DataProvider.INDENT_WIDTH.set(4);
         DataGenBuilder.create(Apotheosis.MODID)
             .provider(ApothLootProvider::create)
             .provider(ApothRecipeProvider::new)

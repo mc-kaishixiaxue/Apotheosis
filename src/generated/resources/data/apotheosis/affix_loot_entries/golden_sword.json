@@ -1,19 +1,19 @@
 {
-  "type": "apotheosis:affix_loot_entry",
-  "rarities": [],
-  "stack": {
-    "count": 1,
-    "id": "minecraft:golden_sword"
-  },
-  "weights": {
-    "haven": {
-      "weight": 5
+    "type": "apotheosis:affix_loot_entry",
+    "rarities": [],
+    "stack": {
+        "count": 1,
+        "id": "minecraft:golden_sword"
     },
-    "frontier": {
-      "weight": 10
-    },
-    "ascent": {
-      "weight": 5
+    "weights": {
+        "haven": {
+            "weight": 5
+        },
+        "frontier": {
+            "weight": 10
+        },
+        "ascent": {
+            "weight": 5
+        }
     }
-  }
 }

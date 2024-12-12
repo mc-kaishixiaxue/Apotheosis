@@ -1,23 +1,23 @@
 {
-  "type": "apotheosis:attribute",
-  "attribute": "neoforge:creative_flight",
-  "categories": [
-    "chestplate"
-  ],
-  "definition": {
-    "affix_type": "stat",
-    "exclusive_set": [
-      "apotheosis:armor/attribute/winged"
+    "type": "apotheosis:attribute",
+    "attribute": "neoforge:creative_flight",
+    "categories": [
+        "chestplate"
     ],
-    "weights": {
-      "apotheosis": {
-        "quality": 5.0,
-        "weight": 20
-      }
+    "definition": {
+        "affix_type": "stat",
+        "exclusive_set": [
+            "apotheosis:armor/attribute/winged"
+        ],
+        "weights": {
+            "apotheosis": {
+                "quality": 5.0,
+                "weight": 20
+            }
+        }
+    },
+    "operation": "add_value",
+    "values": {
+        "apotheosis:mythic": 1.0
     }
-  },
-  "operation": "add_value",
-  "values": {
-    "apotheosis:mythic": 1.0
-  }
 }

@@ -1,18 +1,18 @@
-// 1.21.1	2024-12-11T00:08:41.2534229	Gems
-5b35c77d0c392ed899aa4ec4b1334b5aa94d4665 data/apotheosis/gems/core/ballast.json
-a5b197b31160e2ddb4778acaac23c0ac24a323b6 data/apotheosis/gems/core/brawlers.json
-271b87823272afc1ce3bc342ba04673a81e43d31 data/apotheosis/gems/core/breach.json
-37047ac885d073caee6e8660c7ce66ea32f38ff9 data/apotheosis/gems/core/combatant.json
-9cc20cad03a2b7aea9b4431345456b9ec4434191 data/apotheosis/gems/core/guardian.json
-b39bacf05d0dda4ff5c039d9b43ec9ddba9bd8ad data/apotheosis/gems/core/lightning.json
-e931b3b422d8364406cd88d9eae4d5c95000ec87 data/apotheosis/gems/core/lunar.json
-b6a913781765ccbb75651032fd1e8968d53048ab data/apotheosis/gems/core/samurai.json
-19f647bc944c25ec2efc45a930a1a85b1a96c3e0 data/apotheosis/gems/core/slipstream.json
-92c9bdb5aa5eda516f7fd9742a20f92bcf4b34de data/apotheosis/gems/core/solar.json
-e0b43ed3e21ac35e042379afbbc2c546dda1e21d data/apotheosis/gems/core/splendor.json
-a7afc58b1dfd2a7c1714938f69922cffc7e18482 data/apotheosis/gems/core/tyrannical.json
-06853229726574f42748b48528f1e7eeb834b452 data/apotheosis/gems/core/warlord.json
-2276814fdf992137433d59bc0c9be56dd87e431f data/apotheosis/gems/overworld/earth.json
-624a7fde4fa7a43a10cba6e66749936947d9f2ad data/apotheosis/gems/overworld/royalty.json
-ab70f3935e42ed5d36e33d5c8fac783a80d404fc data/apotheosis/gems/the_end/endersurge.json
-51691bfd2851b7968c2d66cd3ef1f040bfa5eb2a data/apotheosis/gems/the_end/mageslayer.json
+// 1.21.1	2024-12-11T23:29:00.765021	Gems
+033264447f12fb4c151cda023c3343936d02500a data/apotheosis/gems/core/ballast.json
+89ee5b028fd5ff52af8374d6efde23d2e108339b data/apotheosis/gems/core/brawlers.json
+038e3863ee9396eed829c6a193b44cef97f06534 data/apotheosis/gems/core/breach.json
+45b6da9a585db3b76058760c5b9e424bb1c1f830 data/apotheosis/gems/core/combatant.json
+9b8c078c98a7b5740e09414d677fdf80c6f94e5c data/apotheosis/gems/core/guardian.json
+238bc19531ed9cac0334afc21b5cdfd5da685752 data/apotheosis/gems/core/lightning.json
+e00ae646c670c1954807d4016786ce37691f5606 data/apotheosis/gems/core/lunar.json
+06cc508f8afeefa1214c96843f33f5e19862447c data/apotheosis/gems/core/samurai.json
+f68c002e2933c7918d1faa79faf95d860f1bdc34 data/apotheosis/gems/core/slipstream.json
+9980f80f2326ec9bb28ae9886d51050db5445df7 data/apotheosis/gems/core/solar.json
+bfb539672656dde9b34bc0e1ccbad29ea59ed415 data/apotheosis/gems/core/splendor.json
+c81a4ec6897a5812f8eb2799d6daae6edadec535 data/apotheosis/gems/core/tyrannical.json
+b3499e9f623372e9294561487080bae1d7aa14cd data/apotheosis/gems/core/warlord.json
+8990bdc70b3d67d0f0d225b624bda36eb3717dd1 data/apotheosis/gems/overworld/earth.json
+d293799c67e7f53eaa26b87ed9c9ef4f6770ca9d data/apotheosis/gems/overworld/royalty.json
+5b1f38a6a0b2baff703e5295786b5e448aec18d2 data/apotheosis/gems/the_end/endersurge.json
+9bb0b9ad2392085eefd900173cc4042a24c194f4 data/apotheosis/gems/the_end/mageslayer.json

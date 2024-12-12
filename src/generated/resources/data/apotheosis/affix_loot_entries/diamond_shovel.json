@@ -1,19 +1,19 @@
 {
-  "type": "apotheosis:affix_loot_entry",
-  "rarities": [],
-  "stack": {
-    "count": 1,
-    "id": "minecraft:diamond_shovel"
-  },
-  "weights": {
-    "ascent": {
-      "weight": 25
+    "type": "apotheosis:affix_loot_entry",
+    "rarities": [],
+    "stack": {
+        "count": 1,
+        "id": "minecraft:diamond_shovel"
     },
-    "summit": {
-      "weight": 25
-    },
-    "apotheosis": {
-      "weight": 5
+    "weights": {
+        "ascent": {
+            "weight": 25
+        },
+        "summit": {
+            "weight": 25
+        },
+        "apotheosis": {
+            "weight": 5
+        }
     }
-  }
 }

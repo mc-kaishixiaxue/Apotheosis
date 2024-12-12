@@ -1,28 +1,28 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "group": "apotheosis",
-  "key": {
-    "A": {
-      "item": "minecraft:amethyst_shard"
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "group": "apotheosis",
+    "key": {
+        "A": {
+            "item": "minecraft:amethyst_shard"
+        },
+        "E": {
+            "item": "apotheosis:gem_fused_slate"
+        },
+        "G": {
+            "item": "apotheosis:gem_dust"
+        },
+        "I": {
+            "item": "apothic_enchanting:infused_breath"
+        }
     },
-    "E": {
-      "item": "apotheosis:gem_fused_slate"
-    },
-    "G": {
-      "item": "apotheosis:gem_dust"
-    },
-    "I": {
-      "item": "apothic_enchanting:infused_breath"
+    "pattern": [
+        "GIG",
+        "EEE",
+        "GAG"
+    ],
+    "result": {
+        "count": 3,
+        "id": "apotheosis:sigil_of_socketing"
     }
-  },
-  "pattern": [
-    "GIG",
-    "EEE",
-    "GAG"
-  ],
-  "result": {
-    "count": 3,
-    "id": "apotheosis:sigil_of_socketing"
-  }
 }

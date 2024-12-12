@@ -1,78 +1,78 @@
 {
-  "type": "apotheosis:gem",
-  "constraints": {
-    "dimensions": [
-      "minecraft:overworld"
+    "type": "apotheosis:gem",
+    "constraints": {
+        "dimensions": [
+            "minecraft:overworld"
+        ]
+    },
+    "min_purity": "flawed",
+    "unique": true,
+    "weights": {
+        "frontier": {
+            "quality": 1.5,
+            "weight": 5
+        },
+        "ascent": {
+            "quality": 1.5,
+            "weight": 5
+        },
+        "summit": {
+            "quality": 1.5,
+            "weight": 5
+        },
+        "apotheosis": {
+            "quality": 1.5,
+            "weight": 5
+        }
+    },
+    "bonuses": [
+        {
+            "type": "apotheosis:enchantment",
+            "enchantment": "minecraft:sharpness",
+            "gem_class": {
+                "key": "light_weapon",
+                "types": [
+                    "melee_weapon",
+                    "trident"
+                ]
+            },
+            "mode": "existing",
+            "values": {
+                "flawed": 1,
+                "normal": 2,
+                "flawless": 3,
+                "perfect": 4
+            }
+        },
+        {
+            "type": "apotheosis:enchantment",
+            "enchantment": "minecraft:protection",
+            "gem_class": {
+                "key": "core_armor",
+                "types": [
+                    "chestplate",
+                    "leggings"
+                ]
+            },
+            "mode": "existing",
+            "values": {
+                "flawed": 1,
+                "normal": 2,
+                "flawless": 3,
+                "perfect": 4
+            }
+        },
+        {
+            "type": "apotheosis:enchantment",
+            "enchantment": "minecraft:fortune",
+            "gem_class": "breaker",
+            "mode": "existing",
+            "values": {
+                "flawed": 1,
+                "normal": 2,
+                "flawless": 3,
+                "perfect": 4
+            }
+        }
     ]
-  },
-  "min_purity": "flawed",
-  "unique": true,
-  "weights": {
-    "frontier": {
-      "quality": 1.5,
-      "weight": 5
-    },
-    "ascent": {
-      "quality": 1.5,
-      "weight": 5
-    },
-    "summit": {
-      "quality": 1.5,
-      "weight": 5
-    },
-    "apotheosis": {
-      "quality": 1.5,
-      "weight": 5
-    }
-  },
-  "bonuses": [
-    {
-      "type": "apotheosis:enchantment",
-      "enchantment": "minecraft:sharpness",
-      "gem_class": {
-        "key": "light_weapon",
-        "types": [
-          "melee_weapon",
-          "trident"
-        ]
-      },
-      "mode": "existing",
-      "values": {
-        "flawed": 1,
-        "normal": 2,
-        "flawless": 3,
-        "perfect": 4
-      }
-    },
-    {
-      "type": "apotheosis:enchantment",
-      "enchantment": "minecraft:protection",
-      "gem_class": {
-        "key": "core_armor",
-        "types": [
-          "chestplate",
-          "leggings"
-        ]
-      },
-      "mode": "existing",
-      "values": {
-        "flawed": 1,
-        "normal": 2,
-        "flawless": 3,
-        "perfect": 4
-      }
-    },
-    {
-      "type": "apotheosis:enchantment",
-      "enchantment": "minecraft:fortune",
-      "gem_class": "breaker",
-      "mode": "existing",
-      "values": {
-        "flawed": 1,
-        "normal": 2,
-        "flawless": 3,
-        "perfect": 4
-      }
-    }
-  ]
 }

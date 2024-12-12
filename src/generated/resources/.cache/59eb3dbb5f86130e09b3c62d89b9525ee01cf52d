@@ -1,6 +1,6 @@
-// 1.21.1	2024-11-11T15:58:43.3889006	Loot Tables
-28307b21c4ca515839357443985e32ac4b074b1b data/apotheosis/loot_table/blocks/augmenting_table.json
-c83ea6488c8c4ed1477b1eef7bcadd4f33d6d810 data/apotheosis/loot_table/blocks/gem_cutting_table.json
-1c764260bb52fc1941e1018d13a9e8905935ccce data/apotheosis/loot_table/blocks/reforging_table.json
-a133e3ffadad9cd5462a2060e7d830a8e8edbb4c data/apotheosis/loot_table/blocks/salvaging_table.json
-a3bef8dbcfbbbfb2375b64624caf3266dde47324 data/apotheosis/loot_table/blocks/simple_reforging_table.json
+// 1.21.1	2024-12-11T23:29:00.7670221	Loot Tables
+6e72c67c502d8671fc08cf2e1d05ac59ca9bf011 data/apotheosis/loot_table/blocks/augmenting_table.json
+570237e7dd2494f473d6d1734ee129a70e3c0ef7 data/apotheosis/loot_table/blocks/gem_cutting_table.json
+beecd2bb25a814e49f588a5c4a46c9ba065c2fb1 data/apotheosis/loot_table/blocks/reforging_table.json
+0c944f798b970f65d7944890aae42f82a16a5d46 data/apotheosis/loot_table/blocks/salvaging_table.json
+3a544244dfb082db186ff3c26865c52053603a92 data/apotheosis/loot_table/blocks/simple_reforging_table.json

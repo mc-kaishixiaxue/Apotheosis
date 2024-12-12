@@ -1,37 +1,37 @@
 {
-  "type": "apotheosis:rarity",
-  "color": "#808080",
-  "material": "apotheosis:common_material",
-  "overrides": {},
-  "rules": [
-    {
-      "type": "apotheosis:affix",
-      "affix_type": "stat"
-    },
-    {
-      "type": "apotheosis:chanced",
-      "chance": 0.25,
-      "rule": {
-        "type": "apotheosis:affix",
-        "affix_type": "stat"
-      }
+    "type": "apotheosis:rarity",
+    "color": "#808080",
+    "material": "apotheosis:common_material",
+    "overrides": {},
+    "rules": [
+        {
+            "type": "apotheosis:affix",
+            "affix_type": "stat"
+        },
+        {
+            "type": "apotheosis:chanced",
+            "chance": 0.25,
+            "rule": {
+                "type": "apotheosis:affix",
+                "affix_type": "stat"
+            }
+        }
+    ],
+    "weights": {
+        "haven": {
+            "weight": 600
+        },
+        "frontier": {
+            "weight": 290
+        },
+        "ascent": {
+            "weight": 100
+        },
+        "summit": {
+            "weight": 50
+        },
+        "apotheosis": {
+            "weight": 0
+        }
     }
-  ],
-  "weights": {
-    "haven": {
-      "weight": 600
-    },
-    "frontier": {
-      "weight": 290
-    },
-    "ascent": {
-      "weight": 100
-    },
-    "summit": {
-      "weight": 50
-    },
-    "apotheosis": {
-      "weight": 0
-    }
-  }
 }

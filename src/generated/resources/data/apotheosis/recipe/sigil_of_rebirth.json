@@ -1,22 +1,22 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "group": "apotheosis",
-  "key": {
-    "E": {
-      "item": "apotheosis:gem_dust"
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "group": "apotheosis",
+    "key": {
+        "E": {
+            "item": "apotheosis:gem_dust"
+        },
+        "G": {
+            "item": "apotheosis:gem_fused_slate"
+        }
     },
-    "G": {
-      "item": "apotheosis:gem_fused_slate"
+    "pattern": [
+        "GGG",
+        "EEE",
+        "GGG"
+    ],
+    "result": {
+        "count": 6,
+        "id": "apotheosis:sigil_of_rebirth"
     }
-  },
-  "pattern": [
-    "GGG",
-    "EEE",
-    "GGG"
-  ],
-  "result": {
-    "count": 6,
-    "id": "apotheosis:sigil_of_rebirth"
-  }
 }

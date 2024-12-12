@@ -1,0 +1,84 @@
+{
+    "type": "apotheosis:gem",
+    "constraints": {
+        "dimensions": [
+            "minecraft:the_nether"
+        ]
+    },
+    "min_purity": "flawed",
+    "unique": true,
+    "weights": {
+        "ascent": {
+            "quality": 1.5,
+            "weight": 5
+        },
+        "summit": {
+            "quality": 1.5,
+            "weight": 5
+        },
+        "apotheosis": {
+            "quality": 1.5,
+            "weight": 5
+        }
+    },
+    "bonuses": [
+        {
+            "type": "apotheosis:mob_effect",
+            "gem_class": {
+                "key": "light_weapon",
+                "types": [
+                    "melee_weapon",
+                    "trident"
+                ]
+            },
+            "mob_effect": "apothic_attributes:detonation",
+            "target": "attack_target",
+            "values": {
+                "flawless": {
+                    "duration": 80,
+                    "amplifier": 0,
+                    "cooldown": 1200
+                },
+                "perfect": {
+                    "duration": 80,
+                    "amplifier": 1,
+                    "cooldown": 1200
+                }
+            }
+        },
+        {
+            "type": "apotheosis:enchantment",
+            "enchantment": "apothic_enchanting:berserkers_fury",
+            "gem_class": "chestplate",
+            "values": {
+                "flawed": 1,
+                "normal": 1,
+                "flawless": 2,
+                "perfect": 2
+            }
+        },
+        {
+            "type": "apotheosis:enchantment",
+            "enchantment": "minecraft:efficiency",
+            "gem_class": "breaker",
+            "values": {
+                "flawed": 1,
+                "normal": 2,
+                "flawless": 3,
+                "perfect": 4
+            }
+        },
+        {
+            "type": "apotheosis:attribute",
+            "attribute": "apothic_attributes:fire_damage",
+            "gem_class": "helmet",
+            "operation": "add_multiplied_total",
+            "values": {
+                "flawed": 0.5,
+                "normal": 0.625,
+                "flawless": 0.75,
+                "perfect": 0.9
+            }
+        }
+    ]
+}

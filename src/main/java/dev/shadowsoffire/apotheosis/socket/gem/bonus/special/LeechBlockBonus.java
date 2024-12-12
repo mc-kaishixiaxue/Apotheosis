@@ -59,7 +59,7 @@ public class LeechBlockBonus extends GemBonus {
         return this.values.containsKey(purity);
     }
 
-    static record Data(float healFactor, int cooldown) {
+    public static record Data(float healFactor, int cooldown) {
 
         public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst
             .group(

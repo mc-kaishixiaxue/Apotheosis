@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.UnaryOperator;
 
+import com.mojang.serialization.JsonOps;
+
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
@@ -21,18 +23,25 @@ import dev.shadowsoffire.apotheosis.socket.gem.bonus.EnchantmentBonus.Mode;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.MobEffectBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.MultiAttrBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.AllStatsBonus;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.BloodyArrowBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.DropTransformBonus;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.LeechBlockBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.MageSlayerBonus;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apothic_attributes.api.ALObjects;
+import dev.shadowsoffire.apothic_enchanting.Ench;
 import dev.shadowsoffire.placebo.util.data.DynamicRegistryProvider;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.HolderLookup.RegistryLookup;
+import net.minecraft.core.HolderOwner;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -70,7 +79,8 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
 
     @Override
     public void generate() {
-        RegistryLookup<Enchantment> enchants = this.lookupProvider.join().lookup(Registries.ENCHANTMENT).get();
+        HolderLookup.Provider registries = this.lookupProvider.join();
+        RegistryLookup<Enchantment> enchants = registries.lookup(Registries.ENCHANTMENT).get();
 
         addGem("core/ballast", c -> c
             .bonus(LIGHT_WEAPON, AttributeBonus.builder()
@@ -587,6 +597,91 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                     .value(Purity.FLAWLESS, -0.35F)
                     .value(Purity.PERFECT, -0.40F))));
 
+        addGem("the_nether/blood_lord", TieredWeights.forTiersAbove(WorldTier.ASCENT, 5, 1.5F), c -> c
+            .unique()
+            .minPurity(Purity.FLAWED)
+            .contstraints(Constraints.forDimension(Level.NETHER))
+            .bonus(LIGHT_WEAPON, MultiAttrBonus.builder()
+                .desc("bonus.apotheosis:multi_attr.desc.and")
+                .modifier(b -> b
+                    .attr(ALObjects.Attributes.LIFE_STEAL)
+                    .op(Operation.ADD_VALUE)
+                    .value(Purity.FLAWED, 0.25F)
+                    .value(Purity.NORMAL, 0.40F)
+                    .value(Purity.FLAWLESS, 0.50F)
+                    .value(Purity.PERFECT, 0.60F))
+                .modifier(b -> b
+                    .attr(ALObjects.Attributes.LIFE_STEAL)
+                    .op(Operation.ADD_MULTIPLIED_TOTAL)
+                    .value(Purity.FLAWED, 0.05F)
+                    .value(Purity.NORMAL, 0.10F)
+                    .value(Purity.FLAWLESS, 0.20F)
+                    .value(Purity.PERFECT, 0.30F)))
+            .bonus(LootCategory.HELMET, MultiAttrBonus.builder()
+                .desc("bonus.apotheosis:multi_attr.desc.and")
+                .modifier(b -> b
+                    .attr(Attributes.ATTACK_DAMAGE)
+                    .op(Operation.ADD_MULTIPLIED_TOTAL)
+                    .value(Purity.FLAWED, 0.25F)
+                    .value(Purity.NORMAL, 0.35F)
+                    .value(Purity.FLAWLESS, 0.45F)
+                    .value(Purity.PERFECT, 0.60F))
+                .modifier(b -> b
+                    .attr(Attributes.MAX_HEALTH)
+                    .op(Operation.ADD_MULTIPLIED_TOTAL)
+                    .value(Purity.FLAWED, -0.30F)
+                    .value(Purity.NORMAL, -0.40F)
+                    .value(Purity.FLAWLESS, -0.50F)
+                    .value(Purity.PERFECT, -0.65F)))
+            .bonus(LootCategory.CHESTPLATE, AttributeBonus.builder()
+                .attr(ALObjects.Attributes.HEALING_RECEIVED)
+                .op(Operation.ADD_MULTIPLIED_BASE)
+                .value(Purity.FLAWED, 0.20)
+                .value(Purity.NORMAL, 0.30)
+                .value(Purity.FLAWLESS, 0.40)
+                .value(Purity.PERFECT, 0.50))
+            .bonus(new BloodyArrowBonus(Map.of(
+                Purity.FLAWED, new BloodyArrowBonus.Data(0.20F, 1.60F, 450),
+                Purity.NORMAL, new BloodyArrowBonus.Data(0.30F, 1.90F, 450),
+                Purity.FLAWLESS, new BloodyArrowBonus.Data(0.40F, 2.20F, 450),
+                Purity.PERFECT, new BloodyArrowBonus.Data(0.50F, 2.50F, 450))))
+            .bonus(new LeechBlockBonus(Map.of(
+                Purity.FLAWED, new LeechBlockBonus.Data(0.25F, 450),
+                Purity.NORMAL, new LeechBlockBonus.Data(0.40F, 450),
+                Purity.FLAWLESS, new LeechBlockBonus.Data(0.55F, 450),
+                Purity.PERFECT, new LeechBlockBonus.Data(0.65F, 450)))));
+
+        addGem("the_nether/inferno", TieredWeights.forTiersAbove(WorldTier.ASCENT, 5, 1.5F), c -> c
+            .unique()
+            .minPurity(Purity.FLAWED)
+            .contstraints(Constraints.forDimension(Level.NETHER))
+            .bonus(LIGHT_WEAPON, MobEffectBonus.builder()
+                .effect(ALObjects.MobEffects.DETONATION)
+                .target(Target.ATTACK_TARGET)
+                .value(Purity.FLAWLESS, 80, 0, 1200)
+                .value(Purity.PERFECT, 80, 1, 1200))
+            .bonus(LootCategory.CHESTPLATE, EnchantmentBonus.builder()
+                .enchantment(standaloneHolder(registries, Ench.Enchantments.BERSERKERS_FURY))
+                .mode(Mode.SINGLE)
+                .value(Purity.FLAWED, 1)
+                .value(Purity.NORMAL, 1)
+                .value(Purity.FLAWLESS, 2)
+                .value(Purity.PERFECT, 2))
+            .bonus(LootCategory.BREAKER, EnchantmentBonus.builder()
+                .enchantment(enchants.getOrThrow(Enchantments.EFFICIENCY))
+                .mode(Mode.SINGLE)
+                .value(Purity.FLAWED, 1)
+                .value(Purity.NORMAL, 2)
+                .value(Purity.FLAWLESS, 3)
+                .value(Purity.PERFECT, 4))
+            .bonus(LootCategory.HELMET, AttributeBonus.builder()
+                .attr(ALObjects.Attributes.FIRE_DAMAGE)
+                .op(Operation.ADD_MULTIPLIED_TOTAL)
+                .value(Purity.FLAWED, 0.50)
+                .value(Purity.NORMAL, 0.625)
+                .value(Purity.FLAWLESS, 0.75)
+                .value(Purity.PERFECT, 0.90)));
+
         addGem("the_end/endersurge", TieredWeights.forTiersAbove(WorldTier.SUMMIT, 5, 1.5F), c -> c
             .unique()
             .minPurity(Purity.FLAWLESS)
@@ -636,6 +731,14 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
         var builder = new Gem.Builder(weights);
         config.apply(builder);
         this.add(Apotheosis.loc(name), builder.build());
+    }
+
+    /**
+     * Creates a standalone holder that can be serialized in datagen by stealing the {@link UniversalOwner} from the registry lookup.
+     */
+    private static <T> Holder.Reference<T> standaloneHolder(HolderLookup.Provider registries, ResourceKey<T> key) {
+        HolderOwner<T> owner = registries.createSerializationContext(JsonOps.INSTANCE).owner(key.registryKey()).get();
+        return Holder.Reference.createStandAlone(owner, key);
     }
 
 }

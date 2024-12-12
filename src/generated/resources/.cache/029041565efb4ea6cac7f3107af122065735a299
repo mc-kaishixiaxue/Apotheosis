@@ -1,4 +1,4 @@
-// 1.21.1	2024-12-11T23:29:00.765021	Gems
+// 1.21.1	2024-12-12T00:04:25.6098384	Gems
 033264447f12fb4c151cda023c3343936d02500a data/apotheosis/gems/core/ballast.json
 89ee5b028fd5ff52af8374d6efde23d2e108339b data/apotheosis/gems/core/brawlers.json
 038e3863ee9396eed829c6a193b44cef97f06534 data/apotheosis/gems/core/breach.json
@@ -16,3 +16,5 @@ b3499e9f623372e9294561487080bae1d7aa14cd data/apotheosis/gems/core/warlord.json
 d293799c67e7f53eaa26b87ed9c9ef4f6770ca9d data/apotheosis/gems/overworld/royalty.json
 5b1f38a6a0b2baff703e5295786b5e448aec18d2 data/apotheosis/gems/the_end/endersurge.json
 9bb0b9ad2392085eefd900173cc4042a24c194f4 data/apotheosis/gems/the_end/mageslayer.json
+d791987fe512bbd41c2a365060f2ac19db4dbd9b data/apotheosis/gems/the_nether/blood_lord.json
+dff98ba4916f547244dbcfd906ba5ea4577430f4 data/apotheosis/gems/the_nether/inferno.json

@@ -60,7 +60,7 @@ public class BloodyArrowBonus extends GemBonus {
         return this.values.containsKey(purity);
     }
 
-    static record Data(float healthCost, float dmgMultiplier, int cooldown) {
+    public static record Data(float healthCost, float dmgMultiplier, int cooldown) {
 
         public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst
             .group(

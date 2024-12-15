@@ -1,5 +1,10 @@
-// 1.21.1	2024-12-11T23:29:00.7680222	Recipes
+// 1.21.1	2024-12-15T12:39:57.3621519	Recipes
 bab664def1f01400bfe3a7cf432385247dcd847d data/apotheosis/recipe/augmenting_table.json
+cfc46608a868f8e622a46d07c0b0d2d642bec035 data/apotheosis/recipe/gem_cutting/chipped.json
+527c22d6be2eb2dbc699e129a7db9313980d97a5 data/apotheosis/recipe/gem_cutting/cracked.json
+c60d64ece743daf5afb56c44ef1594bd7c86ef7d data/apotheosis/recipe/gem_cutting/flawed.json
+c3f32e8ab774ebff2bac6522f8cf041069af8d26 data/apotheosis/recipe/gem_cutting/flawless.json
+7d1e81771392cdacb85b1fdd12c8fad0a84662fe data/apotheosis/recipe/gem_cutting/normal.json
 00793e028bc1a5f0589bd1e666e5ed2a84a00dbb data/apotheosis/recipe/gem_cutting_table.json
 a347031477eb93618ffdb13c26c94480f507c32a data/apotheosis/recipe/gem_fused_slate.json
 0803ca18f18ad251e9cbd1cc8ad11c7a557c7586 data/apotheosis/recipe/reforging/common.json

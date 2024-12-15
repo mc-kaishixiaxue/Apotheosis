@@ -1,11 +1,18 @@
 package dev.shadowsoffire.apotheosis.socket.gem.cutting;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import org.spongepowered.include.com.google.common.base.Preconditions;
+
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingRecipe.CuttingRecipeInput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
@@ -50,6 +57,24 @@ public interface GemCuttingRecipe extends Recipe<CuttingRecipeInput> {
     @Override
     default RecipeType<?> getType() {
         return Apoth.RecipeTypes.GEM_CUTTING;
+    }
+
+    @Nullable
+    public static SizedIngredient getMatch(ItemStack stack, List<SizedIngredient> ingredients) {
+        for (SizedIngredient si : ingredients) {
+            if (si.test(stack)) {
+                return si;
+            }
+        }
+        return null;
+    }
+
+    public static SizedIngredient getMatchOrThrow(ItemStack stack, List<SizedIngredient> ingredients) {
+        return Preconditions.checkNotNull(getMatch(stack, ingredients), "Failed to find a match for " + stack);
+    }
+
+    public static boolean anyMatch(ItemStack stack, List<SizedIngredient> ingredients) {
+        return getMatch(stack, ingredients) != null;
     }
 
     public static class CuttingRecipeInput extends RecipeWrapper {

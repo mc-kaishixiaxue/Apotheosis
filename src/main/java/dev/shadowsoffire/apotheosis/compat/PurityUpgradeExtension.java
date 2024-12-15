@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import dev.shadowsoffire.apotheosis.Apoth;
+import dev.shadowsoffire.apotheosis.compat.GemCuttingCategory.GemCuttingExtension;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
@@ -13,25 +14,14 @@ import dev.shadowsoffire.apotheosis.socket.gem.cutting.PurityUpgradeRecipe;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
-public class PurityUpgradeCategory extends GemCuttingCategory<PurityUpgradeRecipe> {
-
-    public PurityUpgradeCategory(IGuiHelper guiHelper) {
-        super(guiHelper);
-    }
-
-    @Override
-    public RecipeType<PurityUpgradeRecipe> getRecipeType() {
-        return AdventureJEIPlugin.PURITY_UPGRADE;
-    }
+public class PurityUpgradeExtension implements GemCuttingExtension<PurityUpgradeRecipe> {
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, PurityUpgradeRecipe recipe, IFocusGroup focuses) {

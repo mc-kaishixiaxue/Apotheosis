@@ -1,6 +1,8 @@
 package dev.shadowsoffire.apotheosis.data;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 import dev.shadowsoffire.apotheosis.Apoth.Blocks;
@@ -16,6 +18,7 @@ import dev.shadowsoffire.apotheosis.socket.AddSocketsRecipe;
 import dev.shadowsoffire.apotheosis.socket.SocketingRecipe;
 import dev.shadowsoffire.apotheosis.socket.WithdrawalRecipe;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import dev.shadowsoffire.apotheosis.socket.gem.cutting.PurityUpgradeRecipe;
 import dev.shadowsoffire.apotheosis.util.AffixItemIngredient;
 import dev.shadowsoffire.apotheosis.util.GemIngredient;
 import dev.shadowsoffire.apothic_enchanting.Ench;
@@ -33,6 +36,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 public class ApothRecipeProvider extends LegacyRecipeProvider {
 
@@ -85,6 +89,25 @@ public class ApothRecipeProvider extends LegacyRecipeProvider {
             Items.GEM_FUSED_SLATE);
         addShaped(new ItemStack(Items.SIGIL_OF_WITHDRAWAL, 4), 3, 3, Items.GEM_FUSED_SLATE, Items.BLAZE_ROD, Items.GEM_FUSED_SLATE, Tags.Items.ENDER_PEARLS, Items.LAVA_BUCKET, Tags.Items.ENDER_PEARLS, Items.GEM_FUSED_SLATE,
             Items.GEM_DUST, Items.GEM_FUSED_SLATE);
+
+        List<Holder<Item>> rarityMaterials = List.of(Items.COMMON_MATERIAL, Items.UNCOMMON_MATERIAL, Items.RARE_MATERIAL, Items.EPIC_MATERIAL, Items.MYTHIC_MATERIAL);
+        for (int i = 0; i < Purity.values().length - 1; i++) {
+            Purity purity = Purity.BY_ID.apply(i);
+            List<Holder<Item>> materials = rarityMaterials.subList(Math.max(i - 1, 0), Math.min(i + 2, rarityMaterials.size()));
+            addPurityUpgrade(purity, 1 + i * 2, materials, i == 0 ? 3 : 9);
+        }
+    }
+
+    private void addPurityUpgrade(Purity purity, int gemDust, List<Holder<Item>> materials, int zerothMatCost) {
+        SizedIngredient dustIng = SizedIngredient.of(Items.GEM_DUST.value(), gemDust);
+        List<SizedIngredient> materialIngs = new ArrayList<>();
+        int matAmount = zerothMatCost;
+        for (Holder<Item> mat : materials) {
+            materialIngs.add(SizedIngredient.of(mat.value(), matAmount));
+            matAmount /= 3;
+        }
+        var recipe = new PurityUpgradeRecipe(purity, List.of(dustIng), materialIngs);
+        this.recipeOutput.accept(Apotheosis.loc("gem_cutting/" + purity.name().toLowerCase(Locale.ROOT)), recipe, null);
     }
 
     @SafeVarargs

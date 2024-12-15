@@ -50,9 +50,10 @@ public record PurityUpgradeRecipe(Purity purity, List<SizedIngredient> left, Lis
 
     @Override
     public void decrementInputs(CuttingRecipeInput input, Level level) {
+        SizedIngredient left = GemCuttingRecipe.getMatchOrThrow(input.getLeft(), this.left);
+        SizedIngredient right = GemCuttingRecipe.getMatchOrThrow(input.getRight(), this.right);
+
         input.getTop().shrink(1);
-        SizedIngredient left = this.left.stream().filter(i -> i.test(input.getLeft())).findFirst().get();
-        SizedIngredient right = this.right.stream().filter(i -> i.test(input.getLeft())).findFirst().get();
         input.getLeft().shrink(left.count());
         input.getRight().shrink(right.count());
     }
@@ -65,7 +66,7 @@ public record PurityUpgradeRecipe(Purity purity, List<SizedIngredient> left, Lis
             return false;
         }
 
-        return this.left.stream().anyMatch(i -> i.test(input.getLeft())) && this.right.stream().anyMatch(i -> i.test(input.getRight()));
+        return GemCuttingRecipe.anyMatch(input.getLeft(), this.left) && GemCuttingRecipe.anyMatch(input.getRight(), this.right);
     }
 
     @Override

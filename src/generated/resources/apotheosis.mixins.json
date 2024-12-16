@@ -5,6 +5,7 @@
     "refmap": "apotheosis.refmap.json",
     "maxShiftBy": 5,
     "mixins": [
+        "AbstractSkeletonMixin",
         "BaseSpawnerAccessor",
         "BlockMixin",
         "DamageSourceMixin",
@@ -19,7 +20,8 @@
         "WandererSpawnerMixin"
     ],
     "client": [
-        "client.GuiMixin"
+        "client.GuiMixin",
+        "client.SkeletonModelMixin"
     ],
     "minVersion": "0.8",
     "maxShiftBy": 5

@@ -1,9 +1,11 @@
-package dev.shadowsoffire.apotheosis.boss;
+package dev.shadowsoffire.apotheosis.mobs;
 
 import java.util.Optional;
 
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apotheosis;
+import dev.shadowsoffire.apotheosis.mobs.registries.InvaderRegistry;
+import dev.shadowsoffire.apotheosis.mobs.types.Invader;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
@@ -47,7 +49,7 @@ public class BossSpawnerBlock extends Block implements TickingEntityBlock {
 
     public static class BossSpawnerTile extends BlockEntity implements TickingBlockEntity {
 
-        protected DynamicHolder<ApothBoss> item = BossRegistry.INSTANCE.emptyHolder();
+        protected DynamicHolder<Invader> item = InvaderRegistry.INSTANCE.emptyHolder();
         protected int ticks = 0;
 
         public BossSpawnerTile(BlockPos pos, BlockState state) {
@@ -62,7 +64,7 @@ public class BossSpawnerBlock extends Block implements TickingEntityBlock {
                     this.level.setBlockAndUpdate(this.worldPosition, Blocks.AIR.defaultBlockState());
 
                     GenContext ctx = GenContext.forPlayerAtPos(this.level.random, player, pos);
-                    ApothBoss bossItem = !this.item.isBound() ? BossRegistry.INSTANCE.getRandomItem(ctx) : this.item.get();
+                    Invader bossItem = !this.item.isBound() ? InvaderRegistry.INSTANCE.getRandomItem(ctx) : this.item.get();
                     if (bossItem == null) {
                         Apotheosis.LOGGER.error("A boss spawner attempted to spawn a boss at {} in {}, but no bosses were available!", this.getBlockPos(), this.level.dimension().location());
                         return;
@@ -76,7 +78,7 @@ public class BossSpawnerBlock extends Block implements TickingEntityBlock {
             }
         }
 
-        public void setBossItem(DynamicHolder<ApothBoss> item) {
+        public void setBossItem(DynamicHolder<Invader> item) {
             this.item = item;
         }
 
@@ -91,7 +93,7 @@ public class BossSpawnerBlock extends Block implements TickingEntityBlock {
         @Override
         protected void loadAdditional(CompoundTag tag, Provider registries) {
             if (tag.contains("boss_item")) {
-                this.item = BossRegistry.INSTANCE.holder(ResourceLocation.tryParse(tag.getString("boss_item")));
+                this.item = InvaderRegistry.INSTANCE.holder(ResourceLocation.tryParse(tag.getString("boss_item")));
             }
             super.loadAdditional(tag, registries);
         }

@@ -1,4 +1,4 @@
-package dev.shadowsoffire.apotheosis.boss;
+package dev.shadowsoffire.apotheosis.mobs.util;
 
 import java.util.List;
 import java.util.Set;
@@ -9,7 +9,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.boss.BossEvents.BossSpawnRules;
 import dev.shadowsoffire.placebo.codec.CodecMap;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
@@ -27,6 +26,32 @@ public interface Exclusion extends CodecProvider<Exclusion> {
     public boolean isExcluded(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType, @Nullable CompoundTag entityNbt);
 
     public boolean requiresNbtAccess();
+
+    /**
+     * Checks if the given parameters are excluded by the given list of exclusions.
+     * <p>
+     * If the list is empty, nothing is excluded.
+     */
+    public static boolean isExcluded(List<Exclusion> exclusions, Mob mob, ServerLevelAccessor level, MobSpawnType type) {
+        if (exclusions.isEmpty()) {
+            return false;
+        }
+
+        boolean requiresNbt = false;
+        for (Exclusion ex : exclusions) {
+            requiresNbt |= ex.requiresNbtAccess();
+        }
+
+        CompoundTag nbt = requiresNbt ? mob.saveWithoutId(new CompoundTag()) : null;
+
+        for (Exclusion ex : exclusions) {
+            if (ex.isExcluded(mob, level, type, nbt)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public static void initCodecs() {
         register("spawn_type", SpawnTypeExclusion.CODEC);
@@ -135,13 +160,23 @@ public interface Exclusion extends CodecProvider<Exclusion> {
         }
 
         @Override
-        public boolean isExcluded(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType, CompoundTag entityNbt) {
-            return this.exclusions.stream().allMatch(e -> e.isExcluded(mob, level, spawnType, entityNbt));
+        public boolean isExcluded(Mob mob, ServerLevelAccessor level, MobSpawnType type, CompoundTag nbt) {
+            for (Exclusion ex : exclusions) {
+                if (ex.isExcluded(mob, level, type, nbt)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         @Override
         public boolean requiresNbtAccess() {
-            return this.exclusions.stream().anyMatch(Exclusion::requiresNbtAccess);
+            boolean requiresNbt = false;
+            for (Exclusion ex : exclusions) {
+                requiresNbt |= ex.requiresNbtAccess();
+            }
+            return requiresNbt;
         }
 
     }

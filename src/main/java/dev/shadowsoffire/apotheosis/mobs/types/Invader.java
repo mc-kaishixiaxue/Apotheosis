@@ -1,5 +1,6 @@
-package dev.shadowsoffire.apotheosis.boss;
+package dev.shadowsoffire.apotheosis.mobs.types;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,26 +16,26 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.Apoth.Attachments;
 import dev.shadowsoffire.apotheosis.Apoth.Components;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
-import dev.shadowsoffire.apotheosis.attachments.BonusLootTables;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.mobs.registries.InvaderRegistry;
+import dev.shadowsoffire.apotheosis.mobs.util.BasicBossData;
+import dev.shadowsoffire.apotheosis.mobs.util.BossStats;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.Constraints.Constrained;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights.Weighted;
 import dev.shadowsoffire.apotheosis.util.NameHelper;
-import dev.shadowsoffire.apotheosis.util.SupportingEntity;
 import dev.shadowsoffire.apothic_enchanting.asm.EnchHooks;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.json.ChancedEffectInstance;
-import dev.shadowsoffire.placebo.json.NBTAdapter;
 import dev.shadowsoffire.placebo.json.RandomAttributeModifier;
 import dev.shadowsoffire.placebo.systems.gear.GearSet;
-import dev.shadowsoffire.placebo.systems.gear.GearSet.SetPredicate;
 import dev.shadowsoffire.placebo.systems.gear.GearSetRegistry;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.BlockPos;
@@ -45,9 +46,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -68,7 +69,17 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 
-public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, Weighted {
+/**
+ * An Invader is a preset entity with per-rarity stats that will spawn with a full gear set and an equipped affix item.
+ * <p>
+ * Invaders piggyback off of normal spawns, cancelling the original and spawning in the invader, instead of spinning up a new spawn mechanism.
+ * 
+ * @param basicData The basic boss data for the spawned entity
+ * @param entity    The type of spawned entity
+ * @param size      The AABB of the spawned entity, accounting for any mounts or supports.
+ * @param stats     The per-rarity stats for this invader.
+ */
+public record Invader(BasicBossData basicData, EntityType<?> entity, AABB size, Map<LootRarity, BossStats> stats) implements CodecProvider<Invader>, Constrained, Weighted {
 
     /**
      * NBT key for a boolean value applied to entity persistent data to indicate a mob is an apoth boss.
@@ -80,66 +91,30 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
      */
     public static final String RARITY_KEY = BOSS_KEY + ".rarity";
 
-    public static final Codec<AABB> AABB_CODEC = RecordCodecBuilder.create(inst -> inst
-        .group(
-            Codec.DOUBLE.fieldOf("width").forGetter(a -> Math.abs(a.maxX - a.minX)),
-            Codec.DOUBLE.fieldOf("height").forGetter(a -> Math.abs(a.maxY - a.minY)))
-        .apply(inst, (width, height) -> new AABB(0, 0, 0, width, height, width)));
+    public static final String INVADER_ATTR_PREFIX = "apothic_invader_";
 
-    public static final Codec<ApothBoss> CODEC = RecordCodecBuilder.create(inst -> inst
+    public static final Codec<Invader> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
-            TieredWeights.CODEC.fieldOf("weights").forGetter(Weighted::weights),
-            Constraints.CODEC.optionalFieldOf("constraints", Constraints.EMPTY).forGetter(Constrained::constraints),
-            BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(ApothBoss::getEntity),
-            AABB_CODEC.fieldOf("size").forGetter(ApothBoss::getSize),
-            LootRarity.mapCodec(BossStats.CODEC).fieldOf("stats").forGetter(a -> a.stats),
-            SetPredicate.CODEC.listOf().fieldOf("valid_gear_sets").forGetter(a -> a.gearSets),
-            NBTAdapter.EITHER_CODEC.optionalFieldOf("nbt").forGetter(a -> a.nbt),
-            SupportingEntity.CODEC.optionalFieldOf("mount").forGetter(a -> a.mount),
-            BonusLootTables.CODEC.optionalFieldOf("bonus_loot", BonusLootTables.EMPTY).forGetter(a -> a.bonusLoot))
-        .apply(inst, ApothBoss::new));
+            BasicBossData.CODEC.fieldOf("basic_data").forGetter(Invader::basicData),
+            BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(Invader::entity),
+            BasicBossData.AABB_CODEC.fieldOf("size").forGetter(Invader::size),
+            LootRarity.mapCodec(BossStats.CODEC).fieldOf("stats").forGetter(Invader::stats))
+        .apply(inst, Invader::new));
 
     public static final Predicate<Goal> IS_VILLAGER_ATTACK = a -> a instanceof NearestAttackableTargetGoal && ((NearestAttackableTargetGoal<?>) a).targetType == Villager.class;
 
-    protected final TieredWeights weights;
-    protected final Constraints constraints;
-    protected final EntityType<?> entity;
-    protected final AABB size;
-    protected final Map<LootRarity, BossStats> stats;
-    protected final List<SetPredicate> gearSets;
-    protected final Optional<CompoundTag> nbt;
-    protected final Optional<SupportingEntity> mount;
-    protected final BonusLootTables bonusLoot;
-
-    public ApothBoss(TieredWeights weights, Constraints constraints, EntityType<?> entity, AABB size, Map<LootRarity, BossStats> stats, List<SetPredicate> armorSets, Optional<CompoundTag> nbt, Optional<SupportingEntity> mount,
-        BonusLootTables bonusLoot) {
-        this.weights = weights;
-        this.constraints = constraints;
-        this.entity = entity;
-        this.size = size;
-        this.stats = stats;
-        this.gearSets = armorSets;
-        this.nbt = nbt;
-        this.mount = mount;
-        this.bonusLoot = bonusLoot;
+    public BasicBossData basicData() {
+        return this.basicData;
     }
 
     @Override
     public TieredWeights weights() {
-        return this.weights;
+        return this.basicData.weights();
     }
 
     @Override
     public Constraints constraints() {
-        return this.constraints;
-    }
-
-    public AABB getSize() {
-        return this.size;
-    }
-
-    public EntityType<?> getEntity() {
-        return this.entity;
+        return this.basicData.constraints();
     }
 
     /**
@@ -152,32 +127,39 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
     /**
      * Generates (but does not spawn) the result of this BossItem.
      *
-     * @param world  The world to create the entity in.
+     * @param level  The level to create the entity in.
      * @param pos    The location to place the entity. Will be centered (+0.5, +0.5).
-     * @param random A random, used for selection of boss stats.
-     * @param luck   The player's luck value.
+     * @param ctx    The generation context, used for selection of boss stats and equipment.
      * @param rarity A rarity override. This will be clamped to a valid rarity, and randomly generated if null.
-     * @return The newly created boss, or it's mount, if it had one.
+     * @return The newly created boss, or it's mount, if present.
      */
-    public Mob createBoss(ServerLevelAccessor world, BlockPos pos, GenContext ctx, @Nullable LootRarity rarity) {
-        CompoundTag fakeNbt = this.nbt.orElse(new CompoundTag());
+    public Mob createBoss(ServerLevelAccessor level, BlockPos pos, GenContext ctx, @Nullable LootRarity rarity) {
+        Optional<CompoundTag> nbt = this.basicData.nbt();
+        CompoundTag fakeNbt = nbt.orElse(new CompoundTag());
         fakeNbt.putString("id", EntityType.getKey(this.entity).toString());
-        Mob entity = (Mob) EntityType.loadEntityRecursive(fakeNbt, world.getLevel(), Function.identity());
+        Mob entity = (Mob) EntityType.loadEntityRecursive(fakeNbt, level.getLevel(), Function.identity());
 
         this.initBoss(entity, ctx, rarity);
-        // Re-read here so we can apply certain things after the boss has been modified
-        // But only mob-specific things, not a full load()
-        if (this.nbt.isPresent()) {
-            entity.readAdditionalSaveData(this.nbt.get());
+
+        if (this.basicData.finalizeSpawn()) {
+            // TODO: Implement finalize support for invaders.
         }
 
-        if (this.mount.isPresent()) {
-            Mob mountedEntity = this.mount.get().create(world.getLevel(), pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
-            entity.startRiding(mountedEntity, true);
-            entity = mountedEntity;
+        // Re-read here so we can apply certain things after the boss has been modified
+        // But only mob-specific things, not a full load()
+        if (nbt.isPresent()) {
+            entity.readAdditionalSaveData(nbt.get());
         }
 
         entity.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, ctx.rand().nextFloat() * 360.0F, 0.0F);
+
+        if (this.basicData.hasMount()) {
+            entity = this.basicData.createMount(level, pos, entity);
+        }
+
+        entity.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, ctx.rand().nextFloat() * 360.0F, 0.0F);
+
+        // TODO: Implement supporting entities here. Need to return the boss *and* the supports for spawning.
         return entity;
     }
 
@@ -185,9 +167,9 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
      * Initializes an entity as a boss, based on the stats of this BossItem.
      *
      * @param rand
-     * @param entity
+     * @param mob
      */
-    public void initBoss(Mob entity, GenContext ctx, @Nullable LootRarity rarity) {
+    public void initBoss(Mob mob, GenContext ctx, @Nullable LootRarity rarity) {
         RandomSource rand = ctx.rand();
 
         if (rarity == null) {
@@ -195,64 +177,99 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
         }
 
         BossStats stats = this.stats.get(rarity);
-        int duration = entity instanceof Creeper ? 6000 : Integer.MAX_VALUE;
+        int duration = mob instanceof Creeper ? 6000 : Integer.MAX_VALUE;
 
         for (ChancedEffectInstance inst : stats.effects()) {
             if (rand.nextFloat() <= inst.chance()) {
-                entity.addEffect(inst.create(rand, duration));
+                mob.addEffect(inst.create(rand, duration));
             }
         }
 
+        int i = 0;
         for (RandomAttributeModifier modif : stats.modifiers()) {
-            modif.apply(rand, entity);
+            modif.apply(createAttributeModifierId(i++), rand, mob);
         }
 
-        entity.goalSelector.getAvailableGoals().removeIf(IS_VILLAGER_ATTACK);
-        String name = NameHelper.setEntityName(rand, entity);
+        mob.goalSelector.getAvailableGoals().removeIf(IS_VILLAGER_ATTACK);
 
-        GearSet set = GearSetRegistry.INSTANCE.getRandomSet(rand, ctx.luck(), this.gearSets);
-        set.apply(entity);
+        this.basicData.applyEntityName(rand, mob);
 
-        boolean anyValid = false;
+        GearSet set = this.basicData.applyGearSet(rand, ctx.luck(), mob);
 
-        for (EquipmentSlot t : EquipmentSlot.values()) {
-            ItemStack s = entity.getItemBySlot(t);
-            if (!s.isEmpty() && !LootCategory.forItem(s).isNone()) {
-                anyValid = true;
-                break;
+        if (set != null) {
+            boolean anyValid = false;
+
+            for (EquipmentSlot t : EquipmentSlot.values()) {
+                ItemStack s = mob.getItemBySlot(t);
+                if (!s.isEmpty() && !LootCategory.forItem(s).isNone()) {
+                    anyValid = true;
+                    break;
+                }
+            }
+
+            if (!anyValid) {
+                Apotheosis.LOGGER.error("Attempted to apply boss gear set " + GearSetRegistry.INSTANCE.getKey(set) + " but it had no valid affix loot items generated.");
             }
         }
+        else {
+            // We didn't apply an armor set to this invader. We still need to generate an affix item, so we'll pull one at random and equip it.
+            ItemStack affixItem = LootController.createRandomLootItem(ctx, rarity);
+            LootCategory cat = LootCategory.forItem(affixItem);
+            EquipmentSlot slot = Arrays.stream(EquipmentSlot.values()).filter(cat.getSlots()::test).findAny().orElse(EquipmentSlot.MAINHAND);
+            mob.setItemSlot(slot, affixItem);
+        }
 
-        if (!anyValid) throw new RuntimeException("Attempted to apply boss gear set " + GearSetRegistry.INSTANCE.getKey(set) + " but it had no valid affix loot items generated.");
+        EquipmentSlot[] slots = EquipmentSlot.values();
 
-        int guaranteed = rand.nextInt(6);
+        EquipmentSlot guaranteed = slots[rand.nextInt(6)];
+        int tries = 50;
 
-        ItemStack temp = entity.getItemBySlot(EquipmentSlot.values()[guaranteed]);
+        ItemStack temp = mob.getItemBySlot(guaranteed);
         while (temp.isEmpty() || LootCategory.forItem(temp) == LootCategory.NONE) {
-            guaranteed = rand.nextInt(6);
-            temp = entity.getItemBySlot(EquipmentSlot.values()[guaranteed]);
+            guaranteed = slots[rand.nextInt(6)];
+            temp = mob.getItemBySlot(guaranteed);
+
+            if (tries-- <= 0) {
+                break; // Shouldn't happen, but we can't deadlock here.
+            }
         }
 
         for (EquipmentSlot s : EquipmentSlot.values()) {
-            ItemStack stack = entity.getItemBySlot(s);
-            if (stack.isEmpty()) continue;
-            if (s.ordinal() == guaranteed) entity.setDropChance(s, 2F);
-            if (s.ordinal() == guaranteed) {
-                entity.setItemSlot(s, modifyBossItem(stack, name, ctx, rarity, stats, entity.level().registryAccess()));
-                entity.setCustomName(((MutableComponent) entity.getCustomName()).withStyle(Style.EMPTY.withColor(rarity.color())));
+            ItemStack stack = mob.getItemBySlot(s);
+            if (stack.isEmpty()) {
+                continue;
+            }
+
+            if (s == guaranteed) {
+                mob.setDropChance(s, 2F);
+                mob.setItemSlot(s, modifyBossItem(stack, mob.getName(), ctx, rarity, stats, mob.level().registryAccess()));
+                mob.setCustomName(mob.getCustomName().copy().withStyle(Style.EMPTY.withColor(rarity.color())));
             }
             else if (rand.nextFloat() < stats.enchantChance()) {
-                enchantBossItem(rand, stack, stats.enchLevels().secondary(), true, entity.level().registryAccess());
-                entity.setItemSlot(s, stack);
+                enchantBossItem(rand, stack, stats.enchLevels().secondary(), true, mob.level().registryAccess());
+                mob.setItemSlot(s, stack);
             }
         }
-        entity.getPersistentData().putBoolean(BOSS_KEY, true);
-        entity.getPersistentData().putString(RARITY_KEY, RarityRegistry.INSTANCE.getKey(rarity).toString());
-        entity.setHealth(entity.getMaxHealth());
+
+        mob.getPersistentData().putBoolean(BOSS_KEY, true);
+        mob.getPersistentData().putString(RARITY_KEY, RarityRegistry.INSTANCE.getKey(rarity).toString());
+        mob.setHealth(mob.getMaxHealth());
+
         if (AdventureConfig.bossGlowOnSpawn) {
-            entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 3600));
+            mob.addEffect(new MobEffectInstance(MobEffects.GLOWING, 3600));
         }
-        entity.setData(Attachments.BONUS_LOOT_TABLES, this.bonusLoot);
+
+        mob.setData(Attachments.BONUS_LOOT_TABLES, this.basicData.bonusLoot());
+    }
+
+    @Override
+    public Codec<? extends Invader> getCodec() {
+        return CODEC;
+    }
+
+    protected ResourceLocation createAttributeModifierId(int index) {
+        ResourceLocation key = InvaderRegistry.INSTANCE.getKey(this);
+        return ResourceLocation.fromNamespaceAndPath(key.getNamespace(), INVADER_ATTR_PREFIX + key.getPath() + "_modif_" + index);
     }
 
     public static void enchantBossItem(RandomSource rand, ItemStack stack, int level, boolean treasure, RegistryAccess reg) {
@@ -263,15 +280,15 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
         EnchantmentHelper.setEnchantments(stack, builder.toImmutable());
     }
 
-    public static ItemStack modifyBossItem(ItemStack stack, String bossName, GenContext ctx, LootRarity rarity, BossStats stats, RegistryAccess reg) {
+    public static ItemStack modifyBossItem(ItemStack stack, Component bossName, GenContext ctx, LootRarity rarity, BossStats stats, RegistryAccess reg) {
         RandomSource rand = ctx.rand();
         enchantBossItem(rand, stack, stats.enchLevels().primary(), true, reg);
         NameHelper.setItemName(rand, stack);
         stack = LootController.createLootItem(stack, LootCategory.forItem(stack), rarity, ctx);
 
-        String bossOwnerName = String.format(NameHelper.ownershipFormat, bossName);
+        Component bossOwnerName = Component.translatable(NameHelper.ownershipFormat, bossName);
         Component name = AffixHelper.getName(stack);
-        if (!bossName.isEmpty() && name.getContents() instanceof TranslatableContents tc) {
+        if (name.getContents() instanceof TranslatableContents tc) {
             String oldKey = tc.getKey();
             String newKey = "misc.apotheosis.affix_name.two".equals(oldKey) ? "misc.apotheosis.affix_name.three" : "misc.apotheosis.affix_name.four";
             Object[] newArgs = new Object[tc.getArgs().length + 1];
@@ -301,11 +318,6 @@ public final class ApothBoss implements CodecProvider<ApothBoss>, Constrained, W
         EnchantmentHelper.setEnchantments(stack, enchMap.toImmutable());
         stack.set(Components.FROM_BOSS, true);
         return stack;
-    }
-
-    @Override
-    public Codec<? extends ApothBoss> getCodec() {
-        return CODEC;
     }
 
 }

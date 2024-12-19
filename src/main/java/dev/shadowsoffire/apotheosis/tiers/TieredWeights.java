@@ -31,13 +31,13 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
      * TieredWeights can be represented in json as a single weight object, which applies for all tiers, or a map from WorldTier->Weight.
      * If opting to provide per-tier weights, weights must be provided for each tier.
      */
-    public static MapCodec<TieredWeights> CODEC = Codec.mapEither(Weight.CODEC,
+    public static final MapCodec<TieredWeights> CODEC = Codec.mapEither(Weight.CODEC,
         Codec.simpleMap(WorldTier.CODEC, Weight.CODEC.codec(), StringRepresentable.keys(WorldTier.values())))
         .xmap(e -> e.map(TieredWeights::fillAll, Function.identity()), TieredWeights::toEither)
         .xmap(TieredWeights::new, TieredWeights::weights);
 
-    private static StreamCodec<ByteBuf, Map<WorldTier, Weight>> MAP_STREAM_CODEC = ByteBufCodecs.map(IdentityHashMap::new, WorldTier.STREAM_CODEC, Weight.STREAM_CODEC, 5);
-    public static StreamCodec<ByteBuf, TieredWeights> STREAM_CODEC = MAP_STREAM_CODEC.map(TieredWeights::new, TieredWeights::weights);
+    private static final StreamCodec<ByteBuf, Map<WorldTier, Weight>> MAP_STREAM_CODEC = ByteBufCodecs.map(IdentityHashMap::new, WorldTier.STREAM_CODEC, Weight.STREAM_CODEC, 5);
+    public static final StreamCodec<ByteBuf, TieredWeights> STREAM_CODEC = MAP_STREAM_CODEC.map(TieredWeights::new, TieredWeights::weights);
 
     public static TieredWeights EMPTY = new TieredWeights(Map.of());
 

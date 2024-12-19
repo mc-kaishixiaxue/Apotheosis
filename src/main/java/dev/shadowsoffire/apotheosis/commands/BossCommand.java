@@ -6,10 +6,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 
-import dev.shadowsoffire.apotheosis.boss.ApothBoss;
-import dev.shadowsoffire.apotheosis.boss.BossRegistry;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.mobs.registries.InvaderRegistry;
+import dev.shadowsoffire.apotheosis.mobs.types.Invader;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.commands.CommandSourceStack;
@@ -29,7 +29,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class BossCommand {
 
-    public static final SuggestionProvider<CommandSourceStack> SUGGEST_BOSS = (ctx, builder) -> SharedSuggestionProvider.suggest(BossRegistry.INSTANCE.getKeys().stream().map(ResourceLocation::toString), builder);
+    public static final SuggestionProvider<CommandSourceStack> SUGGEST_BOSS = (ctx, builder) -> SharedSuggestionProvider.suggest(InvaderRegistry.INSTANCE.getKeys().stream().map(ResourceLocation::toString), builder);
 
     public static void register(LiteralArgumentBuilder<CommandSourceStack> root) {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("spawn_boss").requires(c -> c.hasPermission(2));
@@ -63,7 +63,7 @@ public class BossCommand {
         }
 
         GenContext ctx = GenContext.forPlayer(summoner);
-        ApothBoss boss = bossId == null ? BossRegistry.INSTANCE.getRandomItem(ctx) : BossRegistry.INSTANCE.getValue(bossId);
+        Invader boss = bossId == null ? InvaderRegistry.INSTANCE.getRandomItem(ctx) : InvaderRegistry.INSTANCE.getValue(bossId);
         if (boss == null) {
             if (bossId == null) {
                 c.getSource().sendFailure(Component.literal("Unknown boss: " + bossId));

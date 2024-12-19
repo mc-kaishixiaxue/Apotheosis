@@ -4,9 +4,9 @@ import java.util.function.Consumer;
 
 import com.google.common.base.Predicates;
 
-import dev.shadowsoffire.apotheosis.boss.ApothBoss;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.mobs.types.Invader;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
@@ -22,7 +22,7 @@ import net.minecraft.world.level.Level;
 public class CommonTooltipUtil {
 
     public static void appendBossData(Level level, LivingEntity entity, Consumer<Component> tooltip) {
-        DynamicHolder<LootRarity> rarity = RarityRegistry.INSTANCE.holder(ResourceLocation.tryParse(entity.getPersistentData().getString(ApothBoss.RARITY_KEY)));
+        DynamicHolder<LootRarity> rarity = RarityRegistry.INSTANCE.holder(ResourceLocation.tryParse(entity.getPersistentData().getString(Invader.RARITY_KEY)));
         if (!rarity.isBound()) return;
         tooltip.accept(Component.translatable("info.apotheosis.boss", rarity.get().toComponent()).withStyle(ChatFormatting.GRAY));
         if (SharedConstants.IS_RUNNING_IN_IDE) {

@@ -1,10 +1,11 @@
-package dev.shadowsoffire.apotheosis.boss;
+package dev.shadowsoffire.apotheosis.mobs.registries;
 
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
+import dev.shadowsoffire.apotheosis.mobs.types.Elite;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredDynamicRegistry;
@@ -13,21 +14,21 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 
-public class MinibossRegistry extends TieredDynamicRegistry<ApothMiniboss> {
+public class EliteRegistry extends TieredDynamicRegistry<Elite> {
 
-    public static final MinibossRegistry INSTANCE = new MinibossRegistry();
+    public static final EliteRegistry INSTANCE = new EliteRegistry();
 
-    public MinibossRegistry() {
-        super(Apotheosis.LOGGER, "minibosses", false, false);
+    public EliteRegistry() {
+        super(Apotheosis.LOGGER, "apothic_elites", false, false);
     }
 
     @Override
     protected void registerBuiltinCodecs() {
-        this.registerDefaultCodec(Apotheosis.loc("miniboss"), ApothMiniboss.CODEC);
+        this.registerDefaultCodec(Apotheosis.loc("elite"), Elite.CODEC);
     }
 
     @Nullable
-    public ApothMiniboss getRandomItem(GenContext ctx, Entity target) {
+    public Elite getRandomItem(GenContext ctx, Entity target) {
         return this.getRandomItem(ctx, Constraints.eval(ctx), IEntityMatch.matches(target));
     }
 

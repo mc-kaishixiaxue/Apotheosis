@@ -9,8 +9,8 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import dev.shadowsoffire.apotheosis.boss.BossEvents.BossSpawnRules;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
+import dev.shadowsoffire.apotheosis.mobs.util.BossSpawnRules;
 import dev.shadowsoffire.placebo.config.Configuration;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -26,6 +26,8 @@ public class AdventureConfig {
     public static final List<ResourceLocation> DIM_WHITELIST = new ArrayList<>();
     public static final Map<ResourceLocation, LootCategory> TYPE_OVERRIDES = new HashMap<>(); // needs sync
     public static final Map<ResourceLocation, Pair<Float, BossSpawnRules>> BOSS_SPAWN_RULES = new HashMap<>();
+
+    public static float augmentedMobChance = 0.075F;
 
     // Boss Stats
     public static boolean curseBossItems = false;

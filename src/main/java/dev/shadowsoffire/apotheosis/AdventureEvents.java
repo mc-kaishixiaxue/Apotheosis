@@ -1,12 +1,10 @@
 package dev.shadowsoffire.apotheosis;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.base.Predicates;
 
-import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
@@ -25,9 +23,7 @@ import dev.shadowsoffire.apotheosis.commands.ReforgeCommand;
 import dev.shadowsoffire.apotheosis.commands.SocketCommand;
 import dev.shadowsoffire.apotheosis.commands.WorldTierCommand;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
-import dev.shadowsoffire.apotheosis.loot.LootController;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
-import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apothic_attributes.event.ApotheosisCommandEvent;
 import dev.shadowsoffire.placebo.events.AnvilLandEvent;
 import net.minecraft.core.BlockPos;
@@ -36,12 +32,9 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
@@ -54,7 +47,6 @@ import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
-import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -228,24 +220,6 @@ public class AdventureEvents {
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onBreak(BlockEvent.BreakEvent e) {
         RadialAffix.onBreak(e);
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public void special(FinalizeSpawnEvent e) {
-        if (e.getSpawnType() == MobSpawnType.NATURAL && e.getLevel().getRandom().nextFloat() <= AdventureConfig.randomAffixItem && e.getEntity() instanceof Monster) {
-            Player player = e.getLevel().getNearestPlayer(e.getX(), e.getY(), e.getZ(), -1, false);
-            if (player == null) return;
-
-            GenContext ctx = GenContext.forPlayer(player);
-            ItemStack affixItem = LootController.createRandomLootItem(ctx, null);
-            if (affixItem.isEmpty()) return;
-
-            affixItem.set(Components.FROM_MOB, true);
-            LootCategory cat = LootCategory.forItem(affixItem);
-            EquipmentSlot slot = Arrays.stream(EquipmentSlot.values()).filter(cat.getSlots()::test).findAny().orElse(EquipmentSlot.MAINHAND);
-            e.getEntity().setItemSlot(slot, affixItem);
-            e.getEntity().setGuaranteedDrop(slot);
-        }
     }
 
     @SubscribeEvent

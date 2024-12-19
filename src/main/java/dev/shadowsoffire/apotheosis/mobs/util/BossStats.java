@@ -1,4 +1,4 @@
-package dev.shadowsoffire.apotheosis.boss;
+package dev.shadowsoffire.apotheosis.mobs.util;
 
 import java.util.List;
 

@@ -8,8 +8,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.boss.ApothBoss;
-import dev.shadowsoffire.apotheosis.boss.BossRegistry;
+import dev.shadowsoffire.apotheosis.mobs.registries.InvaderRegistry;
+import dev.shadowsoffire.apotheosis.mobs.types.Invader;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.gateways.entity.GatewayEntity;
 import dev.shadowsoffire.gateways.gate.WaveEntity;
@@ -34,24 +34,24 @@ public class GatewaysCompat {
             .apply(inst, BossWaveEntity::new));
 
         private final Optional<ResourceLocation> bossId;
-        private final Supplier<ApothBoss> boss;
+        private final Supplier<Invader> boss;
 
         public BossWaveEntity(Optional<ResourceLocation> bossId) {
             this.bossId = bossId;
-            this.boss = Suppliers.memoize(() -> bossId.map(BossRegistry.INSTANCE::getValue).orElse(null));
+            this.boss = Suppliers.memoize(() -> bossId.map(InvaderRegistry.INSTANCE::getValue).orElse(null));
         }
 
         @Override
         public LivingEntity createEntity(ServerLevel level, GatewayEntity gate) {
             GenContext ctx = GenContext.forPlayer(gate.summonerOrClosest());
-            ApothBoss realBoss = this.bossId.isEmpty() ? BossRegistry.INSTANCE.getRandomItem(ctx) : this.boss.get();
+            Invader realBoss = this.bossId.isEmpty() ? InvaderRegistry.INSTANCE.getRandomItem(ctx) : this.boss.get();
             if (realBoss == null) return null; // error condition
             return realBoss.createBoss(level, BlockPos.ZERO, ctx);
         }
 
         @Override
         public MutableComponent getDescription() {
-            return Component.translatable("misc.apotheosis.boss", Component.translatable(this.bossId.isEmpty() ? "misc.apotheosis.random" : this.boss.get().getEntity().getDescriptionId()));
+            return Component.translatable("misc.apotheosis.boss", Component.translatable(this.bossId.isEmpty() ? "misc.apotheosis.random" : this.boss.get().entity().getDescriptionId()));
         }
 
         @Override

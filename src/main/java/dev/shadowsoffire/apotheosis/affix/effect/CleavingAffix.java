@@ -138,7 +138,7 @@ public class CleavingAffix extends Affix {
         public Builder value(LootRarity rarity, float minChance, float maxChance, int minTargets, int maxTargets) {
             StepFunction chance = StepFunction.fromBounds(minChance, maxChance, 0.05F);
             StepFunction targets = StepFunction.fromBounds(minTargets, maxTargets, 1);
-            values.put(rarity, new CleaveValues(chance, targets));
+            this.values.put(rarity, new CleaveValues(chance, targets));
             return this;
         }
 

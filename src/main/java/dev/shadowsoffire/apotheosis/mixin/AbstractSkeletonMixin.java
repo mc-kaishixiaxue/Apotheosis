@@ -54,7 +54,7 @@ public abstract class AbstractSkeletonMixin extends Monster implements CrossbowA
 
     @Inject(method = "performRangedAttack", at = @At("HEAD"), cancellable = true)
     public void apoth_performRangedCrossbowAttack(LivingEntity target, float velocity, CallbackInfo ci) {
-        ItemStack crossbow = apoth_getCrossbow();
+        ItemStack crossbow = this.apoth_getCrossbow();
         if (!crossbow.isEmpty()) {
             this.performCrossbowAttack(this, 1.6F);
             ci.cancel();
@@ -68,7 +68,7 @@ public abstract class AbstractSkeletonMixin extends Monster implements CrossbowA
             this.goalSelector.removeGoal(this.apoth_crossbowGoal);
 
             // Check if we have a crossbow, and if we do, apply the crossbow goal.
-            ItemStack crossbow = apoth_getCrossbow();
+            ItemStack crossbow = this.apoth_getCrossbow();
             if (!crossbow.isEmpty()) {
                 this.goalSelector.removeGoal(this.meleeGoal);
                 this.goalSelector.removeGoal(this.bowGoal);

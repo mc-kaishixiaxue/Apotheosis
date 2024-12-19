@@ -151,8 +151,8 @@ public record Elite(BasicBossData basicData, float chance, HolderSet<EntityType<
         }
 
         int i = 0;
-        for (RandomAttributeModifier modif : stats.modifiers()) {
-            modif.apply(createAttributeModifierId(i++), rand, mob);
+        for (RandomAttributeModifier modif : this.stats.modifiers()) {
+            modif.apply(this.createAttributeModifierId(i++), rand, mob);
         }
 
         this.basicData.applyEntityName(rand, mob);

@@ -128,7 +128,7 @@ public class EnchantmentBonus extends GemBonus {
 
         @Override
         public EnchantmentBonus build(GemClass gemClass) {
-            return new EnchantmentBonus(gemClass, enchantment, mode, values);
+            return new EnchantmentBonus(gemClass, this.enchantment, this.mode, this.values);
         }
     }
 

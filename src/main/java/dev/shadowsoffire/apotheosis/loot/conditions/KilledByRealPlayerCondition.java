@@ -37,6 +37,7 @@ public class KilledByRealPlayerCondition implements LootItemCondition {
         return ImmutableSet.of(LootContextParams.ATTACKING_ENTITY);
     }
 
+    @Override
     public boolean test(LootContext context) {
         Entity attacker = context.getParamOrNull(LootContextParams.ATTACKING_ENTITY);
         return attacker instanceof Player && !(attacker instanceof FakePlayer);

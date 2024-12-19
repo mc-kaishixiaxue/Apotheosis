@@ -136,7 +136,7 @@ public class DropTransformBonus extends GemBonus {
         @Override
         public DropTransformBonus build(GemClass gemClass) {
             ContextAwarePredicate predicate = ContextAwarePredicate.create(this.conditions.toArray(new LootItemCondition[0]));
-            return new DropTransformBonus(gemClass, predicate, inputs, output, values, descKey);
+            return new DropTransformBonus(gemClass, predicate, this.inputs, this.output, this.values, this.descKey);
         }
     }
 

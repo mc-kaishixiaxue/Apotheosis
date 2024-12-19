@@ -213,7 +213,7 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
      * Fires from the {@link GatherSkippedAttributeTooltipsEvent} to allow the gem to hide any relevant attribute modifiers.
      * <p>
      * If a bonus implements {@link #addModifiers(GemInstance, ItemAttributeModifierEvent)}, it should override this method as well to hide the modifiers.
-     * 
+     *
      * @param inst The current gem instance.
      * @param skip A consumer that accepts resource locations to skip.
      */

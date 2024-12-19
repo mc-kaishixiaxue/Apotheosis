@@ -73,7 +73,7 @@ import net.minecraft.world.phys.AABB;
  * An Invader is a preset entity with per-rarity stats that will spawn with a full gear set and an equipped affix item.
  * <p>
  * Invaders piggyback off of normal spawns, cancelling the original and spawning in the invader, instead of spinning up a new spawn mechanism.
- * 
+ *
  * @param basicData The basic boss data for the spawned entity
  * @param entity    The type of spawned entity
  * @param size      The AABB of the spawned entity, accounting for any mounts or supports.
@@ -187,7 +187,7 @@ public record Invader(BasicBossData basicData, EntityType<?> entity, AABB size, 
 
         int i = 0;
         for (RandomAttributeModifier modif : stats.modifiers()) {
-            modif.apply(createAttributeModifierId(i++), rand, mob);
+            modif.apply(this.createAttributeModifierId(i++), rand, mob);
         }
 
         mob.goalSelector.getAvailableGoals().removeIf(IS_VILLAGER_ATTACK);

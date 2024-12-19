@@ -139,7 +139,7 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
         public Builder() {}
 
         public Builder with(WorldTier tier, int weight, float quality) {
-            return with(tier, new Weight(weight, quality));
+            return this.with(tier, new Weight(weight, quality));
         }
 
         public Builder with(WorldTier tier, Weight weight) {

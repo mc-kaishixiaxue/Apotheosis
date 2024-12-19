@@ -118,7 +118,7 @@ public class AllStatsBonus extends GemBonus {
 
         @Override
         public AllStatsBonus build(GemClass gClass) {
-            return new AllStatsBonus(gClass, operation, values, HolderSet.direct(this.attributes));
+            return new AllStatsBonus(gClass, this.operation, this.values, HolderSet.direct(this.attributes));
         }
     }
 

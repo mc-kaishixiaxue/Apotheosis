@@ -21,7 +21,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
  * Augmentations are applied very early in the mob spawn pipeline, immediately after world tier modifiers.
  * <p>
  * Mobs have a chance to be selected for augmenting. If they are selected, every loaded augmentation will attempt to apply.
- * 
+ *
  * @param chance      The chance that this augmentation is selected.
  * @param constraints Any context-based restrictions on the application of this augmentation.
  * @param exclusions  Any entity-based restrictions on the application of this augmentation.

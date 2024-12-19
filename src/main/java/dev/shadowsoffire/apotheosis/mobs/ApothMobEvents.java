@@ -83,17 +83,17 @@ public class ApothMobEvents {
         RandomSource rand = e.getLevel().getRandom();
         GenContext ctx = GenContext.forPlayerAtPos(rand, player, mob.blockPosition());
 
-        if (trySpawnInvader(e, mob, ctx, player)) {
+        if (this.trySpawnInvader(e, mob, ctx, player)) {
             return;
         }
 
-        tryAugmentations(e.getLevel(), mob, e.getSpawnType(), ctx);
+        this.tryAugmentations(e.getLevel(), mob, e.getSpawnType(), ctx);
 
-        if (trySpawnElite(e, mob, ctx, player)) {
+        if (this.trySpawnElite(e, mob, ctx, player)) {
             return;
         }
 
-        tryRandomAffixItems(e, mob, ctx);
+        this.tryRandomAffixItems(e, mob, ctx);
     }
 
     private boolean trySpawnInvader(FinalizeSpawnEvent e, Mob mob, GenContext ctx, Player player) {

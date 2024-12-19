@@ -86,8 +86,9 @@ public class DamageReductionBonus extends GemBonus {
             return this;
         }
 
+        @Override
         public DamageReductionBonus build(GemClass gemClass) {
-            return new DamageReductionBonus(gemClass, type, values);
+            return new DamageReductionBonus(gemClass, this.type, this.values);
         }
     }
 

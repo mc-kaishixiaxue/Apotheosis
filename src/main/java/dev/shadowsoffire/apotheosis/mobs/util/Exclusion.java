@@ -161,7 +161,7 @@ public interface Exclusion extends CodecProvider<Exclusion> {
 
         @Override
         public boolean isExcluded(Mob mob, ServerLevelAccessor level, MobSpawnType type, CompoundTag nbt) {
-            for (Exclusion ex : exclusions) {
+            for (Exclusion ex : this.exclusions) {
                 if (ex.isExcluded(mob, level, type, nbt)) {
                     return true;
                 }
@@ -173,7 +173,7 @@ public interface Exclusion extends CodecProvider<Exclusion> {
         @Override
         public boolean requiresNbtAccess() {
             boolean requiresNbt = false;
-            for (Exclusion ex : exclusions) {
+            for (Exclusion ex : this.exclusions) {
                 requiresNbt |= ex.requiresNbtAccess();
             }
             return requiresNbt;

@@ -103,7 +103,7 @@ public class AttributeBonus extends GemBonus {
 
         @Override
         public AttributeBonus build(GemClass gClass) {
-            return new AttributeBonus(gClass, attribute, operation, values);
+            return new AttributeBonus(gClass, this.attribute, this.operation, this.values);
         }
     }
 

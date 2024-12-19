@@ -34,7 +34,7 @@ import net.minecraft.world.phys.AABB;
 
 /**
  * Basic boss information, shared between {@link Elite} and {@link Invader}.
- * 
+ *
  * @param weights       The weights for this element, relative to other objects of the same type.
  * @param constraints   Application constraints that may remove this element from the available pool.
  * @param name          The entity name. May be a lang key. Empty or null will cause no name to be set.

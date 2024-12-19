@@ -42,7 +42,7 @@ public final class PurityWeightsRegistry extends DynamicRegistry<PurityWeights> 
     @Override
     protected void beginReload() {
         super.beginReload();
-        parsedWeights = Map.of();
+        this.parsedWeights = Map.of();
     }
 
     @Override

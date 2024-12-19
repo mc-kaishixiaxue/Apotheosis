@@ -118,7 +118,7 @@ public class MultiAttrBonus extends GemBonus {
             }
 
             public ModifierInst build() {
-                return new ModifierInst(attr, op, values);
+                return new ModifierInst(this.attr, this.op, this.values);
             }
         }
 
@@ -144,7 +144,7 @@ public class MultiAttrBonus extends GemBonus {
 
         @Override
         public MultiAttrBonus build(GemClass gemClass) {
-            return new MultiAttrBonus(gemClass, modifiers, desc);
+            return new MultiAttrBonus(gemClass, this.modifiers, this.desc);
         }
     }
 

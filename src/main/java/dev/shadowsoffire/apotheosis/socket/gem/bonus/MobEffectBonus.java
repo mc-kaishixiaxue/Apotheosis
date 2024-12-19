@@ -230,7 +230,7 @@ public class MobEffectBonus extends GemBonus {
 
         @Override
         public MobEffectBonus build(GemClass gemClass) {
-            return new MobEffectBonus(gemClass, effect, target, values, stacking);
+            return new MobEffectBonus(gemClass, this.effect, this.target, this.values, this.stacking);
         }
     }
 

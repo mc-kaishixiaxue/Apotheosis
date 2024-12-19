@@ -279,7 +279,7 @@ public class RadialAffix extends Affix {
 
             });
 
-            values.put(rarity, list);
+            this.values.put(rarity, list);
             return this;
         }
 
@@ -294,7 +294,7 @@ public class RadialAffix extends Affix {
             DataListBuilder radii(int x, int y, int xOffset, int yOffset);
 
             default DataListBuilder radii(int x, int y) {
-                return radii(x, y, 0, 0);
+                return this.radii(x, y, 0, 0);
             }
         }
     }

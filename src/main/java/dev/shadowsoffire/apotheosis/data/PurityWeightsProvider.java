@@ -76,7 +76,7 @@ public class PurityWeightsProvider extends DynamicRegistryProvider<PurityWeights
         Map<WorldTier, Map<Purity, Weight>> weightsMap = new HashMap<>();
 
         public Builder tier(WorldTier tier, UnaryOperator<InnerBuilder> config) {
-            weightsMap.put(tier, config.apply(new InnerBuilder()).innerMap);
+            this.weightsMap.put(tier, config.apply(new InnerBuilder()).innerMap);
             return this;
         }
 
@@ -90,7 +90,7 @@ public class PurityWeightsProvider extends DynamicRegistryProvider<PurityWeights
         Map<Purity, Weight> innerMap = new HashMap<>();
 
         InnerBuilder with(Purity purity, int weight, float quality) {
-            innerMap.put(purity, new Weight(weight, quality));
+            this.innerMap.put(purity, new Weight(weight, quality));
             return this;
         }
     }

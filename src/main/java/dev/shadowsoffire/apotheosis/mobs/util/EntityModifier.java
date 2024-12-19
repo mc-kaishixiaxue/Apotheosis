@@ -72,7 +72,7 @@ public interface EntityModifier extends CodecProvider<EntityModifier> {
         @Override
         public void apply(Mob mob, GenContext ctx) {
             int duration = mob instanceof Creeper ? 6000 : Integer.MAX_VALUE;
-            mob.addEffect(effect.createDeterministic(duration));
+            mob.addEffect(this.effect.createDeterministic(duration));
         }
 
         @Override

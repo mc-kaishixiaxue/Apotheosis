@@ -69,8 +69,9 @@ public class DurabilityBonus extends GemBonus {
             return this;
         }
 
+        @Override
         public DurabilityBonus build(GemClass gClass) {
-            return new DurabilityBonus(gClass, values);
+            return new DurabilityBonus(gClass, this.values);
         }
     }
 

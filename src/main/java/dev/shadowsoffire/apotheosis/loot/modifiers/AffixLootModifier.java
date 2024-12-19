@@ -37,7 +37,7 @@ public class AffixLootModifier extends ContextualLootModifier {
 
     protected final List<AffixTableEntry> entries;
 
-    protected AffixLootModifier(LootItemCondition[] conditions, List<AffixTableEntry> entries) {
+    public AffixLootModifier(LootItemCondition[] conditions, List<AffixTableEntry> entries) {
         super(conditions);
         this.entries = entries;
     }

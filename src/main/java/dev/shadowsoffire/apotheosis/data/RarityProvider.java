@@ -56,7 +56,7 @@ public class RarityProvider extends DynamicRegistryProvider<LootRarity> {
                 .with(WorldTier.HAVEN, 600, 0)
                 .with(WorldTier.FRONTIER, 290, 0)
                 .with(WorldTier.ASCENT, 100, 0)
-                .with(WorldTier.SUMMIT, 50, 0)
+                .with(WorldTier.SUMMIT, 0, 0)
                 .with(WorldTier.APOTHEOSIS, 0, 0))
             .rule(new AffixLootRule(AffixType.STAT))
             .rule(new ChancedLootRule(0.25F, new AffixLootRule(AffixType.STAT))));
@@ -83,7 +83,7 @@ public class RarityProvider extends DynamicRegistryProvider<LootRarity> {
                 .with(WorldTier.HAVEN, 40, 5)
                 .with(WorldTier.FRONTIER, 100, 5)
                 .with(WorldTier.ASCENT, 330, 2.5F)
-                .with(WorldTier.SUMMIT, 430, 2.5F)
+                .with(WorldTier.SUMMIT, 480, 2.5F)
                 .with(WorldTier.APOTHEOSIS, 100, 0))
             .rule(new AffixLootRule(AffixType.STAT))
             .rule(new AffixLootRule(AffixType.STAT))

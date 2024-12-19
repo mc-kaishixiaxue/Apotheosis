@@ -1,6 +1,8 @@
 package dev.shadowsoffire.apotheosis.socket.gem;
 
 import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.IntFunction;
@@ -10,18 +12,22 @@ import com.mojang.serialization.Keyable;
 import com.mojang.serialization.MapCodec;
 
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
+import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.placebo.color.GradientColor;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.Util;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.random.WeightedEntry.Wrapper;
+import net.minecraft.util.random.WeightedRandom;
 
 /**
  * Purity represents a fixed set of gem tiers. Gems are expected to have increasingly powerful stats with each purity level.
  */
-public enum Purity implements StringRepresentable {
+public enum Purity implements StringRepresentable, TieredWeights.Weighted {
     CRACKED("cracked", 0x808080),
     CHIPPED("chipped", 0x33FF33),
     FLAWED("flawed", 0x5555FF),
@@ -32,6 +38,15 @@ public enum Purity implements StringRepresentable {
     public static final IntFunction<Purity> BY_ID = ByIdMap.continuous(Enum::ordinal, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
     public static final Codec<Purity> CODEC = StringRepresentable.fromValues(Purity::values);
     public static final StreamCodec<ByteBuf, Purity> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Enum::ordinal);
+
+    public static final Set<Purity> ALL_PURITIES = Util.make(new LinkedHashSet<>(), set -> {
+        set.add(CRACKED);
+        set.add(CHIPPED);
+        set.add(FLAWED);
+        set.add(NORMAL);
+        set.add(FLAWLESS);
+        set.add(PERFECT);
+    });
 
     private final String name;
     private final TextColor color;
@@ -58,6 +73,11 @@ public enum Purity implements StringRepresentable {
         return this.name;
     }
 
+    @Override
+    public TieredWeights weights() {
+        return PurityWeightsRegistry.getWeights().get(this);
+    }
+
     public Purity next() {
         return this == PERFECT ? this : BY_ID.apply(this.ordinal() + 1);
     }
@@ -71,11 +91,16 @@ public enum Purity implements StringRepresentable {
     }
 
     public static Purity random(GenContext ctx) {
-        return Purity.CRACKED;  // TODO: Implement purity selection via TieredWeights. Need a place to store that data.
+        return random(ctx, ALL_PURITIES);
     }
 
     public static Purity random(GenContext ctx, Set<Purity> pool) {
-        return Purity.CRACKED; // TODO: Implement
+        if (pool.isEmpty()) {
+            pool = ALL_PURITIES;
+        }
+
+        List<Wrapper<Purity>> list = pool.stream().map(l -> l.<Purity>wrap(ctx.tier(), ctx.luck())).toList();
+        return WeightedRandom.getRandomItem(ctx.rand(), list).map(Wrapper::data).orElse(Purity.CRACKED);
     }
 
     public static <T> MapCodec<Map<Purity, T>> mapCodec(Codec<T> elementCodec) {

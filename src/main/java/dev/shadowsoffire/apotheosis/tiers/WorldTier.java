@@ -1,8 +1,12 @@
 package dev.shadowsoffire.apotheosis.tiers;
 
+import java.util.Arrays;
+import java.util.Map;
 import java.util.function.IntFunction;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.Keyable;
+import com.mojang.serialization.MapCodec;
 
 import dev.shadowsoffire.apotheosis.Apoth.Attachments;
 import io.netty.buffer.ByteBuf;
@@ -46,5 +50,10 @@ public enum WorldTier implements StringRepresentable {
 
     public static void setTier(Player player, WorldTier tier) {
         player.setData(Attachments.WORLD_TIER, tier);
+    }
+
+    public static <T> MapCodec<Map<WorldTier, T>> mapCodec(Codec<T> elementCodec) {
+        return Codec.simpleMap(WorldTier.CODEC, elementCodec,
+            Keyable.forStrings(() -> Arrays.stream(WorldTier.values()).map(StringRepresentable::getSerializedName)));
     }
 }

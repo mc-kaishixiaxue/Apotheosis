@@ -26,13 +26,6 @@ public class GemRegistry extends TieredDynamicRegistry<Gem> {
         this.registerDefaultCodec(Apotheosis.loc("gem"), Gem.CODEC);
     }
 
-    public static ItemStack createGemStack(Gem gem, Purity purity) {
-        ItemStack stack = new ItemStack(Items.GEM);
-        GemItem.setGem(stack, gem);
-        GemItem.setPurity(stack, purity);
-        return stack;
-    }
-
     @Override
     protected void validateItem(ResourceLocation key, Gem item) {
         super.validateItem(key, item);
@@ -51,6 +44,18 @@ public class GemRegistry extends TieredDynamicRegistry<Gem> {
     @Nullable
     public Gem getRandomItem(GenContext ctx) {
         return this.getRandomItem(ctx, Constraints.eval(ctx));
+    }
+
+    /**
+     * Creates a new {@link ItemStack} containing the provided {@link Gem}.
+     * <p>
+     * The provided purity will be automatically clamped based on {@link Gem#getMinPurity()}.
+     */
+    public static ItemStack createGemStack(Gem gem, Purity purity) {
+        ItemStack stack = new ItemStack(Items.GEM);
+        GemItem.setGem(stack, gem);
+        GemItem.setPurity(stack, Purity.max(purity, gem.getMinPurity()));
+        return stack;
     }
 
     /**

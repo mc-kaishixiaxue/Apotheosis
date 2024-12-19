@@ -34,7 +34,7 @@ public class GemLootModifier extends ContextualLootModifier {
 
     protected final List<GemTableEntry> entries;
 
-    protected GemLootModifier(LootItemCondition[] conditions, List<GemTableEntry> entries) {
+    public GemLootModifier(LootItemCondition[] conditions, List<GemTableEntry> entries) {
         super(conditions);
         this.entries = entries;
     }

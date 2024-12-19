@@ -31,7 +31,7 @@ public class AffixConvertLootModifier extends ContextualLootModifier {
 
     protected final List<AffixConversionEntry> entries;
 
-    protected AffixConvertLootModifier(LootItemCondition[] conditions, List<AffixConversionEntry> entries) {
+    public AffixConvertLootModifier(LootItemCondition[] conditions, List<AffixConversionEntry> entries) {
         super(conditions);
         this.entries = entries;
     }
@@ -41,6 +41,8 @@ public class AffixConvertLootModifier extends ContextualLootModifier {
         for (AffixConversionEntry entry : this.entries) {
             if (entry.pattern.matches(context.getQueriedLootTableId())) {
                 RandomSource rand = context.getRandom();
+                if (entry.chance() <= 0) continue; // Entries with a chance of 0 are used to skip certain loot tables that would match other patterns.
+
                 for (ItemStack s : generatedLoot) {
                     if (!LootCategory.forItem(s).isNone() && AffixHelper.getAffixes(s).isEmpty() && rand.nextFloat() <= entry.chance()) {
                         // This modifies the stack in-place, so we don't need to re-set it into the list.

@@ -1,5 +1,7 @@
 package dev.shadowsoffire.apotheosis;
 
+import java.util.function.Supplier;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
@@ -31,7 +33,9 @@ import dev.shadowsoffire.apotheosis.loot.AffixLootPoolEntry;
 import dev.shadowsoffire.apotheosis.loot.GemLootPoolEntry;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.loot.conditions.KilledByRealPlayerCondition;
 import dev.shadowsoffire.apotheosis.loot.conditions.MatchesBlockCondition;
+import dev.shadowsoffire.apotheosis.loot.conditions.MonsterPredicate;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixConvertLootModifier;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixHookLootModifier;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixLootModifier;
@@ -291,11 +295,19 @@ public class Apoth {
     public static final class LootConditions {
         public static final LootItemConditionType MATCHES_BLOCK = R.lootCondition("matches_block", MatchesBlockCondition.CODEC);
 
+        public static final LootItemConditionType KILLED_BY_REAL_PLAYER = R.lootCondition("killed_by_real_player", KilledByRealPlayerCondition.CODEC);
+
         private static void bootstrap() {}
     }
 
     public static final class Triggers {
         public static final GemCutTrigger GEM_CUTTING = R.criteriaTrigger("gem_cutting", new GemCutTrigger());
+
+        private static void bootstrap() {}
+    }
+
+    public static final class EntitySubPredicates {
+        public static final Supplier<MapCodec<MonsterPredicate>> IS_MONSTER = R.custom("is_monster", Registries.ENTITY_SUB_PREDICATE_TYPE, () -> MonsterPredicate.CODEC);
 
         private static void bootstrap() {}
     }
@@ -342,6 +354,7 @@ public class Apoth {
         LootConditions.bootstrap();
         LootPoolEntries.bootstrap();
         RecipeSerializers.bootstrap();
+        EntitySubPredicates.bootstrap();
 
         R.custom("blacklist", NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, () -> BlacklistModifier.CODEC);
     }

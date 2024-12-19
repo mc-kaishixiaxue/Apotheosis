@@ -23,6 +23,7 @@ import dev.shadowsoffire.apotheosis.data.ApothTagsProvider;
 import dev.shadowsoffire.apotheosis.data.GLMProvider;
 import dev.shadowsoffire.apotheosis.data.GearSetProvider;
 import dev.shadowsoffire.apotheosis.data.GemProvider;
+import dev.shadowsoffire.apotheosis.data.PurityWeightsProvider;
 import dev.shadowsoffire.apotheosis.data.RarityProvider;
 import dev.shadowsoffire.apotheosis.loot.AffixLootRegistry;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
@@ -33,6 +34,7 @@ import dev.shadowsoffire.apotheosis.net.RadialStateChangePayload;
 import dev.shadowsoffire.apotheosis.net.RerollResultPayload;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import dev.shadowsoffire.apotheosis.socket.gem.PurityWeightsRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.apotheosis.spawner.RogueSpawnerRegistry;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
@@ -112,6 +114,7 @@ public class Apotheosis {
         BossRegistry.INSTANCE.registerToBus();
         RogueSpawnerRegistry.INSTANCE.registerToBus();
         MinibossRegistry.INSTANCE.registerToBus();
+        PurityWeightsRegistry.INSTANCE.registerToBus();
         loadConfig(true);
         NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, event -> event.addListener(RunnableReloader.of(() -> loadConfig(false))));
     }
@@ -130,16 +133,8 @@ public class Apotheosis {
             .provider(GemProvider::new)
             .provider(GLMProvider::new)
             .provider(GearSetProvider::new)
+            .provider(PurityWeightsProvider::new)
             .build(e);
-
-        /*
-         * TODO: Loot Modifier Provider, with the following entries:
-         * 1. Affix conversion modifier
-         * 2. Affix hook modifier (no config)
-         * 3. Gem Loot Modifier (chest config)
-         * 4. Gem Loot Modifier (player-only condition, entity config)
-         * 5. Affix loot modifier (chest config)
-         */
 
         Object2IntOpenHashMap<String> map = (Object2IntOpenHashMap<String>) DataProvider.FIXED_ORDER_FIELDS;
         // Keep enums in ordinal order

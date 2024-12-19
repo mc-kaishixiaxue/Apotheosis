@@ -1,3 +1,8 @@
-// 1.21.1	2024-12-11T23:29:00.7670221	Global Loot Modifiers : apotheosis
+// 1.21.1	2024-12-18T21:35:57.8910027	Global Loot Modifiers : apotheosis
+9bd09dd7cf105fb077ee18c0f7b96863dd627d39 data/apotheosis/loot_modifiers/affix_conversion.json
 4e8d056165b051ba1a32865f2a9b16a2d997b4af data/apotheosis/loot_modifiers/affix_hook.json
-efc2deeaaa62aeb5a47097a1ba14b764f730ca63 data/neoforge/loot_modifiers/global_loot_modifiers.json
+2cc47f2413dcaf98d36ffb674079bfa03a8a7743 data/apotheosis/loot_modifiers/affix_loot_injection.json
+44d4a9f366f8b23f03be79e8922fae35b7d32904 data/apotheosis/loot_modifiers/gem_entity_drops.json
+ab7627f92ccebc14c28a40b10282bf722107a4c5 data/apotheosis/loot_modifiers/gem_entity_drops_from_real_players.json
+0f08d3ede145c945bf160cc76a24a6799e5c9d18 data/apotheosis/loot_modifiers/gem_loot_injection.json
+7e05d5ffe0e7e8096f6d2d8e1b83af71b6bbe1d1 data/neoforge/loot_modifiers/global_loot_modifiers.json

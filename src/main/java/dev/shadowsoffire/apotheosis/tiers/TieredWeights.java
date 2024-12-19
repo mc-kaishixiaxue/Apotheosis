@@ -13,7 +13,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.placebo.reload.WeightedDynamicRegistry.ILuckyWeighted;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -40,13 +39,15 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
     private static StreamCodec<ByteBuf, Map<WorldTier, Weight>> MAP_STREAM_CODEC = ByteBufCodecs.map(IdentityHashMap::new, WorldTier.STREAM_CODEC, Weight.STREAM_CODEC, 5);
     public static StreamCodec<ByteBuf, TieredWeights> STREAM_CODEC = MAP_STREAM_CODEC.map(TieredWeights::new, TieredWeights::weights);
 
+    public static TieredWeights EMPTY = new TieredWeights(Map.of());
+
     public static record Weight(int weight, float quality) {
 
         public static Weight ZERO = new Weight(0, 0);
 
         public static MapCodec<Weight> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             Codec.intRange(0, 1024).fieldOf("weight").forGetter(Weight::weight),
-            Codec.floatRange(0, 16).optionalFieldOf("quality", 0F).forGetter(Weight::quality))
+            Codec.floatRange(-16, 16).optionalFieldOf("quality", 0F).forGetter(Weight::quality))
             .apply(inst, Weight::new));
 
         public static StreamCodec<ByteBuf, Weight> STREAM_CODEC = StreamCodec.composite(
@@ -105,6 +106,11 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
     }
 
     public static interface Weighted {
+        /**
+         * Cached {@link net.minecraft.util.random.Weight} with a value of zero that will not trigger the warning.
+         */
+        static net.minecraft.util.random.Weight SAFE_ZERO = net.minecraft.util.random.Weight.of(0);
+
         TieredWeights weights();
 
         /**
@@ -116,10 +122,14 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
         }
 
         /**
-         * Static (and more generic-safe) variant of {@link ILuckyWeighted#wrap(float)}
+         * Static (and more generic-safe) variant of {@link Weighted#wrap(float)}
          */
         static <T extends Weighted> Wrapper<T> wrap(T item, WorldTier tier, float luck) {
-            return WeightedEntry.wrap(item, Math.max(0, item.weights().getWeight(tier, luck)));
+            int weight = Math.max(0, item.weights().getWeight(tier, luck));
+            if (weight == 0) {
+                return new WeightedEntry.Wrapper<>(item, SAFE_ZERO);
+            }
+            return WeightedEntry.wrap(item, weight);
         }
     }
 
@@ -129,7 +139,11 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
         public Builder() {}
 
         public Builder with(WorldTier tier, int weight, float quality) {
-            this.mapBuilder.put(tier, new Weight(weight, quality));
+            return with(tier, new Weight(weight, quality));
+        }
+
+        public Builder with(WorldTier tier, Weight weight) {
+            this.mapBuilder.put(tier, weight);
             return this;
         }
 

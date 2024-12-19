@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
@@ -20,7 +19,6 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.level.Level;
 
 /**
@@ -82,22 +80,12 @@ public abstract class AbstractSkeletonMixin extends Monster implements CrossbowA
 
     @Override
     public void setChargingCrossbow(boolean chargingCrossbow) {
-        ItemStack crossbow = apoth_getCrossbow();
-        if (!crossbow.isEmpty()) {
-            if (chargingCrossbow) {
-                // This call should charge the crossbow with a normal arrow, and play the charging sounds appropriately.
-                //crossbow.releaseUsing(this.level(), this, 0);
-            }
-            else {
-                //crossbow.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
-            }
-        }
+        // This doesn't need to do anything, since we don't record that the crossbow is charging.
     }
 
     @Override
     public void onCrossbowAttackPerformed() {
         this.noActionTime = 0;
-        this.setChargingCrossbow(false);
     }
 
     @Unique

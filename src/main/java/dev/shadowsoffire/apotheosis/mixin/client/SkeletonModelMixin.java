@@ -25,7 +25,7 @@ public abstract class SkeletonModelMixin extends HumanoidModel<Mob> {
         super(root);
     }
 
-    @Inject(method = "setupAnim", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "setupAnim", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Mob;isAggressive()Z"), cancellable = true)
     public void apoth_setupCrossbowAnimations(Mob entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
         if (entity.getMainHandItem().getItem() instanceof CrossbowItem) {
             // While Illagers use a synced data bit to check if the crossbow is charging, this suffices

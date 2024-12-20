@@ -4,12 +4,39 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:netherite_leggings"
+                "id": "minecraft:netherite_boots"
             },
             "weight": 10
         }
     ],
     "chestplates": [
+        {
+            "stack": {
+                "count": 1,
+                "id": "minecraft:netherite_chestplate"
+            },
+            "weight": 10
+        }
+    ],
+    "helmets": [
+        {
+            "stack": {
+                "count": 1,
+                "id": "minecraft:netherite_helmet"
+            },
+            "weight": 10
+        }
+    ],
+    "leggings": [
+        {
+            "stack": {
+                "count": 1,
+                "id": "minecraft:netherite_leggings"
+            },
+            "weight": 10
+        }
+    ],
+    "mainhands": [
         {
             "stack": {
                 "count": 1,
@@ -39,38 +66,11 @@
             "weight": 10
         }
     ],
-    "helmets": [
-        {
-            "stack": {
-                "count": 1,
-                "id": "minecraft:shield"
-            },
-            "weight": 10
-        }
-    ],
-    "leggings": [
-        {
-            "stack": {
-                "count": 1,
-                "id": "minecraft:netherite_boots"
-            },
-            "weight": 10
-        }
-    ],
-    "mainhands": [
-        {
-            "stack": {
-                "count": 1,
-                "id": "minecraft:netherite_helmet"
-            },
-            "weight": 10
-        }
-    ],
     "offhands": [
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:netherite_chestplate"
+                "id": "minecraft:shield"
             },
             "weight": 10
         }

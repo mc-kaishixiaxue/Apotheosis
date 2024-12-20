@@ -1,11 +1,13 @@
 package dev.shadowsoffire.apotheosis.mobs.types;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +16,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
-import dev.shadowsoffire.apotheosis.Apoth.Attachments;
 import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
@@ -194,7 +195,7 @@ public record Invader(BasicBossData basicData, EntityType<?> entity, AABB size, 
 
         this.basicData.applyEntityName(rand, mob);
 
-        GearSet set = this.basicData.applyGearSet(rand, ctx.luck(), mob);
+        GearSet set = this.basicData.applyGearSet(mob, ctx);
 
         if (set != null) {
             boolean anyValid = false;
@@ -243,7 +244,7 @@ public record Invader(BasicBossData basicData, EntityType<?> entity, AABB size, 
             if (s == guaranteed) {
                 mob.setDropChance(s, 2F);
                 mob.setItemSlot(s, modifyBossItem(stack, mob.getName(), ctx, rarity, stats, mob.level().registryAccess()));
-                mob.setCustomName(mob.getCustomName().copy().withStyle(Style.EMPTY.withColor(rarity.color())));
+                mob.setCustomName(mob.getName().copy().withStyle(Style.EMPTY.withColor(rarity.color())));
             }
             else if (rand.nextFloat() < stats.enchantChance()) {
                 enchantBossItem(rand, stack, stats.enchLevels().secondary(), true, mob.level().registryAccess());
@@ -256,10 +257,10 @@ public record Invader(BasicBossData basicData, EntityType<?> entity, AABB size, 
         mob.setHealth(mob.getMaxHealth());
 
         if (AdventureConfig.bossGlowOnSpawn) {
-            mob.addEffect(new MobEffectInstance(MobEffects.GLOWING, 3600));
+            mob.addEffect(new MobEffectInstance(MobEffects.GLOWING, 3600, 0, true, false));
         }
 
-        mob.setData(Attachments.BONUS_LOOT_TABLES, this.basicData.bonusLoot());
+        this.basicData.appendBonusLoot(mob);
     }
 
     @Override
@@ -318,6 +319,53 @@ public record Invader(BasicBossData basicData, EntityType<?> entity, AABB size, 
         EnchantmentHelper.setEnchantments(stack, enchMap.toImmutable());
         stack.set(Components.FROM_BOSS, true);
         return stack;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private BasicBossData basicData;
+        private EntityType<? extends Mob> entity;
+        private AABB size;
+        private Map<LootRarity, BossStats> stats = new HashMap<>();
+
+        public Builder basicData(UnaryOperator<BasicBossData.Builder> config) {
+            this.basicData = config.apply(BasicBossData.builder()).build();
+            return this;
+        }
+
+        public Builder entity(EntityType<? extends Mob> entity) {
+            this.entity = entity;
+            return this;
+        }
+
+        public Builder size(double width, double height) {
+            this.size = new AABB(0, 0, 0, width, height, width);
+            return this;
+        }
+
+        public Builder stats(LootRarity rarity, UnaryOperator<BossStats.Builder> config) {
+            this.stats.put(rarity, config.apply(BossStats.builder()).build());
+            return this;
+        }
+
+        public Invader build() {
+            if (basicData == null) {
+                throw new IllegalStateException("BasicBossData must be set");
+            }
+            if (entity == null) {
+                throw new IllegalStateException("Entity type must be set");
+            }
+            if (size == null) {
+                throw new IllegalStateException("Size must be set");
+            }
+            if (stats.isEmpty()) {
+                throw new IllegalStateException("Stats must not be empty");
+            }
+            return new Invader(basicData, entity, size, stats);
+        }
     }
 
 }

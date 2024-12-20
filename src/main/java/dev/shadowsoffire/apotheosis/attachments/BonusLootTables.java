@@ -1,5 +1,6 @@
 package dev.shadowsoffire.apotheosis.attachments;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.serialization.Codec;
@@ -48,6 +49,17 @@ public record BonusLootTables(List<ResourceKey<LootTable>> tables) {
             LootParams lootparams = lootparams$builder.create(LootContextParamSets.ENTITY);
             table.getRandomItems(lootparams, owner.getLootTableSeed(), owner::spawnAtLocation);
         }
+    }
+
+    public boolean isEmpty() {
+        return this.tables.isEmpty();
+    }
+
+    public BonusLootTables mergeWith(BonusLootTables other) {
+        List<ResourceKey<LootTable>> combined = new ArrayList<>();
+        combined.addAll(this.tables);
+        combined.addAll(other.tables);
+        return new BonusLootTables(combined);
     }
 
 }

@@ -12,28 +12,12 @@
                     }
                 },
                 "count": 1,
-                "id": "minecraft:golden_leggings"
+                "id": "minecraft:golden_boots"
             },
             "weight": 10
         }
     ],
     "chestplates": [
-        {
-            "stack": {
-                "count": 1,
-                "id": "minecraft:bow"
-            },
-            "weight": 12
-        },
-        {
-            "stack": {
-                "count": 1,
-                "id": "minecraft:crossbow"
-            },
-            "weight": 8
-        }
-    ],
-    "leggings": [
         {
             "stack": {
                 "components": {
@@ -45,12 +29,12 @@
                     }
                 },
                 "count": 1,
-                "id": "minecraft:golden_boots"
+                "id": "minecraft:golden_chestplate"
             },
             "weight": 10
         }
     ],
-    "mainhands": [
+    "helmets": [
         {
             "stack": {
                 "components": {
@@ -67,7 +51,7 @@
             "weight": 10
         }
     ],
-    "offhands": [
+    "leggings": [
         {
             "stack": {
                 "components": {
@@ -79,9 +63,25 @@
                     }
                 },
                 "count": 1,
-                "id": "minecraft:golden_chestplate"
+                "id": "minecraft:golden_leggings"
             },
             "weight": 10
+        }
+    ],
+    "mainhands": [
+        {
+            "stack": {
+                "count": 1,
+                "id": "minecraft:bow"
+            },
+            "weight": 12
+        },
+        {
+            "stack": {
+                "count": 1,
+                "id": "minecraft:crossbow"
+            },
+            "weight": 8
         }
     ],
     "tags": [

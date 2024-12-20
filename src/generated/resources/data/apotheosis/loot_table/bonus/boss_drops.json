@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:entity",
+    "pools": [
+        {
+            "bonus_rolls": 0.0,
+            "entries": [
+                {
+                    "type": "apotheosis:random_gem",
+                    "weight": 30
+                },
+                {
+                    "type": "minecraft:empty",
+                    "weight": 70
+                }
+            ],
+            "rolls": 1.0
+        }
+    ],
+    "random_sequence": "apotheosis:bonus/boss_drops"
+}

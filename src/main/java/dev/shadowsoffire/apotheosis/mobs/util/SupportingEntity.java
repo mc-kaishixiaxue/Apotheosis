@@ -1,4 +1,4 @@
-package dev.shadowsoffire.apotheosis.util;
+package dev.shadowsoffire.apotheosis.mobs.util;
 
 import java.util.Optional;
 

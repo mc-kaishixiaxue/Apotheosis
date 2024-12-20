@@ -1,6 +1,7 @@
-// 1.21.1	2024-12-11T23:29:00.7670221	Loot Tables
+// 1.21.1	2024-12-19T23:27:58.7995653	Loot Tables
 6e72c67c502d8671fc08cf2e1d05ac59ca9bf011 data/apotheosis/loot_table/blocks/augmenting_table.json
 570237e7dd2494f473d6d1734ee129a70e3c0ef7 data/apotheosis/loot_table/blocks/gem_cutting_table.json
 beecd2bb25a814e49f588a5c4a46c9ba065c2fb1 data/apotheosis/loot_table/blocks/reforging_table.json
 0c944f798b970f65d7944890aae42f82a16a5d46 data/apotheosis/loot_table/blocks/salvaging_table.json
 3a544244dfb082db186ff3c26865c52053603a92 data/apotheosis/loot_table/blocks/simple_reforging_table.json
+f59beb5fc125b3d85dbbf3f41bba370395f28140 data/apotheosis/loot_table/bonus/boss_drops.json

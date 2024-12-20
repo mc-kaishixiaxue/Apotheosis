@@ -385,7 +385,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(epic, 0.15F, 0.25F)
             .value(mythic, 0.25F, 0.40F));
 
-        this.addAttribute("melee", "intricate", ALObjects.Attributes.CRIT_DAMAGE, Operation.ADD_VALUE, b -> b
+        this.addAttribute("melee", "intricate", ALObjects.Attributes.CRIT_CHANCE, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .value(common, 0.10F, 0.20F)

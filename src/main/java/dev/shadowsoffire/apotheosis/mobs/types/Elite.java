@@ -6,21 +6,20 @@ import java.util.function.Function;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.Apoth.Attachments;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.mobs.registries.EliteRegistry;
 import dev.shadowsoffire.apotheosis.mobs.registries.EliteRegistry.IEntityMatch;
+import dev.shadowsoffire.apotheosis.mobs.util.AffixData;
 import dev.shadowsoffire.apotheosis.mobs.util.BasicBossData;
 import dev.shadowsoffire.apotheosis.mobs.util.BossStats;
+import dev.shadowsoffire.apotheosis.mobs.util.SupportingEntity;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.Constraints.Constrained;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights.Weighted;
-import dev.shadowsoffire.apotheosis.util.AffixData;
-import dev.shadowsoffire.apotheosis.util.SupportingEntity;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.json.ChancedEffectInstance;
 import dev.shadowsoffire.placebo.json.RandomAttributeModifier;
@@ -157,7 +156,7 @@ public record Elite(BasicBossData basicData, float chance, HolderSet<EntityType<
 
         this.basicData.applyEntityName(rand, mob);
 
-        this.basicData.applyGearSet(rand, ctx.luck(), mob);
+        this.basicData.applyGearSet(mob, ctx);
 
         int guaranteed = -1;
         if (this.afxData.enabled()) {
@@ -200,7 +199,7 @@ public record Elite(BasicBossData basicData, float chance, HolderSet<EntityType<
 
         mob.setHealth(mob.getMaxHealth());
 
-        mob.setData(Attachments.BONUS_LOOT_TABLES, this.basicData.bonusLoot());
+        this.basicData.appendBonusLoot(mob);
     }
 
     @Override

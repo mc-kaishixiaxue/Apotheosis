@@ -1,5 +1,6 @@
 package dev.shadowsoffire.apotheosis.mobs.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.serialization.Codec;
@@ -7,6 +8,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.placebo.json.ChancedEffectInstance;
 import dev.shadowsoffire.placebo.json.RandomAttributeModifier;
+import dev.shadowsoffire.placebo.util.StepFunction;
+import net.minecraft.core.Holder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 
 /**
  * Boss Stats, aka everything that a boss might need to buff itself.
@@ -39,6 +45,56 @@ public record BossStats(float enchantChance, EnchantmentLevels enchLevels, List<
                 Codec.INT.fieldOf("primary").forGetter(EnchantmentLevels::primary),
                 Codec.INT.fieldOf("secondary").forGetter(EnchantmentLevels::secondary))
             .apply(inst, EnchantmentLevels::new));
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private float enchantChance = 0F;
+        private EnchantmentLevels enchLevels;
+        private List<ChancedEffectInstance> effects = new ArrayList<>();
+        private List<RandomAttributeModifier> modifiers = new ArrayList<>();
+
+        public Builder enchantChance(float enchantChance) {
+            this.enchantChance = enchantChance;
+            return this;
+        }
+
+        public Builder enchLevels(int primary, int secondary) {
+            this.enchLevels = new EnchantmentLevels(primary, secondary);
+            return this;
+        }
+
+        public Builder effect(ChancedEffectInstance effect) {
+            this.effects.add(effect);
+            return this;
+        }
+
+        public Builder effect(float chance, Holder<MobEffect> effect) {
+            return this.effect(chance, effect, StepFunction.constant(1));
+        }
+
+        public Builder effect(float chance, Holder<MobEffect> effect, StepFunction amplifier) {
+            return this.effect(new ChancedEffectInstance(chance, effect, amplifier, true, false));
+        }
+
+        public Builder modifier(Holder<Attribute> attribute, Operation operation, float min, float max) {
+            return this.modifier(attribute, operation, StepFunction.fromBounds(min, max));
+        }
+
+        public Builder modifier(Holder<Attribute> attribute, Operation operation, StepFunction value) {
+            this.modifiers.add(new RandomAttributeModifier(attribute, operation, value));
+            return this;
+        }
+
+        public BossStats build() {
+            if (enchLevels == null) {
+                throw new IllegalStateException("EnchantmentLevels must be set");
+            }
+            return new BossStats(enchantChance, enchLevels, effects, modifiers);
+        }
     }
 
 }

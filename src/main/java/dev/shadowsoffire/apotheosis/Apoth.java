@@ -318,6 +318,7 @@ public class Apoth {
         public static final ResourceKey<LootTable> SPAWNER_BRUTAL = key("chests/spawner_brutal");
         public static final ResourceKey<LootTable> SPAWNER_SWARM = key("chests/spawner_swarm");
         public static final ResourceKey<LootTable> TOME_TOWER = key("chests/tome_tower");
+        public static final ResourceKey<LootTable> BONUS_BOSS_DROPS = key("bonus/boss_drops");
 
         private static ResourceKey<LootTable> key(String path) {
             return ResourceKey.create(Registries.LOOT_TABLE, Apotheosis.loc(path));

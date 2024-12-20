@@ -1,4 +1,4 @@
-// 1.21.1	2024-12-11T23:29:00.7690213	Affixes
+// 1.21.1	2024-12-19T23:27:58.8005653	Affixes
 0fec353805c92f4ad48f7e5d2a7121a06d9c3831 data/apotheosis/affixes/armor/attribute/adamantine.json
 12a0daf6d77fa2918d783881198cdd6ae92f59e4 data/apotheosis/affixes/armor/attribute/aquatic.json
 ddd5fd82543316ce78e69d72bab9965a05487cdd data/apotheosis/affixes/armor/attribute/blessed.json
@@ -44,7 +44,7 @@ fcdf5ce35a06be773e3762cb77e13ca603eae2c0 data/apotheosis/affixes/melee/attribute
 b26443ec9c5d7a8e2306350815cc3f69472ae385 data/apotheosis/affixes/melee/attribute/glacial.json
 70b7fbfa8e03fcdab3a9ffc2bd8596514a609c08 data/apotheosis/affixes/melee/attribute/graceful.json
 1f2a247b440e3f8ab8063a635c6110f1b73b883d data/apotheosis/affixes/melee/attribute/infernal.json
-bd7e0a0fb230a786ff8cff66751c0cd89a300b38 data/apotheosis/affixes/melee/attribute/intricate.json
+69d9fffda306ec45e266a35aa78756849243c09a data/apotheosis/affixes/melee/attribute/intricate.json
 e9befd41bb17f8c3066a00094769cbf42bf6ceff data/apotheosis/affixes/melee/attribute/lacerating.json
 1dda2529abb20c42b2dba26c57c8b01125ed5f0f data/apotheosis/affixes/melee/attribute/lengthy.json
 8a0e9ed807c79990d425648fe7bc4823afc18b10 data/apotheosis/affixes/melee/attribute/murderous.json

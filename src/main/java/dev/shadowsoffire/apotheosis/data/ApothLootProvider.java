@@ -3,21 +3,30 @@ package dev.shadowsoffire.apotheosis.data;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apotheosis;
+import dev.shadowsoffire.apotheosis.loot.GemLootPoolEntry;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.LootTable.Builder;
+import net.minecraft.world.level.storage.loot.entries.EmptyLootItem;
+import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
 public class ApothLootProvider extends LootTableProvider {
 
@@ -30,7 +39,8 @@ public class ApothLootProvider extends LootTableProvider {
             output,
             Set.of(),
             List.of(
-                new LootTableProvider.SubProviderEntry(BlockLoot::new, LootContextParamSets.BLOCK)),
+                new LootTableProvider.SubProviderEntry(BlockLoot::new, LootContextParamSets.BLOCK),
+                new LootTableProvider.SubProviderEntry(EntityLoot::new, LootContextParamSets.ENTITY)),
             registries);
     }
 
@@ -60,6 +70,23 @@ public class ApothLootProvider extends LootTableProvider {
 
         protected void dropSelf(Holder<Block> block) {
             this.dropSelf(block.value());
+        }
+
+    }
+
+    public static record EntityLoot(HolderLookup.Provider registries) implements LootTableSubProvider {
+
+        @Override
+        public void generate(BiConsumer<ResourceKey<LootTable>, Builder> output) {
+            // Bonus Invader drops, which has a 30% chance to spawn in a gem (compared to the normal 4% chance)
+            output.accept(Apoth.LootTables.BONUS_BOSS_DROPS,
+                LootTable.lootTable()
+                    .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootPoolSingletonContainer.simpleBuilder(GemLootPoolEntry.ctor(Set.of(), Set.of())).setWeight(30))
+                        .add(EmptyLootItem.emptyItem().setWeight(70))
+
+                    ));
         }
 
     }

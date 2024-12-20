@@ -352,9 +352,9 @@ public class GearSetProvider extends DynamicRegistryProvider<GearSet> {
         private final int weight;
         private final float quality;
         private final List<WeightedItemStack> helmets = new ArrayList<>();
-        private final List<WeightedItemStack> chests = new ArrayList<>();
-        private final List<WeightedItemStack> legs = new ArrayList<>();
-        private final List<WeightedItemStack> feet = new ArrayList<>();
+        private final List<WeightedItemStack> chestplates = new ArrayList<>();
+        private final List<WeightedItemStack> leggings = new ArrayList<>();
+        private final List<WeightedItemStack> boots = new ArrayList<>();
         private final List<WeightedItemStack> mainhands = new ArrayList<>();
         private final List<WeightedItemStack> offhands = new ArrayList<>();
         private final Set<String> tags = new LinkedHashSet<>();
@@ -374,7 +374,7 @@ public class GearSetProvider extends DynamicRegistryProvider<GearSet> {
         }
 
         public GSBuilder chestplate(ItemStack stack, int weight, float dropChance) {
-            this.chests.add(new WeightedItemStack(stack, Weight.of(weight), dropChance));
+            this.chestplates.add(new WeightedItemStack(stack, Weight.of(weight), dropChance));
             return this;
         }
 
@@ -383,7 +383,7 @@ public class GearSetProvider extends DynamicRegistryProvider<GearSet> {
         }
 
         public GSBuilder leggings(ItemStack stack, int weight, float dropChance) {
-            this.legs.add(new WeightedItemStack(stack, Weight.of(weight), dropChance));
+            this.leggings.add(new WeightedItemStack(stack, Weight.of(weight), dropChance));
             return this;
         }
 
@@ -392,7 +392,7 @@ public class GearSetProvider extends DynamicRegistryProvider<GearSet> {
         }
 
         public GSBuilder boots(ItemStack stack, int weight, float dropChance) {
-            this.feet.add(new WeightedItemStack(stack, Weight.of(weight), dropChance));
+            this.boots.add(new WeightedItemStack(stack, Weight.of(weight), dropChance));
             return this;
         }
 
@@ -424,7 +424,7 @@ public class GearSetProvider extends DynamicRegistryProvider<GearSet> {
         }
 
         public GearSet build() {
-            return new GearSet(weight, quality, helmets, chests, legs, feet, mainhands, offhands, tags);
+            return new GearSet(weight, quality, mainhands, offhands, boots, leggings, chestplates, helmets, tags);
         }
     }
 }

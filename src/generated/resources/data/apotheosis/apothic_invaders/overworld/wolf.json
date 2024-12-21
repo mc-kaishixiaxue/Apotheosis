@@ -5,94 +5,64 @@
             "apotheosis:bonus/boss_drops"
         ],
         "constraints": {
+            "biomes": "#c:is_snowy",
             "dimensions": [
                 "minecraft:overworld"
             ]
         },
         "name": "use_name_generation",
+        "nbt": {
+            "AngerTime": 99999999
+        },
         "valid_gear_sets": {
             "haven": [
-                "#haven_ranged"
+                "#haven_melee"
             ],
             "frontier": [
-                "#frontier_ranged"
+                "#frontier_melee"
             ],
             "ascent": [
-                "#ascent_ranged"
+                "#ascent_melee"
             ],
             "summit": [
-                "#summit_ranged"
+                "#summit_melee"
             ],
             "apotheosis": [
-                "#apotheosis_ranged"
+                "#apotheosis_melee"
             ]
         },
         "weights": {
-            "weight": 100
+            "frontier": {
+                "quality": 5.0,
+                "weight": 150
+            },
+            "ascent": {
+                "quality": 5.0,
+                "weight": 150
+            },
+            "summit": {
+                "quality": 5.0,
+                "weight": 150
+            },
+            "apotheosis": {
+                "quality": 5.0,
+                "weight": 150
+            }
         }
     },
-    "entity": "minecraft:skeleton",
+    "entity": "minecraft:wolf",
     "size": {
-        "height": 2.45,
-        "width": 0.75
+        "height": 2.5,
+        "width": 1.5
     },
     "stats": {
-        "apotheosis:uncommon": {
-            "attribute_modifiers": [
-                {
-                    "attribute": "minecraft:generic.max_health",
-                    "operation": "add_value",
-                    "value": {
-                        "min": 20.0,
-                        "max": 50.0
-                    }
-                },
-                {
-                    "attribute": "minecraft:generic.movement_speed",
-                    "operation": "add_multiplied_base",
-                    "value": {
-                        "min": 0.05,
-                        "max": 0.1
-                    }
-                },
-                {
-                    "attribute": "apothic_attributes:arrow_damage",
-                    "operation": "add_multiplied_base",
-                    "value": {
-                        "min": 0.2,
-                        "max": 0.4
-                    }
-                },
-                {
-                    "attribute": "minecraft:generic.knockback_resistance",
-                    "operation": "add_value",
-                    "value": 0.25
-                },
-                {
-                    "attribute": "minecraft:generic.scale",
-                    "operation": "add_multiplied_total",
-                    "value": 0.25
-                }
-            ],
-            "effects": [
-                {
-                    "amplifier": 1.0,
-                    "effect": "minecraft:fire_resistance"
-                }
-            ],
-            "enchant_chance": 0.25,
-            "enchantment_levels": {
-                "primary": 20,
-                "secondary": 12
-            }
-        },
         "apotheosis:rare": {
             "attribute_modifiers": [
                 {
                     "attribute": "minecraft:generic.max_health",
                     "operation": "add_value",
                     "value": {
-                        "min": 45.0,
+                        "min": 50.0,
                         "max": 70.0
                     }
                 },
@@ -100,15 +70,15 @@
                     "attribute": "minecraft:generic.movement_speed",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.15,
-                        "max": 0.25
+                        "min": 0.25,
+                        "max": 0.45
                     }
                 },
                 {
-                    "attribute": "apothic_attributes:arrow_damage",
+                    "attribute": "minecraft:generic.attack_damage",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.3,
+                        "min": 0.35,
                         "max": 0.55
                     }
                 },
@@ -120,7 +90,7 @@
                 {
                     "attribute": "minecraft:generic.scale",
                     "operation": "add_multiplied_total",
-                    "value": 0.25
+                    "value": 1.25
                 }
             ],
             "effects": [
@@ -141,24 +111,24 @@
                     "attribute": "minecraft:generic.max_health",
                     "operation": "add_value",
                     "value": {
-                        "min": 95.0,
-                        "max": 120.0
+                        "min": 60.0,
+                        "max": 100.0
                     }
                 },
                 {
                     "attribute": "minecraft:generic.movement_speed",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.25,
-                        "max": 0.4
+                        "min": 0.3,
+                        "max": 0.5
                     }
                 },
                 {
-                    "attribute": "apothic_attributes:arrow_damage",
+                    "attribute": "minecraft:generic.attack_damage",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.45,
-                        "max": 0.65
+                        "min": 0.4,
+                        "max": 0.75
                     }
                 },
                 {
@@ -169,17 +139,17 @@
                 {
                     "attribute": "minecraft:generic.armor",
                     "operation": "add_value",
-                    "value": 4.0
+                    "value": 6.0
                 },
                 {
                     "attribute": "minecraft:generic.armor_toughness",
                     "operation": "add_value",
-                    "value": 10.0
+                    "value": 12.0
                 },
                 {
                     "attribute": "minecraft:generic.scale",
                     "operation": "add_multiplied_total",
-                    "value": 0.25
+                    "value": 1.25
                 }
             ],
             "effects": [
@@ -200,24 +170,24 @@
                     "attribute": "minecraft:generic.max_health",
                     "operation": "add_value",
                     "value": {
-                        "min": 125.0,
-                        "max": 150.0
+                        "min": 90.0,
+                        "max": 140.0
                     }
                 },
                 {
                     "attribute": "minecraft:generic.movement_speed",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.3,
+                        "min": 0.35,
                         "max": 0.65
                     }
                 },
                 {
-                    "attribute": "apothic_attributes:arrow_damage",
+                    "attribute": "minecraft:generic.attack_damage",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.75,
-                        "max": 1.2
+                        "min": 0.7,
+                        "max": 1.1
                     }
                 },
                 {
@@ -228,7 +198,7 @@
                 {
                     "attribute": "minecraft:generic.armor",
                     "operation": "add_value",
-                    "value": 10.0
+                    "value": 12.0
                 },
                 {
                     "attribute": "minecraft:generic.armor_toughness",
@@ -238,7 +208,7 @@
                 {
                     "attribute": "minecraft:generic.scale",
                     "operation": "add_multiplied_total",
-                    "value": 0.25
+                    "value": 1.25
                 }
             ],
             "effects": [

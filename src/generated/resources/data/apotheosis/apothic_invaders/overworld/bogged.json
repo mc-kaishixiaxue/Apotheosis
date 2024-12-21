@@ -28,14 +28,28 @@
             ]
         },
         "weights": {
-            "quality": 2.0,
-            "weight": 50
+            "frontier": {
+                "quality": 2.0,
+                "weight": 50
+            },
+            "ascent": {
+                "quality": 2.0,
+                "weight": 50
+            },
+            "summit": {
+                "quality": 2.0,
+                "weight": 50
+            },
+            "apotheosis": {
+                "quality": 2.0,
+                "weight": 50
+            }
         }
     },
     "entity": "minecraft:bogged",
     "size": {
-        "height": 1.95,
-        "width": 0.6
+        "height": 2.45,
+        "width": 0.75
     },
     "stats": {
         "apotheosis:uncommon": {
@@ -67,6 +81,11 @@
                 {
                     "attribute": "minecraft:generic.knockback_resistance",
                     "operation": "add_value",
+                    "value": 0.25
+                },
+                {
+                    "attribute": "minecraft:generic.scale",
+                    "operation": "add_multiplied_total",
                     "value": 0.25
                 }
             ],
@@ -112,6 +131,11 @@
                     "attribute": "minecraft:generic.knockback_resistance",
                     "operation": "add_value",
                     "value": 0.4
+                },
+                {
+                    "attribute": "minecraft:generic.scale",
+                    "operation": "add_multiplied_total",
+                    "value": 0.25
                 }
             ],
             "effects": [
@@ -166,6 +190,11 @@
                     "attribute": "minecraft:generic.armor_toughness",
                     "operation": "add_value",
                     "value": 10.0
+                },
+                {
+                    "attribute": "minecraft:generic.scale",
+                    "operation": "add_multiplied_total",
+                    "value": 0.25
                 }
             ],
             "effects": [
@@ -220,6 +249,11 @@
                     "attribute": "minecraft:generic.armor_toughness",
                     "operation": "add_value",
                     "value": 20.0
+                },
+                {
+                    "attribute": "minecraft:generic.scale",
+                    "operation": "add_multiplied_total",
+                    "value": 0.25
                 }
             ],
             "effects": [

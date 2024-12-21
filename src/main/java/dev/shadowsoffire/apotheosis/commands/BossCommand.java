@@ -65,7 +65,7 @@ public class BossCommand {
         GenContext ctx = GenContext.forPlayer(summoner);
         Invader boss = bossId == null ? InvaderRegistry.INSTANCE.getRandomItem(ctx) : InvaderRegistry.INSTANCE.getValue(bossId);
         if (boss == null) {
-            if (bossId == null) {
+            if (bossId != null) {
                 c.getSource().sendFailure(Component.literal("Unknown boss: " + bossId));
             }
             else {

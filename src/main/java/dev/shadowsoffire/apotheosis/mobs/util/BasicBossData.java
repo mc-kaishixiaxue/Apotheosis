@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 import org.jetbrains.annotations.Nullable;
@@ -216,6 +217,13 @@ public record BasicBossData(
 
         public Builder nbt(CompoundTag nbt) {
             this.nbt = Optional.of(nbt);
+            return this;
+        }
+
+        public Builder nbt(Consumer<CompoundTag> nbt) {
+            CompoundTag current = this.nbt.orElse(new CompoundTag());
+            nbt.accept(current);
+            this.nbt = Optional.of(current);
             return this;
         }
 

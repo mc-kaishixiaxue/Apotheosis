@@ -101,6 +101,10 @@ public record Constraints(Set<WorldTier> tiers, Set<ResourceKey<Level>> dimensio
             return this;
         }
 
+        public Builder biomes(RegistryLookup<Biome> registry, TagKey<Biome> key) {
+            return this.biomes(registry.getOrThrow(key));
+        }
+
         public Builder gameStages(String... gameStages) {
             for (String stage : gameStages) {
                 this.gameStages.add(stage);

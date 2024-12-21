@@ -56,9 +56,11 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
         LootRarity epic = rarity("epic");
         LootRarity mythic = rarity("mythic");
 
+        // Overworld
+
         addBoss("overworld/zombie", b -> basicMeleeStats(b)
             .entity(EntityType.ZOMBIE)
-            .size(0.6, 1.95)
+            .size(0.75, 2.45)
             .basicData(c -> meleeGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
                 .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
@@ -67,16 +69,16 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
 
         addBoss("overworld/husk", b -> basicMeleeStats(b)
             .entity(EntityType.HUSK)
-            .size(0.6, 1.95)
+            .size(0.75, 2.45)
             .basicData(c -> meleeGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
-                .weights(TieredWeights.forAllTiers(50, 2))
+                .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 50, 2))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
                 .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
 
         addBoss("overworld/husk_in_dry", b -> basicMeleeStats(b)
             .entity(EntityType.HUSK)
-            .size(0.6, 1.95)
+            .size(0.75, 2.45)
             .basicData(c -> meleeGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
                 .weights(TieredWeights.forAllTiers(120, DEFAULT_QUALITY))
@@ -85,7 +87,16 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
 
         addBoss("overworld/enderman", b -> basicMeleeStats(b)
             .entity(EntityType.ENDERMAN)
-            .size(0.6, 2.95)
+            .size(0.75, 3.7)
+            .basicData(c -> meleeGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forTiersAbove(WorldTier.ASCENT, 150, 5))
+                .constraints(Constraints.forDimension(Level.OVERWORLD))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
+
+        addBoss("overworld/vindicator", b -> basicMeleeStats(b)
+            .entity(EntityType.VINDICATOR)
+            .size(0.75, 2.45)
             .basicData(c -> meleeGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
                 .weights(TieredWeights.forTiersAbove(WorldTier.ASCENT, 150, 5))
@@ -94,9 +105,52 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
 
         // TODO: Figure out how to make drowned not act stupid...
 
+        addBoss("overworld/wolf", b -> b
+            .entity(EntityType.WOLF)
+            .size(1.5, 2.5)
+            .basicData(c -> meleeGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 150, 5))
+                .constraints(x -> x
+                    .dimensions(Level.OVERWORLD)
+                    .biomes(biomes, Tags.Biomes.IS_SNOWY))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)
+                .nbt(t -> t.putInt("AngerTime", 99999999)))
+            .stats(rare, c -> c
+                .enchantChance(0.35F)
+                .enchLevels(23, 15)
+                .effect(1, MobEffects.FIRE_RESISTANCE)
+                .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 50, 70)
+                .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.25F, 0.45F)
+                .modifier(Attributes.ATTACK_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.35F, 0.55F)
+                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.4F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(1.25F)))
+            .stats(epic, c -> c
+                .enchantChance(0.6F)
+                .enchLevels(35, 25)
+                .effect(1, MobEffects.FIRE_RESISTANCE)
+                .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 60, 100)
+                .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.30F, 0.50F)
+                .modifier(Attributes.ATTACK_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.40F, 0.75F)
+                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.5F))
+                .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(6F))
+                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(12F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(1.25F)))
+            .stats(mythic, c -> c
+                .enchantChance(0.75F)
+                .enchLevels(35, 25)
+                .effect(1, MobEffects.FIRE_RESISTANCE)
+                .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 90, 140)
+                .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.35F, 0.65F)
+                .modifier(Attributes.ATTACK_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.7F, 1.10F)
+                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.8F))
+                .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(12F))
+                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(20F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(1.25F))));
+
         addBoss("overworld/skeleton", b -> basicRangedStats(b)
             .entity(EntityType.SKELETON)
-            .size(0.6, 1.95)
+            .size(0.75, 2.45)
             .basicData(c -> rangedGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
                 .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
@@ -105,25 +159,25 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
 
         addBoss("overworld/stray", b -> basicRangedStats(b)
             .entity(EntityType.STRAY)
-            .size(0.6, 1.95)
+            .size(0.75, 2.45)
             .basicData(c -> rangedGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
-                .weights(TieredWeights.forAllTiers(50, 2))
+                .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 50, 2))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
                 .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
 
         addBoss("overworld/bogged", b -> basicRangedStats(b)
             .entity(EntityType.BOGGED)
-            .size(0.6, 1.95)
+            .size(0.75, 2.45)
             .basicData(c -> rangedGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
-                .weights(TieredWeights.forAllTiers(50, 2))
+                .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 50, 2))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
                 .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
 
         addBoss("overworld/stray_in_cold", b -> basicRangedStats(b)
             .entity(EntityType.STRAY)
-            .size(0.6, 1.95)
+            .size(0.75, 2.45)
             .basicData(c -> rangedGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
                 .weights(TieredWeights.forAllTiers(120, DEFAULT_QUALITY))
@@ -132,12 +186,15 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
 
         addBoss("overworld/bogged_in_wet", b -> basicRangedStats(b)
             .entity(EntityType.BOGGED)
-            .size(0.6, 1.95)
+            .size(0.75, 2.45)
             .basicData(c -> rangedGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
                 .weights(TieredWeights.forAllTiers(120, DEFAULT_QUALITY))
                 .constraints(Constraints.forBiomes(biomes, Tags.Biomes.IS_WET_OVERWORLD))
                 .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
+
+        // Nether
+
     }
 
     private Invader.Builder basicMeleeStats(Invader.Builder builder) {
@@ -154,7 +211,8 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 20, 60)
                 .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.15F, 0.20F)
                 .modifier(Attributes.ATTACK_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.2F, 0.4F)
-                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.3F)))
+                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.3F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
             .stats(rare, c -> c
                 .enchantChance(0.35F)
                 .enchLevels(23, 15)
@@ -162,7 +220,8 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 40, 90)
                 .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.15F, 0.25F)
                 .modifier(Attributes.ATTACK_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.25F, 0.5F)
-                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.4F)))
+                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.4F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
             .stats(epic, c -> c
                 .enchantChance(0.6F)
                 .enchLevels(35, 25)
@@ -172,7 +231,8 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.ATTACK_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.30F, 0.65F)
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.5F))
                 .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(4F))
-                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(10F)))
+                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(10F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
             .stats(mythic, c -> c
                 .enchantChance(0.75F)
                 .enchLevels(35, 25)
@@ -182,7 +242,8 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.ATTACK_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.7F, 1.05F)
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.8F))
                 .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(10F))
-                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(20F)));
+                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(20F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)));
     }
 
     private Invader.Builder basicRangedStats(Invader.Builder builder) {
@@ -199,7 +260,8 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 20, 50)
                 .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.05F, 0.10F)
                 .modifier(ALObjects.Attributes.ARROW_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.2F, 0.4F)
-                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.25F)))
+                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.25F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
             .stats(rare, c -> c
                 .enchantChance(0.35F)
                 .enchLevels(23, 15)
@@ -207,7 +269,8 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 45, 70)
                 .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.15F, 0.25F)
                 .modifier(ALObjects.Attributes.ARROW_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.3F, 0.55F)
-                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.4F)))
+                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.4F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
             .stats(epic, c -> c
                 .enchantChance(0.6F)
                 .enchLevels(35, 25)
@@ -217,7 +280,8 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(ALObjects.Attributes.ARROW_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.45F, 0.65F)
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.5F))
                 .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(4F))
-                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(10F)))
+                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(10F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
             .stats(mythic, c -> c
                 .enchantChance(0.75F)
                 .enchLevels(35, 25)
@@ -227,7 +291,8 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(ALObjects.Attributes.ARROW_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.75F, 1.2F)
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.8F))
                 .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(10F))
-                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(20F)));
+                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(20F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)));
     }
 
     private BasicBossData.Builder meleeGear(BasicBossData.Builder builder) {

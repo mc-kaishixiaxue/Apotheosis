@@ -136,7 +136,7 @@ public record Invader(BasicBossData basicData, EntityType<?> entity, AABB size, 
      */
     public Mob createBoss(ServerLevelAccessor level, BlockPos pos, GenContext ctx, @Nullable LootRarity rarity) {
         Optional<CompoundTag> nbt = this.basicData.nbt();
-        CompoundTag fakeNbt = nbt.orElse(new CompoundTag());
+        CompoundTag fakeNbt = nbt.map(CompoundTag::copy).orElse(new CompoundTag());
         fakeNbt.putString("id", EntityType.getKey(this.entity).toString());
         Mob entity = (Mob) EntityType.loadEntityRecursive(fakeNbt, level.getLevel(), Function.identity());
 

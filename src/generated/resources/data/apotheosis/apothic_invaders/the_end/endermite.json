@@ -2,12 +2,11 @@
     "type": "apotheosis:invader",
     "basic_data": {
         "bonus_loot": [
-            "apotheosis:bonus/boss_drops",
-            "apotheosis:bonus/rare_boss_drops"
+            "apotheosis:bonus/boss_drops"
         ],
         "constraints": {
             "dimensions": [
-                "minecraft:overworld"
+                "minecraft:the_end"
             ]
         },
         "name": "use_name_generation",
@@ -29,24 +28,14 @@
             ]
         },
         "weights": {
-            "ascent": {
-                "quality": 5.0,
-                "weight": 150
-            },
-            "summit": {
-                "quality": 5.0,
-                "weight": 150
-            },
-            "apotheosis": {
-                "quality": 5.0,
-                "weight": 150
-            }
+            "quality": 2.0,
+            "weight": 5
         }
     },
-    "entity": "minecraft:enderman",
+    "entity": "minecraft:endermite",
     "size": {
-        "height": 3.7,
-        "width": 0.75
+        "height": 0.5,
+        "width": 0.5
     },
     "stats": {
         "apotheosis:uncommon": {

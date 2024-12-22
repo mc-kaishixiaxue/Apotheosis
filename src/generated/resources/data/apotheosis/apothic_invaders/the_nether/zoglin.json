@@ -2,12 +2,11 @@
     "type": "apotheosis:invader",
     "basic_data": {
         "bonus_loot": [
-            "apotheosis:bonus/boss_drops",
-            "apotheosis:bonus/rare_boss_drops"
+            "apotheosis:bonus/boss_drops"
         ],
         "constraints": {
             "dimensions": [
-                "minecraft:overworld"
+                "minecraft:the_nether"
             ]
         },
         "name": "use_name_generation",
@@ -29,24 +28,28 @@
             ]
         },
         "weights": {
+            "frontier": {
+                "quality": 5.0,
+                "weight": 100
+            },
             "ascent": {
                 "quality": 5.0,
-                "weight": 150
+                "weight": 100
             },
             "summit": {
                 "quality": 5.0,
-                "weight": 150
+                "weight": 100
             },
             "apotheosis": {
                 "quality": 5.0,
-                "weight": 150
+                "weight": 100
             }
         }
     },
-    "entity": "minecraft:enderman",
+    "entity": "minecraft:zoglin",
     "size": {
-        "height": 3.7,
-        "width": 0.75
+        "height": 2.0,
+        "width": 2.0
     },
     "stats": {
         "apotheosis:uncommon": {

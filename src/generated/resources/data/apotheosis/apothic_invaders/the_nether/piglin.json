@@ -2,15 +2,17 @@
     "type": "apotheosis:invader",
     "basic_data": {
         "bonus_loot": [
-            "apotheosis:bonus/boss_drops",
-            "apotheosis:bonus/rare_boss_drops"
+            "apotheosis:bonus/boss_drops"
         ],
         "constraints": {
             "dimensions": [
-                "minecraft:overworld"
+                "minecraft:the_nether"
             ]
         },
         "name": "use_name_generation",
+        "nbt": {
+            "AngerTime": 99999999
+        },
         "valid_gear_sets": {
             "haven": [
                 "#haven_melee"
@@ -29,23 +31,12 @@
             ]
         },
         "weights": {
-            "ascent": {
-                "quality": 5.0,
-                "weight": 150
-            },
-            "summit": {
-                "quality": 5.0,
-                "weight": 150
-            },
-            "apotheosis": {
-                "quality": 5.0,
-                "weight": 150
-            }
+            "weight": 100
         }
     },
-    "entity": "minecraft:enderman",
+    "entity": "minecraft:piglin",
     "size": {
-        "height": 3.7,
+        "height": 2.45,
         "width": 0.75
     },
     "stats": {

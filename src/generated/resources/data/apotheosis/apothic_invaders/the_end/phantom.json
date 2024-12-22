@@ -7,7 +7,7 @@
         ],
         "constraints": {
             "dimensions": [
-                "minecraft:overworld"
+                "minecraft:the_end"
             ]
         },
         "name": "use_name_generation",
@@ -30,23 +30,20 @@
         },
         "weights": {
             "ascent": {
-                "quality": 5.0,
-                "weight": 150
+                "weight": 50
             },
             "summit": {
-                "quality": 5.0,
-                "weight": 150
+                "weight": 50
             },
             "apotheosis": {
-                "quality": 5.0,
-                "weight": 150
+                "weight": 50
             }
         }
     },
-    "entity": "minecraft:enderman",
+    "entity": "minecraft:phantom",
     "size": {
-        "height": 3.7,
-        "width": 0.75
+        "height": 0.75,
+        "width": 1.2
     },
     "stats": {
         "apotheosis:uncommon": {

@@ -29,19 +29,15 @@
         },
         "weights": {
             "frontier": {
-                "quality": 2.0,
                 "weight": 50
             },
             "ascent": {
-                "quality": 2.0,
                 "weight": 50
             },
             "summit": {
-                "quality": 2.0,
                 "weight": 50
             },
             "apotheosis": {
-                "quality": 2.0,
                 "weight": 50
             }
         }
@@ -71,7 +67,7 @@
                     }
                 },
                 {
-                    "attribute": "apothic_attributes:arrow_damage",
+                    "attribute": "apothic_attributes:projectile_damage",
                     "operation": "add_multiplied_base",
                     "value": {
                         "min": 0.2,
@@ -120,7 +116,7 @@
                     }
                 },
                 {
-                    "attribute": "apothic_attributes:arrow_damage",
+                    "attribute": "apothic_attributes:projectile_damage",
                     "operation": "add_multiplied_base",
                     "value": {
                         "min": 0.3,
@@ -169,7 +165,7 @@
                     }
                 },
                 {
-                    "attribute": "apothic_attributes:arrow_damage",
+                    "attribute": "apothic_attributes:projectile_damage",
                     "operation": "add_multiplied_base",
                     "value": {
                         "min": 0.45,
@@ -228,7 +224,7 @@
                     }
                 },
                 {
-                    "attribute": "apothic_attributes:arrow_damage",
+                    "attribute": "apothic_attributes:projectile_damage",
                     "operation": "add_multiplied_base",
                     "value": {
                         "min": 0.75,

@@ -54,7 +54,7 @@
                     }
                 },
                 {
-                    "attribute": "apothic_attributes:arrow_damage",
+                    "attribute": "apothic_attributes:projectile_damage",
                     "operation": "add_multiplied_base",
                     "value": {
                         "min": 0.2,
@@ -103,7 +103,7 @@
                     }
                 },
                 {
-                    "attribute": "apothic_attributes:arrow_damage",
+                    "attribute": "apothic_attributes:projectile_damage",
                     "operation": "add_multiplied_base",
                     "value": {
                         "min": 0.3,
@@ -152,7 +152,7 @@
                     }
                 },
                 {
-                    "attribute": "apothic_attributes:arrow_damage",
+                    "attribute": "apothic_attributes:projectile_damage",
                     "operation": "add_multiplied_base",
                     "value": {
                         "min": 0.45,
@@ -211,7 +211,7 @@
                     }
                 },
                 {
-                    "attribute": "apothic_attributes:arrow_damage",
+                    "attribute": "apothic_attributes:projectile_damage",
                     "operation": "add_multiplied_base",
                     "value": {
                         "min": 0.75,

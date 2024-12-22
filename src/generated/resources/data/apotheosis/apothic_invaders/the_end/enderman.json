@@ -2,12 +2,11 @@
     "type": "apotheosis:invader",
     "basic_data": {
         "bonus_loot": [
-            "apotheosis:bonus/boss_drops",
-            "apotheosis:bonus/rare_boss_drops"
+            "apotheosis:bonus/boss_drops"
         ],
         "constraints": {
             "dimensions": [
-                "minecraft:overworld"
+                "minecraft:the_end"
             ]
         },
         "name": "use_name_generation",
@@ -29,18 +28,7 @@
             ]
         },
         "weights": {
-            "ascent": {
-                "quality": 5.0,
-                "weight": 150
-            },
-            "summit": {
-                "quality": 5.0,
-                "weight": 150
-            },
-            "apotheosis": {
-                "quality": 5.0,
-                "weight": 150
-            }
+            "weight": 100
         }
     },
     "entity": "minecraft:enderman",

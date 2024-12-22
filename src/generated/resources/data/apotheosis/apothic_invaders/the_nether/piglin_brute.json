@@ -7,7 +7,7 @@
         ],
         "constraints": {
             "dimensions": [
-                "minecraft:overworld"
+                "minecraft:the_nether"
             ]
         },
         "name": "use_name_generation",
@@ -43,9 +43,9 @@
             }
         }
     },
-    "entity": "minecraft:enderman",
+    "entity": "minecraft:piglin_brute",
     "size": {
-        "height": 3.7,
+        "height": 2.45,
         "width": 0.75
     },
     "stats": {

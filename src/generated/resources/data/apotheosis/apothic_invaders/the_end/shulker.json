@@ -2,51 +2,40 @@
     "type": "apotheosis:invader",
     "basic_data": {
         "bonus_loot": [
-            "apotheosis:bonus/boss_drops",
-            "apotheosis:bonus/rare_boss_drops"
+            "apotheosis:bonus/boss_drops"
         ],
         "constraints": {
             "dimensions": [
-                "minecraft:overworld"
+                "minecraft:the_end"
             ]
         },
         "name": "use_name_generation",
         "valid_gear_sets": {
             "haven": [
-                "#haven_melee"
+                "#haven_ranged"
             ],
             "frontier": [
-                "#frontier_melee"
+                "#frontier_ranged"
             ],
             "ascent": [
-                "#ascent_melee"
+                "#ascent_ranged"
             ],
             "summit": [
-                "#summit_melee"
+                "#summit_ranged"
             ],
             "apotheosis": [
-                "#apotheosis_melee"
+                "#apotheosis_ranged"
             ]
         },
         "weights": {
-            "ascent": {
-                "quality": 5.0,
-                "weight": 150
-            },
-            "summit": {
-                "quality": 5.0,
-                "weight": 150
-            },
-            "apotheosis": {
-                "quality": 5.0,
-                "weight": 150
-            }
+            "quality": 2.0,
+            "weight": 20
         }
     },
-    "entity": "minecraft:enderman",
+    "entity": "minecraft:shulker",
     "size": {
-        "height": 3.7,
-        "width": 0.75
+        "height": 1.25,
+        "width": 1.25
     },
     "stats": {
         "apotheosis:uncommon": {
@@ -56,19 +45,19 @@
                     "operation": "add_value",
                     "value": {
                         "min": 20.0,
-                        "max": 60.0
+                        "max": 50.0
                     }
                 },
                 {
                     "attribute": "minecraft:generic.movement_speed",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.15,
-                        "max": 0.2
+                        "min": 0.05,
+                        "max": 0.1
                     }
                 },
                 {
-                    "attribute": "minecraft:generic.attack_damage",
+                    "attribute": "apothic_attributes:projectile_damage",
                     "operation": "add_multiplied_base",
                     "value": {
                         "min": 0.2,
@@ -78,7 +67,7 @@
                 {
                     "attribute": "minecraft:generic.knockback_resistance",
                     "operation": "add_value",
-                    "value": 0.3
+                    "value": 0.25
                 },
                 {
                     "attribute": "minecraft:generic.scale",
@@ -104,8 +93,8 @@
                     "attribute": "minecraft:generic.max_health",
                     "operation": "add_value",
                     "value": {
-                        "min": 40.0,
-                        "max": 90.0
+                        "min": 45.0,
+                        "max": 70.0
                     }
                 },
                 {
@@ -117,11 +106,11 @@
                     }
                 },
                 {
-                    "attribute": "minecraft:generic.attack_damage",
+                    "attribute": "apothic_attributes:projectile_damage",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.25,
-                        "max": 0.5
+                        "min": 0.3,
+                        "max": 0.55
                     }
                 },
                 {
@@ -153,8 +142,8 @@
                     "attribute": "minecraft:generic.max_health",
                     "operation": "add_value",
                     "value": {
-                        "min": 80.0,
-                        "max": 150.0
+                        "min": 95.0,
+                        "max": 120.0
                     }
                 },
                 {
@@ -166,10 +155,10 @@
                     }
                 },
                 {
-                    "attribute": "minecraft:generic.attack_damage",
+                    "attribute": "apothic_attributes:projectile_damage",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.3,
+                        "min": 0.45,
                         "max": 0.65
                     }
                 },
@@ -212,8 +201,8 @@
                     "attribute": "minecraft:generic.max_health",
                     "operation": "add_value",
                     "value": {
-                        "min": 110.0,
-                        "max": 180.0
+                        "min": 125.0,
+                        "max": 150.0
                     }
                 },
                 {
@@ -225,11 +214,11 @@
                     }
                 },
                 {
-                    "attribute": "minecraft:generic.attack_damage",
+                    "attribute": "apothic_attributes:projectile_damage",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.7,
-                        "max": 1.05
+                        "min": 0.75,
+                        "max": 1.2
                     }
                 },
                 {

@@ -7,25 +7,25 @@
         ],
         "constraints": {
             "dimensions": [
-                "minecraft:overworld"
+                "minecraft:the_nether"
             ]
         },
         "name": "use_name_generation",
         "valid_gear_sets": {
             "haven": [
-                "#haven_melee"
+                "#haven_ranged"
             ],
             "frontier": [
-                "#frontier_melee"
+                "#frontier_ranged"
             ],
             "ascent": [
-                "#ascent_melee"
+                "#ascent_ranged"
             ],
             "summit": [
-                "#summit_melee"
+                "#summit_ranged"
             ],
             "apotheosis": [
-                "#apotheosis_melee"
+                "#apotheosis_ranged"
             ]
         },
         "weights": {
@@ -43,133 +43,43 @@
             }
         }
     },
-    "entity": "minecraft:enderman",
+    "entity": "minecraft:wither_skeleton",
     "size": {
         "height": 3.7,
         "width": 0.75
     },
     "stats": {
-        "apotheosis:uncommon": {
-            "attribute_modifiers": [
-                {
-                    "attribute": "minecraft:generic.max_health",
-                    "operation": "add_value",
-                    "value": {
-                        "min": 20.0,
-                        "max": 60.0
-                    }
-                },
-                {
-                    "attribute": "minecraft:generic.movement_speed",
-                    "operation": "add_multiplied_base",
-                    "value": {
-                        "min": 0.15,
-                        "max": 0.2
-                    }
-                },
-                {
-                    "attribute": "minecraft:generic.attack_damage",
-                    "operation": "add_multiplied_base",
-                    "value": {
-                        "min": 0.2,
-                        "max": 0.4
-                    }
-                },
-                {
-                    "attribute": "minecraft:generic.knockback_resistance",
-                    "operation": "add_value",
-                    "value": 0.3
-                },
-                {
-                    "attribute": "minecraft:generic.scale",
-                    "operation": "add_multiplied_total",
-                    "value": 0.25
-                }
-            ],
-            "effects": [
-                {
-                    "amplifier": 1.0,
-                    "effect": "minecraft:fire_resistance"
-                }
-            ],
-            "enchant_chance": 0.25,
-            "enchantment_levels": {
-                "primary": 20,
-                "secondary": 12
-            }
-        },
-        "apotheosis:rare": {
-            "attribute_modifiers": [
-                {
-                    "attribute": "minecraft:generic.max_health",
-                    "operation": "add_value",
-                    "value": {
-                        "min": 40.0,
-                        "max": 90.0
-                    }
-                },
-                {
-                    "attribute": "minecraft:generic.movement_speed",
-                    "operation": "add_multiplied_base",
-                    "value": {
-                        "min": 0.15,
-                        "max": 0.25
-                    }
-                },
-                {
-                    "attribute": "minecraft:generic.attack_damage",
-                    "operation": "add_multiplied_base",
-                    "value": {
-                        "min": 0.25,
-                        "max": 0.5
-                    }
-                },
-                {
-                    "attribute": "minecraft:generic.knockback_resistance",
-                    "operation": "add_value",
-                    "value": 0.4
-                },
-                {
-                    "attribute": "minecraft:generic.scale",
-                    "operation": "add_multiplied_total",
-                    "value": 0.25
-                }
-            ],
-            "effects": [
-                {
-                    "amplifier": 1.0,
-                    "effect": "minecraft:fire_resistance"
-                }
-            ],
-            "enchant_chance": 0.35,
-            "enchantment_levels": {
-                "primary": 23,
-                "secondary": 15
-            }
-        },
         "apotheosis:epic": {
             "attribute_modifiers": [
                 {
                     "attribute": "minecraft:generic.max_health",
                     "operation": "add_value",
                     "value": {
-                        "min": 80.0,
-                        "max": 150.0
+                        "min": 60.0,
+                        "max": 100.0
                     }
                 },
                 {
                     "attribute": "minecraft:generic.movement_speed",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.25,
-                        "max": 0.4
+                        "min": 0.3,
+                        "max": 0.5
                     }
                 },
                 {
-                    "attribute": "minecraft:generic.attack_damage",
+                    "attribute": "apothic_attributes:fire_damage",
+                    "operation": "add_value",
+                    "value": {
+                        "min": 7.0,
+                        "max": 12.0
+                    }
+                },
+                {
+                    "attribute": "apothic_attributes:arrow_damage",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.3,
+                        "min": 0.45,
                         "max": 0.65
                     }
                 },
@@ -181,12 +91,12 @@
                 {
                     "attribute": "minecraft:generic.armor",
                     "operation": "add_value",
-                    "value": 4.0
+                    "value": 6.0
                 },
                 {
                     "attribute": "minecraft:generic.armor_toughness",
                     "operation": "add_value",
-                    "value": 10.0
+                    "value": 12.0
                 },
                 {
                     "attribute": "minecraft:generic.scale",
@@ -200,10 +110,10 @@
                     "effect": "minecraft:fire_resistance"
                 }
             ],
-            "enchant_chance": 0.6,
+            "enchant_chance": 0.75,
             "enchantment_levels": {
-                "primary": 35,
-                "secondary": 25
+                "primary": 45,
+                "secondary": 30
             }
         },
         "apotheosis:mythic": {
@@ -212,24 +122,32 @@
                     "attribute": "minecraft:generic.max_health",
                     "operation": "add_value",
                     "value": {
-                        "min": 110.0,
-                        "max": 180.0
+                        "min": 90.0,
+                        "max": 140.0
                     }
                 },
                 {
                     "attribute": "minecraft:generic.movement_speed",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.3,
+                        "min": 0.35,
                         "max": 0.65
                     }
                 },
                 {
-                    "attribute": "minecraft:generic.attack_damage",
+                    "attribute": "apothic_attributes:fire_damage",
+                    "operation": "add_value",
+                    "value": {
+                        "min": 12.0,
+                        "max": 20.0
+                    }
+                },
+                {
+                    "attribute": "apothic_attributes:arrow_damage",
                     "operation": "add_multiplied_base",
                     "value": {
-                        "min": 0.7,
-                        "max": 1.05
+                        "min": 0.75,
+                        "max": 1.2
                     }
                 },
                 {
@@ -240,7 +158,7 @@
                 {
                     "attribute": "minecraft:generic.armor",
                     "operation": "add_value",
-                    "value": 10.0
+                    "value": 12.0
                 },
                 {
                     "attribute": "minecraft:generic.armor_toughness",
@@ -259,10 +177,10 @@
                     "effect": "minecraft:fire_resistance"
                 }
             ],
-            "enchant_chance": 0.75,
+            "enchant_chance": 0.95,
             "enchantment_levels": {
-                "primary": 35,
-                "secondary": 25
+                "primary": 60,
+                "secondary": 40
             }
         }
     }

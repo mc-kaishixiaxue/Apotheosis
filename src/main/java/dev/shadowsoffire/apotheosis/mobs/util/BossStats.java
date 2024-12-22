@@ -28,8 +28,8 @@ public record BossStats(float enchantChance, EnchantmentLevels enchLevels, List<
         .group(
             Codec.FLOAT.fieldOf("enchant_chance").forGetter(BossStats::enchantChance),
             EnchantmentLevels.CODEC.fieldOf("enchantment_levels").forGetter(BossStats::enchLevels),
-            ChancedEffectInstance.CODEC.listOf().fieldOf("effects").forGetter(BossStats::effects),
-            RandomAttributeModifier.CODEC.listOf().fieldOf("attribute_modifiers").forGetter(BossStats::modifiers))
+            ChancedEffectInstance.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(BossStats::effects),
+            RandomAttributeModifier.CODEC.listOf().optionalFieldOf("attribute_modifiers", List.of()).forGetter(BossStats::modifiers))
         .apply(inst, BossStats::new));
 
     /**

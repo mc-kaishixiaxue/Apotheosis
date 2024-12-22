@@ -72,7 +72,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
             .size(0.75, 2.45)
             .basicData(c -> meleeGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
-                .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 50, 2))
+                .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 50, DEFAULT_QUALITY))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
                 .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
 
@@ -92,7 +92,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .name(Component.literal(BasicBossData.NAME_GEN))
                 .weights(TieredWeights.forTiersAbove(WorldTier.ASCENT, 150, 5))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
-                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS, Apoth.LootTables.BONUS_RARE_BOSS_DROPS)));
 
         addBoss("overworld/vindicator", b -> basicMeleeStats(b)
             .entity(EntityType.VINDICATOR)
@@ -101,7 +101,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .name(Component.literal(BasicBossData.NAME_GEN))
                 .weights(TieredWeights.forTiersAbove(WorldTier.ASCENT, 150, 5))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
-                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS, Apoth.LootTables.BONUS_RARE_BOSS_DROPS)));
 
         // TODO: Figure out how to make drowned not act stupid...
 
@@ -114,7 +114,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .constraints(x -> x
                     .dimensions(Level.OVERWORLD)
                     .biomes(biomes, Tags.Biomes.IS_SNOWY))
-                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS, Apoth.LootTables.BONUS_RARE_BOSS_DROPS)
                 .nbt(t -> t.putInt("AngerTime", 99999999)))
             .stats(rare, c -> c
                 .enchantChance(0.35F)
@@ -162,7 +162,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
             .size(0.75, 2.45)
             .basicData(c -> rangedGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
-                .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 50, 2))
+                .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 50, DEFAULT_QUALITY))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
                 .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
 
@@ -171,7 +171,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
             .size(0.75, 2.45)
             .basicData(c -> rangedGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
-                .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 50, 2))
+                .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 50, DEFAULT_QUALITY))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
                 .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
 
@@ -193,7 +193,168 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .constraints(Constraints.forBiomes(biomes, Tags.Biomes.IS_WET_OVERWORLD))
                 .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
 
+        addBoss("overworld/breeze", b -> b
+            .entity(EntityType.BREEZE)
+            .size(1.2, 3.6)
+            .basicData(c -> rangedGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forTiersAbove(WorldTier.SUMMIT, 150, 5))
+                .constraints(Constraints.forDimension(Level.NETHER))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS, Apoth.LootTables.BONUS_RARE_BOSS_DROPS))
+            .stats(mythic, c -> c
+                .enchantChance(1)
+                .enchLevels(100, 80)
+                .effect(1, MobEffects.FIRE_RESISTANCE)
+                .effect(1, MobEffects.DAMAGE_RESISTANCE)
+                .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 90, 140)
+                .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.35F, 0.65F)
+                .modifier(ALObjects.Attributes.COLD_DAMAGE, Operation.ADD_VALUE, 30F, 40F)
+                .modifier(ALObjects.Attributes.PROJECTILE_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 2.25F, 4.15F)
+                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.8F))
+                .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(12F))
+                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(20F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(1F))));
+
         // Nether
+
+        addBoss("the_nether/zombified_piglin", b -> basicMeleeStats(b)
+            .entity(EntityType.ZOMBIFIED_PIGLIN)
+            .size(0.75, 2.45)
+            .basicData(c -> meleeGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
+                .constraints(Constraints.forDimension(Level.NETHER))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
+
+        addBoss("the_nether/piglin", b -> basicMeleeStats(b)
+            .entity(EntityType.PIGLIN)
+            .size(0.75, 2.45)
+            .basicData(c -> meleeGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
+                .constraints(Constraints.forDimension(Level.NETHER))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)
+                .nbt(t -> t.putInt("AngerTime", 99999999))));
+
+        addBoss("the_nether/piglin_brute", b -> basicMeleeStats(b)
+            .entity(EntityType.PIGLIN_BRUTE)
+            .size(0.75, 2.45)
+            .basicData(c -> meleeGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forTiersAbove(WorldTier.ASCENT, 150, 5))
+                .constraints(Constraints.forDimension(Level.NETHER))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS, Apoth.LootTables.BONUS_RARE_BOSS_DROPS)));
+
+        addBoss("the_nether/zoglin", b -> basicMeleeStats(b)
+            .entity(EntityType.ZOGLIN)
+            .size(2, 2)
+            .basicData(c -> meleeGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, DEFAULT_WEIGHT, 5))
+                .constraints(Constraints.forDimension(Level.NETHER))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
+
+        addBoss("the_nether/wither_skeleton", b -> b
+            .entity(EntityType.WITHER_SKELETON)
+            .size(0.75, 3.7)
+            .basicData(c -> rangedGear(meleeGear(c))
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forTiersAbove(WorldTier.ASCENT, 150, 5))
+                .constraints(Constraints.forDimension(Level.NETHER))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS, Apoth.LootTables.BONUS_RARE_BOSS_DROPS))
+            .stats(epic, c -> c
+                .enchantChance(0.75F)
+                .enchLevels(45, 30)
+                .effect(1, MobEffects.FIRE_RESISTANCE)
+                .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 60, 100)
+                .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.30F, 0.50F)
+                .modifier(ALObjects.Attributes.FIRE_DAMAGE, Operation.ADD_VALUE, 7F, 12F)
+                .modifier(ALObjects.Attributes.ARROW_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.45F, 0.65F)
+                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.5F))
+                .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(6F))
+                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(12F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
+            .stats(mythic, c -> c
+                .enchantChance(0.95F)
+                .enchLevels(60, 40)
+                .effect(1, MobEffects.FIRE_RESISTANCE)
+                .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 90, 140)
+                .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.35F, 0.65F)
+                .modifier(ALObjects.Attributes.FIRE_DAMAGE, Operation.ADD_VALUE, 12F, 20F)
+                .modifier(ALObjects.Attributes.ARROW_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.75F, 1.2F)
+                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.8F))
+                .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(12F))
+                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(20F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F))));
+
+        addBoss("the_nether/blaze", b -> b
+            .entity(EntityType.BLAZE)
+            .size(1.2, 3.6)
+            .basicData(c -> rangedGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forTiersAbove(WorldTier.SUMMIT, 150, 5))
+                .constraints(Constraints.forDimension(Level.NETHER))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS, Apoth.LootTables.BONUS_RARE_BOSS_DROPS))
+            .stats(mythic, c -> c
+                .enchantChance(1)
+                .enchLevels(100, 80)
+                .effect(1, MobEffects.DAMAGE_RESISTANCE)
+                .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 90, 140)
+                .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.35F, 0.65F)
+                .modifier(ALObjects.Attributes.FIRE_DAMAGE, Operation.ADD_VALUE, 30F, 40F)
+                .modifier(ALObjects.Attributes.PROJECTILE_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 2.75F, 5.5F)
+                .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.8F))
+                .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(12F))
+                .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(20F))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(1F))));
+
+        // End - TODO: Do something here. They're all using the defaults...
+
+        addBoss("the_end/enderman", b -> basicMeleeStats(b)
+            .entity(EntityType.ENDERMAN)
+            .size(0.75, 3.7)
+            .basicData(c -> meleeGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
+                .constraints(Constraints.forDimension(Level.END))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
+
+        addBoss("the_end/endermite", b -> basicMeleeStats(b)
+            .entity(EntityType.ENDERMITE)
+            .size(0.5, 0.5)
+            .basicData(c -> meleeGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forAllTiers(5, 2))
+                .constraints(Constraints.forDimension(Level.END))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
+
+        addBoss("the_end/shulker", b -> basicRangedStats(b)
+            .entity(EntityType.SHULKER)
+            .size(1.25, 1.25)
+            .basicData(c -> rangedGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forAllTiers(20, 2))
+                .constraints(Constraints.forDimension(Level.END))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS)));
+
+        addBoss("the_end/phantom", b -> basicMeleeStats(b)
+            .entity(EntityType.PHANTOM)
+            .size(1.2, 0.75)
+            .basicData(c -> meleeGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forTiersAbove(WorldTier.ASCENT, 50, DEFAULT_QUALITY))
+                .constraints(Constraints.forDimension(Level.END))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS, Apoth.LootTables.BONUS_RARE_BOSS_DROPS)));
+
+        // TODO: Generic Magic Damage attribute in AL? No other way to buff the outgoing evoker fang damage.
+        addBoss("the_end/evoker", b -> basicRangedStats(b)
+            .entity(EntityType.EVOKER)
+            .size(0.75, 2.45)
+            .basicData(c -> rangedGear(c)
+                .name(Component.literal(BasicBossData.NAME_GEN))
+                .weights(TieredWeights.forTiersAbove(WorldTier.SUMMIT, 150, 5))
+                .constraints(Constraints.forDimension(Level.END))
+                .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS, Apoth.LootTables.BONUS_RARE_BOSS_DROPS)));
 
     }
 
@@ -259,7 +420,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .effect(1, MobEffects.FIRE_RESISTANCE)
                 .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 20, 50)
                 .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.05F, 0.10F)
-                .modifier(ALObjects.Attributes.ARROW_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.2F, 0.4F)
+                .modifier(ALObjects.Attributes.PROJECTILE_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.2F, 0.4F)
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.25F))
                 .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
             .stats(rare, c -> c
@@ -268,7 +429,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .effect(1, MobEffects.FIRE_RESISTANCE)
                 .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 45, 70)
                 .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.15F, 0.25F)
-                .modifier(ALObjects.Attributes.ARROW_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.3F, 0.55F)
+                .modifier(ALObjects.Attributes.PROJECTILE_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.3F, 0.55F)
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.4F))
                 .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
             .stats(epic, c -> c
@@ -277,7 +438,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .effect(1, MobEffects.FIRE_RESISTANCE)
                 .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 95, 120)
                 .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.25F, 0.40F)
-                .modifier(ALObjects.Attributes.ARROW_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.45F, 0.65F)
+                .modifier(ALObjects.Attributes.PROJECTILE_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.45F, 0.65F)
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.5F))
                 .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(4F))
                 .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(10F))
@@ -288,7 +449,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .effect(1, MobEffects.FIRE_RESISTANCE)
                 .modifier(Attributes.MAX_HEALTH, Operation.ADD_VALUE, 125, 150)
                 .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.3F, 0.65F)
-                .modifier(ALObjects.Attributes.ARROW_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.75F, 1.2F)
+                .modifier(ALObjects.Attributes.PROJECTILE_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.75F, 1.2F)
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.8F))
                 .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(10F))
                 .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(20F))

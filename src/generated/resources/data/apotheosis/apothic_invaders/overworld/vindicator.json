@@ -2,7 +2,8 @@
     "type": "apotheosis:invader",
     "basic_data": {
         "bonus_loot": [
-            "apotheosis:bonus/boss_drops"
+            "apotheosis:bonus/boss_drops",
+            "apotheosis:bonus/rare_boss_drops"
         ],
         "constraints": {
             "dimensions": [

@@ -29,19 +29,15 @@
         },
         "weights": {
             "frontier": {
-                "quality": 2.0,
                 "weight": 50
             },
             "ascent": {
-                "quality": 2.0,
                 "weight": 50
             },
             "summit": {
-                "quality": 2.0,
                 "weight": 50
             },
             "apotheosis": {
-                "quality": 2.0,
                 "weight": 50
             }
         }

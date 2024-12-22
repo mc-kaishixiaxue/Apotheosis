@@ -1,5 +1,6 @@
 package dev.shadowsoffire.apotheosis.mobs.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -172,9 +173,9 @@ public record BasicBossData(
         private Map<WorldTier, List<SetPredicate>> gearSets = new HashMap<>();
         private Optional<CompoundTag> nbt = Optional.empty();
         private Optional<SupportingEntity> mount = Optional.empty();
-        private List<SupportingEntity> support = Collections.emptyList();
+        private List<SupportingEntity> support = new ArrayList<>();
         private boolean finalizeSpawn = false;
-        private List<Exclusion> exclusions = Collections.emptyList();
+        private List<Exclusion> exclusions = new ArrayList<>();
 
         public Builder weights(TieredWeights weights) {
             this.weights = weights;
@@ -232,6 +233,19 @@ public record BasicBossData(
             return this;
         }
 
+        public Builder mount(UnaryOperator<SupportingEntity.Builder> config) {
+            return this.mount(config.apply(SupportingEntity.builder()).build());
+        }
+
+        public Builder support(SupportingEntity support) {
+            this.support.add(support);
+            return this;
+        }
+
+        public Builder support(UnaryOperator<SupportingEntity.Builder> config) {
+            return this.support(config.apply(SupportingEntity.builder()).build());
+        }
+
         public Builder support(List<SupportingEntity> support) {
             this.support = support;
             return this;
@@ -239,6 +253,11 @@ public record BasicBossData(
 
         public Builder finalizeSpawn(boolean finalizeSpawn) {
             this.finalizeSpawn = finalizeSpawn;
+            return this;
+        }
+
+        public Builder exclusion(Exclusion exclusion) {
+            this.exclusions.add(exclusion);
             return this;
         }
 

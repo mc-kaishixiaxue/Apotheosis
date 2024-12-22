@@ -7,7 +7,7 @@
         ],
         "constraints": {
             "dimensions": [
-                "minecraft:the_nether"
+                "minecraft:overworld"
             ]
         },
         "name": "use_name_generation",

@@ -16,6 +16,7 @@ import dev.shadowsoffire.apotheosis.data.AffixProvider;
 import dev.shadowsoffire.apotheosis.data.ApothLootProvider;
 import dev.shadowsoffire.apotheosis.data.ApothRecipeProvider;
 import dev.shadowsoffire.apotheosis.data.ApothTagsProvider;
+import dev.shadowsoffire.apotheosis.data.EliteProvider;
 import dev.shadowsoffire.apotheosis.data.GLMProvider;
 import dev.shadowsoffire.apotheosis.data.GearSetProvider;
 import dev.shadowsoffire.apotheosis.data.GemProvider;
@@ -138,6 +139,7 @@ public class Apotheosis {
             .provider(GearSetProvider::new)
             .provider(PurityWeightsProvider::new)
             .provider(InvaderProvider::new)
+            .provider(EliteProvider::new)
             .build(e);
 
         Object2IntOpenHashMap<String> map = (Object2IntOpenHashMap<String>) DataProvider.FIXED_ORDER_FIELDS;

@@ -80,7 +80,10 @@
                 {
                     "attribute": "minecraft:generic.scale",
                     "operation": "add_multiplied_total",
-                    "value": 0.25
+                    "value": {
+                        "min": -0.15,
+                        "max": 0.25
+                    }
                 }
             ],
             "effects": [
@@ -129,7 +132,10 @@
                 {
                     "attribute": "minecraft:generic.scale",
                     "operation": "add_multiplied_total",
-                    "value": 0.25
+                    "value": {
+                        "min": -0.15,
+                        "max": 0.25
+                    }
                 }
             ],
             "effects": [
@@ -188,7 +194,10 @@
                 {
                     "attribute": "minecraft:generic.scale",
                     "operation": "add_multiplied_total",
-                    "value": 0.25
+                    "value": {
+                        "min": -0.15,
+                        "max": 0.25
+                    }
                 }
             ],
             "effects": [
@@ -247,7 +256,10 @@
                 {
                     "attribute": "minecraft:generic.scale",
                     "operation": "add_multiplied_total",
-                    "value": 0.25
+                    "value": {
+                        "min": -0.15,
+                        "max": 0.25
+                    }
                 }
             ],
             "effects": [

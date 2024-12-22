@@ -43,7 +43,7 @@ config="apotheosis.mixins.json"
 [[dependencies.apotheosis]]
     modId="apothic_attributes"
     type="required"
-    versionRange="[2.4.0,)"
+    versionRange="[2.4.1-beta1,)"
     ordering="AFTER"
     side="BOTH"
 

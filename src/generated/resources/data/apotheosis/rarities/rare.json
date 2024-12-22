@@ -46,11 +46,11 @@
         },
         "ascent": {
             "quality": 2.5,
-            "weight": 330
+            "weight": 500
         },
         "summit": {
             "quality": 2.5,
-            "weight": 480
+            "weight": 290
         },
         "apotheosis": {
             "weight": 100

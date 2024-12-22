@@ -199,7 +199,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
             .basicData(c -> rangedGear(c)
                 .name(Component.literal(BasicBossData.NAME_GEN))
                 .weights(TieredWeights.forTiersAbove(WorldTier.SUMMIT, 150, 5))
-                .constraints(Constraints.forDimension(Level.NETHER))
+                .constraints(Constraints.forDimension(Level.OVERWORLD))
                 .bonusLoot(Apoth.LootTables.BONUS_BOSS_DROPS, Apoth.LootTables.BONUS_RARE_BOSS_DROPS))
             .stats(mythic, c -> c
                 .enchantChance(1)
@@ -273,7 +273,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.5F))
                 .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(6F))
                 .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(12F))
-                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, -0.15F, 0.25F))
             .stats(mythic, c -> c
                 .enchantChance(0.95F)
                 .enchLevels(60, 40)
@@ -285,7 +285,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.8F))
                 .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(12F))
                 .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(20F))
-                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F))));
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, -0.15F, 0.25F)));
 
         addBoss("the_nether/blaze", b -> b
             .entity(EntityType.BLAZE)
@@ -373,7 +373,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.15F, 0.20F)
                 .modifier(Attributes.ATTACK_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.2F, 0.4F)
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.3F))
-                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, -0.15F, 0.25F))
             .stats(rare, c -> c
                 .enchantChance(0.35F)
                 .enchLevels(23, 15)
@@ -382,7 +382,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.15F, 0.25F)
                 .modifier(Attributes.ATTACK_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.25F, 0.5F)
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.4F))
-                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, -0.15F, 0.25F))
             .stats(epic, c -> c
                 .enchantChance(0.6F)
                 .enchLevels(35, 25)
@@ -393,7 +393,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.5F))
                 .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(4F))
                 .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(10F))
-                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, -0.15F, 0.25F))
             .stats(mythic, c -> c
                 .enchantChance(0.75F)
                 .enchLevels(35, 25)
@@ -404,7 +404,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.8F))
                 .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(10F))
                 .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(20F))
-                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)));
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, -0.15F, 0.25F));
     }
 
     private Invader.Builder basicRangedStats(Invader.Builder builder) {
@@ -422,7 +422,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.05F, 0.10F)
                 .modifier(ALObjects.Attributes.PROJECTILE_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.2F, 0.4F)
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.25F))
-                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, -0.15F, 0.25F))
             .stats(rare, c -> c
                 .enchantChance(0.35F)
                 .enchLevels(23, 15)
@@ -431,7 +431,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.MOVEMENT_SPEED, Operation.ADD_MULTIPLIED_BASE, 0.15F, 0.25F)
                 .modifier(ALObjects.Attributes.PROJECTILE_DAMAGE, Operation.ADD_MULTIPLIED_BASE, 0.3F, 0.55F)
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.4F))
-                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, -0.15F, 0.25F))
             .stats(epic, c -> c
                 .enchantChance(0.6F)
                 .enchLevels(35, 25)
@@ -442,7 +442,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.5F))
                 .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(4F))
                 .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(10F))
-                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)))
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, -0.15F, 0.25F))
             .stats(mythic, c -> c
                 .enchantChance(0.75F)
                 .enchLevels(35, 25)
@@ -453,10 +453,10 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.KNOCKBACK_RESISTANCE, Operation.ADD_VALUE, StepFunction.constant(0.8F))
                 .modifier(Attributes.ARMOR, Operation.ADD_VALUE, StepFunction.constant(10F))
                 .modifier(Attributes.ARMOR_TOUGHNESS, Operation.ADD_VALUE, StepFunction.constant(20F))
-                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, StepFunction.constant(0.25F)));
+                .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, -0.15F, 0.25F));
     }
 
-    private BasicBossData.Builder meleeGear(BasicBossData.Builder builder) {
+    public static BasicBossData.Builder meleeGear(BasicBossData.Builder builder) {
         builder.gearSets(WorldTier.HAVEN, "#haven_melee");
         builder.gearSets(WorldTier.FRONTIER, "#frontier_melee");
         builder.gearSets(WorldTier.ASCENT, "#ascent_melee");
@@ -465,7 +465,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
         return builder;
     }
 
-    private BasicBossData.Builder rangedGear(BasicBossData.Builder builder) {
+    public static BasicBossData.Builder rangedGear(BasicBossData.Builder builder) {
         builder.gearSets(WorldTier.HAVEN, "#haven_ranged");
         builder.gearSets(WorldTier.FRONTIER, "#frontier_ranged");
         builder.gearSets(WorldTier.ASCENT, "#ascent_ranged");

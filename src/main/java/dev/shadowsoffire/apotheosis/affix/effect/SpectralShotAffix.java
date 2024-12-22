@@ -60,7 +60,7 @@ public class SpectralShotAffix extends Affix {
         if (user.level().random.nextFloat() <= this.getTrueLevel(inst.getRarity(), inst.level())) {
             if (!user.level().isClientSide) {
                 ArrowItem arrowitem = (ArrowItem) Items.SPECTRAL_ARROW;
-                AbstractArrow spectralArrow = arrowitem.createArrow(user.level(), ItemStack.EMPTY, user, inst.stack());
+                AbstractArrow spectralArrow = arrowitem.createArrow(user.level(), Items.SPECTRAL_ARROW.getDefaultInstance(), user, inst.stack());
                 spectralArrow.shoot(user.getXRot(), user.getYRot(), 0.0F, 2.0F, 1.0F);
                 this.cloneMotion(arrow, spectralArrow);
                 spectralArrow.setCritArrow(arrow.isCritArrow());

@@ -15,12 +15,12 @@ import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
  * @param enabled  If one of the miniboss's items (from the selected gear set) will become affixes.
  * @param rarities A pool of rarities; if empty, all rarities will be used.
  */
-public record AffixData(boolean enabled, Set<LootRarity> rarities) {
+public record AffixData(float chance, Set<LootRarity> rarities) {
 
-    public static final AffixData DEFAULT = new AffixData(false, Set.of());
+    public static final AffixData DEFAULT = new AffixData(0, Set.of());
 
     public static final Codec<AffixData> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-        Codec.BOOL.fieldOf("enabled").forGetter(AffixData::enabled),
+        Codec.FLOAT.fieldOf("affix_chance").forGetter(AffixData::chance),
         PlaceboCodecs.setOf(LootRarity.CODEC).optionalFieldOf("rarities", Set.of()).forGetter(AffixData::rarities))
         .apply(inst, AffixData::new));
 

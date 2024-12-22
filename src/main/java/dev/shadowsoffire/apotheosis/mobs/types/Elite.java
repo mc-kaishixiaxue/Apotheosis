@@ -1,7 +1,9 @@
 package dev.shadowsoffire.apotheosis.mobs.types;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -26,12 +28,14 @@ import dev.shadowsoffire.placebo.json.RandomAttributeModifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -41,6 +45,7 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.registries.holdersets.OrHolderSet;
 
 public record Elite(BasicBossData basicData, float chance, HolderSet<EntityType<?>> entities, BossStats stats, AffixData afxData) implements CodecProvider<Elite>, Constrained, Weighted, IEntityMatch {
 
@@ -159,7 +164,7 @@ public record Elite(BasicBossData basicData, float chance, HolderSet<EntityType<
         this.basicData.applyGearSet(mob, ctx);
 
         int guaranteed = -1;
-        if (this.afxData.enabled()) {
+        if (rand.nextFloat() <= this.afxData.chance()) {
             boolean anyValid = false;
 
             for (EquipmentSlot t : EquipmentSlot.values()) {
@@ -210,6 +215,74 @@ public record Elite(BasicBossData basicData, float chance, HolderSet<EntityType<
     protected ResourceLocation createAttributeModifierId(int index) {
         ResourceLocation key = EliteRegistry.INSTANCE.getKey(this);
         return ResourceLocation.fromNamespaceAndPath(key.getNamespace(), Invader.INVADER_ATTR_PREFIX + key.getPath() + "_modif_" + index);
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private BasicBossData basicData;
+        private float chance = -1;
+        private HolderSet<EntityType<?>> entities = null;
+        private BossStats stats;
+        private AffixData afxData = AffixData.DEFAULT;
+
+        public Builder basicData(UnaryOperator<BasicBossData.Builder> config) {
+            this.basicData = config.apply(BasicBossData.builder()).build();
+            return this;
+        }
+
+        public Builder chance(float chance) {
+            this.chance = chance;
+            return this;
+        }
+
+        public Builder entities(HolderSet<EntityType<?>> entities) {
+            if (this.entities == null) {
+                this.entities = entities;
+            }
+            else {
+                this.entities = new OrHolderSet<>(this.entities, entities);
+            }
+            return this;
+        }
+
+        public Builder entities(TagKey<EntityType<?>> entities) {
+            return this.entities(BuiltInRegistries.ENTITY_TYPE.getOrCreateTag(entities));
+        }
+
+        @SafeVarargs
+        @SuppressWarnings("deprecation")
+        public final Builder entities(EntityType<? extends Mob>... entities) {
+            return this.entities(HolderSet.direct(EntityType::builtInRegistryHolder, entities));
+        }
+
+        public Builder stats(UnaryOperator<BossStats.Builder> config) {
+            this.stats = config.apply(BossStats.builder()).build();
+            return this;
+        }
+
+        public Builder affixes(float chance, Set<LootRarity> rarities) {
+            this.afxData = new AffixData(chance, rarities);
+            return this;
+        }
+
+        public Elite build() {
+            if (basicData == null) {
+                throw new IllegalStateException("BasicBossData must be set");
+            }
+            if (chance <= 0) {
+                throw new IllegalStateException("Chance value must be positive");
+            }
+            if (this.entities == null) {
+                throw new IllegalStateException("Entities must be set");
+            }
+            if (stats == null) {
+                throw new IllegalStateException("Stats must be set");
+            }
+            return new Elite(basicData, chance, entities, stats, afxData);
+        }
     }
 
 }

@@ -1,4 +1,5 @@
 {
+    "parent": "apotheosis:progression/root",
     "criteria": {
         "affixed": {
             "conditions": {
@@ -17,15 +18,15 @@
         "announce_to_chat": false,
         "background": "apotheosis:textures/advancements/bg/apoth.png",
         "description": {
-            "translate": "advancements.apotheosis.progression.root.desc"
+            "translate": "advancements.apotheosis.progression.haven.desc"
         },
         "icon": {
             "count": 1,
-            "id": "apotheosis:boss_summoner"
+            "id": "minecraft:oak_sapling"
         },
         "show_toast": false,
         "title": {
-            "translate": "advancements.apotheosis.progression.root.title"
+            "translate": "advancements.apotheosis.progression.haven.title"
         }
     },
     "requirements": [

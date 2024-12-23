@@ -525,85 +525,24 @@
 
     "comment_id": "/Advancements",
 
-    "advancements.apotheosis.enchantment": "The Secrets of Enchanting",
-    "advancements.apotheosis.enchantment.desc": "Obtain an enchanting table, and begin to unveil the mystery.",
-    
-    "advancements.apotheosis.30ench": "The Basics",
-    "advancements.apotheosis.30ench.desc": "Enchant an item at level 30.",
-    
-    "advancements.apotheosis.60ench": "Mastering Hell and Sea",
-    "advancements.apotheosis.60ench.desc": "Enchant an item at level 60.",
-    
-    "advancements.apotheosis.80ench": "Enchantments from the Depths",
-    "advancements.apotheosis.80ench.desc": "Enchant an item at level 80.",
-    
-    "advancements.apotheosis.100ench": "Draconic Enchanting",
-    "advancements.apotheosis.100ench.desc": "Enchant an item at level 100.",
-    
-    "advancements.apotheosis.bookshelf": "Local Librarian",
-    "advancements.apotheosis.bookshelf.desc": "Create a bookshelf.",
-    
-    "advancements.apotheosis.hellshelf": "The Chaos of Hell",
-    "advancements.apotheosis.hellshelf.desc": "Obtain a Hellshelf.",
-    
-    "advancements.apotheosis.upgrade_hellshelf": "Mastering the Inferno",
-    "advancements.apotheosis.upgrade_hellshelf.desc": "Upgrade an Infused Hellshelf.",
-    
-    "advancements.apotheosis.deepshelf": "Delving Into Darkness",
-    "advancements.apotheosis.deepshelf.desc": "Activate a Dormant Deepshelf.",
-    
-    "advancements.apotheosis.sculkshelf": "Embracing the Sculk",
-    "advancements.apotheosis.sculkshelf.desc": "Create a Sculkshelf using a Warden Tendril.",
-    
-    "advancements.apotheosis.endshelf": "Dragon-Slaying Enchanter",
-    "advancements.apotheosis.endshelf.desc": "Acquire Infused Dragon's Breath, and create an Endshelf.",
-    
-    "advancements.apotheosis.upgrade_endshelf": "The Final Bookshelf",
-    "advancements.apotheosis.upgrade_endshelf.desc": "Upgrade an Endshelf into a Draconic Endshelf.",
-    
-    "advancements.apotheosis.seashelf": "The Purity of the Seas",
-    "advancements.apotheosis.seashelf.desc": "Obtain a Seashelf",
-    
-    "advancements.apotheosis.infuse_seashelf": "Sea Infusion",
-    "advancements.apotheosis.infuse_seashelf.desc": "Obtain an Infused Seashelf through Infusion Enchanting.",
-    
-    "advancements.apotheosis.upgrade_seashelf": "Sleeping in the Cold Below",
-    "advancements.apotheosis.upgrade_seashelf.desc": "Upgrade an Infused Seashelf",
-    
-    "advancements.apotheosis.infuse_hellshelf": "Hell Infusion",
-    "advancements.apotheosis.infuse_hellshelf.desc": "Obtain an Infused Hellshelf through Infusion Enchanting.",
-    
-    "advancements.apotheosis.anvilench": "Anvil Enchanter",
-    "advancements.apotheosis.anvilench.desc": "Enchant an anvil",
-    "advancements.apotheosis.shieldench": "Shield Enchanter",
-    "advancements.apotheosis.shieldench.desc": "Enchant a shield",
-    "advancements.apotheosis.altar": "Oceanic Transformation",
-    "advancements.apotheosis.altar.desc": "Create an Altar of the Seas, which can turn unwanted enchanted items into a new book.",
-    "advancements.apotheosis.splitting": "Enchantment Crusher",
-    "advancements.apotheosis.splitting.desc": "Successfully drop an anvil enchanted with Splitting on an enchanted book to split it apart",
-    "advancements.apotheosis.sharp10": "Sharpestest",
-    "advancements.apotheosis.sharp10.desc": "Enchant a weapon with Sharpness X or higher",
-    "advancements.apotheosis.level20": "Unlimited Power",
-    "advancements.apotheosis.level20.desc": "Obtain an item with an enchantment at level XX or higher",
-    "advancements.apotheosis.enchanting_stats": "Eterna, Quanta, Arcana",
-    "advancements.apotheosis.enchanting_stats.desc": "Enchant an item while having at least 10 of each stat.",
-    "advancements.apotheosis.quanta0": "Begone, Flux",
-    "advancements.apotheosis.quanta0.desc": "Enchant an item at 0% Quanta.",
-    "advancements.apotheosis.quanta50": "Introduction to Chaos",
-    "advancements.apotheosis.quanta50.desc": "Enchant an item at 50% Quanta.",
-    "advancements.apotheosis.quanta100": "Rolling the Dice",
-    "advancements.apotheosis.quanta100.desc": "Enchant an item at 100% Quanta.",
-    "advancements.apotheosis.arcana50": "Magical Energy",
-    "advancements.apotheosis.arcana50.desc": "Enchant an item at 50% Arcana.",
-    "advancements.apotheosis.arcana100": "Arcane Power",
-    "advancements.apotheosis.arcana100.desc": "Enchant an item at 100% Arcana.",
-    "advancements.apotheosis.max_stats": "Maximum Strength",
-    "advancements.apotheosis.max_stats.desc": "Enchant an item while having all stats at maximum.",
-    "advancements.apotheosis.max_stable": "Stable Power",
-    "advancements.apotheosis.max_stable.desc": "Enchant an item while having max Eterna and Arcana, but 0% Quanta.",
-    "advancements.apotheosis.max_rectified": "Only the Best",
-    "advancements.apotheosis.max_rectified.desc": "Enchant an item with max stats and max rectification.",
-    
+    "advancements.apotheosis.progression.root.title": "Apothic World Tiers",
+    "advancements.apotheosis.progression.root.desc": "Milestones for unlocking World Tiers in Apotheosis",
+
+    "advancements.apotheosis.progression.haven.title": "World Tier: Haven",
+    "advancements.apotheosis.progression.haven.desc": "Haven, the easiest world tier, is unlocked by default",
+
+    "advancements.apotheosis.progression.frontier.title": "World Tier: Frontier",
+    "advancements.apotheosis.progression.frontier.desc": "Equip a full set of Affix items to progress into the Frontier",
+
+    "advancements.apotheosis.progression.ascent.title": "World Tier: Ascent",
+    "advancements.apotheosis.progression.ascent.desc": "Equip a full set of Uncommon gear and slay the Wither to begin your Ascent",
+
+    "advancements.apotheosis.progression.summit.title": "World Tier: Summit",
+    "advancements.apotheosis.progression.summit.desc": "To reach the Summit, slay the Warden, and equip a full set of Rare gear",
+
+    "advancements.apotheosis.progression.pinnacle.title": "World Tier: Pinnacle",
+    "advancements.apotheosis.progression.pinnacle.desc": "Entering the Pinnacle requires freeing the End, and acquiring a full set of Epic gear",
+
     "advancements.apotheosis.affix": "Apothic Affixes",
     "advancements.apotheosis.affix.desc": "Find an item with an Apothic Affix.",
 

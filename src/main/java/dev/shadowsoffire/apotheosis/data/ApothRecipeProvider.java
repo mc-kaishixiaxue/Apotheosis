@@ -1,8 +1,10 @@
 package dev.shadowsoffire.apotheosis.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import dev.shadowsoffire.apotheosis.Apoth.Blocks;
@@ -14,6 +16,8 @@ import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingRecipe.OutputData;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.recipe.CharmInfusionRecipe;
+import dev.shadowsoffire.apotheosis.recipe.PotionCharmRecipe;
 import dev.shadowsoffire.apotheosis.socket.AddSocketsRecipe;
 import dev.shadowsoffire.apotheosis.socket.SocketingRecipe;
 import dev.shadowsoffire.apotheosis.socket.WithdrawalRecipe;
@@ -22,6 +26,7 @@ import dev.shadowsoffire.apotheosis.socket.gem.cutting.PurityUpgradeRecipe;
 import dev.shadowsoffire.apotheosis.util.AffixItemIngredient;
 import dev.shadowsoffire.apotheosis.util.GemIngredient;
 import dev.shadowsoffire.apothic_enchanting.Ench;
+import dev.shadowsoffire.apothic_enchanting.table.EnchantingStatRegistry.Stats;
 import dev.shadowsoffire.placebo.datagen.LegacyRecipeProvider;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.core.Holder;
@@ -32,7 +37,9 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
@@ -96,6 +103,20 @@ public class ApothRecipeProvider extends LegacyRecipeProvider {
             List<Holder<Item>> materials = rarityMaterials.subList(Math.max(i - 1, 0), Math.min(i + 2, rarityMaterials.size()));
             addPurityUpgrade(purity, 1 + i * 2, materials, i == 0 ? 3 : 9);
         }
+
+        out.accept(Apotheosis.loc("potion_charm"), new PotionCharmRecipe("", CraftingBookCategory.MISC, charmPattern()), null);
+
+        out.accept(Apotheosis.loc("infusion/potion_charm"), new CharmInfusionRecipe(
+            new Stats(15F, 100F, 8.5F, 32.5F, 0),
+            new Stats(15F, 100F, 13.5F, 37.5F, 0)),
+            null);
+    }
+
+    private ShapedRecipePattern charmPattern() {
+        Map<Character, Ingredient> key = new HashMap<>();
+        key.put('B', Ingredient.of(Items.BLAZE_POWDER));
+        key.put('P', Ingredient.of(Items.POTION));
+        return ShapedRecipePattern.of(key, "BBB", "PPP", "BBB");
     }
 
     private void addPurityUpgrade(Purity purity, int gemDust, List<Holder<Item>> materials, int zerothMatCost) {

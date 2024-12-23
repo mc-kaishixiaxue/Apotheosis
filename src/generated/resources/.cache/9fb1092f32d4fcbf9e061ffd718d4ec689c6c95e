@@ -1,4 +1,4 @@
-// 1.21.1	2024-12-15T12:39:57.3621519	Recipes
+// 1.21.1	2024-12-23T00:20:00.5426147	Recipes
 bab664def1f01400bfe3a7cf432385247dcd847d data/apotheosis/recipe/augmenting_table.json
 cfc46608a868f8e622a46d07c0b0d2d642bec035 data/apotheosis/recipe/gem_cutting/chipped.json
 527c22d6be2eb2dbc699e129a7db9313980d97a5 data/apotheosis/recipe/gem_cutting/cracked.json
@@ -7,6 +7,8 @@ c3f32e8ab774ebff2bac6522f8cf041069af8d26 data/apotheosis/recipe/gem_cutting/flaw
 7d1e81771392cdacb85b1fdd12c8fad0a84662fe data/apotheosis/recipe/gem_cutting/normal.json
 00793e028bc1a5f0589bd1e666e5ed2a84a00dbb data/apotheosis/recipe/gem_cutting_table.json
 a347031477eb93618ffdb13c26c94480f507c32a data/apotheosis/recipe/gem_fused_slate.json
+335353336e6ceeb73a8afc9330cc26f1623226e0 data/apotheosis/recipe/infusion/potion_charm.json
+4d07bd52af85fdeb3a5bbe497c0600d84e403be8 data/apotheosis/recipe/potion_charm.json
 0803ca18f18ad251e9cbd1cc8ad11c7a557c7586 data/apotheosis/recipe/reforging/common.json
 0c9e500b832b072a30fd1ed224da480ba89e1712 data/apotheosis/recipe/reforging/epic.json
 ff69ff07f299405024cc1571be7c27ac14abe98c data/apotheosis/recipe/reforging/mythic.json

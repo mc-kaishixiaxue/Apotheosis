@@ -50,6 +50,8 @@ public class AdventureConfig {
     // Wandering Trader
     public static boolean undergroundTrader = true;
 
+    public static boolean charmsInCuriosOnly = false;
+
     public static void load(Configuration c) {
         c.setTitle("Apotheosis Adventure Module Config");
 

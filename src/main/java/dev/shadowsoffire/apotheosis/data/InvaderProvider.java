@@ -51,7 +51,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
         HolderLookup.Provider registries = this.lookupProvider.join();
         RegistryLookup<Biome> biomes = registries.lookup(Registries.BIOME).get();
 
-        LootRarity uncommon = rarity("uncommon");
+        // LootRarity uncommon = rarity("uncommon");
         LootRarity rare = rarity("rare");
         LootRarity epic = rarity("epic");
         LootRarity mythic = rarity("mythic");

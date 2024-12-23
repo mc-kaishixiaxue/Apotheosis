@@ -1,9 +1,10 @@
-package dev.shadowsoffire.apotheosis.compat;
+package dev.shadowsoffire.apotheosis.compat.jei;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
 
 import dev.shadowsoffire.apotheosis.Apoth.Blocks;
+import dev.shadowsoffire.apotheosis.compat.PurityUpgradeExtension;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.BasicGemCuttingRecipe;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingBlock;

@@ -1,4 +1,4 @@
-package dev.shadowsoffire.apotheosis.compat;
+package dev.shadowsoffire.apotheosis.compat.jei;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,4 +1,4 @@
-package dev.shadowsoffire.apotheosis.mobs;
+package dev.shadowsoffire.apotheosis.item;
 
 import dev.shadowsoffire.apotheosis.mobs.registries.InvaderRegistry;
 import dev.shadowsoffire.apotheosis.mobs.types.Invader;

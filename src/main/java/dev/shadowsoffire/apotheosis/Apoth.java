@@ -26,6 +26,9 @@ import dev.shadowsoffire.apotheosis.gen.BossDungeonFeature;
 import dev.shadowsoffire.apotheosis.gen.BossDungeonFeature2;
 import dev.shadowsoffire.apotheosis.gen.ItemFrameGemsProcessor;
 import dev.shadowsoffire.apotheosis.gen.RogueSpawnerFeature;
+import dev.shadowsoffire.apotheosis.item.BossSummonerItem;
+import dev.shadowsoffire.apotheosis.item.PotionCharmItem;
+import dev.shadowsoffire.apotheosis.item.TooltipItem;
 import dev.shadowsoffire.apotheosis.loot.AffixLootPoolEntry;
 import dev.shadowsoffire.apotheosis.loot.GemLootPoolEntry;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -39,7 +42,8 @@ import dev.shadowsoffire.apotheosis.loot.modifiers.AffixLootModifier;
 import dev.shadowsoffire.apotheosis.loot.modifiers.GemLootModifier;
 import dev.shadowsoffire.apotheosis.mobs.BossSpawnerBlock;
 import dev.shadowsoffire.apotheosis.mobs.BossSpawnerBlock.BossSpawnerTile;
-import dev.shadowsoffire.apotheosis.mobs.BossSummonerItem;
+import dev.shadowsoffire.apotheosis.recipe.CharmInfusionRecipe;
+import dev.shadowsoffire.apotheosis.recipe.PotionCharmRecipe;
 import dev.shadowsoffire.apotheosis.socket.AddSocketsRecipe;
 import dev.shadowsoffire.apotheosis.socket.SocketingRecipe;
 import dev.shadowsoffire.apotheosis.socket.WithdrawalRecipe;
@@ -56,7 +60,6 @@ import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apotheosis.util.AffixItemIngredient;
 import dev.shadowsoffire.apotheosis.util.GemIngredient;
 import dev.shadowsoffire.apotheosis.util.SingletonRecipeSerializer;
-import dev.shadowsoffire.apotheosis.util.TooltipItem;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntityType.TickSide;
 import dev.shadowsoffire.placebo.registry.DeferredHelper;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
@@ -125,6 +128,8 @@ public class Apoth {
         public static final DataComponentType<Boolean> FROM_BOSS = R.component("from_boss", b -> b.persistent(Codec.BOOL));
 
         public static final DataComponentType<Boolean> FROM_MOB = R.component("from_mob", b -> b.persistent(Codec.BOOL));
+
+        public static final DataComponentType<Boolean> CHARM_ENABLED = R.component("charm_enabled", b -> b.persistent(Codec.BOOL));
 
         private static void bootstrap() {}
 
@@ -198,7 +203,9 @@ public class Apoth {
 
         public static final Holder<Item> AUGMENTING_TABLE = R.blockItem("augmenting_table", Blocks.AUGMENTING_TABLE, p -> p.rarity(Rarity.UNCOMMON));
 
-        public static final Holder<Item> GEM = R.item("gem", () -> new GemItem(new Item.Properties()));
+        public static final Holder<Item> GEM = R.item("gem", GemItem::new);
+
+        public static final Holder<Item> POTION_CHARM = R.item("potion_charm", PotionCharmItem::new);
 
         private static Holder<Item> rarityMat(String id) {
             return R.item(id + "_material", () -> new SalvageItem(RarityRegistry.INSTANCE.holder(Apotheosis.loc(id)), new Item.Properties()));
@@ -265,6 +272,8 @@ public class Apoth {
         public static final Holder<RecipeSerializer<?>> REFORGING = R.recipeSerializer("reforging", () -> ReforgingRecipe.Serializer.INSTANCE);
         public static final Holder<RecipeSerializer<?>> PURITY_UPGRADE = R.recipeSerializer("purity_upgrade", () -> PurityUpgradeRecipe.Serializer.INSTANCE);
         public static final Holder<RecipeSerializer<?>> BASIC_GEM_CUTTING = R.recipeSerializer("basic_gem_cutting", () -> BasicGemCuttingRecipe.Serializer.INSTANCE);
+        public static final Holder<RecipeSerializer<?>> POTION_CHARM_CRAFTING = R.recipeSerializer("potion_charm_crafting", () -> PotionCharmRecipe.Serializer.INSTANCE);
+        public static final Holder<RecipeSerializer<?>> POTION_CHARM_INFUSION = R.recipeSerializer("potion_charm_infusion", () -> CharmInfusionRecipe.Serializer.INSTANCE);
 
         private static void bootstrap() {}
     }

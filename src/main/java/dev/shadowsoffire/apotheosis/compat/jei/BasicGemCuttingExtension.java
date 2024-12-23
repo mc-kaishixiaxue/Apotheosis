@@ -1,8 +1,8 @@
-package dev.shadowsoffire.apotheosis.compat;
+package dev.shadowsoffire.apotheosis.compat.jei;
 
 import java.util.Arrays;
 
-import dev.shadowsoffire.apotheosis.compat.GemCuttingCategory.GemCuttingExtension;
+import dev.shadowsoffire.apotheosis.compat.jei.GemCuttingCategory.GemCuttingExtension;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.BasicGemCuttingRecipe;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;

@@ -94,7 +94,7 @@ public class GemLootModifier extends ContextualLootModifier {
             LootPatternMatcher.CODEC.fieldOf("pattern").forGetter(GemTableEntry::pattern),
             Codec.floatRange(0, 1).fieldOf("chance").forGetter(GemTableEntry::chance),
             PlaceboCodecs.setOf(GemRegistry.INSTANCE.holderCodec()).optionalFieldOf("gems", Set.of()).forGetter(GemTableEntry::gems),
-            PlaceboCodecs.setOf(Purity.CODEC).optionalFieldOf("gems", Set.of()).forGetter(GemTableEntry::purities))
+            PlaceboCodecs.setOf(Purity.CODEC).optionalFieldOf("purities", Set.of()).forGetter(GemTableEntry::purities))
             .apply(inst, GemTableEntry::new));
 
     }

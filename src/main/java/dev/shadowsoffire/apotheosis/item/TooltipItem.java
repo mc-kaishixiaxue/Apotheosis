@@ -1,4 +1,4 @@
-package dev.shadowsoffire.apotheosis.util;
+package dev.shadowsoffire.apotheosis.item;
 
 import java.util.List;
 

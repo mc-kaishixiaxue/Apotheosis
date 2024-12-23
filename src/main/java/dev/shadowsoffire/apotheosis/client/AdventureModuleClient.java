@@ -31,6 +31,7 @@ import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingScreen;
 import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingTableTileRenderer;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingScreen;
 import dev.shadowsoffire.apotheosis.client.SocketTooltipRenderer.SocketComponent;
+import dev.shadowsoffire.apotheosis.item.PotionCharmItem;
 import dev.shadowsoffire.apotheosis.net.BossSpawnPayload.BossSpawnData;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
@@ -55,6 +56,8 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.contents.PlainTextContents;
@@ -62,10 +65,15 @@ import net.minecraft.network.chat.contents.PlainTextContents.LiteralContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -78,6 +86,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
@@ -98,10 +107,15 @@ public class AdventureModuleClient {
         e.enqueueWork(() -> {
             BlockEntityRenderers.register(Apoth.Tiles.REFORGING_TABLE, k -> new ReforgingTableTileRenderer());
             BlockEntityRenderers.register(Apoth.Tiles.AUGMENTING_TABLE, k -> new AugmentingTableTileRenderer());
+
             ItemProperties.register(Apoth.Items.GEM.value(), Apotheosis.loc("purity"), (stack, level, entity, tint) -> {
                 DynamicHolder<Gem> gem = GemItem.getGem(stack);
                 Purity purity = GemItem.getPurity(stack);
                 return gem.isBound() ? purity.ordinal() : Float.NEGATIVE_INFINITY;
+            });
+
+            ItemProperties.register(Apoth.Items.POTION_CHARM.value(), Apotheosis.loc("enabled"), (stack, level, entity, tint) -> {
+                return stack.getOrDefault(Components.CHARM_ENABLED, false) ? 1 : 0;
             });
         });
         NeoForge.EVENT_BUS.register(AdventureKeys.class);
@@ -157,6 +171,13 @@ public class AdventureModuleClient {
     @SubscribeEvent
     public static void keys(RegisterKeyMappingsEvent e) {
         e.register(AdventureKeys.TOGGLE_RADIAL);
+    }
+
+    @SubscribeEvent
+    public static void colors(RegisterColorHandlersEvent.Item e) {
+        e.register(
+            (stack, tint) -> tint == 0 ? -1 : FastColor.ARGB32.opaque(stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getColor()),
+            Apoth.Items.POTION_CHARM.value());
     }
 
     public static void onBossSpawn(BlockPos pos, int color) {
@@ -288,6 +309,17 @@ public class AdventureModuleClient {
                 }
 
                 e.getToolTip().addAll(1, components);
+            }
+        }
+
+        @SubscribeEvent
+        public static void showBlacklistedPotions(ItemTooltipEvent e) {
+            if (e.getItemStack().getItem() == Items.POTION) {
+                Holder<Potion> potion = e.getItemStack().getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion().orElse(Potions.WATER);
+
+                if (!PotionCharmItem.isValidPotion(potion)) {
+                    e.getToolTip().add(Component.translatable("misc.apotheosis.blacklisted_potion").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+                }
             }
         }
     }

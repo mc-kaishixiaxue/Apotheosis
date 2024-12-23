@@ -13,6 +13,7 @@ import dev.shadowsoffire.apotheosis.compat.AdventureTwilightCompat;
 import dev.shadowsoffire.apotheosis.compat.GatewaysCompat;
 import dev.shadowsoffire.apotheosis.data.AffixLootEntryProvider;
 import dev.shadowsoffire.apotheosis.data.AffixProvider;
+import dev.shadowsoffire.apotheosis.data.ApothAdvancementProvider;
 import dev.shadowsoffire.apotheosis.data.ApothLootProvider;
 import dev.shadowsoffire.apotheosis.data.ApothRecipeProvider;
 import dev.shadowsoffire.apotheosis.data.ApothTagsProvider;
@@ -143,6 +144,7 @@ public class Apotheosis {
             .provider(PurityWeightsProvider::new)
             .provider(InvaderProvider::new)
             .provider(EliteProvider::new)
+            .provider(ApothAdvancementProvider::create)
             .build(e);
 
         Object2IntOpenHashMap<String> map = (Object2IntOpenHashMap<String>) DataProvider.FIXED_ORDER_FIELDS;

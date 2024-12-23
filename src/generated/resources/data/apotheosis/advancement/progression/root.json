@@ -1,0 +1,37 @@
+{
+    "criteria": {
+        "affixed": {
+            "conditions": {
+                "items": [
+                    {
+                        "predicates": {
+                            "apotheosis:affixed_item": {}
+                        }
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        }
+    },
+    "display": {
+        "announce_to_chat": false,
+        "background": "apotheosis:textures/advancements/bg/apoth.png",
+        "description": {
+            "translate": "advancements.apotheosis.progression.root.description"
+        },
+        "icon": {
+            "count": 1,
+            "id": "minecraft:map"
+        },
+        "show_toast": false,
+        "title": {
+            "translate": "advancements.apotheosis.progression.root.title"
+        }
+    },
+    "requirements": [
+        [
+            "affixed"
+        ]
+    ],
+    "sends_telemetry_event": true
+}

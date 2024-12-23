@@ -6,6 +6,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import dev.shadowsoffire.apotheosis.advancements.GemCutTrigger;
+import dev.shadowsoffire.apotheosis.advancements.predicates.AffixItemPredicate;
+import dev.shadowsoffire.apotheosis.advancements.predicates.PurityItemPredicate;
+import dev.shadowsoffire.apotheosis.advancements.predicates.RarityItemPredicate;
+import dev.shadowsoffire.apotheosis.advancements.predicates.SocketItemPredicate;
 import dev.shadowsoffire.apotheosis.affix.ItemAffixes;
 import dev.shadowsoffire.apotheosis.affix.UnnamingRecipe;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingMenu;
@@ -63,6 +67,7 @@ import dev.shadowsoffire.apotheosis.util.SingletonRecipeSerializer;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntityType.TickSide;
 import dev.shadowsoffire.placebo.registry.DeferredHelper;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
+import net.minecraft.advancements.critereon.ItemSubPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -321,6 +326,16 @@ public class Apoth {
         private static void bootstrap() {}
     }
 
+    public static final class ItemSubPredicates {
+
+        public static final ItemSubPredicate.Type<AffixItemPredicate> AFFIXED_ITEM = R.itemSubPredicate("affixed_item", AffixItemPredicate.CODEC);
+        public static final ItemSubPredicate.Type<PurityItemPredicate> ITEM_WITH_PURITY = R.itemSubPredicate("item_with_purity", PurityItemPredicate.CODEC);
+        public static final ItemSubPredicate.Type<RarityItemPredicate> ITEM_WITH_RARITY = R.itemSubPredicate("item_with_rarity", RarityItemPredicate.CODEC);
+        public static final ItemSubPredicate.Type<SocketItemPredicate> SOCKETED_ITEM = R.itemSubPredicate("socketed_item", SocketItemPredicate.CODEC);
+
+        private static void bootstrap() {}
+    }
+
     public static final class LootTables {
         public static final ResourceKey<LootTable> CHEST_VALUABLE = key("chests/chest_valuable");
         public static final ResourceKey<LootTable> SPAWNER_BRUTAL_ROTATE = key("chests/spawner_brutal_rotate");
@@ -365,6 +380,7 @@ public class Apoth {
         LootConditions.bootstrap();
         LootPoolEntries.bootstrap();
         RecipeSerializers.bootstrap();
+        ItemSubPredicates.bootstrap();
         EntitySubPredicates.bootstrap();
 
         R.custom("blacklist", NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, () -> BlacklistModifier.CODEC);

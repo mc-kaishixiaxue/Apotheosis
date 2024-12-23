@@ -1,4 +1,4 @@
-package dev.shadowsoffire.apotheosis.loot.conditions;
+package dev.shadowsoffire.apotheosis.advancements.predicates;
 
 import com.mojang.serialization.MapCodec;
 

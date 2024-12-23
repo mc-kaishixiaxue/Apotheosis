@@ -6,8 +6,8 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
+import dev.shadowsoffire.apotheosis.advancements.predicates.MonsterPredicate;
 import dev.shadowsoffire.apotheosis.loot.conditions.KilledByRealPlayerCondition;
-import dev.shadowsoffire.apotheosis.loot.conditions.MonsterPredicate;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixConvertLootModifier;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixConvertLootModifier.AffixConversionEntry;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixHookLootModifier;

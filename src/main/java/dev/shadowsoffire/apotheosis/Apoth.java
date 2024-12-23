@@ -8,6 +8,8 @@ import com.mojang.serialization.MapCodec;
 import dev.shadowsoffire.apotheosis.advancements.EquippedItemTrigger;
 import dev.shadowsoffire.apotheosis.advancements.GemCutTrigger;
 import dev.shadowsoffire.apotheosis.advancements.predicates.AffixItemPredicate;
+import dev.shadowsoffire.apotheosis.advancements.predicates.InvaderPredicate;
+import dev.shadowsoffire.apotheosis.advancements.predicates.MonsterPredicate;
 import dev.shadowsoffire.apotheosis.advancements.predicates.PurityItemPredicate;
 import dev.shadowsoffire.apotheosis.advancements.predicates.RarityItemPredicate;
 import dev.shadowsoffire.apotheosis.advancements.predicates.SocketItemPredicate;
@@ -40,7 +42,6 @@ import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.loot.conditions.KilledByRealPlayerCondition;
 import dev.shadowsoffire.apotheosis.loot.conditions.MatchesBlockCondition;
-import dev.shadowsoffire.apotheosis.loot.conditions.MonsterPredicate;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixConvertLootModifier;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixHookLootModifier;
 import dev.shadowsoffire.apotheosis.loot.modifiers.AffixLootModifier;
@@ -324,6 +325,7 @@ public class Apoth {
 
     public static final class EntitySubPredicates {
         public static final Supplier<MapCodec<MonsterPredicate>> IS_MONSTER = R.custom("is_monster", Registries.ENTITY_SUB_PREDICATE_TYPE, () -> MonsterPredicate.CODEC);
+        public static final Supplier<MapCodec<InvaderPredicate>> IS_INVADER = R.custom("is_invader", Registries.ENTITY_SUB_PREDICATE_TYPE, () -> InvaderPredicate.CODEC);
 
         private static void bootstrap() {}
     }

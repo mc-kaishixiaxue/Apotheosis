@@ -3,7 +3,9 @@ package dev.shadowsoffire.apotheosis.compat;
 import com.google.common.base.Predicates;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
+import dev.shadowsoffire.apotheosis.mobs.types.Invader;
 import dev.shadowsoffire.apotheosis.util.CommonTooltipUtil;
+import net.minecraft.SharedConstants;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -40,12 +42,12 @@ public class AdventureHwylaPlugin implements IWailaPlugin, IEntityComponentProvi
 
     @Override
     public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-        if (accessor.getEntity() instanceof LivingEntity living && accessor.getServerData().getBoolean("apoth.boss")) {
+        if (accessor.getEntity() instanceof LivingEntity living && accessor.getServerData().getBoolean(Invader.BOSS_KEY)) {
             ListTag bossAttribs = accessor.getServerData().getList("apoth.modifiers", Tag.TAG_COMPOUND);
             AttributeMap map = living.getAttributes();
             for (Tag t : bossAttribs) {
                 CompoundTag tag = (CompoundTag) t;
-                Holder<Attribute> attrib = BuiltInRegistries.ATTRIBUTE.getHolder(ResourceLocation.tryParse(tag.getString("Name"))).get();
+                Holder<Attribute> attrib = BuiltInRegistries.ATTRIBUTE.getHolder(ResourceLocation.tryParse(tag.getString("id"))).get();
                 map.getInstance(attrib).load(tag);
             }
             accessor.getServerData().remove("apoth.modifiers");
@@ -56,20 +58,22 @@ public class AdventureHwylaPlugin implements IWailaPlugin, IEntityComponentProvi
 
     @Override
     public void appendServerData(CompoundTag tag, EntityAccessor access) {
-        if (access.getEntity() instanceof LivingEntity living && living.getPersistentData().getBoolean("apoth.boss")) {
-            tag.putBoolean("apoth.boss", true);
-            tag.putString("apoth.rarity", living.getPersistentData().getString("apoth.rarity"));
-            AttributeMap map = living.getAttributes();
-            ListTag bossAttribs = new ListTag();
-            BuiltInRegistries.ATTRIBUTE.holders().map(map::getInstance).filter(Predicates.notNull()).forEach(inst -> {
-                for (AttributeModifier modif : inst.getModifiers()) {
-                    // TODO: Figure out how to identify boss modifiers after the fact.
-                    // if (modif.getName().startsWith("placebo_random_modifier_")) {
-                    // bossAttribs.add(inst.save());
-                    // }
-                }
-            });
-            tag.put("apoth.modifiers", bossAttribs);
+        if (access.getEntity() instanceof LivingEntity living && living.getPersistentData().getBoolean(Invader.BOSS_KEY)) {
+            tag.putBoolean(Invader.BOSS_KEY, true);
+            tag.putString(Invader.RARITY_KEY, living.getPersistentData().getString(Invader.RARITY_KEY));
+            if (SharedConstants.IS_RUNNING_IN_IDE) {
+                AttributeMap map = living.getAttributes();
+                ListTag bossAttribs = new ListTag();
+                BuiltInRegistries.ATTRIBUTE.holders().map(map::getInstance).filter(Predicates.notNull()).forEach(inst -> {
+                    for (AttributeModifier modif : inst.getModifiers()) {
+                        if (modif.id().getPath().startsWith(Invader.INVADER_ATTR_PREFIX)) {
+                            bossAttribs.add(inst.save());
+                            break;
+                        }
+                    }
+                });
+                tag.put("apoth.modifiers", bossAttribs);
+            }
         }
     }
 

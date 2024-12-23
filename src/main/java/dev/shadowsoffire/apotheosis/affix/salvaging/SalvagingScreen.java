@@ -39,6 +39,7 @@ public class SalvagingScreen extends AdventureContainerScreen<SalvagingMenu> {
     protected List<OutputData> results = new ArrayList<>();
     protected SimpleTexButton salvageBtn;
 
+    @SuppressWarnings("removal")
     public SalvagingScreen(SalvagingMenu menu, Inventory inv, Component title) {
         super(menu, inv, TITLE);
         this.menu.addSlotListener((id, stack) -> this.computeResults());

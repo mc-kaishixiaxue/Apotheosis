@@ -98,7 +98,9 @@
                         "condition": "minecraft:entity_properties",
                         "entity": "this",
                         "predicate": {
-                            "type": "minecraft:wither"
+                            "type_specific": {
+                                "type": "apotheosis:is_invader"
+                            }
                         }
                     }
                 ]

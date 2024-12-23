@@ -10,6 +10,7 @@ import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.advancements.EquippedItemTrigger;
 import dev.shadowsoffire.apotheosis.advancements.predicates.AffixItemPredicate;
+import dev.shadowsoffire.apotheosis.advancements.predicates.InvaderPredicate;
 import dev.shadowsoffire.apotheosis.advancements.predicates.RarityItemPredicate;
 import dev.shadowsoffire.apotheosis.advancements.predicates.TypeAwareISP;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
@@ -56,6 +57,7 @@ public class ApothAdvancementProvider extends AdvancementProvider {
     private static class ProgressionGenerator implements AdvancementGenerator {
 
         @Override
+        @SuppressWarnings("unused")
         public void generate(Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
 
             DynamicHolder<LootRarity> common = rarity("common");
@@ -128,7 +130,7 @@ public class ApothAdvancementProvider extends AdvancementProvider {
                 .addCriterion("uncommon_legs", rarityInSlot(EquipmentSlotGroup.LEGS, uncommon, rare, epic, mythic))
                 .addCriterion("uncommon_feet", rarityInSlot(EquipmentSlotGroup.FEET, uncommon, rare, epic, mythic))
                 .addCriterion("uncommon_hand", rarityInSlot(EquipmentSlotGroup.HAND, uncommon, rare, epic, mythic))
-                .addCriterion("wither", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().of(EntityType.WITHER)))
+                .addCriterion("wither", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().subPredicate(InvaderPredicate.INSTANCE)))
                 .parent(frontier)
                 .save(saver, loc("progression/ascent"));
 
@@ -148,7 +150,7 @@ public class ApothAdvancementProvider extends AdvancementProvider {
                 .addCriterion("rare_legs", rarityInSlot(EquipmentSlotGroup.LEGS, rare, epic, mythic))
                 .addCriterion("rare_feet", rarityInSlot(EquipmentSlotGroup.FEET, rare, epic, mythic))
                 .addCriterion("rare_hand", rarityInSlot(EquipmentSlotGroup.HAND, rare, epic, mythic))
-                .addCriterion("warden", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().of(EntityType.WARDEN)))
+                .addCriterion("wither", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().of(EntityType.WITHER)))
                 .parent(ascent)
                 .save(saver, loc("progression/summit"));
 

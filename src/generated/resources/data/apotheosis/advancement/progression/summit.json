@@ -86,14 +86,14 @@
             },
             "trigger": "apotheosis:equipped_item"
         },
-        "warden": {
+        "wither": {
             "conditions": {
                 "entity": [
                     {
                         "condition": "minecraft:entity_properties",
                         "entity": "this",
                         "predicate": {
-                            "type": "minecraft:warden"
+                            "type": "minecraft:wither"
                         }
                     }
                 ]
@@ -132,7 +132,7 @@
             "rare_hand"
         ],
         [
-            "warden"
+            "wither"
         ]
     ],
     "sends_telemetry_event": true

@@ -7,6 +7,7 @@ import com.google.common.base.Predicates;
 import dev.shadowsoffire.apotheosis.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.loot.RarityRegistry;
 import dev.shadowsoffire.apotheosis.mobs.types.Invader;
+import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
@@ -31,10 +32,9 @@ public class CommonTooltipUtil {
             AttributeMap map = entity.getAttributes();
             BuiltInRegistries.ATTRIBUTE.holders().map(map::getInstance).filter(Predicates.notNull()).forEach(inst -> {
                 for (AttributeModifier modif : inst.getModifiers()) {
-                    // TODO: Figure out how to identify boss modifiers after the fact.
-                    // if (modif.getName().startsWith("placebo_random_modifier_")) {
-                    // tooltip.accept(inst.getAttribute().value().toComponent(modif, ApothicAttributes.getTooltipFlag()));
-                    // }
+                    if (modif.id().getPath().startsWith(Invader.INVADER_ATTR_PREFIX)) {
+                        tooltip.accept(inst.getAttribute().value().toComponent(modif, ApothicAttributes.getTooltipFlag()));
+                    }
                 }
             });
         }

@@ -206,7 +206,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         this.addAttribute("armor", "unbound", NeoForgeMod.CREATIVE_FLIGHT, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, d -> d
-                .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5))
+                .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 20, 5))
                 .exclusiveWith(afx("armor/attribute/winged")))
             .categories(LootCategory.CHESTPLATE)
             .value(mythic, 1));
@@ -458,7 +458,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         this.addAttribute("melee", "giant_slaying", ALObjects.Attributes.CURRENT_HP_DAMAGE, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, d -> d
-                .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5)))
+                .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 20, 5)))
             .categories(LootCategory.MELEE_WEAPON)
             .value(epic, 0.15F, 0.25F)
             .value(mythic, 0.15F, 0.35F));
@@ -631,7 +631,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         this.addMobEffect("ranged", "acidic", ALObjects.MobEffects.SUNDERING, Target.ARROW_TARGET, b -> b
             .definition(AffixType.BASIC_EFFECT, d -> d
-                .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5)))
+                .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 20, 5)))
             .categories(LootCategory.BOW)
             .stacking()
             .value(mythic, 80, 160, 0, 60));
@@ -676,7 +676,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         this.addMobEffect("ranged", "deathbound", MobEffects.WITHER, Target.ARROW_TARGET, b -> b
             .definition(AffixType.BASIC_EFFECT, d -> d
-                .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5))
+                .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 20, 5))
                 .exclusiveWith(afx("ranged/mob_effect/blighted")))
             .categories(LootCategory.BOW, LootCategory.TRIDENT)
             .stacking()
@@ -712,7 +712,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         this.addMobEffect("melee", "omniscient", ALObjects.MobEffects.KNOWLEDGE, Target.ATTACK_SELF, b -> b
             .definition(AffixType.BASIC_EFFECT, d -> d
-                .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5))
+                .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 20, 5))
                 .exclusiveWith(afx("melee/mob_effect/sophisticated")))
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .stacking()
@@ -770,7 +770,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         this.addMobEffect("shield", "galvanizing", MobEffects.DAMAGE_RESISTANCE, Target.BLOCK_SELF, b -> b
             .definition(AffixType.BASIC_EFFECT, d -> d
-                .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5))
+                .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 20, 5))
                 .exclusiveWith(afx("shield/mob_effect/reinforcing")))
             .categories(LootCategory.SHIELD)
             .stacking()
@@ -790,7 +790,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
         this.add(Apotheosis.loc("breaker/ability/supermassive"),
             new RadialAffix.Builder()
                 .definition(AffixType.ABILITY, c -> c
-                    .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 20, 5))
+                    .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 20, 5))
                     .exclusiveWith(afx("breaker/effect/radial")))
                 .value(mythic, c -> c
                     .radii(7, 7))

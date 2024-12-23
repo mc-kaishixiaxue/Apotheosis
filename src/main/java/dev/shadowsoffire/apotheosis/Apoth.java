@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
+import dev.shadowsoffire.apotheosis.advancements.EquippedItemTrigger;
 import dev.shadowsoffire.apotheosis.advancements.GemCutTrigger;
 import dev.shadowsoffire.apotheosis.advancements.predicates.AffixItemPredicate;
 import dev.shadowsoffire.apotheosis.advancements.predicates.PurityItemPredicate;
@@ -316,6 +317,7 @@ public class Apoth {
 
     public static final class Triggers {
         public static final GemCutTrigger GEM_CUTTING = R.criteriaTrigger("gem_cutting", new GemCutTrigger());
+        public static final EquippedItemTrigger EQUIPPED_ITEM = R.criteriaTrigger("equipped_item", new EquippedItemTrigger());
 
         private static void bootstrap() {}
     }

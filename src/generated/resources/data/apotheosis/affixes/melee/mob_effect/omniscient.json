@@ -6,7 +6,7 @@
             "apotheosis:melee/mob_effect/sophisticated"
         ],
         "weights": {
-            "apotheosis": {
+            "pinnacle": {
                 "quality": 5.0,
                 "weight": 20
             }

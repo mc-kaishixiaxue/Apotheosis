@@ -6,7 +6,7 @@
             "apotheosis:ranged/mob_effect/blighted"
         ],
         "weights": {
-            "apotheosis": {
+            "pinnacle": {
                 "quality": 5.0,
                 "weight": 20
             }

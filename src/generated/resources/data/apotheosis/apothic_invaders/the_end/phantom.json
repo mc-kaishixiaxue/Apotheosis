@@ -24,7 +24,7 @@
             "summit": [
                 "#summit_melee"
             ],
-            "apotheosis": [
+            "pinnacle": [
                 "#apotheosis_melee"
             ]
         },
@@ -35,7 +35,7 @@
             "summit": {
                 "weight": 50
             },
-            "apotheosis": {
+            "pinnacle": {
                 "weight": 50
             }
         }

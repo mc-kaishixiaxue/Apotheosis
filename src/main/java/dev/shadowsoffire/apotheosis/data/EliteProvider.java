@@ -50,10 +50,10 @@ public class EliteProvider extends DynamicRegistryProvider<Elite> {
             .entities(EntityType.GOAT)
             .basicData(c -> c
                 .name(Component.literal("Craig the Eternal").withStyle(s -> s.withColor(GradientColor.RAINBOW)))
-                .weights(TieredWeights.onlyFor(WorldTier.APOTHEOSIS, 100, 0))
+                .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 100, 0))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
                 .exclusion(new SpawnTypeExclusion(Set.of(MobSpawnType.SPAWN_EGG)))
-                .gearSets(WorldTier.APOTHEOSIS, "#apotheosis_melee")
+                .gearSets(WorldTier.PINNACLE, "#apotheosis_melee")
                 .nbt(t -> t.putBoolean("IsScreamingGoat", true))
                 .nbt(t -> t.putBoolean("HasLeftHorn", true))
                 .nbt(t -> t.putBoolean("HasRightHorn", true))

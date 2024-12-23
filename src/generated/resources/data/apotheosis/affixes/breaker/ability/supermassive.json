@@ -6,7 +6,7 @@
             "apotheosis:breaker/effect/radial"
         ],
         "weights": {
-            "apotheosis": {
+            "pinnacle": {
                 "quality": 5.0,
                 "weight": 20
             }

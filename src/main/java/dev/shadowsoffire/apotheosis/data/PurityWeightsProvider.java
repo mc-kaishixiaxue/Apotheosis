@@ -58,7 +58,7 @@ public class PurityWeightsProvider extends DynamicRegistryProvider<PurityWeights
                 .with(Purity.NORMAL, 150, 5F)
                 .with(Purity.FLAWLESS, 20, 5F)
                 .with(Purity.PERFECT, 0, 0))
-            .tier(WorldTier.APOTHEOSIS, c -> c
+            .tier(WorldTier.PINNACLE, c -> c
                 .with(Purity.CRACKED, 0, 0)
                 .with(Purity.CHIPPED, 0, 0)
                 .with(Purity.FLAWED, 100, 0)

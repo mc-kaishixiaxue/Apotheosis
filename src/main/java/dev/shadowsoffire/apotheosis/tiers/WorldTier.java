@@ -27,7 +27,7 @@ public enum WorldTier implements StringRepresentable {
     FRONTIER("frontier"),
     ASCENT("ascent"),
     SUMMIT("summit"),
-    APOTHEOSIS("apotheosis");
+    PINNACLE("pinnacle");
 
     public static final IntFunction<WorldTier> BY_ID = ByIdMap.continuous(Enum::ordinal, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
     public static final Codec<WorldTier> CODEC = StringRepresentable.fromValues(WorldTier::values);

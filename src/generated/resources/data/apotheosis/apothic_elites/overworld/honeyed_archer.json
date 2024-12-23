@@ -44,7 +44,7 @@
             "summit": [
                 "#summit_ranged"
             ],
-            "apotheosis": [
+            "pinnacle": [
                 "#apotheosis_ranged"
             ]
         },
@@ -58,7 +58,7 @@
             "summit": {
                 "weight": 100
             },
-            "apotheosis": {
+            "pinnacle": {
                 "weight": 100
             }
         }

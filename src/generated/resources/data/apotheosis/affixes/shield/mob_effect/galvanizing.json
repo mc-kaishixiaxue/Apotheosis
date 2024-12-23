@@ -6,7 +6,7 @@
             "apotheosis:shield/mob_effect/reinforcing"
         ],
         "weights": {
-            "apotheosis": {
+            "pinnacle": {
                 "quality": 5.0,
                 "weight": 20
             }

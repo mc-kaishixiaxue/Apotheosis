@@ -1,4 +1,4 @@
-// 1.21.1	2024-12-12T00:04:25.6098384	Gems
+// 1.21.1	2024-12-23T02:15:55.0414795	Gems
 033264447f12fb4c151cda023c3343936d02500a data/apotheosis/gems/core/ballast.json
 89ee5b028fd5ff52af8374d6efde23d2e108339b data/apotheosis/gems/core/brawlers.json
 038e3863ee9396eed829c6a193b44cef97f06534 data/apotheosis/gems/core/breach.json
@@ -12,9 +12,9 @@ f68c002e2933c7918d1faa79faf95d860f1bdc34 data/apotheosis/gems/core/slipstream.js
 bfb539672656dde9b34bc0e1ccbad29ea59ed415 data/apotheosis/gems/core/splendor.json
 c81a4ec6897a5812f8eb2799d6daae6edadec535 data/apotheosis/gems/core/tyrannical.json
 b3499e9f623372e9294561487080bae1d7aa14cd data/apotheosis/gems/core/warlord.json
-8990bdc70b3d67d0f0d225b624bda36eb3717dd1 data/apotheosis/gems/overworld/earth.json
-d293799c67e7f53eaa26b87ed9c9ef4f6770ca9d data/apotheosis/gems/overworld/royalty.json
-5b1f38a6a0b2baff703e5295786b5e448aec18d2 data/apotheosis/gems/the_end/endersurge.json
-9bb0b9ad2392085eefd900173cc4042a24c194f4 data/apotheosis/gems/the_end/mageslayer.json
-d791987fe512bbd41c2a365060f2ac19db4dbd9b data/apotheosis/gems/the_nether/blood_lord.json
-dff98ba4916f547244dbcfd906ba5ea4577430f4 data/apotheosis/gems/the_nether/inferno.json
+cc4011d86502e8807be125c18e6564e472eec298 data/apotheosis/gems/overworld/earth.json
+9dc0bcb2b54df6cc9d3a9fed88843d10d9a3323a data/apotheosis/gems/overworld/royalty.json
+e07556f45974fa6bd5615f26772c7329d6092d27 data/apotheosis/gems/the_end/endersurge.json
+1699d15c50fca63ad52a12f3bd848a231c7389b5 data/apotheosis/gems/the_end/mageslayer.json
+8a905a1f92573c8e890b1009a24967cd917bc1a4 data/apotheosis/gems/the_nether/blood_lord.json
+64f1cbcb3c87aa3b351c3697d677e5a1c6673b85 data/apotheosis/gems/the_nether/inferno.json

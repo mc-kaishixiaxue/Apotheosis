@@ -45,16 +45,16 @@ public class AffixLootEntryProvider extends DynamicRegistryProvider<AffixLootEnt
     protected static final TieredWeights DIAMOND = TieredWeights.builder()
         .with(WorldTier.ASCENT, 25, 0)
         .with(WorldTier.SUMMIT, 25, 0)
-        .with(WorldTier.APOTHEOSIS, 5, 0)
+        .with(WorldTier.PINNACLE, 5, 0)
         .build();
     protected static final TieredWeights NETHERITE = TieredWeights.builder()
         .with(WorldTier.SUMMIT, 5, 1)
-        .with(WorldTier.APOTHEOSIS, 25, 2)
+        .with(WorldTier.PINNACLE, 25, 2)
         .build();
     protected static final TieredWeights TRIDENT = TieredWeights.builder()
         .with(WorldTier.ASCENT, 5, 1)
         .with(WorldTier.SUMMIT, 7, 1)
-        .with(WorldTier.APOTHEOSIS, 7, 1)
+        .with(WorldTier.PINNACLE, 7, 1)
         .build();
 
     public AffixLootEntryProvider(PackOutput output, CompletableFuture<Provider> registries) {

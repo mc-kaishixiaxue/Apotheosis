@@ -27,6 +27,7 @@ import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import dev.shadowsoffire.apothic_attributes.event.ApotheosisCommandEvent;
 import dev.shadowsoffire.placebo.events.AnvilLandEvent;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -49,6 +50,7 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.living.MobDespawnEvent;
@@ -294,6 +296,13 @@ public class AdventureEvents {
     public void clone(PlayerEvent.Clone e) {
         int oldSeed = e.getOriginal().getPersistentData().getInt(ReforgingMenu.REFORGE_SEED);
         e.getEntity().getPersistentData().putInt(ReforgingMenu.REFORGE_SEED, oldSeed);
+    }
+
+    @SubscribeEvent
+    public void equip(LivingEquipmentChangeEvent e) {
+        if (e.getEntity() instanceof ServerPlayer player) {
+            Apoth.Triggers.EQUIPPED_ITEM.trigger(player, e.getSlot(), e.getTo());
+        }
     }
 
     /**

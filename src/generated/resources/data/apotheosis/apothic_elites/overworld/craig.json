@@ -32,12 +32,12 @@
             }
         ],
         "valid_gear_sets": {
-            "apotheosis": [
+            "pinnacle": [
                 "#apotheosis_melee"
             ]
         },
         "weights": {
-            "apotheosis": {
+            "pinnacle": {
                 "weight": 100
             }
         }

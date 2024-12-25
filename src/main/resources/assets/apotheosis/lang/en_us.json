@@ -183,50 +183,50 @@
     "affix.apotheosis:ranged/mob_effect/satanic": "Satanic",
     "affix.apotheosis:ranged/mob_effect/satanic.suffix": "of the Burning Hells",
 
-    "affix.apotheosis:ranged/ability/spectral": "Spectral",
-    "affix.apotheosis:ranged/ability/spectral.suffix": "of the Forlorn",
-    "affix.apotheosis:ranged/ability/spectral.desc": "You have a %s%% chance to shoot a second arrow.",
+    "affix.apotheosis:ranged/spectral": "Spectral",
+    "affix.apotheosis:ranged/spectral.suffix": "of the Forlorn",
+    "affix.apotheosis:ranged/spectral.desc": "You have a %s%% chance to shoot a second arrow.",
     
-    "affix.apotheosis:ranged/ability/magical": "Magical",
-    "affix.apotheosis:ranged/ability/magical.suffix": "of the Arcane",
-    "affix.apotheosis:ranged/ability/magical.desc": "Your arrows deal magic damage.",
+    "affix.apotheosis:ranged/magical": "Magical",
+    "affix.apotheosis:ranged/magical.suffix": "of the Arcane",
+    "affix.apotheosis:ranged/magical.desc": "Your arrows deal magic damage.",
     
-    "affix.apotheosis:melee/effect/festive": "Festive",
-    "affix.apotheosis:melee/effect/festive.suffix": "of Partying",
-    "affix.apotheosis:melee/effect/festive.desc": "Slain enemies have a %s%% chance to be a Loot Piñata",
+    "affix.apotheosis:melee/festive": "Festive",
+    "affix.apotheosis:melee/festive.suffix": "of Partying",
+    "affix.apotheosis:melee/festive.desc": "Slain enemies have a %s%% chance to be a Loot Piñata",
     
-    "affix.apotheosis:melee/effect/thunderstruck": "Thunderstruck",
-    "affix.apotheosis:melee/effect/thunderstruck.suffix": "of the Storm",
-    "affix.apotheosis:melee/effect/thunderstruck.desc": "Your attacks deal %s damage to nearby enemies.",
+    "affix.apotheosis:melee/thunderstruck": "Thunderstruck",
+    "affix.apotheosis:melee/thunderstruck.suffix": "of the Storm",
+    "affix.apotheosis:melee/thunderstruck.desc": "Your attacks deal %s damage to nearby enemies.",
     
-    "affix.apotheosis:shield/effect/retreating": "Retreating",
-    "affix.apotheosis:shield/effect/retreating.suffix": "of the Jester",
-    "affix.apotheosis:shield/effect/retreating.desc": "You will leap back when blocking in melee.",
+    "affix.apotheosis:shield/retreating": "Retreating",
+    "affix.apotheosis:shield/retreating.suffix": "of the Jester",
+    "affix.apotheosis:shield/retreating.desc": "You will leap back when blocking in melee.",
     
     "affix.apotheosis:generic/telepathic": "Telepathic",
     "affix.apotheosis:generic/telepathic.suffix": "of Space and Time",
     "affix.apotheosis:generic/telepathic.desc.weapon": "Mob drops will teleport to you.",
     "affix.apotheosis:generic/telepathic.desc.tool": "Block drops will teleport to you.",
 
-    "affix.apotheosis:melee/effect/executing": "Executing",
-    "affix.apotheosis:melee/effect/executing.suffix": "of the Executioner",
-    "affix.apotheosis:melee/effect/executing.desc": "Enemies below %s%% max health will be executed.",
+    "affix.apotheosis:melee/executing": "Executing",
+    "affix.apotheosis:melee/executing.suffix": "of the Executioner",
+    "affix.apotheosis:melee/executing.desc": "Enemies below %s%% max health will be executed.",
     
-    "affix.apotheosis:melee/effect/cleaving": "Cleaving",
-    "affix.apotheosis:melee/effect/cleaving.suffix": "of the Butcher",
-    "affix.apotheosis:melee/effect/cleaving.desc": "Attacks have a %s%% chance to also hit up to %s nearby enemies.",
+    "affix.apotheosis:melee/cleaving": "Cleaving",
+    "affix.apotheosis:melee/cleaving.suffix": "of the Butcher",
+    "affix.apotheosis:melee/cleaving.desc": "Attacks have a %s%% chance to also hit up to %s nearby enemies.",
 
     "affix.apotheosis:breaker/ability/enlightened": "Enlightened",
     "affix.apotheosis:breaker/ability/enlightened.suffix": "of the Lightbringer",
     "affix.apotheosis:breaker/ability/enlightened.desc": "This tool can place a torch at the cost of %s durability.",
 
-    "affix.apotheosis:shield/effect/psychic": "Psychic",
-    "affix.apotheosis:shield/effect/psychic.suffix": "of the Vengeful",
-    "affix.apotheosis:shield/effect/psychic.desc": "Blocking a projectile deals %s%% of the damage to the shooter.",
+    "affix.apotheosis:shield/psychic": "Psychic",
+    "affix.apotheosis:shield/psychic.suffix": "of the Vengeful",
+    "affix.apotheosis:shield/psychic.desc": "Blocking a projectile deals %s%% of the damage to the shooter.",
 
-    "affix.apotheosis:shield/effect/catalyzing": "Catalyzing",
-    "affix.apotheosis:shield/effect/catalyzing.suffix": "of the Converted",
-    "affix.apotheosis:shield/effect/catalyzing.desc": "Blocking an explosion will grant you great strength.",
+    "affix.apotheosis:shield/catalyzing": "Catalyzing",
+    "affix.apotheosis:shield/catalyzing.suffix": "of the Converted",
+    "affix.apotheosis:shield/catalyzing.desc": "Blocking an explosion will grant you great strength.",
 
     "affix.apotheosis:melee/attribute/annihilating": "Annihilating",
     "affix.apotheosis:melee/attribute/annihilating.suffix": "of the Titan",
@@ -262,7 +262,52 @@
 
     "affix.apotheosis:melee_weapon/mob_effect/detonating": "Detonating",
     "affix.apotheosis:melee_weapon/mob_effect/detonating.suffix": "of the Elemental Flame",
-    
+
+    "affix.apotheosis:armor/attribute/oxygenated": "Oxygenated",
+    "affix.apotheosis:armor/attribute/oxygenated.suffix": "of the Diver",
+
+    "affix.apotheosis:melee/mob_effect/omniscient": "Omniscient",
+    "affix.apotheosis:melee/mob_effect/omniscient.suffix": "of the Grand Sage",
+
+    "affix.apotheosis:breaker/attribute/submerged": "Submerged",
+    "affix.apotheosis:breaker/attribute/submerged.suffix": "of the Seaborn Miner",
+
+    "affix.apotheosis:shield/mob_effect/galvanizing": "Galvanizing",
+    "affix.apotheosis:shield/mob_effect/galvanizing.suffix": "of the Indestructible",
+
+    "affix.apotheosis:armor/dmg_reduction/grounded": "Grounded",
+    "affix.apotheosis:armor/dmg_reduction/grounded.suffix": "of the Lightning Rod",
+
+    "affix.apotheosis:ranged/mob_effect/deathbound": "Deathbound",
+    "affix.apotheosis:ranged/mob_effect/deathbound.suffix": "of the Witherlord",
+
+    "affix.apotheosis:shield/mob_effect/reinforcing": "Reinforcing",
+    "affix.apotheosis:shield/mob_effect/reinforcing.suffix": "of Steel",
+
+    "affix.apotheosis:melee/attribute/lengthy": "Lengthy",
+    "affix.apotheosis:melee/attribute/lengthy.suffix": "of Extreme Length",
+
+    "affix.apotheosis:ranged/mob_effect/blighted": "Blighted",
+    "affix.apotheosis:ranged/mob_effect/blighted.suffix": "of the Blighted Lands",
+
+    "affix.apotheosis:armor/attribute/unbound": "Unbound",
+    "affix.apotheosis:armor/attribute/unbound.suffix": "of Icarus",
+
+    "affix.apotheosis:armor/attribute/fireproof": "Fireproof",
+    "affix.apotheosis:armor/attribute/fireproof.suffix": "of Flaming Defense",
+
+    "affix.apotheosis:armor/attribute/adamantine": "Adamantine",
+    "affix.apotheosis:armor/attribute/adamantine.suffix": "of Adamantine",
+
+    "affix.apotheosis:breaker/enchantment/prosperous": "Prosperous",
+    "affix.apotheosis:breaker/enchantment/prosperous.suffix": "of Great Fortune",
+
+    "affix.apotheosis:ranged/enchantment/prosperous": "Prosperous",
+    "affix.apotheosis:ranged/enchantment/prosperous.suffix": "of the Treasure-Seeker",
+
+    "affix.apotheosis:armor/dmg_reduction/deflective": "Deflective",
+    "affix.apotheosis:armor/dmg_reduction/deflective.suffix": "of Deflection",
+
     "misc.apotheosis.iron": "iron",
     "misc.apotheosis.diamond": "diamond",
     "misc.apotheosis.netherite": "netherite",
@@ -299,8 +344,8 @@
     "affix.apotheosis:armor/attribute/spiritual": "Spiritual",
     "affix.apotheosis:armor/attribute/spiritual.suffix": "of the Witch Doctor",
     
-    "affix.apotheosis:global/attribute/lucky": "Lucky",
-    "affix.apotheosis:global/attribute/lucky.suffix": "of the Serendipitous",
+    "affix.apotheosis:generic/attribute/lucky": "Lucky",
+    "affix.apotheosis:generic/attribute/lucky.suffix": "of the Serendipitous",
 
     "affix.apotheosis:melee/attribute/nullifying": "Nullifying",
     "affix.apotheosis:melee/attribute/nullifying.suffix": "of the Magebreaker",

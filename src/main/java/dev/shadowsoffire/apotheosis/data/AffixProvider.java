@@ -215,10 +215,10 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.HELMET)
             .step(-0.05F)
-            .value(uncommon, -0.15F, -0.25F)
-            .value(rare, -0.20F, -0.30F)
-            .value(epic, -0.25F, -0.35F)
-            .value(mythic, -0.30F, -0.45F));
+            .value(uncommon, -0.15F, -0.35F)
+            .value(rare, -0.20F, -0.40F)
+            .value(epic, -0.35F, -0.75F)
+            .value(mythic, -0.60F, -1F));
 
         this.addAttribute("armor", "oxygenated", Attributes.OXYGEN_BONUS, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, DEFAULT_WEIGHT, DEFAULT_QUALITY)

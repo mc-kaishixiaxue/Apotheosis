@@ -1,13 +1,13 @@
 {
     "name": "Levels 60 - 80",
-    "icon": "apotheosis:dormant_deepshelf",
+    "icon": "apothic_enchanting:dormant_deepshelf",
     "category": "apotheosis:enchanting/progression",
 	"flag": "apotheosis:enchanting",
     "pages": [
 		{
             "type": "patchouli:crafting",
 			"title": "Reaching Level 70",
-			"recipe": "apotheosis:dormant_deepshelf",
+			"recipe": "apothic_enchanting:dormant_deepshelf",
 			"text": "Reaching Level 70 requires a Level 60 Enchanting Table and access to Deepslate."
 		},
 		{
@@ -23,8 +23,8 @@
 		{
             "type": "patchouli:crafting",
 			"title": "Reaching Level 75",
-			"recipe": "apotheosis:echoing_deepshelf",
-			"recipe2": "apotheosis:soul_touched_deepshelf"
+			"recipe": "apothic_enchanting:echoing_deepshelf",
+			"recipe2": "apothic_enchanting:soul_touched_deepshelf"
 		},
 		{
             "type": "patchouli:entity",
@@ -36,8 +36,8 @@
 		{
             "type": "patchouli:crafting",
 			"title": "Reaching Level 80",
-			"recipe": "apotheosis:echoing_sculkshelf",
-			"recipe2": "apotheosis:soul_touched_sculkshelf"
+			"recipe": "apothic_enchanting:echoing_sculkshelf",
+			"recipe2": "apothic_enchanting:soul_touched_sculkshelf"
 		}
 	]
 }

@@ -1,6 +1,6 @@
 {
     "name": "Enchantment Filtering",
-    "icon": "apotheosis:filtering_shelf",
+    "icon": "apothic_enchanting:filtering_shelf",
     "category": "apotheosis:enchanting/utility",
     "flag": "apotheosis:enchanting",
     "sortnum": 0,
@@ -11,7 +11,7 @@
         },
         {
             "type": "patchouli:crafting",
-            "recipe": "apotheosis:filtering_shelf",
+            "recipe": "apothic_enchanting:filtering_shelf",
             "title": "Aquatic Filtration",
             "text": "The shelf allows you to insert up to six single-enchantment books in it, preventing those enchantments from appearing."
         },

@@ -12,7 +12,7 @@
 		{
             "type": "patchouli:spotlight",
 			"title": "Making Tridents",
-			"item": "apotheosis:inert_trident",
+			"item": "apothic_enchanting:inert_trident",
 			"link_recipe": true,
             "text": "Apotheosis also adds a method of creating tridents.$(p)Simply create an $(9)Inert Trident$() and upgrade it through $(l:apotheosis:enchanting/table/infusion)Infusion Enchanting$()."
         }

@@ -25,12 +25,12 @@ import net.neoforged.neoforge.common.util.AttributeTooltipContext;
 
 public class SelectWorldTierScreen extends Screen {
 
-    public static final ResourceLocation TEXTURE = Apotheosis.loc("textures/gui/select_world_tier.png");
+    public static final ResourceLocation TEXTURE = Apotheosis.loc("textures/gui/mountain.png");
 
     public static final int GUI_WIDTH = 480;
     public static final int GUI_HEIGHT = 270;
-    public static final int IMAGE_WIDTH = 512;
-    public static final int IMAGE_HEIGHT = 512;
+    public static final int IMAGE_WIDTH = 498;
+    public static final int IMAGE_HEIGHT = 286;
 
     protected Button havenBtn, frontierBtn, ascentBtn, summitBtn, pinnacleBtn;
 
@@ -86,10 +86,13 @@ public class SelectWorldTierScreen extends Screen {
     public void renderBackground(GuiGraphics gfx, int mouseX, int mouseY, float partialTick) {
         super.renderBackground(gfx, mouseX, mouseY, partialTick);
 
+        int imgLeft = (this.width - IMAGE_WIDTH) / 2;
+        int imgTop = (this.height - IMAGE_HEIGHT) / 2;
+
+        gfx.blit(TEXTURE, imgLeft, imgTop, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_HEIGHT);
+
         int leftPos = (this.width - GUI_WIDTH) / 2;
         int topPos = (this.height - GUI_HEIGHT) / 2;
-
-        gfx.blit(TEXTURE, leftPos, topPos, 0, 0, GUI_WIDTH, GUI_HEIGHT, IMAGE_WIDTH, IMAGE_HEIGHT);
 
         PoseStack pose = gfx.pose();
         pose.pushPose();

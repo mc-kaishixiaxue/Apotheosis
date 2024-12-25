@@ -8,13 +8,23 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Keyable;
 import com.mojang.serialization.MapCodec;
 
+import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apoth.Attachments;
+import dev.shadowsoffire.apotheosis.net.WorldTierPayload;
+import dev.shadowsoffire.apotheosis.tiers.augments.TierAugment;
+import dev.shadowsoffire.apotheosis.tiers.augments.TierAugment.Target;
+import dev.shadowsoffire.apotheosis.tiers.augments.TierAugmentRegistry;
+import dev.shadowsoffire.apotheosis.util.ApothMiscUtil;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
  * World Tiers for Apothic content, each increasing the quality of loot received and the overall strength of the monsters in the world.
@@ -44,12 +54,45 @@ public enum WorldTier implements StringRepresentable {
         return this.name;
     }
 
+    public ResourceLocation getUnlockAdvancement() {
+        return switch (this) {
+            case HAVEN -> Apoth.Advancements.WORLD_TIER_HAVEN;
+            case FRONTIER -> Apoth.Advancements.WORLD_TIER_FRONTIER;
+            case ASCENT -> Apoth.Advancements.WORLD_TIER_ASCENT;
+            case SUMMIT -> Apoth.Advancements.WORLD_TIER_SUMMIT;
+            case PINNACLE -> Apoth.Advancements.WORLD_TIER_PINNACLE;
+        };
+    }
+
     public static WorldTier getTier(Player player) {
         return player.getData(Attachments.WORLD_TIER);
     }
 
     public static void setTier(Player player, WorldTier tier) {
+        WorldTier oldTier = player.getData(Attachments.WORLD_TIER);
+        if (oldTier == tier) {
+            return;
+        }
+
         player.setData(Attachments.WORLD_TIER, tier);
+        if (player instanceof ServerPlayer sp) {
+            PacketDistributor.sendToPlayer(sp, new WorldTierPayload(tier));
+
+            for (TierAugment aug : TierAugmentRegistry.getAugments(oldTier, Target.PLAYERS)) {
+                aug.remove((ServerLevel) sp.level(), player);
+            }
+
+            for (TierAugment aug : TierAugmentRegistry.getAugments(tier, Target.PLAYERS)) {
+                aug.apply((ServerLevel) sp.level(), player);
+            }
+
+            player.setData(Attachments.TIER_AUGMENTS_APPLIED, true);
+        }
+
+    }
+
+    public static boolean isUnlocked(Player player, WorldTier tier) {
+        return ApothMiscUtil.hasAdvancement(player, tier.getUnlockAdvancement());
     }
 
     public static <T> MapCodec<Map<WorldTier, T>> mapCodec(Codec<T> elementCodec) {

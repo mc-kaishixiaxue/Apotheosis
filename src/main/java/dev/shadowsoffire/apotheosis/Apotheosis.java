@@ -24,6 +24,7 @@ import dev.shadowsoffire.apotheosis.data.GemProvider;
 import dev.shadowsoffire.apotheosis.data.InvaderProvider;
 import dev.shadowsoffire.apotheosis.data.PurityWeightsProvider;
 import dev.shadowsoffire.apotheosis.data.RarityProvider;
+import dev.shadowsoffire.apotheosis.data.TierAugmentProvider;
 import dev.shadowsoffire.apotheosis.loot.AffixLootRegistry;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRule;
@@ -36,12 +37,14 @@ import dev.shadowsoffire.apotheosis.mobs.util.Exclusion;
 import dev.shadowsoffire.apotheosis.net.BossSpawnPayload;
 import dev.shadowsoffire.apotheosis.net.RadialStateChangePayload;
 import dev.shadowsoffire.apotheosis.net.RerollResultPayload;
+import dev.shadowsoffire.apotheosis.net.WorldTierPayload;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.PurityWeightsRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.apotheosis.spawner.RogueSpawnerRegistry;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.augments.TierAugmentRegistry;
 import dev.shadowsoffire.apotheosis.util.NameHelper;
 import dev.shadowsoffire.apothic_attributes.ApothicAttributes;
 import dev.shadowsoffire.placebo.config.Configuration;
@@ -112,6 +115,7 @@ public class Apotheosis {
         PayloadHelper.registerPayload(new BossSpawnPayload.Provider());
         PayloadHelper.registerPayload(new RerollResultPayload.Provider());
         PayloadHelper.registerPayload(new RadialStateChangePayload.Provider());
+        PayloadHelper.registerPayload(new WorldTierPayload.Provider());
         NeoForge.EVENT_BUS.register(new AdventureEvents());
         NeoForge.EVENT_BUS.register(new ApothMobEvents());
         RarityRegistry.INSTANCE.registerToBus();
@@ -123,6 +127,7 @@ public class Apotheosis {
         EliteRegistry.INSTANCE.registerToBus();
         PurityWeightsRegistry.INSTANCE.registerToBus();
         AugmentRegistry.INSTANCE.registerToBus();
+        TierAugmentRegistry.INSTANCE.registerToBus();
         loadConfig(true);
         NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, event -> event.addListener(RunnableReloader.of(() -> loadConfig(false))));
     }
@@ -145,6 +150,7 @@ public class Apotheosis {
             .provider(InvaderProvider::new)
             .provider(EliteProvider::new)
             .provider(ApothAdvancementProvider::create)
+            .provider(TierAugmentProvider::new)
             .build(e);
 
         Object2IntOpenHashMap<String> map = (Object2IntOpenHashMap<String>) DataProvider.FIXED_ORDER_FIELDS;
@@ -228,7 +234,11 @@ public class Apotheosis {
      * @param args Translation arguments passed to the created translatable component.
      */
     public static MutableComponent lang(String type, String path, Object... args) {
-        return Component.translatable(type + "." + MODID + "." + path, args);
+        return Component.translatable(langKey(type, path), args);
+    }
+
+    public static String langKey(String type, String path) {
+        return type + "." + MODID + "." + path;
     }
 
     public static MutableComponent sysMessageHeader() {

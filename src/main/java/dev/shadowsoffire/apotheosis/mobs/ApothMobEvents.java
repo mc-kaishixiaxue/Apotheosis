@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
+import dev.shadowsoffire.apotheosis.Apoth.Attachments;
 import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
@@ -22,6 +23,9 @@ import dev.shadowsoffire.apotheosis.mobs.util.BossSpawnRules;
 import dev.shadowsoffire.apotheosis.mobs.util.SpawnCooldownSavedData;
 import dev.shadowsoffire.apotheosis.net.BossSpawnPayload;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
+import dev.shadowsoffire.apotheosis.tiers.augments.TierAugment;
+import dev.shadowsoffire.apotheosis.tiers.augments.TierAugment.Target;
+import dev.shadowsoffire.apotheosis.tiers.augments.TierAugmentRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -159,7 +163,15 @@ public class ApothMobEvents {
         return false;
     }
 
+    /**
+     * Applies all active {@link TierAugment}s to the mob, then rolls the {@link AdventureConfig#augmentedMobChance} to apply {@link Augmentation}s.
+     */
     private void tryAugmentations(ServerLevelAccessor level, Mob mob, MobSpawnType type, GenContext ctx) {
+        for (TierAugment aug : TierAugmentRegistry.getAugments(ctx.tier(), Target.MONSTERS)) {
+            aug.apply(level, mob);
+        }
+        mob.setData(Attachments.TIER_AUGMENTS_APPLIED, true);
+
         if (ctx.rand().nextFloat() <= AdventureConfig.augmentedMobChance) {
             for (Augmentation aug : AugmentRegistry.getAll()) {
                 if (aug.canApply(level, mob, type, ctx)) {
@@ -167,10 +179,6 @@ public class ApothMobEvents {
                 }
             }
         }
-
-        // if chance < augment chance
-        // for aug : augments
-        // if (aug.canApply) aug.apply(...)
     }
 
     private boolean trySpawnElite(FinalizeSpawnEvent e, Mob mob, GenContext ctx, Player player) {

@@ -7,8 +7,15 @@ import org.jetbrains.annotations.Nullable;
 
 import dev.shadowsoffire.placebo.color.GradientColor;
 import dev.shadowsoffire.placebo.util.EnchantmentUtils;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.PlayerAdvancements;
+import net.minecraft.server.ServerAdvancementManager;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.fml.loading.FMLEnvironment;
 
@@ -79,10 +86,42 @@ public class ApothMiscUtil {
         return set;
     }
 
+    /**
+     * Checks if a player has the target advancement, using the appropriate sided path.
+     * <p>
+     * Returns false if the advancement is not loaded.
+     */
+    public static boolean hasAdvancement(Player player, ResourceLocation key) {
+        if (player.level().isClientSide) {
+            return ClientInternal.hasAdvancment(key);
+        }
+
+        PlayerAdvancements advancements = ((ServerPlayer) player).getAdvancements();
+        ServerAdvancementManager manager = ((ServerPlayer) player).getServer().getAdvancements();
+
+        AdvancementHolder holder = manager.get(key);
+        if (holder != null) {
+            AdvancementProgress progress = advancements.progress.get(holder);
+            return progress != null && progress.isDone();
+        }
+
+        return false;
+    }
+
     private static class ClientInternal {
 
         public static LocalPlayer getClientPlayer() {
             return Minecraft.getInstance().player;
+        }
+
+        public static boolean hasAdvancment(ResourceLocation key) {
+            ClientAdvancements advancements = getClientPlayer().connection.getAdvancements();
+            AdvancementHolder holder = advancements.get(key);
+            if (holder != null) {
+                AdvancementProgress progress = advancements.progress.get(holder);
+                return progress != null && progress.isDone();
+            }
+            return false;
         }
     }
 

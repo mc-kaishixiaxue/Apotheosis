@@ -43,6 +43,7 @@
             "max": 0.55
         }
     ],
+    "sort_index": 600,
     "weights": {
         "haven": {
             "weight": 0

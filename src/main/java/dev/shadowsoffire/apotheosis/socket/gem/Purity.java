@@ -1,7 +1,6 @@
 package dev.shadowsoffire.apotheosis.socket.gem;
 
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,9 +12,9 @@ import com.mojang.serialization.MapCodec;
 
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
+import dev.shadowsoffire.apotheosis.util.ApothMiscUtil;
 import dev.shadowsoffire.placebo.color.GradientColor;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.Util;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -39,14 +38,7 @@ public enum Purity implements StringRepresentable, TieredWeights.Weighted {
     public static final Codec<Purity> CODEC = StringRepresentable.fromValues(Purity::values);
     public static final StreamCodec<ByteBuf, Purity> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Enum::ordinal);
 
-    public static final Set<Purity> ALL_PURITIES = Util.make(new LinkedHashSet<>(), set -> {
-        set.add(CRACKED);
-        set.add(CHIPPED);
-        set.add(FLAWED);
-        set.add(NORMAL);
-        set.add(FLAWLESS);
-        set.add(PERFECT);
-    });
+    public static final Set<Purity> ALL_PURITIES = ApothMiscUtil.linkedSet(CRACKED, CHIPPED, FLAWED, NORMAL, FLAWLESS, PERFECT);
 
     private final String name;
     private final TextColor color;

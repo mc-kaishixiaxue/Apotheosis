@@ -2,6 +2,28 @@
     "comment_id": "/Adventure Module",
 
     "key.categories.apotheosis": "Apotheosis",
+
+    "text.apotheosis.world_tier.haven": "Haven",
+    "text.apotheosis.world_tier.haven.desc": "The start of your journey",
+
+    "text.apotheosis.world_tier.frontier": "Frontier",
+    "text.apotheosis.world_tier.frontier.desc": "Venture forth into the dangerous world",
+
+    "text.apotheosis.world_tier.ascent": "Ascent",
+    "text.apotheosis.world_tier.ascent.desc": "Begin your ascent to power",
+
+    "text.apotheosis.world_tier.summit": "Summit",
+    "text.apotheosis.world_tier.summit.desc": "You've reached the top, but there's something beyond",
+
+    "text.apotheosis.world_tier.pinnacle": "Pinnacle",
+    "text.apotheosis.world_tier.pinnacle.desc": "Lose thyself in the mountain's stormy peaks",
+
+    "text.apotheosis.tier_info": "World Tier Information",
+    "text.apotheosis.monster_augments": "Monster Augments",
+    "text.apotheosis.player_augments": "Player Augments",
+    "text.apotheosis.rarity_weights": "Rarity Weights",
+    "text.apotheosis.purity_weights": "Purity Weights",
+
     "key.apotheosis.toggle_radial_mining": "Change Radial Mining Mode",
 
     "info.apotheosis.affix_item": "Apothic Affix Item",

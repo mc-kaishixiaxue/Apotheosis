@@ -63,6 +63,7 @@ import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingMenu;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingRecipe;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.PurityUpgradeRecipe;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.augments.TierAugment;
 import dev.shadowsoffire.apotheosis.util.AffixItemIngredient;
 import dev.shadowsoffire.apotheosis.util.GemIngredient;
 import dev.shadowsoffire.apotheosis.util.SingletonRecipeSerializer;
@@ -77,6 +78,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -146,7 +148,14 @@ public class Apoth {
 
         public static final AttachmentType<BonusLootTables> BONUS_LOOT_TABLES = R.attachment("bonus_loot_tables", () -> BonusLootTables.EMPTY, b -> b.serialize(BonusLootTables.CODEC, blt -> !blt.tables().isEmpty()));
 
-        public static final AttachmentType<WorldTier> WORLD_TIER = R.attachment("world_tier", () -> WorldTier.HAVEN, b -> b.serialize(WorldTier.CODEC).copyOnDeath());
+        public static final AttachmentType<WorldTier> WORLD_TIER = R.attachment("world_tier", () -> WorldTier.HAVEN, b -> b.serialize(WorldTier.CODEC).copyOnDeath().copyHandler((t, holder, prov) -> t));
+
+        /**
+         * Records if the {@link TierAugment}s for the current world tier have been applied to the attached entity or not.
+         * <p>
+         * If this is not set, they will be applied the next time the entity joins the level.
+         */
+        public static final AttachmentType<Boolean> TIER_AUGMENTS_APPLIED = R.attachment("tier_augments_applied", () -> false, b -> b.serialize(Codec.BOOL));
 
         private static void bootstrap() {}
     }
@@ -363,6 +372,14 @@ public class Apoth {
         public static final ResourceKey<DamageType> EXECUTE = ResourceKey.create(Registries.DAMAGE_TYPE, Apotheosis.loc("execute"));
         public static final ResourceKey<DamageType> PSYCHIC = ResourceKey.create(Registries.DAMAGE_TYPE, Apotheosis.loc("psychic"));
 
+    }
+
+    public static final class Advancements {
+        public static final ResourceLocation WORLD_TIER_HAVEN = Apotheosis.loc("progression/haven");
+        public static final ResourceLocation WORLD_TIER_FRONTIER = Apotheosis.loc("progression/frontier");
+        public static final ResourceLocation WORLD_TIER_ASCENT = Apotheosis.loc("progression/ascent");
+        public static final ResourceLocation WORLD_TIER_SUMMIT = Apotheosis.loc("progression/summit");
+        public static final ResourceLocation WORLD_TIER_PINNACLE = Apotheosis.loc("progression/pinnacle");
     }
 
     public static void bootstrap(IEventBus bus) {

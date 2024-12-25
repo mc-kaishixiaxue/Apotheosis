@@ -35,6 +35,7 @@
             "max": 0.25
         }
     ],
+    "sort_index": 500,
     "weights": {
         "haven": {
             "quality": 5.0,

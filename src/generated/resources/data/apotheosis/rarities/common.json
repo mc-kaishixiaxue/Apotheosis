@@ -17,6 +17,7 @@
             }
         }
     ],
+    "sort_index": 300,
     "weights": {
         "haven": {
             "weight": 600

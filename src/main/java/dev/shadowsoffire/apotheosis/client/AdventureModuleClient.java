@@ -171,6 +171,7 @@ public class AdventureModuleClient {
     @SubscribeEvent
     public static void keys(RegisterKeyMappingsEvent e) {
         e.register(AdventureKeys.TOGGLE_RADIAL);
+        e.register(AdventureKeys.OPEN_WORLD_TIER_SELECT);
     }
 
     @SubscribeEvent

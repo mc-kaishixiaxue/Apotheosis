@@ -23,14 +23,15 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public record LootRarity(TextColor color, Holder<Item> material, TieredWeights weights, List<LootRule> rules, Map<LootCategory, List<LootRule>> overrides) implements CodecProvider<LootRarity>, Weighted {
+public record LootRarity(TextColor color, Holder<Item> material, TieredWeights weights, List<LootRule> rules, Map<LootCategory, List<LootRule>> overrides, int sortIndex) implements CodecProvider<LootRarity>, Weighted {
 
     public static final Codec<LootRarity> LOAD_CODEC = RecordCodecBuilder.create(inst -> inst.group(
         TextColor.CODEC.fieldOf("color").forGetter(LootRarity::color),
         ItemStack.ITEM_NON_AIR_CODEC.fieldOf("material").forGetter(LootRarity::material),
         TieredWeights.CODEC.fieldOf("weights").forGetter(Weighted::weights),
         LootRule.CODEC.listOf().fieldOf("rules").forGetter(LootRarity::rules),
-        LootCategory.mapCodec(LootRule.CODEC.listOf()).fieldOf("overrides").forGetter(LootRarity::overrides))
+        LootCategory.mapCodec(LootRule.CODEC.listOf()).fieldOf("overrides").forGetter(LootRarity::overrides),
+        Codec.intRange(0, 2000).optionalFieldOf("sort_index", 1000).forGetter(LootRarity::sortIndex))
         .apply(inst, LootRarity::new));
 
     /**

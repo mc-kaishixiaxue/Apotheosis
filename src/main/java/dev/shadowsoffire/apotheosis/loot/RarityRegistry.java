@@ -1,12 +1,20 @@
 package dev.shadowsoffire.apotheosis.loot;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
+import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.tiers.TieredDynamicRegistry;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -19,6 +27,7 @@ public class RarityRegistry extends TieredDynamicRegistry<LootRarity> {
     public static final RarityRegistry INSTANCE = new RarityRegistry();
 
     protected BiMap<Item, DynamicHolder<LootRarity>> materialMap = HashBiMap.create();
+    protected List<LootRarity> sorted = new ArrayList<>();
 
     private RarityRegistry() {
         super(Apotheosis.LOGGER, "rarities", true, false);
@@ -47,6 +56,7 @@ public class RarityRegistry extends TieredDynamicRegistry<LootRarity> {
     protected void beginReload() {
         super.beginReload();
         this.materialMap = HashBiMap.create();
+        this.sorted.clear();
     }
 
     @Override
@@ -57,7 +67,10 @@ public class RarityRegistry extends TieredDynamicRegistry<LootRarity> {
             if (old != null) {
                 throw new RuntimeException("Two rarities may not share the same rarity material: " + this.getKey(r) + " conflicts with " + old.getId());
             }
+            this.sorted.add(r);
         }
+        this.sorted.sort(Comparator.comparing(LootRarity::sortIndex));
+
     }
 
     @Override
@@ -71,6 +84,26 @@ public class RarityRegistry extends TieredDynamicRegistry<LootRarity> {
         Preconditions.checkNotNull(item.color());
         Preconditions.checkArgument(item.getMaterial() != null && item.getMaterial() != Items.AIR);
         Preconditions.checkArgument(!item.rules().isEmpty(), "A rarity must provide base rules.");
+    }
+
+    /**
+     * Returns a component that contains all the weighted drop chances for each rarity (ignoring luck).
+     */
+    public static Component getDropChances(WorldTier tier) {
+        int totalWeight = INSTANCE.registry.values().stream().mapToInt(r -> r.weights().getWeight(tier, 0)).sum();
+
+        MutableComponent out = Component.empty();
+        for (int i = 0; i < INSTANCE.sorted.size(); i++) {
+            LootRarity rarity = INSTANCE.sorted.get(i);
+            float percent = rarity.weights().getWeight(tier, 0) / (float) totalWeight;
+            Component comp = Component.translatable("%s", Affix.fmt(100 * percent) + "%").withStyle(s -> s.withColor(rarity.color()));
+            out.append(comp);
+            if (i != INSTANCE.sorted.size() - 1) {
+                out.append(Component.literal(" / "));
+            }
+        }
+
+        return out;
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.base.Predicates;
 
+import dev.shadowsoffire.apotheosis.Apoth.Attachments;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
@@ -23,7 +24,12 @@ import dev.shadowsoffire.apotheosis.commands.ReforgeCommand;
 import dev.shadowsoffire.apotheosis.commands.SocketCommand;
 import dev.shadowsoffire.apotheosis.commands.WorldTierCommand;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
+import dev.shadowsoffire.apotheosis.net.WorldTierPayload;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
+import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.tiers.augments.TierAugment;
+import dev.shadowsoffire.apotheosis.tiers.augments.TierAugment.Target;
+import dev.shadowsoffire.apotheosis.tiers.augments.TierAugmentRegistry;
 import dev.shadowsoffire.apothic_attributes.event.ApotheosisCommandEvent;
 import dev.shadowsoffire.placebo.events.AnvilLandEvent;
 import net.minecraft.core.BlockPos;
@@ -34,12 +40,14 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -61,6 +69,7 @@ import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class AdventureEvents {
 
@@ -303,6 +312,43 @@ public class AdventureEvents {
         if (e.getEntity() instanceof ServerPlayer player) {
             Apoth.Triggers.EQUIPPED_ITEM.trigger(player, e.getSlot(), e.getTo());
         }
+    }
+
+    @SubscribeEvent
+    public void sendWorldTierDataOnJoin(EntityJoinLevelEvent e) {
+        if (e.getEntity() instanceof ServerPlayer p) {
+            PacketDistributor.sendToPlayer(p, new WorldTierPayload(WorldTier.getTier(p)));
+        }
+    }
+
+    @SubscribeEvent
+    public void applyMissedTierAugments(EntityJoinLevelEvent e) {
+        if (e.getLevel().isClientSide) {
+            return;
+        }
+
+        Entity entity = e.getEntity();
+        if (entity.getData(Attachments.TIER_AUGMENTS_APPLIED)) {
+            return;
+        }
+
+        if (entity instanceof Player player) {
+            WorldTier tier = player.getData(Attachments.WORLD_TIER);
+            for (TierAugment aug : TierAugmentRegistry.getAugments(tier, Target.PLAYERS)) {
+                aug.apply((ServerLevelAccessor) e.getLevel(), player);
+            }
+        }
+        else if (entity instanceof Mob mob) {
+            Player player = e.getLevel().getNearestPlayer(mob.getX(), mob.getY(), mob.getZ(), -1, true);
+            if (player != null) {
+                WorldTier tier = player.getData(Attachments.WORLD_TIER);
+                for (TierAugment aug : TierAugmentRegistry.getAugments(tier, Target.MONSTERS)) {
+                    aug.apply((ServerLevelAccessor) e.getLevel(), mob);
+                }
+            }
+        }
+
+        entity.setData(Attachments.TIER_AUGMENTS_APPLIED, true);
     }
 
     /**

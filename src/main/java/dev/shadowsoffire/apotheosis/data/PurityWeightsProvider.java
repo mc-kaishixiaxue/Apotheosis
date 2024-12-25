@@ -31,40 +31,40 @@ public class PurityWeightsProvider extends DynamicRegistryProvider<PurityWeights
 
         this.add(b -> b
             .tier(WorldTier.HAVEN, c -> c
-                .with(Purity.CRACKED, 600, 0)
-                .with(Purity.CHIPPED, 360, 2.5F)
+                .with(Purity.CRACKED, 550, 0)
+                .with(Purity.CHIPPED, 410, 2.5F)
                 .with(Purity.FLAWED, 40, 5F)
                 .with(Purity.NORMAL, 0, 0)
                 .with(Purity.FLAWLESS, 0, 0)
                 .with(Purity.PERFECT, 0, 0))
             .tier(WorldTier.FRONTIER, c -> c
-                .with(Purity.CRACKED, 290, 0)
-                .with(Purity.CHIPPED, 600, 0)
-                .with(Purity.FLAWED, 100, 2.5F)
-                .with(Purity.NORMAL, 10, 1F)
+                .with(Purity.CRACKED, 230, 0)
+                .with(Purity.CHIPPED, 540, 0)
+                .with(Purity.FLAWED, 180, 2.5F)
+                .with(Purity.NORMAL, 50, 1F)
                 .with(Purity.FLAWLESS, 0, 0)
                 .with(Purity.PERFECT, 0, 0))
             .tier(WorldTier.ASCENT, c -> c
-                .with(Purity.CRACKED, 100, 0)
-                .with(Purity.CHIPPED, 550, 0)
-                .with(Purity.FLAWED, 330, 2.5F)
-                .with(Purity.NORMAL, 20, 5F)
-                .with(Purity.FLAWLESS, 0, 1F)
+                .with(Purity.CRACKED, 20, 0)
+                .with(Purity.CHIPPED, 250, 0)
+                .with(Purity.FLAWED, 560, 2.5F)
+                .with(Purity.NORMAL, 160, 5F)
+                .with(Purity.FLAWLESS, 10, 1F)
                 .with(Purity.PERFECT, 0, 0))
             .tier(WorldTier.SUMMIT, c -> c
                 .with(Purity.CRACKED, 0, 0)
-                .with(Purity.CHIPPED, 350, 0)
-                .with(Purity.FLAWED, 480, 2.5F)
-                .with(Purity.NORMAL, 150, 5F)
+                .with(Purity.CHIPPED, 80, 0)
+                .with(Purity.FLAWED, 310, 2.5F)
+                .with(Purity.NORMAL, 580, 5F)
                 .with(Purity.FLAWLESS, 20, 5F)
-                .with(Purity.PERFECT, 0, 0))
+                .with(Purity.PERFECT, 10, 0))
             .tier(WorldTier.PINNACLE, c -> c
                 .with(Purity.CRACKED, 0, 0)
                 .with(Purity.CHIPPED, 0, 0)
                 .with(Purity.FLAWED, 100, 0)
-                .with(Purity.NORMAL, 250, 0)
-                .with(Purity.FLAWLESS, 500, 0)
-                .with(Purity.PERFECT, 150, 5F)));
+                .with(Purity.NORMAL, 330, 0)
+                .with(Purity.FLAWLESS, 470, 0)
+                .with(Purity.PERFECT, 100, 5F)));
 
     }
 

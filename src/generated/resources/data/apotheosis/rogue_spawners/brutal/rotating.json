@@ -1,6 +1,6 @@
 {
     "type": "apotheosis:rogue_spawner",
-    "loot_table": "apotheosis:chests/spawner_brutal_rotate",
+    "loot_table": "apotheosis:chests/spawner_brutal",
     "spawn_potentials": [
         {
             "data": {

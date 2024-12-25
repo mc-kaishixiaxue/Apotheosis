@@ -83,6 +83,14 @@ public class AffixLootPoolEntry extends ContextualLootPoolEntry {
         return TYPE;
     }
 
+    public static LootPoolSingletonContainer.Builder<?> builder(Set<DynamicHolder<LootRarity>> rarities, Set<DynamicHolder<AffixLootEntry>> entries) {
+        return LootPoolSingletonContainer.simpleBuilder(ctor(rarities, entries));
+    }
+
+    private static EntryConstructor ctor(Set<DynamicHolder<LootRarity>> rarities, Set<DynamicHolder<AffixLootEntry>> entries) {
+        return (weight, quality, conditions, functions) -> new AffixLootPoolEntry(rarities, entries, weight, quality, conditions, functions);
+    }
+
     /**
      * Unwraps the holder to its object, if present, otherwise returns null and logs an error.
      */

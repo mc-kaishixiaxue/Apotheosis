@@ -75,7 +75,11 @@ public class GemLootPoolEntry extends ContextualLootPoolEntry {
         return holder.get();
     }
 
-    public static EntryConstructor ctor(Set<Purity> purities, Set<DynamicHolder<Gem>> gems) {
+    public static LootPoolSingletonContainer.Builder<?> builder(Set<Purity> purities, Set<DynamicHolder<Gem>> gems) {
+        return LootPoolSingletonContainer.simpleBuilder(ctor(purities, gems));
+    }
+
+    private static EntryConstructor ctor(Set<Purity> purities, Set<DynamicHolder<Gem>> gems) {
         return (weight, quality, conditions, functions) -> new GemLootPoolEntry(purities, gems, weight, quality, conditions, functions);
     }
 }

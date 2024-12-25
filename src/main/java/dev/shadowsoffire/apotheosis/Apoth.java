@@ -351,7 +351,6 @@ public class Apoth {
 
     public static final class LootTables {
         public static final ResourceKey<LootTable> CHEST_VALUABLE = key("chests/chest_valuable");
-        public static final ResourceKey<LootTable> SPAWNER_BRUTAL_ROTATE = key("chests/spawner_brutal_rotate");
         public static final ResourceKey<LootTable> SPAWNER_BRUTAL = key("chests/spawner_brutal");
         public static final ResourceKey<LootTable> SPAWNER_SWARM = key("chests/spawner_swarm");
         public static final ResourceKey<LootTable> TOME_TOWER = key("chests/tome_tower");

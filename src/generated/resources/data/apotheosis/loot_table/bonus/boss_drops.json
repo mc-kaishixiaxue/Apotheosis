@@ -6,6 +6,7 @@
             "entries": [
                 {
                     "type": "apotheosis:random_gem",
+                    "quality": 1,
                     "weight": 30
                 },
                 {

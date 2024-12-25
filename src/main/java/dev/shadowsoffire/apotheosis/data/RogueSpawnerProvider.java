@@ -68,7 +68,7 @@ public class RogueSpawnerProvider extends DynamicRegistryProvider<RogueSpawner> 
             .spawnData(10, brutalPillager()));
 
         this.add("brutal/rotating", b -> b
-            .lootTable(Apoth.LootTables.SPAWNER_BRUTAL_ROTATE)
+            .lootTable(Apoth.LootTables.SPAWNER_BRUTAL)
             .weight(10)
             .stats(c -> c
                 .stat(SpawnerStats.MIN_DELAY, 180)

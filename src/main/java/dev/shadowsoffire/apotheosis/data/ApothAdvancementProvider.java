@@ -130,7 +130,7 @@ public class ApothAdvancementProvider extends AdvancementProvider {
                 .addCriterion("uncommon_legs", rarityInSlot(EquipmentSlotGroup.LEGS, uncommon, rare, epic, mythic))
                 .addCriterion("uncommon_feet", rarityInSlot(EquipmentSlotGroup.FEET, uncommon, rare, epic, mythic))
                 .addCriterion("uncommon_hand", rarityInSlot(EquipmentSlotGroup.HAND, uncommon, rare, epic, mythic))
-                .addCriterion("wither", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().subPredicate(InvaderPredicate.INSTANCE)))
+                .addCriterion("kill_apothic_invader", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().subPredicate(InvaderPredicate.INSTANCE)))
                 .parent(frontier)
                 .save(saver, loc("progression/ascent"));
 
@@ -150,7 +150,7 @@ public class ApothAdvancementProvider extends AdvancementProvider {
                 .addCriterion("rare_legs", rarityInSlot(EquipmentSlotGroup.LEGS, rare, epic, mythic))
                 .addCriterion("rare_feet", rarityInSlot(EquipmentSlotGroup.FEET, rare, epic, mythic))
                 .addCriterion("rare_hand", rarityInSlot(EquipmentSlotGroup.HAND, rare, epic, mythic))
-                .addCriterion("wither", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().of(EntityType.WITHER)))
+                .addCriterion("kill_wither", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().of(EntityType.WITHER)))
                 .parent(ascent)
                 .save(saver, loc("progression/summit"));
 
@@ -170,7 +170,7 @@ public class ApothAdvancementProvider extends AdvancementProvider {
                 .addCriterion("epic_legs", rarityInSlot(EquipmentSlotGroup.LEGS, epic, mythic))
                 .addCriterion("epic_feet", rarityInSlot(EquipmentSlotGroup.FEET, epic, mythic))
                 .addCriterion("epic_hand", rarityInSlot(EquipmentSlotGroup.HAND, epic, mythic))
-                .addCriterion("dragon", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().of(EntityType.ENDER_DRAGON)))
+                .addCriterion("kill_ender_dragon", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().of(EntityType.ENDER_DRAGON)))
                 .parent(summit)
                 .save(saver, loc("progression/pinnacle"));
 

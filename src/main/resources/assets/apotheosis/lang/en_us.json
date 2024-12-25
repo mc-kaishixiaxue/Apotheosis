@@ -13,10 +13,17 @@
     "text.apotheosis.world_tier.ascent.desc": "Begin your ascent to power",
 
     "text.apotheosis.world_tier.summit": "Summit",
-    "text.apotheosis.world_tier.summit.desc": "You've reached the top, but there's something beyond",
+    "text.apotheosis.world_tier.summit.desc": "You've reached the top, but not the end",
 
     "text.apotheosis.world_tier.pinnacle": "Pinnacle",
     "text.apotheosis.world_tier.pinnacle.desc": "Lose thyself in the mountain's stormy peaks",
+
+    "button.apotheosis.haven": "Haven",
+    "button.apotheosis.frontier": "Frontier",
+    "button.apotheosis.ascent": "Ascent",
+    "button.apotheosis.summit": "Summit",
+    "button.apotheosis.pinnacle": "Pinnacle",
+    "button.apotheosis.tier_locked": "Locked. Complete %s to progress",
 
     "text.apotheosis.tier_info": "World Tier Information",
     "text.apotheosis.monster_augments": "Monster Augments",
@@ -321,6 +328,8 @@
     "misc.apotheosis.fire": "Fire",
     "misc.apotheosis.fall": "Fall",
     "misc.apotheosis.explosion": "Explosive",
+    "misc.apotheosis.projectile": "Projectile",
+    "misc.apotheosis.lightning": "Lightning",
     "affix.apotheosis:damage_reduction.desc": "%s damage taken is reduced by %s%%",
 
     "affix.apotheosis:armor/dmg_reduction/blockading": "Blockading",
@@ -564,7 +573,7 @@
     "info.apotheosis.boss_item": "Will Drop: %s",
     "info.apotheosis.boss_modifiers": "Boss Modifiers:",
     "info.apotheosis.rarity_material": "Rarity Material (%s)",
-    "info.apotheosis.gem_crushing": "Gem Dust is obtained by dropping any Apothic Gem the in world, and making an Anvil block fall onto it.",
+    "info.apotheosis.gem_crushing": "Your first Gem Dust is obtained by dropping any Apothic Gem into the world, and making an Anvil block fall on it.\n\nAfter that, use the Salvaging Table.",
     "info.apotheosis.gem_extraction": "Used in a Smithing Table to unsocket Apothic Gems.\n\nThe item will be destroyed in the process.",
     "info.apotheosis.gem_expulsion": "Used in a Smithing Table to unsocket Apothic Gems.\n\nThe gems will be destroyed in the process.",
     "info.apotheosis.unnaming": "Used in a Smithing Table to remove the affix components from an item's name.",

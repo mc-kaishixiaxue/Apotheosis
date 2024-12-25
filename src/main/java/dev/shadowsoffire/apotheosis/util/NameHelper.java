@@ -374,8 +374,10 @@ public class NameHelper {
                     itemsByTier.computeIfAbsent(mat, m -> new ArrayList<>()).add(i);
                 }
                 if (i instanceof ArmorItem) {
-                    ResourceKey<ArmorMaterial> mat = ((ArmorItem) i).getMaterial().getKey();
-                    armorsByTier.computeIfAbsent(mat, m -> new ArrayList<>()).add(i);
+                    ResourceKey<ArmorMaterial> key = ((ArmorItem) i).getMaterial().getKey();
+                    if (key != null) {
+                        armorsByTier.computeIfAbsent(key, m -> new ArrayList<>()).add(i);
+                    }
                 }
             }
             catch (Exception e) {

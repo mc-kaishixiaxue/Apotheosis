@@ -1,4 +1,4 @@
-package dev.shadowsoffire.apotheosis.compat;
+package dev.shadowsoffire.apotheosis.compat.jei;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,8 +35,10 @@ public class PurityUpgradeExtension implements GemCuttingExtension<PurityUpgrade
         }
         else {
             GemRegistry.INSTANCE.getValues().stream().forEachOrdered(g -> {
-                inputs.add(gemStack(g, recipe.purity()));
-                outputs.add(gemStack(g, recipe.purity().next()));
+                if (g.getMinPurity().isAtLeast(recipe.purity())) {
+                    inputs.add(gemStack(g, recipe.purity()));
+                    outputs.add(gemStack(g, recipe.purity().next()));
+                }
             });
         }
 

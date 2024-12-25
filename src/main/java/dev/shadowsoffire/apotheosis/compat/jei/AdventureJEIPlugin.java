@@ -3,7 +3,6 @@ package dev.shadowsoffire.apotheosis.compat.jei;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apoth.RecipeTypes;
@@ -17,7 +16,6 @@ import dev.shadowsoffire.apotheosis.socket.ReactiveSmithingRecipe;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
-import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingRecipe;
@@ -64,18 +62,17 @@ public class AdventureJEIPlugin implements IModPlugin {
     }
 
     @Override
-    @SuppressWarnings("removal")
     public void registerRecipes(IRecipeRegistration reg) {
-        ItemStack gem = new ItemStack(Apoth.Items.GEM);
-        Optional<Gem> gemObj = GemRegistry.INSTANCE.getValues().stream().findAny();
-        if (gemObj.isPresent()) {
-            GemItem.setGem(gem, gemObj.get());
-            GemItem.setPurity(gem, Purity.PERFECT);
-            reg.addIngredientInfo(gem, VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.socketing"));
-            reg.addIngredientInfo(new ItemStack(Apoth.Items.GEM_DUST), VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.gem_crushing"));
-            reg.addIngredientInfo(new ItemStack(Apoth.Items.SIGIL_OF_UNNAMING), VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.unnaming"));
-            ApothSmithingCategory.registerExtension(AddSocketsRecipe.class, new AddSocketsExtension());
+        Component socketInfo = Component.translatable("info.apotheosis.socketing");
+        for (Gem gem : GemRegistry.INSTANCE.getValues()) {
+            for (Purity purity : Purity.ALL_PURITIES) {
+                reg.addIngredientInfo(GemRegistry.createGemStack(gem, purity), VanillaTypes.ITEM_STACK, socketInfo);
+            }
         }
+
+        reg.addIngredientInfo(new ItemStack(Apoth.Items.GEM_DUST), VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.gem_crushing"));
+        reg.addIngredientInfo(new ItemStack(Apoth.Items.SIGIL_OF_UNNAMING), VanillaTypes.ITEM_STACK, Component.translatable("info.apotheosis.unnaming"));
+        ApothSmithingCategory.registerExtension(AddSocketsRecipe.class, new AddSocketsExtension());
 
         reg.addRecipes(APO_SMITHING, Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType.SMITHING).stream()
             .map(RecipeHolder::value)

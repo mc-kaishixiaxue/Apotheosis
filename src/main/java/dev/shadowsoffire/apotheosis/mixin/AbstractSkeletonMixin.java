@@ -34,7 +34,7 @@ import net.minecraft.world.level.Level;
  * </ol>
  * Then, in addition to this, we need a clientside mixin must be made to have the skeleton raise the crossbow when it is loaded, similar to a Pillager.
  */
-@Mixin(AbstractSkeleton.class)
+@Mixin(value = AbstractSkeleton.class, remap = false)
 public abstract class AbstractSkeletonMixin extends Monster implements CrossbowAttackMob {
 
     @Unique

@@ -18,7 +18,7 @@ import net.minecraft.world.item.CrossbowItem;
  * <p>
  * This component handles the arm animations while the skeleton is holding a crossbow and targetting an enemy.
  */
-@Mixin(SkeletonModel.class)
+@Mixin(value = SkeletonModel.class, remap = false)
 public abstract class SkeletonModelMixin extends HumanoidModel<Mob> {
 
     public SkeletonModelMixin(ModelPart root) {

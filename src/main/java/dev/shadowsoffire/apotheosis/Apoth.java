@@ -252,7 +252,7 @@ public class Apoth {
         public static final Holder<Feature<?>> BOSS_DUNGEON = R.feature("boss_dungeon", BossDungeonFeature::new);
         public static final Holder<Feature<?>> BOSS_DUNGEON_2 = R.feature("boss_dungeon_2", BossDungeonFeature2::new);
         public static final Holder<Feature<?>> ROGUE_SPAWNER = R.feature("rogue_spawner", RogueSpawnerFeature::new);
-        public static final Holder<StructureProcessorType<?>> ITEM_FRAME_GEMS = R.custom("item_frame_gems", Registries.STRUCTURE_PROCESSOR, () -> () -> ItemFrameGemsProcessor.CODEC);
+        public static final StructureProcessorType<ItemFrameGemsProcessor> ITEM_FRAME_GEMS = R.structureProcessor("item_frame_gems", ItemFrameGemsProcessor.CODEC);
 
         private static void bootstrap() {}
 

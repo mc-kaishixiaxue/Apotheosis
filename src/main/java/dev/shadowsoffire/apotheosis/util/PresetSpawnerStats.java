@@ -1,10 +1,8 @@
 package dev.shadowsoffire.apotheosis.util;
 
 import java.util.Map;
-import java.util.Optional;
 
-import org.spongepowered.include.com.google.common.collect.ImmutableMap;
-
+import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.apothic_spawners.block.ApothSpawnerTile;
@@ -34,7 +32,25 @@ public record PresetSpawnerStats(Map<SpawnerStat<?>, Object> stats) {
         for (Map.Entry<SpawnerStat<?>, Object> entry : this.stats.entrySet()) {
             SpawnerStat stat = entry.getKey();
             Object value = entry.getValue();
-            stat.applyModifier(entity, value, Optional.empty(), Optional.empty());
+            stat.setValue(entity, value);
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        protected final ImmutableMap.Builder<SpawnerStat<?>, Object> stats = ImmutableMap.builder();
+
+        public <T> Builder stat(SpawnerStat<T> stat, T value) {
+            this.stats.put(stat, value);
+            return this;
+        }
+
+        public PresetSpawnerStats build() {
+            return new PresetSpawnerStats(this.stats.build());
         }
     }
 

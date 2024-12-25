@@ -1,8 +1,4 @@
 {
-	"forge:conditions": [{
-		"type": "apotheosis:module",
-		"module": "adventure"
-	}],
 	"name": "apotheosis:tower_sand",
 	"fallback": "minecraft:empty",
 	"elements": [{

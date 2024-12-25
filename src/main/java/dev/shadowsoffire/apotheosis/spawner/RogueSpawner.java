@@ -1,5 +1,10 @@
 package dev.shadowsoffire.apotheosis.spawner;
 
+import java.util.Optional;
+import java.util.function.UnaryOperator;
+
+import org.spongepowered.include.com.google.common.base.Preconditions;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -16,6 +21,7 @@ import net.minecraft.core.Direction.Plane;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.SimpleWeightedRandomList;
@@ -93,6 +99,51 @@ public class RogueSpawner implements CodecProvider<RogueSpawner>, ILuckyWeighted
     @Override
     public Codec<? extends RogueSpawner> getCodec() {
         return CODEC;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        protected int weight;
+        protected PresetSpawnerStats stats;
+        protected ResourceKey<LootTable> lootTable;
+        protected SimpleWeightedRandomList.Builder<SpawnData> spawnPotentials = SimpleWeightedRandomList.builder();
+
+        public Builder weight(int weight) {
+            this.weight = weight;
+            return this;
+        }
+
+        public Builder stats(UnaryOperator<PresetSpawnerStats.Builder> config) {
+            this.stats = config.apply(PresetSpawnerStats.builder()).build();
+            return this;
+        }
+
+        public Builder lootTable(ResourceKey<LootTable> key) {
+            this.lootTable = key;
+            return this;
+        }
+
+        public Builder spawnData(int weight, SpawnData data) {
+            this.spawnPotentials.add(data, weight);
+            return this;
+        }
+
+        public Builder spawnData(int weight, CompoundTag data) {
+            return this.spawnData(weight, new SpawnData(data, Optional.empty(), Optional.empty()));
+        }
+
+        public RogueSpawner build() {
+            Preconditions.checkArgument(this.weight > 0, "Weight must be greater than 0");
+            Preconditions.checkNotNull(this.stats, "Stats must be set");
+            Preconditions.checkNotNull(this.lootTable, "Loot Table must be set");
+            var spawnList = this.spawnPotentials.build();
+            Preconditions.checkArgument(!spawnList.isEmpty(), "At least one spawn potential must be provided");
+
+            return new RogueSpawner(this.weight, this.stats, this.lootTable, spawnList);
+        }
     }
 
 }

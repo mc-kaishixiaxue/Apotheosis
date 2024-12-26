@@ -10,11 +10,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Keyable;
 import com.mojang.serialization.MapCodec;
 
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.util.ApothMiscUtil;
 import dev.shadowsoffire.placebo.color.GradientColor;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -76,6 +79,10 @@ public enum Purity implements StringRepresentable, TieredWeights.Weighted {
 
     public boolean isAtLeast(Purity other) {
         return this.ordinal() >= other.ordinal();
+    }
+
+    public MutableComponent toComponent() {
+        return Apotheosis.lang("purity", this.getSerializedName()).withStyle(Style.EMPTY.withColor(this.color));
     }
 
     public static Purity max(Purity p1, Purity p2) {

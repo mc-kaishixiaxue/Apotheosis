@@ -1,6 +1,5 @@
 package dev.shadowsoffire.apotheosis.socket.gem;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,15 +7,12 @@ import java.util.Map;
 import com.mojang.serialization.Codec;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
-import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.socket.gem.PurityWeightsRegistry.PurityWeights;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights.Weight;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.reload.DynamicRegistry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 public final class PurityWeightsRegistry extends DynamicRegistry<PurityWeights> {
@@ -84,27 +80,6 @@ public final class PurityWeightsRegistry extends DynamicRegistry<PurityWeights> 
      */
     public static Map<Purity, TieredWeights> getWeights() {
         return INSTANCE.parsedWeights.isEmpty() ? ERRORED : INSTANCE.parsedWeights;
-    }
-
-    /**
-     * Returns a component that contains all the weighted drop chances for each purity (ignoring luck).
-     */
-    public static Component getDropChances(WorldTier tier) {
-        Purity[] values = Purity.values();
-        int totalWeight = Arrays.stream(values).mapToInt(r -> r.weights().getWeight(tier, 0)).sum();
-
-        MutableComponent out = Component.empty();
-        for (int i = 0; i < values.length; i++) {
-            Purity purity = values[i];
-            float percent = purity.weights().getWeight(tier, 0) / (float) totalWeight;
-            Component comp = Component.translatable("%s", Affix.fmt(100 * percent) + "%").withStyle(s -> s.withColor(purity.getColor()));
-            out.append(comp);
-            if (i != values.length - 1) {
-                out.append(Component.literal(" / "));
-            }
-        }
-
-        return out;
     }
 
     public static record PurityWeights(Map<WorldTier, Map<Purity, Weight>> weights) implements CodecProvider<PurityWeights> {

@@ -18,18 +18,30 @@
     "text.apotheosis.world_tier.pinnacle": "Pinnacle",
     "text.apotheosis.world_tier.pinnacle.desc": "Lose thyself in the mountain's stormy peaks",
 
+    "title.apotheosis.select_world_tier": "Select World Tier",
+    "title.apotheosis.world_tier_details": "World Tier Details",
+
     "button.apotheosis.haven": "Haven",
     "button.apotheosis.frontier": "Frontier",
     "button.apotheosis.ascent": "Ascent",
     "button.apotheosis.summit": "Summit",
     "button.apotheosis.pinnacle": "Pinnacle",
     "button.apotheosis.tier_locked": "Locked. Complete %s to progress",
+    "button.apotheosis.activate_tier": "Activate World Tier: %s",
+    "button.apotheosis.already_activated": "This World Tier is currently active",
+    "button.apotheosis.activate": "Activate",
+    "button.apotheosis.activated": "Activated",
+    "button.apotheosis.show_detailed_info": "Detailed Info",
+    "button.apotheosis.show_detailed_info.desc": "View Mob Buffs, Player Buffs, and Rarities",
+    "button.apotheosis.return": "X",
+    "button.apotheosis.return.desc": "Go back to the Tier Select screen",
 
     "text.apotheosis.tier_info": "World Tier Information",
     "text.apotheosis.monster_augments": "Monster Augments",
     "text.apotheosis.player_augments": "Player Augments",
-    "text.apotheosis.rarity_weights": "Rarity Weights",
-    "text.apotheosis.purity_weights": "Purity Weights",
+    "text.apotheosis.drop_chances": "Drop Chances",
+    "text.apotheosis.rarities": "Rarities",
+    "text.apotheosis.purities": "Purities",
 
     "key.apotheosis.toggle_radial_mining": "Change Radial Mining Mode",
 
@@ -391,6 +403,13 @@
     "text.apotheosis.when_socketed_in": "When Socketed in:",
     "text.apotheosis.when_socketed_typed": "When Socketed in %s:",
     "info.apotheosis.socketing": "Gems can be socketed with a Smithing Table. Item on the left, gem on the right.\n\nChoose wisely, as removing a socketed gem is costly.",
+
+    "purity.apotheosis.cracked": "Cracked",
+    "purity.apotheosis.chipped": "Chipped",
+    "purity.apotheosis.flawed": "Flawed",
+    "purity.apotheosis.normal": "Normal",
+    "purity.apotheosis.flawless": "Flawless",
+    "purity.apotheosis.perfect": "Perfect",
 
     "gem_class.melee_weapon": "Melee Weapons",
     "gem_class.ranged_weapon": "Ranged Weapons",

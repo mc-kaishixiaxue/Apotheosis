@@ -66,7 +66,9 @@ public class AdventureJEIPlugin implements IModPlugin {
         Component socketInfo = Component.translatable("info.apotheosis.socketing");
         for (Gem gem : GemRegistry.INSTANCE.getValues()) {
             for (Purity purity : Purity.ALL_PURITIES) {
-                reg.addIngredientInfo(GemRegistry.createGemStack(gem, purity), VanillaTypes.ITEM_STACK, socketInfo);
+                if (purity.isAtLeast(gem.getMinPurity())) {
+                    reg.addIngredientInfo(GemRegistry.createGemStack(gem, purity), VanillaTypes.ITEM_STACK, socketInfo);
+                }
             }
         }
 

@@ -18,6 +18,7 @@ import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.Item;
@@ -47,7 +48,7 @@ public record LootRarity(TextColor color, Holder<Item> material, TieredWeights w
         return this.rules;
     }
 
-    public Component toComponent() {
+    public MutableComponent toComponent() {
         return Component.translatable("rarity." + RarityRegistry.INSTANCE.getKey(this)).withStyle(Style.EMPTY.withColor(this.color));
     }
 

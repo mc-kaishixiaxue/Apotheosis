@@ -6,23 +6,34 @@ import java.util.List;
 import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Either;
 
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 public class SimpleTexButton extends Button {
 
-    protected final ResourceLocation texture;
+    public static final WidgetSprites APOTH_SPRITES = new WidgetSprites(
+        Apotheosis.loc("widget/button"),
+        Apotheosis.loc("widget/button_disabled"),
+        Apotheosis.loc("widget/button_highlighted"));
+
+    protected final Either<ResourceLocation, WidgetSprites> texture;
     protected final int xTexStart;
     protected final int yTexStart;
     protected final int textureWidth;
     protected final int textureHeight;
     protected Component inactiveMessage = CommonComponents.EMPTY;
+    protected Component buttonText = CommonComponents.EMPTY;
     protected boolean forceHovered = false;
 
     public SimpleTexButton(int pX, int pY, int pWidth, int pHeight, int pXTexStart, int pYTexStart, ResourceLocation texture, Button.OnPress pOnPress) {
@@ -34,11 +45,11 @@ public class SimpleTexButton extends Button {
     }
 
     public SimpleTexButton(int pX, int pY, int pWidth, int pHeight, int pXTexStart, int pYTexStart, ResourceLocation texture, int pTextureWidth, int pTextureHeight, Button.OnPress pOnPress, Component pMessage) {
-        this(pX, pY, pWidth, pHeight, pXTexStart, pYTexStart, texture, pTextureWidth, pTextureHeight, pOnPress, DEFAULT_NARRATION, pMessage);
+        this(pX, pY, pWidth, pHeight, pXTexStart, pYTexStart, Either.left(texture), pTextureWidth, pTextureHeight, pOnPress, DEFAULT_NARRATION, pMessage);
     }
 
-    public SimpleTexButton(int pX, int pY, int pWidth, int pHeight, int pXTexStart, int pYTexStart, ResourceLocation texture, int pTextureWidth, int pTextureHeight, Button.OnPress pOnPress, Button.CreateNarration pOnTooltip,
-        Component pMessage) {
+    public SimpleTexButton(int pX, int pY, int pWidth, int pHeight, int pXTexStart, int pYTexStart, Either<ResourceLocation, WidgetSprites> texture, int pTextureWidth, int pTextureHeight, Button.OnPress pOnPress,
+        Button.CreateNarration pOnTooltip, Component pMessage) {
         super(pX, pY, pWidth, pHeight, pMessage, pOnPress, pOnTooltip);
         this.textureWidth = pTextureWidth;
         this.textureHeight = pTextureHeight;
@@ -49,6 +60,11 @@ public class SimpleTexButton extends Button {
 
     public SimpleTexButton setInactiveMessage(Component msg) {
         this.inactiveMessage = msg;
+        return this;
+    }
+
+    public SimpleTexButton setButtonText(Component msg) {
+        this.buttonText = msg;
         return this;
     }
 
@@ -70,7 +86,22 @@ public class SimpleTexButton extends Button {
 
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
-        gfx.blit(this.texture, this.getX(), this.getY(), this.xTexStart, yTex, this.width, this.height, this.textureWidth, this.textureHeight);
+        if (this.texture.left().isPresent()) {
+            ResourceLocation texture = this.texture.left().orElseThrow();
+            gfx.blit(texture, this.getX(), this.getY(), this.xTexStart, yTex, this.width, this.height, this.textureWidth, this.textureHeight);
+        }
+        else {
+            WidgetSprites sprites = this.texture.right().orElseThrow();
+            ResourceLocation texture = sprites.get(this.isActive(), this.isHovered() || this.forceHovered);
+            gfx.blitSprite(texture, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+
+        }
+        if (this.buttonText != CommonComponents.EMPTY) {
+            gfx.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+            int i = getFGColor();
+            this.renderString(gfx, Minecraft.getInstance().font, i | Mth.ceil(this.alpha * 255.0F) << 24);
+        }
+
         if (this.isHovered()) {
             this.renderToolTip(gfx, pMouseX, pMouseY);
         }
@@ -79,7 +110,7 @@ public class SimpleTexButton extends Button {
     public void renderToolTip(GuiGraphics gfx, int pMouseX, int pMouseY) {
         if (this.getMessage() != CommonComponents.EMPTY && this.isHovered()) {
             Component primary = this.getMessage();
-            if (!this.active) {
+            if (!this.active && primary.getStyle().getColor() == null) {
                 primary = primary.copy().withStyle(ChatFormatting.GRAY);
             }
             List<Component> tooltips = new ArrayList<>();
@@ -89,6 +120,13 @@ public class SimpleTexButton extends Button {
             }
             gfx.renderComponentTooltip(Minecraft.getInstance().font, tooltips, pMouseX, pMouseY);
         }
+    }
+
+    @Override
+    protected void renderScrollingString(GuiGraphics guiGraphics, Font font, int width, int color) {
+        int i = this.getX() + width;
+        int j = this.getX() + this.getWidth() - width;
+        renderScrollingString(guiGraphics, font, this.buttonText, i, this.getY(), j, this.getY() + this.getHeight(), color);
     }
 
     public static Builder builder() {
@@ -106,7 +144,8 @@ public class SimpleTexButton extends Button {
         protected int textureHeight = 256;
         protected Component message = CommonComponents.EMPTY;
         protected Component inactiveMessage = CommonComponents.EMPTY;
-        protected ResourceLocation texture = null;
+        protected Component buttonText = CommonComponents.EMPTY;
+        protected Either<ResourceLocation, WidgetSprites> texture = null;
         protected OnPress action = btn -> {};
 
         public Builder pos(int x, int y) {
@@ -143,8 +182,18 @@ public class SimpleTexButton extends Button {
             return this;
         }
 
+        public Builder buttonText(Component message) {
+            this.buttonText = message;
+            return this;
+        }
+
         public Builder texture(ResourceLocation texture) {
-            this.texture = texture;
+            this.texture = Either.left(texture);
+            return this;
+        }
+
+        public Builder texture(WidgetSprites texture) {
+            this.texture = Either.right(texture);
             return this;
         }
 
@@ -154,10 +203,11 @@ public class SimpleTexButton extends Button {
         }
 
         public SimpleTexButton build() {
-            Preconditions.checkArgument(this.x >= 0 && this.y >= 0, "Position must be set");
             Preconditions.checkArgument(this.width >= 0 && this.height >= 0, "Size must be set");
             Preconditions.checkNotNull(this.texture, "Texture must bet set");
-            return new SimpleTexButton(this.x, this.y, this.width, this.height, this.u, this.v, this.texture, this.textureWidth, this.textureHeight, action, message).setInactiveMessage(this.inactiveMessage);
+            return new SimpleTexButton(this.x, this.y, this.width, this.height, this.u, this.v, this.texture, this.textureWidth, this.textureHeight, action, DEFAULT_NARRATION, message)
+                .setInactiveMessage(this.inactiveMessage)
+                .setButtonText(this.buttonText);
         }
     }
 

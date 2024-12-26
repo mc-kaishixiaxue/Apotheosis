@@ -372,7 +372,7 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
 
             RenderSystem.enableDepthTest();
             RenderSystem.enableBlend();
-            gfx.blit(this.texture, this.getX() - 2, this.getY() - 2, this.xTexStart - 2, yTex, this.width + 4, this.height + 4, this.textureWidth, this.textureHeight);
+            gfx.blit(this.texture.orThrow(), this.getX() - 2, this.getY() - 2, this.xTexStart - 2, yTex, this.width + 4, this.height + 4, this.textureWidth, this.textureHeight);
             if (this.isHovered()) {
                 this.renderToolTip(gfx, pMouseX, pMouseY);
             }

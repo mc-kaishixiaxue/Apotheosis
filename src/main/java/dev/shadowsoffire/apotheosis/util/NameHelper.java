@@ -45,7 +45,8 @@ public class NameHelper {
     /**
      * List of all possible full names.
      */
-    private static String[] names = { "Butto", "Prim", "Tyrael", "Bajorno", "Michael Morbius", "Morbius", "Arun", "Panez", "Doomsday", "Vanamar", "WhatTheDrunk",
+    private static String[] names = { "Biscuit", "Elisande", "Willow",
+        "Bippy", "Butto", "Prim", "Tyrael", "Bajorno", "Michael Morbius", "Morbius", "Arun", "Panez", "Doomsday", "Vanamar", "WhatTheDrunk",
         "Lothrazar", "Chelly", "Chelicia", "Darsh", "Dariush", "Cheese E Piloza", "Bing", "Royal", "NoWayHere", "SwankyStella", "Isosahedron",
         "Asfalis", "Biz", "Icicle", "Darko", "Shadows", "Katarina", "Faellynna", "Diliviel", "Jank", "Albert", "Andrew", "Anderson", "Andy", "Allan",
         "Arthur", "Aaron", "Allison", "Arielle", "Amanda", "Anne", "Annie", "Amy", "Alana", "Brandon", "Brady", "Bernard", "Ben", "Benjamin", "Bob",
@@ -76,14 +77,18 @@ public class NameHelper {
         "Ger", "Ald", "Mas", "On", "O", "Din", "Thor", "Jon", "Ath", "Burb", "En", "A", "E", "I", "U", "Hab", "Bloo", "Ena",
         "Dit", "Aph", "Ern", "Bor", "Dav", "Id", "Toast", "Son", "For", "Wen", "Lob", "Van", "Zap", "Ear", "Ben", "Don", "Bran",
         "Gro", "Jen", "Bob", "Ette", "Ere", "Man", "Qua", "Bro", "Cree", "Per", "Skel", "Ton", "Zom", "Bie", "Wolf", "End", "Er",
-        "Pig", "Sil", "Ver", "Fish", "Cow", "Chic", "Ken", "Sheep", "Squid", "Hell" };
+        "Pig", "Sil", "Ver", "Fish", "Cow", "Chic", "Ken", "Sheep", "Squid", "Hell", "Dra", "Gor", "Nyx", "Fae", "Lux", "Vex",
+        "Hex", "Rune", "Frost", "Flame", "Storm", "Shade", "Dawn", "Dusk", "Ash", "Mist", "Might", "Fury", "Rage", "Doom", "Grim",
+        "Void", "Rend", "Slay", "Ar", "Or", "Ur", "El", "Al", "Im", "Un", "En", "Ix", "Ox", "Dire", "Dark", "Bright", "Swift", "Glow",
+        "Shine", "Gleam", "Spark"
+    };
 
     /**
      * List of prefixes, that are optionally applied to names.
      */
     private static String[] prefixes = { "Dr. Michael", "Sir", "Mister", "Madam", "Doctor", "Father", "Mother", "Poppa", "Lord", "Lady", "Overseer", "Professor",
         "Mr.", "Mr. President", "Duke", "Duchess", "Dame", "The Honorable", "Chancellor", "Vice-Chancellor", "His Holiness", "Reverend", "Count", "Viscount",
-        "Earl", "Captain", "Major", "General", "Senpai" };
+        "Earl", "Captain", "Major", "General", "Senpai", "Discount" };
 
     /**
      * List of suffixes, that are optionally applied to names. A suffix will always be preceeded by "the"
@@ -95,7 +100,8 @@ public class NameHelper {
         "Light", "Dark", "Odd-Smelling", "Funky", "Rock Smasher", "Son of Herobrine", "Cracked", "Sticky", "\u00a7kAlien\u00a7r", "Baby", "Manly", "Rough",
         "Scary", "Undoubtable", "Honest", "Non-Suspicious", "Boring", "Odd", "Lazy", "Super", "Nifty", "Ogre Slayer", "Pig Thief", "Dirt Digger", "Really Cool",
         "Doominator", "... Something", "Extra-Fishy", "Gorilla Slaughterer", "Marbles Winner", "AC Rizzlord", "President", "Burger Chef", "Professional Animator",
-        "Cheese Sprayer", "Happiness Advocate", "Ghost Hunter", "Head of Potatoes", "Ninja", "Warrior", "Pyromancer"
+        "Cheese Sprayer", "Happiness Advocate", "Ghost Hunter", "Head of Potatoes", "Ninja", "Warrior", "Pyromancer", "Trombone Player", "Airport Technician",
+        "Grand Magistrix", "Starved", "Terrifying", "Expert Cloud Watcher", "Cookie Enthusiast", "Grass Toucher", "Coffee Addict", "Mildly Confused"
     };
 
     /**
@@ -220,7 +226,7 @@ public class NameHelper {
         String root;
 
         if (names.length > 0 && nameParts.length > 0) {
-            root = rand.nextFloat() < 0.8F ? NameHelper.names[rand.nextInt(NameHelper.names.length)] : NameHelper.nameFromParts(rand);
+            root = rand.nextFloat() < 0.45F ? NameHelper.names[rand.nextInt(NameHelper.names.length)] : NameHelper.nameFromParts(rand);
         }
         else if (names.length > 0) {
             root = NameHelper.names[rand.nextInt(NameHelper.names.length)];

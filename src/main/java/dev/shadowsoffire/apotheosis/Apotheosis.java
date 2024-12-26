@@ -73,6 +73,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -135,6 +137,11 @@ public class Apotheosis {
         TierAugmentRegistry.INSTANCE.registerToBus();
         loadConfig(true);
         NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, event -> event.addListener(RunnableReloader.of(() -> loadConfig(false))));
+    }
+
+    @SubscribeEvent
+    public void caps(RegisterCapabilitiesEvent e) {
+        e.registerBlockEntity(Capabilities.ItemHandler.BLOCK, Apoth.Tiles.SALVAGING_TABLE, (be, side) -> be.getItemHandler());
     }
 
     @SubscribeEvent

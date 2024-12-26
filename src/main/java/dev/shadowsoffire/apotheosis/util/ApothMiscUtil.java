@@ -11,7 +11,6 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientAdvancements;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.ServerAdvancementManager;
@@ -110,12 +109,12 @@ public class ApothMiscUtil {
 
     private static class ClientInternal {
 
-        public static LocalPlayer getClientPlayer() {
+        public static Player getClientPlayer() {
             return Minecraft.getInstance().player;
         }
 
         public static boolean hasAdvancment(ResourceLocation key) {
-            ClientAdvancements advancements = getClientPlayer().connection.getAdvancements();
+            ClientAdvancements advancements = Minecraft.getInstance().getConnection().getAdvancements();
             AdvancementHolder holder = advancements.get(key);
             if (holder != null) {
                 AdvancementProgress progress = advancements.progress.get(holder);

@@ -9,9 +9,6 @@
         "H": {
             "item": "minecraft:shears"
         },
-        "M": {
-            "item": "minecraft:smooth_basalt"
-        },
         "P": {
             "tag": "minecraft:planks"
         },
@@ -20,7 +17,7 @@
         }
     },
     "pattern": [
-        "SHM",
+        "SHS",
         "PGP",
         "P P"
     ],

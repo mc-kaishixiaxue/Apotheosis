@@ -87,8 +87,8 @@ public class ApothAdvancementProvider extends AdvancementProvider {
                     desc("progression.haven"),
                     Apotheosis.loc("textures/advancements/bg/apoth.png"),
                     AdvancementType.TASK,
-                    false,
-                    false,
+                    true,
+                    true,
                     false)
                 .requirements(AdvancementRequirements.Strategy.OR)
                 .addCriterion("affixed", InventoryChangeTrigger.TriggerInstance.hasItems(ip(new AffixItemPredicate())))

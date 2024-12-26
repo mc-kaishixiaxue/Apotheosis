@@ -1,6 +1,22 @@
 {
     "parent": "apotheosis:progression/frontier",
     "criteria": {
+        "kill_apothic_invader": {
+            "conditions": {
+                "entity": [
+                    {
+                        "condition": "minecraft:entity_properties",
+                        "entity": "this",
+                        "predicate": {
+                            "type_specific": {
+                                "type": "apotheosis:is_invader"
+                            }
+                        }
+                    }
+                ]
+            },
+            "trigger": "minecraft:player_killed_entity"
+        },
         "uncommon_chest": {
             "conditions": {
                 "items": {
@@ -90,22 +106,6 @@
                 "slots": "legs"
             },
             "trigger": "apotheosis:equipped_item"
-        },
-        "wither": {
-            "conditions": {
-                "entity": [
-                    {
-                        "condition": "minecraft:entity_properties",
-                        "entity": "this",
-                        "predicate": {
-                            "type_specific": {
-                                "type": "apotheosis:is_invader"
-                            }
-                        }
-                    }
-                ]
-            },
-            "trigger": "minecraft:player_killed_entity"
         }
     },
     "display": {
@@ -139,7 +139,7 @@
             "uncommon_hand"
         ],
         [
-            "wither"
+            "kill_apothic_invader"
         ]
     ],
     "sends_telemetry_event": true

@@ -1,20 +1,6 @@
 {
     "parent": "apotheosis:progression/summit",
     "criteria": {
-        "dragon": {
-            "conditions": {
-                "entity": [
-                    {
-                        "condition": "minecraft:entity_properties",
-                        "entity": "this",
-                        "predicate": {
-                            "type": "minecraft:ender_dragon"
-                        }
-                    }
-                ]
-            },
-            "trigger": "minecraft:player_killed_entity"
-        },
         "epic_chest": {
             "conditions": {
                 "items": {
@@ -94,6 +80,20 @@
                 "slots": "legs"
             },
             "trigger": "apotheosis:equipped_item"
+        },
+        "kill_ender_dragon": {
+            "conditions": {
+                "entity": [
+                    {
+                        "condition": "minecraft:entity_properties",
+                        "entity": "this",
+                        "predicate": {
+                            "type": "minecraft:ender_dragon"
+                        }
+                    }
+                ]
+            },
+            "trigger": "minecraft:player_killed_entity"
         }
     },
     "display": {
@@ -127,7 +127,7 @@
             "epic_hand"
         ],
         [
-            "dragon"
+            "kill_ender_dragon"
         ]
     ],
     "sends_telemetry_event": true

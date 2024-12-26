@@ -1,6 +1,20 @@
 {
     "parent": "apotheosis:progression/ascent",
     "criteria": {
+        "kill_wither": {
+            "conditions": {
+                "entity": [
+                    {
+                        "condition": "minecraft:entity_properties",
+                        "entity": "this",
+                        "predicate": {
+                            "type": "minecraft:wither"
+                        }
+                    }
+                ]
+            },
+            "trigger": "minecraft:player_killed_entity"
+        },
         "rare_chest": {
             "conditions": {
                 "items": {
@@ -85,20 +99,6 @@
                 "slots": "legs"
             },
             "trigger": "apotheosis:equipped_item"
-        },
-        "wither": {
-            "conditions": {
-                "entity": [
-                    {
-                        "condition": "minecraft:entity_properties",
-                        "entity": "this",
-                        "predicate": {
-                            "type": "minecraft:wither"
-                        }
-                    }
-                ]
-            },
-            "trigger": "minecraft:player_killed_entity"
         }
     },
     "display": {
@@ -132,7 +132,7 @@
             "rare_hand"
         ],
         [
-            "wither"
+            "kill_wither"
         ]
     ],
     "sends_telemetry_event": true

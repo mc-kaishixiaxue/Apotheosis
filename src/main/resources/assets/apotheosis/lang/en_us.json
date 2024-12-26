@@ -622,10 +622,10 @@
     "comment_id": "/Advancements",
 
     "advancements.apotheosis.progression.root.title": "Apothic World Tiers",
-    "advancements.apotheosis.progression.root.desc": "Milestones for unlocking World Tiers in Apotheosis",
+    "advancements.apotheosis.progression.root.desc": "Milestones for unlocking World Tiers in Apotheosis. Press CTRL+T to open the select screen",
 
     "advancements.apotheosis.progression.haven.title": "World Tier: Haven",
-    "advancements.apotheosis.progression.haven.desc": "Haven, the easiest world tier, is unlocked by default",
+    "advancements.apotheosis.progression.haven.desc": "Haven is unlocked when you find your first affix item",
 
     "advancements.apotheosis.progression.frontier.title": "World Tier: Frontier",
     "advancements.apotheosis.progression.frontier.desc": "Equip a full set of Affix items to progress into the Frontier",

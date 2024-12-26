@@ -1,3 +1,37 @@
+## 8.0.0
+This is the first beta release of Apotheosis for Minecraft 1.21!
+From this release onward, the Adventure Module will be known as Apotheosis, and it depends on the other Apothic mods to provide the full experience.
+
+![](https://i.imgur.com/dRsZqui.png)
+
+### Features
+* Added the World Tiers system, which gates content based on unlockable difficulty levels, instead of specific dimensions.
+  * As you progress through the world, you will unlock more difficult world tiers, which will give you access to better loot (and stronger enemies!)
+  * World Tiers are unlocked by completing certain advancements, and activated in the World Tier Select menu (opened with CTRL + T)
+* Added Purities, a fixed set of gem tiers. Gems are no longer bound to the same rarity system as items and other content.
+* Added many new Affixes for all loot categories, as well as adding endgame-exclusive affixes.
+* Skeletons (and skeleton-like enemies) can wield and shoot crossbows.
+* Bosses have been renamed to Apothic Invaders, and Minibosses have been renamed to Apothic Elites.
+* Potion Charms have been added (including creation of Unbreakable charms through Apothic Enchanting).
+
+### Technical Changes
+* Heavy Weapons and Swords have been flattened into the Melee Weapons loot category.
+* Bows and Crossbows have been flatted into the Ranged Weapons loot category.
+* Pickaxes and Shovels have been flatted into the Breaker loot category.
+* Updated the Loot Rule system to permit more complex operations, giving rarities far more freedom.
+* StepFunction now uses a min/max/step syntax instead of min/steps/step, which is easier to read.
+* There are many more degrees of freedom for various data types.
+  * This means more things are configurable, and things that were already configurable are way more flexible.
+  * The data schema files have not been written yet.
+
+### Notes
+* The Chronicle of Shadows has not been updated to reflect these changes!
+  * It is still available in-game, but may have incorrect statements about changed content.
+* Things _will_ be unbalanced! There has been no extensive playtesting of the new systems yet.
+  * Feedback is welcome about what components feel too weak and/or too strong.
+* Twilight Forest compatibility has not yet been re-enabled.
+* The general non-progression advancements are still missing.
+
 ## 7.4.3
 * Fixed the reforging seed not being copied on death.
 * Fixed blocks with a hardness of zero being unbreakable if using Miner's Fervor.

@@ -5,12 +5,18 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.JsonOps;
+
 import dev.shadowsoffire.placebo.color.GradientColor;
 import dev.shadowsoffire.placebo.util.EnchantmentUtils;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientAdvancements;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderOwner;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.ServerAdvancementManager;
@@ -105,6 +111,14 @@ public class ApothMiscUtil {
         }
 
         return false;
+    }
+
+    /**
+     * Creates a standalone holder that can be serialized in datagen by stealing the {@link UniversalOwner} from the registry lookup.
+     */
+    public static <T> Holder.Reference<T> standaloneHolder(HolderLookup.Provider registries, ResourceKey<T> key) {
+        HolderOwner<T> owner = registries.createSerializationContext(JsonOps.INSTANCE).owner(key.registryKey()).get();
+        return Holder.Reference.createStandAlone(owner, key);
     }
 
     private static class ClientInternal {

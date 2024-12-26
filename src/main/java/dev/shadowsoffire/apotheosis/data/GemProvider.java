@@ -4,8 +4,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.UnaryOperator;
 
-import com.mojang.serialization.JsonOps;
-
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
@@ -30,6 +28,7 @@ import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.MageSlayerBonus;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
+import dev.shadowsoffire.apotheosis.util.ApothMiscUtil;
 import dev.shadowsoffire.apothic_attributes.api.ALObjects;
 import dev.shadowsoffire.apothic_enchanting.Ench;
 import dev.shadowsoffire.placebo.util.data.DynamicRegistryProvider;
@@ -37,7 +36,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.HolderLookup.RegistryLookup;
-import net.minecraft.core.HolderOwner;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -737,8 +735,7 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
      * Creates a standalone holder that can be serialized in datagen by stealing the {@link UniversalOwner} from the registry lookup.
      */
     private static <T> Holder.Reference<T> standaloneHolder(HolderLookup.Provider registries, ResourceKey<T> key) {
-        HolderOwner<T> owner = registries.createSerializationContext(JsonOps.INSTANCE).owner(key.registryKey()).get();
-        return Holder.Reference.createStandAlone(owner, key);
+        return ApothMiscUtil.standaloneHolder(registries, key);
     }
 
 }

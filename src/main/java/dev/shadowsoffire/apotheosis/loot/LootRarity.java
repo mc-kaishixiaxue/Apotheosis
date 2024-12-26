@@ -31,7 +31,7 @@ public record LootRarity(TextColor color, Holder<Item> material, TieredWeights w
         ItemStack.ITEM_NON_AIR_CODEC.fieldOf("material").forGetter(LootRarity::material),
         TieredWeights.CODEC.fieldOf("weights").forGetter(Weighted::weights),
         LootRule.CODEC.listOf().fieldOf("rules").forGetter(LootRarity::rules),
-        LootCategory.mapCodec(LootRule.CODEC.listOf()).fieldOf("overrides").forGetter(LootRarity::overrides),
+        LootCategory.mapCodec(LootRule.CODEC.listOf()).fieldOf("overrides").forGetter(LootRarity::overrides), // TODO: Move this to an external file? Might allow better composition for custom loot categories...
         Codec.intRange(0, 2000).optionalFieldOf("sort_index", 1000).forGetter(LootRarity::sortIndex))
         .apply(inst, LootRarity::new));
 

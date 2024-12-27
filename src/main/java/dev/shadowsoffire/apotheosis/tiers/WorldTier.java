@@ -19,11 +19,13 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
@@ -64,7 +66,25 @@ public enum WorldTier implements StringRepresentable {
         };
     }
 
+    /**
+     * Returns the current world tier for a player.
+     * <p>
+     * For real players, this returns the value of {@link Attachments#WORLD_TIER}.
+     * <p>
+     * For fake players, this method first attempts to resolve the real player with the same UUID, and retrieve their world tier.
+     * If it is successfully able to do so, it will also attach the real player's world tier to the fake player, allowing the
+     * correct one to be resolved when the player is offline.
+     */
     public static WorldTier getTier(Player player) {
+        if (player instanceof FakePlayer fp) {
+            MinecraftServer server = fp.getServer();
+            ServerPlayer realPlayer = server.getPlayerList().getPlayer(fp.getUUID());
+            if (realPlayer != null) {
+                WorldTier realTier = getTier(realPlayer);
+                fp.setData(Attachments.WORLD_TIER, realTier);
+                return realTier;
+            }
+        }
         return player.getData(Attachments.WORLD_TIER);
     }
 

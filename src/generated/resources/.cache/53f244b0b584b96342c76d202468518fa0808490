@@ -1,4 +1,4 @@
-// 1.21.1	2024-12-24T22:08:20.7762003	Affixes
+// 1.21.1	2024-12-26T16:41:58.137567	Affixes
 0fec353805c92f4ad48f7e5d2a7121a06d9c3831 data/apotheosis/affixes/armor/attribute/adamantine.json
 12a0daf6d77fa2918d783881198cdd6ae92f59e4 data/apotheosis/affixes/armor/attribute/aquatic.json
 ddd5fd82543316ce78e69d72bab9965a05487cdd data/apotheosis/affixes/armor/attribute/blessed.json
@@ -83,7 +83,7 @@ b1c76f57c59818c658927b80c6b2f083bf31ec29 data/apotheosis/affixes/shield/catalyzi
 cd01566f3005903fbd737c0d960be64edb9c07b2 data/apotheosis/affixes/shield/mob_effect/devilish.json
 f0f06cf04136b2cd3e6ecf0612685dc365473c2e data/apotheosis/affixes/shield/mob_effect/galvanizing.json
 a4b49da37a32ee480d510c1af34b19dab7b43848 data/apotheosis/affixes/shield/mob_effect/reinforcing.json
-dc2b2761e353a274b450087d7716937a7d3c0fb4 data/apotheosis/affixes/shield/mob_effect/venomous.json
-8e3a6eb5858d83473432a41ed5f3e294b9331409 data/apotheosis/affixes/shield/mob_effect/withering.json
+6b52de2e61d4217c5f9fbdac44cb1cd44eec79fb data/apotheosis/affixes/shield/mob_effect/venomous.json
+4e3c0f3ca6a50ebbcae7ecca60854526d855ae8f data/apotheosis/affixes/shield/mob_effect/withering.json
 fe3baeefd6f1ddfa670d816b01d350dd7e460c3d data/apotheosis/affixes/shield/psychic.json
 cac1562379ecdc025d120d9fe5dc3cdbbcbf5a17 data/apotheosis/affixes/shield/retreating.json

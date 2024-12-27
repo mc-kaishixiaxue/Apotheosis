@@ -7,7 +7,7 @@
             "weight": 25
         }
     },
-    "mob_effect": "minecraft:speed",
+    "mob_effect": "minecraft:wither",
     "target": "block_attacker",
     "types": [
         "shield"

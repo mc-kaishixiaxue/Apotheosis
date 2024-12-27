@@ -746,7 +746,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(epic, 100, 140, StepFunction.fromBounds(0, 1, 0.125F), 60)
             .value(mythic, 100, 140, StepFunction.fromBounds(0, 1, 0.25F), 60));
 
-        this.addMobEffect("shield", "venomous", MobEffects.MOVEMENT_SPEED, Target.BLOCK_ATTACKER, b -> b
+        this.addMobEffect("shield", "venomous", MobEffects.POISON, Target.BLOCK_ATTACKER, b -> b
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.SHIELD)
             .stacking()
@@ -755,7 +755,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .value(epic, 120, 200, StepFunction.fromBounds(0, 1, 0.25F), 300)
             .value(mythic, 160, 240, StepFunction.fromBounds(0, 1, 0.5F), 300));
 
-        this.addMobEffect("shield", "withering", MobEffects.MOVEMENT_SPEED, Target.BLOCK_ATTACKER, b -> b
+        this.addMobEffect("shield", "withering", MobEffects.WITHER, Target.BLOCK_ATTACKER, b -> b
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.SHIELD)
             .value(epic, 40, 100, StepFunction.fromBounds(0, 1, 0.5F), 0)

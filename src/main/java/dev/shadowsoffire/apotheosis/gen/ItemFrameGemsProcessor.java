@@ -54,7 +54,7 @@ public class ItemFrameGemsProcessor extends StructureProcessor {
     }
 
     protected void writeEntityNBT(ServerLevel level, BlockPos pos, RandomSource rand, CompoundTag nbt, StructurePlaceSettings settings) {
-        Player player = level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), -1, true);
+        Player player = level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), -1, false);
         GenContext ctx = player != null ? GenContext.forPlayerAtPos(rand, player, pos) : GenContext.standalone(rand, WorldTier.HAVEN, 0, level, pos);
         Gem gem = GemRegistry.INSTANCE.getRandomItem(ctx);
         if (gem != null) {

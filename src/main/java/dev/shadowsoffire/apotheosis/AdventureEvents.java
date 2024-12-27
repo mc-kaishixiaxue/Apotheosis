@@ -337,18 +337,18 @@ public class AdventureEvents {
             for (TierAugment aug : TierAugmentRegistry.getAugments(tier, Target.PLAYERS)) {
                 aug.apply((ServerLevelAccessor) e.getLevel(), player);
             }
+            entity.setData(Attachments.TIER_AUGMENTS_APPLIED, true);
         }
         else if (entity instanceof Mob mob) {
-            Player player = e.getLevel().getNearestPlayer(mob.getX(), mob.getY(), mob.getZ(), -1, true);
+            Player player = e.getLevel().getNearestPlayer(mob, -1);
             if (player != null) {
                 WorldTier tier = player.getData(Attachments.WORLD_TIER);
                 for (TierAugment aug : TierAugmentRegistry.getAugments(tier, Target.MONSTERS)) {
                     aug.apply((ServerLevelAccessor) e.getLevel(), mob);
                 }
+                entity.setData(Attachments.TIER_AUGMENTS_APPLIED, true);
             }
         }
-
-        entity.setData(Attachments.TIER_AUGMENTS_APPLIED, true);
     }
 
     /**

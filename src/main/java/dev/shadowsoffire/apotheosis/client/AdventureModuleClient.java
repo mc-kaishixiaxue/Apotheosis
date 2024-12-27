@@ -305,7 +305,7 @@ public class AdventureModuleClient {
                     .filter(c -> c.getContents() != PlainTextContents.EMPTY)
                     .forEach(dotPrefixer);
 
-                if (stack.has(Components.DURABILITY_BONUS)) {
+                if (stack.has(Components.DURABILITY_BONUS) && !stack.has(DataComponents.UNBREAKABLE)) {
                     dotPrefixer.accept(Component.translatable("affix.apotheosis:durable.desc", Math.round(100 * stack.get(Components.DURABILITY_BONUS))));
                 }
 

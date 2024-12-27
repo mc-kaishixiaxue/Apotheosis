@@ -10,6 +10,7 @@
         "BlockMixin",
         "DamageSourceMixin",
         "EnchantmentHelperMixin",
+        "EndDragonFightMixin",
         "GoldToolsHaveFortuneModuleMixin",
         "ItemStackMixin",
         "LivingEntityInvoker",
@@ -17,7 +18,8 @@
         "MHFMixinLivingEntity",
         "MobMixin",
         "SmithingMenuMixin",
-        "WandererSpawnerMixin"
+        "WandererSpawnerMixin",
+        "WitherSkullBlockMixin"
     ],
     "client": [
         "client.GuiMixin",

@@ -410,7 +410,7 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
         addGem("core/tyrannical", c -> c
             .unique()
             .bonus(LIGHT_WEAPON, AttributeBonus.builder()
-                .attr(Attributes.KNOCKBACK_RESISTANCE)
+                .attr(Attributes.ATTACK_KNOCKBACK)
                 .op(Operation.ADD_VALUE)
                 .value(Purity.CRACKED, 0.5)
                 .value(Purity.CHIPPED, 1)

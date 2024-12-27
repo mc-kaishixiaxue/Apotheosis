@@ -7,7 +7,7 @@
     "bonuses": [
         {
             "type": "apotheosis:attribute",
-            "attribute": "minecraft:generic.knockback_resistance",
+            "attribute": "minecraft:generic.attack_knockback",
             "gem_class": {
                 "key": "light_weapon",
                 "types": [

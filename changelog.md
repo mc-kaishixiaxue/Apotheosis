@@ -1,3 +1,14 @@
+## 8.0.1
+* Fixed the Salvaging Table not connecting to automation.
+* Re-added the missing Wandering Trader trades (except the affix ones, those are still NYI).
+* Fake Players with the UUID of a real player will now attempt to use the real player's World Tier instead of always using Haven.
+  * Fake Players with a generic UUID will still be perpetually stuck in Haven. Mods using fake players should record UUIDs whenever possible.
+* Fixed Tyrannical Gems providing Knockback Resistance to weapons (should've been Attack Knockback).
+* Fixed the Withering and Venomous shield affixes inflicting Speed to the target instead of Wither / Poison.
+* The Durability Bonus component will no longer show in tooltips when Unbreakable is applied.
+* Made the FinalizeSpawnEvent post for Ender Dragons and Withers.
+  * This means Tier Augments and the like can now apply to these bosses.
+
 ## 8.0.0
 This is the first beta release of Apotheosis for Minecraft 1.21!
 From this release onward, the Adventure Module will be known as Apotheosis, and it depends on the other Apothic mods to provide the full experience.

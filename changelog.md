@@ -1,3 +1,22 @@
+## 8.0.2
+* Fixed fallback world tier logic ignoring creative players.
+  * This could cause certain generation types to always generate using Haven when no survival players were nearby.
+* Fixed a crash that could occur when spawning Apothic Elites.
+  * This was a two-fold issue. The crash itself was prevented by a change made in Placebo 9.6.2, but there was another underlying bug.
+  * The name generation logic for elites could write-back to the stored name Component, which caused the registry to lose track of the Elite object.
+* Fixed command feedback from `/apoth affix apply` being invalid.
+* Fixed the omnetic affix (tools which work on any block) not properly adjusting break speed.
+* Fixed block drops being affixed.
+  * This was caused by an error in the conversion modifier causing 0% chance rules (which are supposed to be blacklists) to be ignored.
+* Fixed pipes not connecting to the Reforging Table.
+* Fixed an issue where Affix Loot Entries' underlying itemstack could be modified, causing no more items to be generated until game restart or `/reload`.
+* Fixed an issue where the Salvaging Table could delete items if it received a stack size higher than one. It will still only process one item per insert op.
+* Fixed the Enlightened Affix (place a torch on right-click) overriding the block interaction (causing it to place a torch when trying to open a chest).
+* Updated the bonuses for the Samurai, Splendor, and Tyrannical gems.
+  * Samurai now gives +Armor Toughness and -Movement Speed for Lower Armor (was +Movement Speed)
+  * Splendor now gives +Luck for all Armor slots (was +Luck for Core Armor and +Movement Speed for Boots)
+  * Tyrannical now gives +Max Health and -Life Steal for Boots.
+
 ## 8.0.1
 * Fixed the Salvaging Table not connecting to automation.
 * Re-added the missing Wandering Trader trades (except the affix ones, those are still NYI).

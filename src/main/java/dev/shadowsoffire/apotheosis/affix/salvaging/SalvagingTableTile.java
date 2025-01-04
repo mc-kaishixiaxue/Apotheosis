@@ -86,7 +86,7 @@ public class SalvagingTableTile extends BlockEntity {
                     if (!out.isEmpty()) return stack; // If any output fails to insert to the output inventory, we abort.
                 }
             }
-            return ItemStack.EMPTY;
+            return stack.copyWithCount(stack.getCount() - 1);
         }
 
         @Override

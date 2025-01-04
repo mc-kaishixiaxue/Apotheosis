@@ -66,6 +66,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.HarvestCheck;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
+import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent.UsePhase;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -160,6 +161,10 @@ public class AdventureEvents {
 
     @SubscribeEvent
     public void onItemUse(UseItemOnBlockEvent e) {
+        if (e.getUsePhase() != UsePhase.ITEM_AFTER_BLOCK) {
+            return;
+        }
+
         ItemStack s = e.getItemStack();
         InteractionResult socketRes = SocketHelper.getGems(s).onItemUse(e.getUseOnContext());
         if (socketRes != null) {

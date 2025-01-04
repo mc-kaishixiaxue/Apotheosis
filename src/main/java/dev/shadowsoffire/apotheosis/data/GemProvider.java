@@ -57,6 +57,7 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
     public static final int DEFAULT_WEIGHT = 10;
     public static final int DEFAULT_QUALITY = 0;
 
+    public static final GemClass ARMOR = new GemClass("armor", LootCategory.HELMET, LootCategory.CHESTPLATE, LootCategory.LEGGINGS, LootCategory.BOOTS);
     public static final GemClass LIGHT_WEAPON = new GemClass("light_weapon", LootCategory.MELEE_WEAPON, LootCategory.TRIDENT);
     public static final GemClass CORE_ARMOR = new GemClass("core_armor", LootCategory.CHESTPLATE, LootCategory.LEGGINGS);
     public static final GemClass RANGED_WEAPON = new GemClass("ranged_weapon", LootCategory.BOW, LootCategory.TRIDENT);
@@ -291,15 +292,26 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                 .value(Purity.NORMAL, 0.35)
                 .value(Purity.FLAWLESS, 0.4)
                 .value(Purity.PERFECT, 0.5))
-            .bonus(LOWER_ARMOR, AttributeBonus.builder()
-                .attr(Attributes.MOVEMENT_SPEED)
-                .op(Operation.ADD_MULTIPLIED_TOTAL)
-                .value(Purity.CRACKED, 0.10)
-                .value(Purity.CHIPPED, 0.15)
-                .value(Purity.FLAWED, 0.25)
-                .value(Purity.NORMAL, 0.35)
-                .value(Purity.FLAWLESS, 0.45)
-                .value(Purity.PERFECT, 0.65))
+            .bonus(LOWER_ARMOR, MultiAttrBonus.builder()
+                .desc("bonus.apotheosis:multi_attr.desc.and")
+                .modifier(b -> b
+                    .attr(Attributes.ARMOR_TOUGHNESS)
+                    .op(Operation.ADD_MULTIPLIED_TOTAL)
+                    .value(Purity.CRACKED, 0.10F)
+                    .value(Purity.CHIPPED, 0.15F)
+                    .value(Purity.FLAWED, 0.175F)
+                    .value(Purity.NORMAL, 0.225F)
+                    .value(Purity.FLAWLESS, 0.275F)
+                    .value(Purity.PERFECT, 0.35F))
+                .modifier(b -> b
+                    .attr(Attributes.MOVEMENT_SPEED)
+                    .op(Operation.ADD_MULTIPLIED_TOTAL)
+                    .value(Purity.CRACKED, -0.025F)
+                    .value(Purity.CHIPPED, -0.05F)
+                    .value(Purity.FLAWED, -0.075F)
+                    .value(Purity.NORMAL, -0.10F)
+                    .value(Purity.FLAWLESS, -0.125F)
+                    .value(Purity.PERFECT, -0.15F)))
             .bonus(LootCategory.HELMET, AttributeBonus.builder()
                 .attr(ALObjects.Attributes.ARROW_VELOCITY)
                 .op(Operation.ADD_MULTIPLIED_TOTAL)
@@ -379,15 +391,15 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                 .value(Purity.PERFECT, 3)));
 
         addGem("core/splendor", c -> c
-            .bonus(CORE_ARMOR, AttributeBonus.builder()
+            .bonus(ARMOR, AttributeBonus.builder()
                 .attr(Attributes.LUCK)
                 .op(Operation.ADD_VALUE)
                 .value(Purity.CRACKED, 0.5)
-                .value(Purity.CHIPPED, 1.5)
-                .value(Purity.FLAWED, 2.5)
-                .value(Purity.NORMAL, 3.5)
-                .value(Purity.FLAWLESS, 4.5)
-                .value(Purity.PERFECT, 6))
+                .value(Purity.CHIPPED, 1.25)
+                .value(Purity.FLAWED, 2)
+                .value(Purity.NORMAL, 2.25)
+                .value(Purity.FLAWLESS, 3.5)
+                .value(Purity.PERFECT, 5))
             .bonus(WEAPON_OR_TOOL, AttributeBonus.builder()
                 .attr(ALObjects.Attributes.EXPERIENCE_GAINED)
                 .op(Operation.ADD_MULTIPLIED_BASE)
@@ -396,16 +408,7 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                 .value(Purity.FLAWED, 0.225)
                 .value(Purity.NORMAL, 0.3)
                 .value(Purity.FLAWLESS, 0.40)
-                .value(Purity.PERFECT, 0.60))
-            .bonus(LootCategory.BOOTS, AttributeBonus.builder()
-                .attr(Attributes.MOVEMENT_SPEED)
-                .op(Operation.ADD_MULTIPLIED_TOTAL)
-                .value(Purity.CRACKED, 0.10)
-                .value(Purity.CHIPPED, 0.25)
-                .value(Purity.FLAWED, 0.35)
-                .value(Purity.NORMAL, 0.45)
-                .value(Purity.FLAWLESS, 0.55)
-                .value(Purity.PERFECT, 0.70)));
+                .value(Purity.PERFECT, 0.60)));
 
         addGem("core/tyrannical", c -> c
             .unique()
@@ -436,6 +439,26 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                 .value(Purity.NORMAL, 0.30)
                 .value(Purity.FLAWLESS, 0.375)
                 .value(Purity.PERFECT, 0.5))
+            .bonus(LootCategory.BOOTS, MultiAttrBonus.builder()
+                .desc("bonus.apotheosis:multi_attr.desc.and")
+                .modifier(b -> b
+                    .attr(Attributes.MAX_HEALTH)
+                    .op(Operation.ADD_MULTIPLIED_TOTAL)
+                    .value(Purity.CRACKED, 0.05F)
+                    .value(Purity.CHIPPED, 0.075F)
+                    .value(Purity.FLAWED, 0.125F)
+                    .value(Purity.NORMAL, 0.175F)
+                    .value(Purity.FLAWLESS, 0.225F)
+                    .value(Purity.PERFECT, 0.40F))
+                .modifier(b -> b
+                    .attr(ALObjects.Attributes.LIFE_STEAL)
+                    .op(Operation.ADD_VALUE)
+                    .value(Purity.CRACKED, -0.025F)
+                    .value(Purity.CHIPPED, -0.05F)
+                    .value(Purity.FLAWED, -0.075F)
+                    .value(Purity.NORMAL, -0.10F)
+                    .value(Purity.FLAWLESS, -0.125F)
+                    .value(Purity.PERFECT, -0.20F)))
             .bonus(LootCategory.BOW, MobEffectBonus.builder()
                 .effect(ALObjects.MobEffects.BLEEDING)
                 .target(Target.ARROW_TARGET)

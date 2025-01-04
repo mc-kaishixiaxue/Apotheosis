@@ -8,20 +8,22 @@
             "type": "apotheosis:attribute",
             "attribute": "minecraft:generic.luck",
             "gem_class": {
-                "key": "core_armor",
+                "key": "armor",
                 "types": [
+                    "helmet",
                     "chestplate",
-                    "leggings"
+                    "leggings",
+                    "boots"
                 ]
             },
             "operation": "add_value",
             "values": {
                 "cracked": 0.5,
-                "chipped": 1.5,
-                "flawed": 2.5,
-                "normal": 3.5,
-                "flawless": 4.5,
-                "perfect": 6.0
+                "chipped": 1.25,
+                "flawed": 2.0,
+                "normal": 2.25,
+                "flawless": 3.5,
+                "perfect": 5.0
             }
         },
         {
@@ -44,20 +46,6 @@
                 "normal": 0.3,
                 "flawless": 0.4,
                 "perfect": 0.6
-            }
-        },
-        {
-            "type": "apotheosis:attribute",
-            "attribute": "minecraft:generic.movement_speed",
-            "gem_class": "boots",
-            "operation": "add_multiplied_total",
-            "values": {
-                "cracked": 0.1,
-                "chipped": 0.25,
-                "flawed": 0.35,
-                "normal": 0.45,
-                "flawless": 0.55,
-                "perfect": 0.7
             }
         }
     ]

@@ -58,7 +58,7 @@ public class AffixLootModifier extends ContextualLootModifier {
                         lootEntry = AffixLootRegistry.INSTANCE.getRandomItem(gCtx);
                     }
 
-                    ItemStack affixItem = LootController.createLootItem(lootEntry.stack().copy(), rarity, gCtx);
+                    ItemStack affixItem = LootController.createLootItem(lootEntry.stack(), rarity, gCtx);
                     if (!affixItem.isEmpty()) {
                         affixItem.set(Components.FROM_CHEST, true);
                         generatedLoot.add(affixItem);

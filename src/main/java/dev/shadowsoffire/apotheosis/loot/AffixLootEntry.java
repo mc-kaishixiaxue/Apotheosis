@@ -45,4 +45,14 @@ public record AffixLootEntry(TieredWeights weights, Constraints constraints, Ite
         return CODEC;
     }
 
+    /**
+     * Always return a copy of the underlying stack so that consumers do not need to worry about creating their own.
+     * <p>
+     * In effectively all usecases, the stack must be copied anyway.
+     */
+    @Override
+    public ItemStack stack() {
+        return this.stack.copy();
+    }
+
 }

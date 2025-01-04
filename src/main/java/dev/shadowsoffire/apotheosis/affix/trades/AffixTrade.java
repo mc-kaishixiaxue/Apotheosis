@@ -90,7 +90,7 @@ public class AffixTrade implements WandererTrade {
             List<Wrapper<AffixLootEntry>> resolved = this.entries.stream().map(this::unwrap).filter(Objects::nonNull).map(e -> e.<AffixLootEntry>wrap(ctx.tier(), ctx.luck())).toList();
             AffixLootEntry entry = WeightedRandom.getRandomItem(rand, resolved).get().data();
             LootRarity selectedRarity = LootRarity.random(ctx, this.rarities.isEmpty() ? entry.rarities() : this.rarities);
-            affixItem = LootController.createLootItem(entry.stack().copy(), selectedRarity, ctx);
+            affixItem = LootController.createLootItem(entry.stack(), selectedRarity, ctx);
         }
 
         if (affixItem.isEmpty()) return null;

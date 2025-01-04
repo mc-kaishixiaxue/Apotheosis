@@ -38,14 +38,16 @@ public class SelectWorldTierScreen extends Screen {
 
     protected WorldTier displayedTier = WorldTier.getTier(Minecraft.getInstance().player);
 
+    protected int leftPos, topPos;
+
     public SelectWorldTierScreen() {
         super(Apotheosis.lang("title", "select_world_tier"));
     }
 
     @Override
     protected void init() {
-        int leftPos = (this.width - GUI_WIDTH) / 2;
-        int topPos = (this.height - GUI_HEIGHT) / 2;
+        leftPos = Math.max(0, (this.width - GUI_WIDTH) / 2);
+        topPos = Math.max(0, (this.height - GUI_HEIGHT) / 2);
         LocalPlayer player = Minecraft.getInstance().player;
 
         this.havenBtn = this.addRenderableWidget(
@@ -138,9 +140,6 @@ public class SelectWorldTierScreen extends Screen {
         int imgTop = (this.height - IMAGE_HEIGHT) / 2;
 
         gfx.blit(TEXTURE, imgLeft, imgTop, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_HEIGHT);
-
-        int leftPos = (this.width - GUI_WIDTH) / 2;
-        int topPos = (this.height - GUI_HEIGHT) / 2;
 
         PoseStack pose = gfx.pose();
         pose.pushPose();

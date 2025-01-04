@@ -17,7 +17,7 @@ import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
  */
 public record AffixData(float chance, Set<LootRarity> rarities) {
 
-    public static final AffixData DEFAULT = new AffixData(0, Set.of());
+    public static final AffixData DEFAULT = new AffixData(-1, Set.of());
 
     public static final Codec<AffixData> CODEC = RecordCodecBuilder.create(inst -> inst.group(
         Codec.FLOAT.fieldOf("affix_chance").forGetter(AffixData::chance),

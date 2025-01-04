@@ -116,9 +116,8 @@ public class EliteProvider extends DynamicRegistryProvider<Elite> {
             .basicData(c -> InvaderProvider.rangedGear(c)
                 .name(Component.literal("Withering Archer"))
                 .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 100, 0))
-                .constraints(Constraints.forDimension(Level.OVERWORLD))
+                .constraints(Constraints.forDimension(Level.NETHER))
                 .exclusion(new SpawnTypeExclusion(ApothMiscUtil.linkedSet(MobSpawnType.SPAWN_EGG, MobSpawnType.SPAWNER, MobSpawnType.MOB_SUMMONED)))
-                .exclusion(new SurfaceTypeExclusion(BossSpawnRules.NEEDS_SURFACE))
                 .nbt(witherCloud()))
             .stats(c -> c
                 .enchantChance(0.25F)
@@ -162,11 +161,16 @@ public class EliteProvider extends DynamicRegistryProvider<Elite> {
             {
                 "Passengers": [{
                     "id": "minecraft:area_effect_cloud",
-                    "Potion": "apotheosis:wither",
+                    "potion_contents": {
+                        "potion": "apothic_attributes:wither"
+                    },
                     "Duration": 200000,
                     "Radius": 2.5,
                     "ReapplicationDelay": 20,
-                    "Particle": "minecraft:entity_effect",
+                    "Particle": {
+                        "type":"entity_effect",
+                        "color": 0
+                    },
                     "WaitTime": 0
                 }]
             }

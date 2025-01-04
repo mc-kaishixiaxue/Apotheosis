@@ -32,7 +32,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -108,6 +107,7 @@ public record Elite(BasicBossData basicData, float chance, HolderSet<EntityType<
                 for (int i = 0; i < passengers.size(); ++i) {
                     Entity entity = EntityType.loadEntityRecursive(passengers.getCompound(i), level.getLevel(), Function.identity());
                     if (entity != null) {
+                        entity.setPos(pos);
                         level.addFreshEntityWithPassengers(entity);
                         entity.startRiding(mob, true);
                     }
@@ -116,7 +116,7 @@ public record Elite(BasicBossData basicData, float chance, HolderSet<EntityType<
         }
 
         mob.setPos(pos);
-        this.initBoss(mob, ctx);
+        this.initElite(mob, ctx);
 
         // readAdditionalSaveData should leave unchanged any tags that are not in the NBT data.
         if (optNbt.isPresent()) {
@@ -142,7 +142,7 @@ public record Elite(BasicBossData basicData, float chance, HolderSet<EntityType<
      * @param rand
      * @param mob
      */
-    public void initBoss(Mob mob, GenContext ctx) {
+    public void initElite(Mob mob, GenContext ctx) {
         RandomSource rand = ctx.rand();
         mob.getPersistentData().putBoolean("apoth.miniboss", true);
 
@@ -188,8 +188,8 @@ public record Elite(BasicBossData basicData, float chance, HolderSet<EntityType<
                 }
 
                 var rarity = LootRarity.random(ctx, this.afxData.rarities());
+                mob.setCustomName(mob.getCustomName().plainCopy().withStyle(Style.EMPTY.withColor(rarity.color())));
                 Invader.modifyBossItem(temp, mob.getName(), ctx, rarity, this.stats, mob.level().registryAccess());
-                mob.setCustomName(((MutableComponent) mob.getCustomName()).withStyle(Style.EMPTY.withColor(rarity.color())));
                 mob.setDropChance(EquipmentSlot.values()[guaranteed], 2F);
             }
         }

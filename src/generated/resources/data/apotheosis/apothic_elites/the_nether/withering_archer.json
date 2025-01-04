@@ -6,7 +6,7 @@
     "basic_data": {
         "constraints": {
             "dimensions": [
-                "minecraft:overworld"
+                "minecraft:the_nether"
             ]
         },
         "exclusions": [
@@ -17,10 +17,6 @@
                     "spawner",
                     "mob_summoned"
                 ]
-            },
-            {
-                "type": "apotheosis:surface_type",
-                "rule": "needs_surface"
             }
         ],
         "name": "Withering Archer",
@@ -28,12 +24,17 @@
             "Passengers": [
                 {
                     "Duration": 200000,
-                    "Particle": "minecraft:entity_effect",
-                    "Potion": "apotheosis:wither",
+                    "Particle": {
+                        "type": "entity_effect",
+                        "color": 0
+                    },
                     "Radius": 2.5,
                     "ReapplicationDelay": 20,
                     "WaitTime": 0,
-                    "id": "minecraft:area_effect_cloud"
+                    "id": "minecraft:area_effect_cloud",
+                    "potion_contents": {
+                        "potion": "apothic_attributes:wither"
+                    }
                 }
             ]
         },

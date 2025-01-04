@@ -118,7 +118,7 @@ public class AffixCommand {
             }
 
             AffixHelper.applyAffix(held, new AffixInstance(afx, level, rarity, held));
-            c.getSource().sendSuccess(() -> Component.translatable("Successfully applied affix %s with level %s to %s", affixId, level, held.getDisplayName()), true);
+            c.getSource().sendSuccess(() -> Component.translatable("Successfully applied affix %s with level %s to %s", affixId.toString(), level, held.getDisplayName()), true);
             return 0;
         }
         else {

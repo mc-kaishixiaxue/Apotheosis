@@ -29,7 +29,7 @@ public record AffixLootEntry(TieredWeights weights, Constraints constraints, Ite
             TieredWeights.CODEC.fieldOf("weights").forGetter(Weighted::weights),
             Constraints.CODEC.optionalFieldOf("constraints", Constraints.EMPTY).forGetter(Constrained::constraints),
             ItemStack.CODEC.fieldOf("stack").forGetter(AffixLootEntry::stack),
-            PlaceboCodecs.setOf(LootRarity.CODEC).fieldOf("rarities").forGetter(AffixLootEntry::rarities))
+            PlaceboCodecs.setOf(LootRarity.CODEC).optionalFieldOf("rarities", Set.of()).forGetter(AffixLootEntry::rarities))
         .apply(inst, AffixLootEntry::new));
 
     public AffixLootEntry(TieredWeights weights, ItemStack stack) {

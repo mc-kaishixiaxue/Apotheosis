@@ -1,6 +1,5 @@
 {
     "type": "apotheosis:affix_loot_entry",
-    "rarities": [],
     "stack": {
         "count": 1,
         "id": "minecraft:iron_helmet"

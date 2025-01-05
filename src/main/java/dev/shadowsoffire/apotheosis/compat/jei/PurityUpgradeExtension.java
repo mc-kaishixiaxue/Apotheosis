@@ -35,7 +35,7 @@ public class PurityUpgradeExtension implements GemCuttingExtension<PurityUpgrade
         }
         else {
             GemRegistry.INSTANCE.getValues().stream().forEachOrdered(g -> {
-                if (g.getMinPurity().isAtLeast(recipe.purity())) {
+                if (recipe.purity().isAtLeast(g.getMinPurity())) {
                     inputs.add(gemStack(g, recipe.purity()));
                     outputs.add(gemStack(g, recipe.purity().next()));
                 }

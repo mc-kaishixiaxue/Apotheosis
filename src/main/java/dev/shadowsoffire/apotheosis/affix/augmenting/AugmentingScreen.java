@@ -29,6 +29,7 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -79,8 +80,6 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
         this.list = this.addRenderableWidget(new AffixDropList(left + 39, top + 17, 123, 14, Component.empty(), this.currentItemAffixes, 6));
         this.list.setSelected(selected);
 
-        Component sigilName = Component.translatable("item.apotheosis.sigil_of_enhancement").withStyle(ChatFormatting.YELLOW);
-
         this.upgradeBtn = this.addRenderableWidget(
             new FatTexButton(left + 60, top + 111, 29, 13, 186, 135,
                 btn -> {
@@ -88,8 +87,7 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
                         this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, AugmentingMenu.UPGRADE | this.getSelectedAffix() << 1);
                     }
                 },
-                Component.translatable("button.apotheosis.augmenting.upgrade"),
-                Component.translatable("button.apotheosis.augmenting.upgrade.cost", 2, sigilName)));
+                Component.translatable("button.apotheosis.augmenting.upgrade")));
 
         this.rerollBtn = this.addRenderableWidget(
             new FatTexButton(left + 112, top + 111, 29, 13, 186 + 37, 135,
@@ -98,8 +96,7 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
                         this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, AugmentingMenu.REROLL | this.getSelectedAffix() << 1);
                     }
                 },
-                Component.translatable("button.apotheosis.augmenting.reroll"),
-                Component.translatable("button.apotheosis.augmenting.upgrade.cost", 1, sigilName)));
+                Component.translatable("button.apotheosis.augmenting.reroll")));
     }
 
     @Override
@@ -210,14 +207,14 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
                 this.rerollBtn.setInactiveMessage(Component.translatable("button.apotheosis.augmenting.no_alternatives").withStyle(ChatFormatting.RED));
             }
 
-            if (this.upgradeBtn.isActive() && this.menu.getSigils().getCount() < 2 && !this.menu.player.isCreative()) {
+            if (this.upgradeBtn.isActive() && !this.menu.hasUpgradeCost() && !this.menu.player.isCreative()) {
                 this.upgradeBtn.active = false;
-                this.upgradeBtn.setInactiveMessage(Component.translatable("Not Enough Sigils").withStyle(ChatFormatting.RED));
+                this.upgradeBtn.setInactiveMessage(CommonComponents.EMPTY);
             }
 
-            if (this.rerollBtn.isActive() && this.menu.getSigils().getCount() < 1 && !this.menu.player.isCreative()) {
+            if (this.rerollBtn.isActive() && !this.menu.hasRerollCost() && !this.menu.player.isCreative()) {
                 this.rerollBtn.active = false;
-                this.rerollBtn.setInactiveMessage(Component.translatable("Not Enough Sigils").withStyle(ChatFormatting.RED));
+                this.rerollBtn.setInactiveMessage(CommonComponents.EMPTY);
             }
         }
     }
@@ -353,11 +350,10 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
      */
     public class FatTexButton extends SimpleTexButton {
 
-        protected final Component costMsg;
+        private final Component sigilName = Component.translatable("item.apotheosis.sigil_of_enhancement").withStyle(ChatFormatting.YELLOW);
 
-        public FatTexButton(int x, int y, int width, int height, int u, int v, OnPress press, Component message, Component costMsg) {
+        public FatTexButton(int x, int y, int width, int height, int u, int v, OnPress press, Component message) {
             super(x, y, width, height, u, v, TEXTURE, 256, 307, press, message);
-            this.costMsg = costMsg;
         }
 
         @Override
@@ -386,14 +382,39 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
                     primary = primary.copy().withStyle(ChatFormatting.GRAY);
                 }
 
+                int sigilCost = this == AugmentingScreen.this.rerollBtn ? AugmentingMenu.REROLL_SIGIL_COST : AugmentingMenu.UPGRADE_SIGIL_COST;
+                int levelCost = this == AugmentingScreen.this.rerollBtn ? AugmentingMenu.REROLL_LEVEL_COST : AugmentingMenu.UPGRADE_LEVEL_COST;
+
                 List<Component> tooltips = new ArrayList<>();
                 tooltips.add(primary);
 
+                MutableComponent sigilCostMsg = Apotheosis.lang("button", "augmenting.upgrade.cost", sigilCost, sigilName);
+                MutableComponent levelCostMsg = Apotheosis.lang("button", "augmenting.upgrade.exp_cost", levelCost);
+
                 if (this.isActive()) {
-                    tooltips.add(this.costMsg);
+                    tooltips.add(sigilCostMsg);
+                    tooltips.add(levelCostMsg);
                 }
                 else if (this.inactiveMessage != CommonComponents.EMPTY) {
                     tooltips.add(this.inactiveMessage);
+                }
+                else {
+                    if (AugmentingScreen.this.menu.getSigils().getCount() < sigilCost) {
+                        sigilCostMsg.withStyle(ChatFormatting.RED);
+                    }
+                    else {
+                        sigilCostMsg.withStyle(ChatFormatting.GRAY);
+                    }
+
+                    if (Minecraft.getInstance().player.experienceLevel < levelCost) {
+                        levelCostMsg.withStyle(ChatFormatting.RED);
+                    }
+                    else {
+                        levelCostMsg.withStyle(ChatFormatting.GRAY);
+                    }
+
+                    tooltips.add(sigilCostMsg);
+                    tooltips.add(levelCostMsg);
                 }
 
                 gfx.renderComponentTooltip(Minecraft.getInstance().font, tooltips, pMouseX, pMouseY);

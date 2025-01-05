@@ -545,6 +545,7 @@
     "button.apotheosis.augmenting.max_level": "Already Max Level",
     "button.apotheosis.augmenting.no_alternatives": "No Alternative Affixes",
     "button.apotheosis.augmenting.upgrade.cost": "Cost: %sx %s",
+    "button.apotheosis.augmenting.upgrade.exp_cost": "Experience Cost: %s Levels",
 
     "menu.apotheosis.gem_cutting": "Gem Cutting",
     "container.apotheosis.salvage": "Salvage",

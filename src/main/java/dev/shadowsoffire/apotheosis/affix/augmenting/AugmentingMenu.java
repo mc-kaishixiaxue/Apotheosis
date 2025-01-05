@@ -15,6 +15,7 @@ import dev.shadowsoffire.apotheosis.net.RerollResultPayload;
 import dev.shadowsoffire.placebo.cap.InternalItemHandler;
 import dev.shadowsoffire.placebo.menu.BlockEntityMenu;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
+import dev.shadowsoffire.placebo.util.EnchantmentUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -29,8 +30,11 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
     public static final int UPGRADE = 0;
     public static final int REROLL = 1;
 
-    public static final int UPGRADE_COST = 2;
-    public static final int REROLL_COST = 1;
+    public static final int UPGRADE_SIGIL_COST = 2;
+    public static final int UPGRADE_LEVEL_COST = 225;
+
+    public static final int REROLL_SIGIL_COST = 1;
+    public static final int REROLL_LEVEL_COST = 175;
 
     protected final Player player;
     protected InternalItemHandler itemInv = new InternalItemHandler(1);
@@ -92,11 +96,12 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
 
                 ItemStack sigils = this.getSigils();
                 if (!this.player.isCreative()) {
-                    if (sigils.getCount() < UPGRADE_COST) {
+                    if (!hasUpgradeCost()) {
                         return false;
                     }
                     else {
-                        sigils.shrink(UPGRADE_COST);
+                        sigils.shrink(UPGRADE_SIGIL_COST);
+                        EnchantmentUtils.chargeExperience(player, EnchantmentUtils.getTotalExperienceForLevel(UPGRADE_LEVEL_COST));
                     }
                 }
 
@@ -116,11 +121,12 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
 
                 ItemStack sigils = this.getSigils();
                 if (!this.player.isCreative()) {
-                    if (sigils.getCount() < REROLL_COST) {
+                    if (!hasRerollCost()) {
                         return false;
                     }
                     else {
-                        sigils.shrink(REROLL_COST);
+                        sigils.shrink(REROLL_SIGIL_COST);
+                        EnchantmentUtils.chargeExperience(player, EnchantmentUtils.getTotalExperienceForLevel(REROLL_LEVEL_COST));
                     }
                 }
 
@@ -150,6 +156,14 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
 
     public ItemStack getSigils() {
         return this.slots.get(1).getItem();
+    }
+
+    public boolean hasUpgradeCost() {
+        return this.getSigils().getCount() >= UPGRADE_SIGIL_COST && this.player.experienceLevel >= UPGRADE_LEVEL_COST;
+    }
+
+    public boolean hasRerollCost() {
+        return this.getSigils().getCount() >= REROLL_SIGIL_COST && this.player.experienceLevel >= REROLL_LEVEL_COST;
     }
 
     /**

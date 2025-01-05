@@ -58,7 +58,7 @@ public class EnlightenedAffix extends Affix {
     @Override
     public InteractionResult onItemUse(AffixInstance inst, UseOnContext ctx) {
         Player player = ctx.getPlayer();
-        if (AdventureConfig.torchItem.get().useOn(ctx).consumesAction()) {
+        if (AdventureConfig.torchItem.useOn(ctx).consumesAction()) {
             if (ctx.getItemInHand().isEmpty()) {
                 ctx.getItemInHand().grow(1);
             }

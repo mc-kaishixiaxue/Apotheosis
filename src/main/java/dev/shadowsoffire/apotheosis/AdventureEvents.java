@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.base.Predicates;
 
+import dev.shadowsoffire.apotheosis.AdventureConfig.ConfigPayload;
 import dev.shadowsoffire.apotheosis.Apoth.Attachments;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
@@ -52,6 +53,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -354,6 +356,12 @@ public class AdventureEvents {
                 entity.setData(Attachments.TIER_AUGMENTS_APPLIED, true);
             }
         }
+    }
+
+    @SubscribeEvent
+    public void sync(OnDatapackSyncEvent e) {
+        ConfigPayload payload = new ConfigPayload();
+        e.getRelevantPlayers().forEach(p -> PacketDistributor.sendToPlayer(p, payload));
     }
 
     /**

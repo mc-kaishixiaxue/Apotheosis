@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.AffixInstance;
@@ -382,8 +383,8 @@ public class AugmentingScreen extends AdventureContainerScreen<AugmentingMenu> {
                     primary = primary.copy().withStyle(ChatFormatting.GRAY);
                 }
 
-                int sigilCost = this == AugmentingScreen.this.rerollBtn ? AugmentingMenu.REROLL_SIGIL_COST : AugmentingMenu.UPGRADE_SIGIL_COST;
-                int levelCost = this == AugmentingScreen.this.rerollBtn ? AugmentingMenu.REROLL_LEVEL_COST : AugmentingMenu.UPGRADE_LEVEL_COST;
+                int sigilCost = this == AugmentingScreen.this.rerollBtn ? AdventureConfig.rerollSigilCost : AdventureConfig.upgradeSigilCost;
+                int levelCost = this == AugmentingScreen.this.rerollBtn ? AdventureConfig.rerollLevelCost : AdventureConfig.upgradeLevelCost;
 
                 List<Component> tooltips = new ArrayList<>();
                 tooltips.add(primary);

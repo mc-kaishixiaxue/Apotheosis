@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import dev.shadowsoffire.apotheosis.AdventureConfig.ConfigPayload;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.affix.AffixRegistry;
 import dev.shadowsoffire.apotheosis.compat.AdventureTwilightCompat;
@@ -58,7 +59,6 @@ import dev.shadowsoffire.placebo.util.RunnableReloader;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -88,7 +88,7 @@ public class Apotheosis {
     public static final boolean DEBUG_WORLDGEN = "on".equalsIgnoreCase(System.getenv("apotheosis.debug_worldgen"));
     public static final boolean STAGES_LOADED = ModList.get().isLoaded("gamestages");
 
-    static final Map<ResourceLocation, LootCategory> IMC_TYPE_OVERRIDES = new HashMap<>();
+    static final Map<Item, LootCategory> IMC_TYPE_OVERRIDES = new HashMap<>();
 
     public static boolean isRunningInDatagen = false;
 
@@ -124,6 +124,7 @@ public class Apotheosis {
         PayloadHelper.registerPayload(new RerollResultPayload.Provider());
         PayloadHelper.registerPayload(new RadialStateChangePayload.Provider());
         PayloadHelper.registerPayload(new WorldTierPayload.Provider());
+        PayloadHelper.registerPayload(new ConfigPayload.Provider());
         NeoForge.EVENT_BUS.register(new AdventureEvents());
         NeoForge.EVENT_BUS.register(new ApothMobEvents());
         RarityRegistry.INSTANCE.registerToBus();
@@ -206,7 +207,7 @@ public class Apotheosis {
                 case "loot_category_override" -> {
                     try {
                         var categoryOverride = (Map.Entry<Item, String>) msg.messageSupplier().get();
-                        ResourceLocation item = BuiltInRegistries.ITEM.getKey(categoryOverride.getKey());
+                        Item item = categoryOverride.getKey();
                         LootCategory cat = LootCategory.byId(categoryOverride.getValue());
                         if (cat == null) throw new NullPointerException("Invalid loot category ID: " + categoryOverride.getValue());
                         Apotheosis.IMC_TYPE_OVERRIDES.put(item, cat);

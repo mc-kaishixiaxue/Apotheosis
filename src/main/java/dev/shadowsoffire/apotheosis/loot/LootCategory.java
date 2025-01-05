@@ -18,8 +18,10 @@ import com.mojang.serialization.MapCodec;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.BlockItem;
@@ -43,6 +45,7 @@ public final class LootCategory {
     public static final List<LootCategory> VALUES = Collections.unmodifiableList(VALUES_INTERNAL);
     public static final Codec<LootCategory> CODEC = Codec.stringResolver(LootCategory::getName, LootCategory::byId);
     public static final Codec<Set<LootCategory>> SET_CODEC = PlaceboCodecs.setOf(CODEC);
+    public static final StreamCodec<ByteBuf, LootCategory> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(LootCategory::byId, LootCategory::getName);
 
     public static final LootCategory BOW = register("bow", s -> s.getItem() instanceof BowItem || s.getItem() instanceof CrossbowItem, EquipmentSlotGroup.HAND);
     public static final LootCategory BREAKER = register("breaker", s -> s.canPerformAction(ItemAbilities.PICKAXE_DIG) || s.canPerformAction(ItemAbilities.SHOVEL_DIG), EquipmentSlotGroup.MAINHAND);
@@ -171,15 +174,15 @@ public final class LootCategory {
      * <p>
      * TODO: Cache this result as a CachedObject sensitive to all component changes.
      *
-     * @param item The item to find the category for.
+     * @param stack The item to find the category for.
      * @return The first valid loot category, or {@link #NONE} if no categories were valid.
      */
-    public static LootCategory forItem(ItemStack item) {
-        if (item.isEmpty()) return NONE;
-        LootCategory override = AdventureConfig.TYPE_OVERRIDES.get(BuiltInRegistries.ITEM.getKey(item.getItem()));
+    public static LootCategory forItem(ItemStack stack) {
+        if (stack.isEmpty()) return NONE;
+        LootCategory override = AdventureConfig.TYPE_OVERRIDES.get(stack.getItem());
         if (override != null) return override;
         for (LootCategory c : VALUES) {
-            if (c.isValid(item)) return c;
+            if (c.isValid(stack)) return c;
         }
         return NONE;
     }

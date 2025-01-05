@@ -3,6 +3,7 @@ package dev.shadowsoffire.apotheosis.affix.augmenting;
 import java.util.Comparator;
 import java.util.List;
 
+import dev.shadowsoffire.apotheosis.AdventureConfig;
 import dev.shadowsoffire.apotheosis.Apoth.Components;
 import dev.shadowsoffire.apotheosis.Apoth.Items;
 import dev.shadowsoffire.apotheosis.Apoth.Menus;
@@ -30,10 +31,14 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
     public static final int UPGRADE = 0;
     public static final int REROLL = 1;
 
+    @Deprecated
     public static final int UPGRADE_SIGIL_COST = 2;
+    @Deprecated
     public static final int UPGRADE_LEVEL_COST = 225;
 
+    @Deprecated
     public static final int REROLL_SIGIL_COST = 1;
+    @Deprecated
     public static final int REROLL_LEVEL_COST = 175;
 
     protected final Player player;
@@ -100,8 +105,8 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
                         return false;
                     }
                     else {
-                        sigils.shrink(UPGRADE_SIGIL_COST);
-                        EnchantmentUtils.chargeExperience(player, EnchantmentUtils.getTotalExperienceForLevel(UPGRADE_LEVEL_COST));
+                        sigils.shrink(AdventureConfig.upgradeSigilCost);
+                        EnchantmentUtils.chargeExperience(player, EnchantmentUtils.getTotalExperienceForLevel(AdventureConfig.upgradeLevelCost));
                     }
                 }
 
@@ -125,8 +130,8 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
                         return false;
                     }
                     else {
-                        sigils.shrink(REROLL_SIGIL_COST);
-                        EnchantmentUtils.chargeExperience(player, EnchantmentUtils.getTotalExperienceForLevel(REROLL_LEVEL_COST));
+                        sigils.shrink(AdventureConfig.rerollSigilCost);
+                        EnchantmentUtils.chargeExperience(player, EnchantmentUtils.getTotalExperienceForLevel(AdventureConfig.rerollLevelCost));
                     }
                 }
 

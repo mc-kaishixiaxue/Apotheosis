@@ -73,6 +73,7 @@ import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import net.minecraft.advancements.critereon.ItemSubPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -139,6 +140,8 @@ public class Apoth {
         public static final DataComponentType<Boolean> FROM_MOB = R.component("from_mob", b -> b.persistent(Codec.BOOL));
 
         public static final DataComponentType<Boolean> CHARM_ENABLED = R.component("charm_enabled", b -> b.persistent(Codec.BOOL));
+
+        public static final DataComponentType<Block> STONEFORMING_TARGET = R.component("stoneforming_target", b -> b.persistent(BuiltInRegistries.BLOCK.byNameCodec()).networkSynchronized(ByteBufCodecs.registry(Registries.BLOCK)));
 
         private static void bootstrap() {}
 
@@ -364,7 +367,8 @@ public class Apoth {
 
     public static final class Tags {
         public static final TagKey<Block> ROGUE_SPAWNER_COVERS = BlockTags.create(Apotheosis.loc("rogue_spawner_covers"));
-
+        public static final TagKey<Block> STONEFORMING_CANDIDATES = BlockTags.create(Apotheosis.loc("stoneforming_candidates"));
+        public static final TagKey<Block> SANDFORMING_CANDIDATES = BlockTags.create(Apotheosis.loc("sandforming_candidates"));
     }
 
     public static final class DamageTypes {

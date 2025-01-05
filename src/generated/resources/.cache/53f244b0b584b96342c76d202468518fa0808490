@@ -1,4 +1,4 @@
-// 1.21.1	2024-12-26T16:41:58.137567	Affixes
+// 1.21.1	2025-01-04T22:47:38.6942575	Affixes
 0fec353805c92f4ad48f7e5d2a7121a06d9c3831 data/apotheosis/affixes/armor/attribute/adamantine.json
 12a0daf6d77fa2918d783881198cdd6ae92f59e4 data/apotheosis/affixes/armor/attribute/aquatic.json
 ddd5fd82543316ce78e69d72bab9965a05487cdd data/apotheosis/affixes/armor/attribute/blessed.json
@@ -26,6 +26,8 @@ ce3e845537b1802ba111b47b97749535a05a4482 data/apotheosis/affixes/armor/mob_effec
 9b04acd0d4f214ed93a174e61e594d0f4047977d data/apotheosis/affixes/armor/mob_effect/nimble.json
 8a814092663d61c292467d058036f82c3b33256d data/apotheosis/affixes/armor/mob_effect/revitalizing.json
 c826445ef08f8e7f9cc810605833718d39055f68 data/apotheosis/affixes/breaker/ability/enlightened.json
+a3f7871ca66509e70ddb463784ca9d0df53f5855 data/apotheosis/affixes/breaker/ability/sandforming.json
+ecbdc17052a73fef785764c412e9b26e0e75eca7 data/apotheosis/affixes/breaker/ability/stoneforming.json
 0e2124220dcf37434df8ae51502d5a9719dc213d data/apotheosis/affixes/breaker/ability/supermassive.json
 88376902ff304055ef9bcfd5c742dcafa7637a4f data/apotheosis/affixes/breaker/attribute/destructive.json
 1c9cf2568fb64b88426a456ff126325bd6e3745e data/apotheosis/affixes/breaker/attribute/experienced.json

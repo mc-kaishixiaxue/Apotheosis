@@ -24,13 +24,16 @@ import dev.shadowsoffire.apotheosis.Apoth.Menus;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.AffixHelper;
+import dev.shadowsoffire.apotheosis.affix.AffixInstance;
 import dev.shadowsoffire.apotheosis.affix.AffixRegistry;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingScreen;
 import dev.shadowsoffire.apotheosis.affix.augmenting.AugmentingTableTileRenderer;
+import dev.shadowsoffire.apotheosis.affix.effect.StoneformingAffix;
 import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingScreen;
 import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingTableTileRenderer;
 import dev.shadowsoffire.apotheosis.affix.salvaging.SalvagingScreen;
 import dev.shadowsoffire.apotheosis.client.SocketTooltipRenderer.SocketComponent;
+import dev.shadowsoffire.apotheosis.client.StoneformingTooltipRenderer.StoneformingComponent;
 import dev.shadowsoffire.apotheosis.item.PotionCharmItem;
 import dev.shadowsoffire.apotheosis.net.BossSpawnPayload.BossSpawnData;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
@@ -61,7 +64,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.contents.PlainTextContents;
-import net.minecraft.network.chat.contents.PlainTextContents.LiteralContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -139,6 +141,7 @@ public class AdventureModuleClient {
     @SubscribeEvent
     public static void tooltipComps(RegisterClientTooltipComponentFactoriesEvent e) {
         e.register(SocketComponent.class, SocketTooltipRenderer::new);
+        e.register(StoneformingComponent.class, StoneformingTooltipRenderer::new);
     }
 
     @SubscribeEvent
@@ -271,22 +274,31 @@ public class AdventureModuleClient {
 
         @SubscribeEvent
         public static void comps(RenderTooltipEvent.GatherComponents e) {
-            int sockets = SocketHelper.getSockets(e.getItemStack());
-            if (sockets == 0) return;
             List<Either<FormattedText, TooltipComponent>> list = e.getTooltipElements();
-            int rmvIdx = -1;
             for (int i = 0; i < list.size(); i++) {
-                Optional<FormattedText> o = list.get(i).left();
-                if (o.isPresent() && o.get() instanceof Component comp && comp.getContents() instanceof LiteralContents tc) {
-                    if ("APOTH_REMOVE_MARKER".equals(tc.text())) {
-                        rmvIdx = i;
-                        list.remove(i);
-                        break;
+                var entry = list.get(i);
+                if (containsText(entry, "APOTH_REMOVE_MARKER")) {
+                    list.remove(i);
+                    list.add(i, Either.right(new SocketComponent(e.getItemStack(), SocketHelper.getGems(e.getItemStack()))));
+                }
+                else if (containsAffixMarker(entry, StoneformingAffix.TOOLTIP_MARKER)) {
+                    list.remove(i);
+                    AffixInstance inst = AffixHelper.streamAffixes(e.getItemStack()).filter(a -> a.getAffix() instanceof StoneformingAffix).findFirst().orElse(null);
+                    if (inst != null) {
+                        list.add(i, Either.right(new StoneformingComponent(inst)));
                     }
                 }
             }
-            if (rmvIdx == -1) return;
-            e.getTooltipElements().add(rmvIdx, Either.right(new SocketComponent(e.getItemStack(), SocketHelper.getGems(e.getItemStack()))));
+        }
+
+        private static boolean containsText(Either<FormattedText, TooltipComponent> entry, String text) {
+            Optional<FormattedText> o = entry.left();
+            return o.isPresent() && o.get() instanceof Component comp && comp.contains(Component.literal(text));
+        }
+
+        private static boolean containsAffixMarker(Either<FormattedText, TooltipComponent> entry, Component marker) {
+            Optional<FormattedText> o = entry.left();
+            return o.isPresent() && o.get() instanceof Component comp && comp.contains(marker);
         }
 
         @SubscribeEvent(priority = EventPriority.HIGH)

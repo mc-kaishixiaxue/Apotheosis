@@ -6,6 +6,7 @@ import java.util.function.UnaryOperator;
 
 import org.spongepowered.include.com.google.common.base.Preconditions;
 
+import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.AffixBuilder;
@@ -30,6 +31,7 @@ import dev.shadowsoffire.apotheosis.affix.effect.PsychicAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.RadialAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.RetreatingAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.SpectralShotAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.StoneformingAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.TelepathicAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.ThunderstruckAffix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
@@ -45,8 +47,11 @@ import dev.shadowsoffire.placebo.util.data.DynamicRegistryProvider;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.HolderLookup.RegistryLookup;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -55,6 +60,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class AffixProvider extends DynamicRegistryProvider<Affix> {
@@ -796,6 +802,20 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
                     .radii(7, 7))
                 .build());
 
+        this.add(Apotheosis.loc("breaker/ability/stoneforming"), new StoneformingAffix(
+            AffixDefinition.builder(AffixType.ABILITY)
+                .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
+                .exclusiveWith(afx("breaker/ability/sandforming"))
+                .build(),
+            blockSet(Apoth.Tags.STONEFORMING_CANDIDATES)));
+
+        this.add(Apotheosis.loc("breaker/ability/sandforming"), new StoneformingAffix(
+            AffixDefinition.builder(AffixType.ABILITY)
+                .weights(TieredWeights.forAllTiers(DEFAULT_WEIGHT, DEFAULT_QUALITY))
+                .exclusiveWith(afx("breaker/ability/stoneforming"))
+                .build(),
+            blockSet(Apoth.Tags.SANDFORMING_CANDIDATES)));
+
         // Ranged Abilities
 
         this.add(Apotheosis.loc("ranged/magical"), new MagicalArrowAffix(
@@ -872,6 +892,10 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         this.futures.add(CompletableFuture.runAsync(RarityRegistry.INSTANCE::validateExistingHolders));
         this.futures.add(CompletableFuture.runAsync(AffixRegistry.INSTANCE::validateExistingHolders));
+    }
+
+    private HolderSet<Block> blockSet(TagKey<Block> tag) {
+        return BuiltInRegistries.BLOCK.getOrCreateTag(tag);
     }
 
     private void addEnchantment(String type, String name, Holder<Enchantment> enchantment, EnchantmentAffix.Mode mode, UnaryOperator<EnchantmentAffix.Builder> config) {

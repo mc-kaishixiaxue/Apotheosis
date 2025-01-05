@@ -18,6 +18,7 @@ import dev.shadowsoffire.apotheosis.affix.effect.PsychicAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.RadialAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.RetreatingAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.SpectralShotAffix;
+import dev.shadowsoffire.apotheosis.affix.effect.StoneformingAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.TelepathicAffix;
 import dev.shadowsoffire.apotheosis.affix.effect.ThunderstruckAffix;
 import dev.shadowsoffire.apotheosis.client.AdventureModuleClient;
@@ -71,6 +72,7 @@ public class AffixRegistry extends TieredDynamicRegistry<Affix> {
         this.registerCodec(Apotheosis.loc("telepathic"), TelepathicAffix.CODEC);
         this.registerCodec(Apotheosis.loc("thunderstruck"), ThunderstruckAffix.CODEC);
         this.registerCodec(Apotheosis.loc("enchantment"), EnchantmentAffix.CODEC);
+        this.registerCodec(Apotheosis.loc("stoneforming"), StoneformingAffix.CODEC);
     }
 
     public Multimap<AffixType, DynamicHolder<Affix>> getTypeMap() {

@@ -141,7 +141,7 @@ public class RarityProvider extends DynamicRegistryProvider<LootRarity> {
                 new DurabilityLootRule(0.45F, 0.75F),
                 new ComponentLootRule(DataComponentPatch.builder()
                     .set(DataComponents.UNBREAKABLE, new Unbreakable(true))
-                    .set(Components.DURABILITY_BONUS, 0F)
+                    .remove(Components.DURABILITY_BONUS)
                     .build()))));
     }
 

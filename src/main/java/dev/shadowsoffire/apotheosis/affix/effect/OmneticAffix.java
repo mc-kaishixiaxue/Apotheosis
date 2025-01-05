@@ -56,8 +56,6 @@ public class OmneticAffix extends Affix {
         return Component.translatable("affix." + this.id() + ".desc", Component.translatable("misc.apotheosis." + this.values.get(inst.getRarity()).name));
     }
 
-    // TODO: Generify these and remove reliance on instanceof checks.
-
     public static void harvest(HarvestCheck e) {
         ItemStack stack = e.getEntity().getMainHandItem();
         if (!stack.isEmpty()) {

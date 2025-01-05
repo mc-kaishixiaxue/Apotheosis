@@ -233,7 +233,6 @@ public class Apotheosis {
         NameHelper.load(nameConfig);
         if (firstLoad && mainConfig.hasChanged()) mainConfig.save();
         if (firstLoad && nameConfig.hasChanged()) nameConfig.save();
-        // TODO: Sync what needs to sync
     }
 
     /**

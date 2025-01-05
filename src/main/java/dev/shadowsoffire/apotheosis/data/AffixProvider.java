@@ -464,10 +464,10 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
 
         this.addAttribute("melee", "giant_slaying", ALObjects.Attributes.CURRENT_HP_DAMAGE, Operation.ADD_VALUE, b -> b
             .definition(AffixType.STAT, d -> d
-                .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 20, 5)))
+                .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 15, 2.5F)))
             .categories(LootCategory.MELEE_WEAPON)
-            .value(epic, 0.15F, 0.25F)
-            .value(mythic, 0.15F, 0.35F));
+            .value(epic, 0.10F, 0.20F)
+            .value(mythic, 0.10F, 0.25F));
 
         // TODO: Armor Shred and Prot Shred affixes for melee + bow
 

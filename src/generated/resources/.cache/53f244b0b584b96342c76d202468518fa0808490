@@ -1,4 +1,4 @@
-// 1.21.1	2025-01-04T22:47:38.6942575	Affixes
+// 1.21.1	2025-01-05T00:26:43.2832729	Affixes
 0fec353805c92f4ad48f7e5d2a7121a06d9c3831 data/apotheosis/affixes/armor/attribute/adamantine.json
 12a0daf6d77fa2918d783881198cdd6ae92f59e4 data/apotheosis/affixes/armor/attribute/aquatic.json
 ddd5fd82543316ce78e69d72bab9965a05487cdd data/apotheosis/affixes/armor/attribute/blessed.json
@@ -42,7 +42,7 @@ e21c69e6d2515e77ba82a3c86790df63b0f5505d data/apotheosis/affixes/generic/attribu
 9c3a600f173a40e96a5f03387a0ac381857cd59f data/apotheosis/affixes/generic/telepathic.json
 2e7a135aa0a3d505047aa759b1577d0010e0d269 data/apotheosis/affixes/melee/attribute/berserking.json
 fcdf5ce35a06be773e3762cb77e13ca603eae2c0 data/apotheosis/affixes/melee/attribute/forceful.json
-bd746703dcce51fc38335c8a77e849b920fe8269 data/apotheosis/affixes/melee/attribute/giant_slaying.json
+2a0a5cbe48b2296ec803c1da5089bb2d691538f0 data/apotheosis/affixes/melee/attribute/giant_slaying.json
 b26443ec9c5d7a8e2306350815cc3f69472ae385 data/apotheosis/affixes/melee/attribute/glacial.json
 70b7fbfa8e03fcdab3a9ffc2bd8596514a609c08 data/apotheosis/affixes/melee/attribute/graceful.json
 1f2a247b440e3f8ab8063a635c6110f1b73b883d data/apotheosis/affixes/melee/attribute/infernal.json

@@ -9,20 +9,20 @@
         "exclusive_set": [],
         "weights": {
             "pinnacle": {
-                "quality": 5.0,
-                "weight": 20
+                "quality": 2.5,
+                "weight": 15
             }
         }
     },
     "operation": "add_value",
     "values": {
         "apotheosis:epic": {
-            "min": 0.15,
-            "max": 0.25
+            "min": 0.1,
+            "max": 0.2
         },
         "apotheosis:mythic": {
-            "min": 0.15,
-            "max": 0.35
+            "min": 0.1,
+            "max": 0.25
         }
     }
 }

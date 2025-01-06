@@ -68,7 +68,6 @@ public class AffixLootEntryProvider extends DynamicRegistryProvider<AffixLootEnt
 
     @Override
     public void generate() {
-
         Map<Holder<ArmorMaterial>, TieredWeights> armorWeights = new HashMap<>();
         armorWeights.put(ArmorMaterials.LEATHER, LEATHER);
         armorWeights.put(ArmorMaterials.CHAIN, CHAIN);
@@ -116,12 +115,6 @@ public class AffixLootEntryProvider extends DynamicRegistryProvider<AffixLootEnt
         this.addEntry(new AffixLootEntry(TRIDENT, new ItemStack(Items.TRIDENT)));
         this.addEntry(new AffixLootEntry(TieredWeights.forAllTiers(2, 0), new ItemStack(Items.TURTLE_HELMET)));
 
-    }
-
-    void addEntry(WorldTier tier, ItemStack stack, int weight, float quality) {
-        TieredWeights weights = TieredWeights.onlyFor(tier, weight, quality);
-        AffixLootEntry entry = new AffixLootEntry(weights, stack);
-        this.add(Apotheosis.loc(tier.getSerializedName() + "/" + BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath()), entry);
     }
 
     void addEntry(AffixLootEntry entry) {

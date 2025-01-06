@@ -1,11 +1,11 @@
 {
     "entries": [
-        "apotheosis:gem_loot_injection",
-        "apotheosis:gem_entity_drops_from_real_players",
-        "apotheosis:gem_entity_drops",
-        "apotheosis:affix_hook",
+        "apotheosis:affix_conversion",
         "apotheosis:affix_loot_injection",
-        "apotheosis:affix_conversion"
+        "apotheosis:gem_loot_injection",
+        "apotheosis:gem_entity_drops",
+        "apotheosis:gem_entity_drops_from_real_players",
+        "apotheosis:affix_hook"
     ],
     "replace": false
 }

@@ -57,6 +57,7 @@ import dev.shadowsoffire.apotheosis.socket.gem.Gem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.FrozenDropsBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.BasicGemCuttingRecipe;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingBlock;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingMenu;
@@ -149,8 +150,14 @@ public class Apoth {
 
     public static final class Attachments {
 
+        /**
+         * Holds additional loot tables that will be dropped by the entity when it is killed.
+         */
         public static final AttachmentType<BonusLootTables> BONUS_LOOT_TABLES = R.attachment("bonus_loot_tables", () -> BonusLootTables.EMPTY, b -> b.serialize(BonusLootTables.CODEC, blt -> !blt.tables().isEmpty()));
 
+        /**
+         * The player's current {@link WorldTier}.
+         */
         public static final AttachmentType<WorldTier> WORLD_TIER = R.attachment("world_tier", () -> WorldTier.HAVEN, b -> b.serialize(WorldTier.CODEC).copyOnDeath().copyHandler((t, holder, prov) -> t));
 
         /**
@@ -159,6 +166,11 @@ public class Apoth {
          * If this is not set, they will be applied the next time the entity joins the level.
          */
         public static final AttachmentType<Boolean> TIER_AUGMENTS_APPLIED = R.attachment("tier_augments_applied", () -> false, b -> b.serialize(Codec.BOOL));
+
+        /**
+         * Supports the {@link FrozenDropsBonus} by recording the amount of post-mitigation cold damage an entity has taken.
+         */
+        public static final AttachmentType<Float> COLD_DAMAGE_TAKEN = R.attachment("cold_damage_taken", () -> 0F, b -> b.serialize(Codec.FLOAT));
 
         private static void bootstrap() {}
     }

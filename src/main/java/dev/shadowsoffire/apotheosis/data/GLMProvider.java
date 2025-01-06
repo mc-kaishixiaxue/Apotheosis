@@ -33,8 +33,6 @@ public class GLMProvider extends GlobalLootModifierProvider {
 
     @Override
     protected void start() {
-        this.add("affix_hook", new AffixHookLootModifier());
-
         List<AffixConversionEntry> conversions = new ArrayList<>();
         conversions.add(new AffixConversionEntry(LootPatternMatcher.of(".*blocks.*"), 0, Set.of()));
         conversions.add(new AffixConversionEntry(LootPatternMatcher.of(".*"), 0.35F, Set.of()));
@@ -70,6 +68,8 @@ public class GLMProvider extends GlobalLootModifierProvider {
         gemRealPlayerKillConditions.add(LootItemEntityPropertyCondition.hasProperties(EntityTarget.THIS, EntityPredicate.Builder.entity().subPredicate(MonsterPredicate.INSTANCE)).build());
         gemRealPlayerKillConditions.add(KilledByRealPlayerCondition.INSTANCE);
         this.add("gem_entity_drops_from_real_players", new GemLootModifier(gemRealPlayerKillConditions.toArray(new LootItemCondition[0]), gemRealPlayerKillRules));
+
+        this.add("affix_hook", new AffixHookLootModifier());
     }
 
 }

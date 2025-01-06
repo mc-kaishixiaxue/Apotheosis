@@ -27,6 +27,13 @@ public class AffixHookLootModifier extends LootModifier {
             SocketHelper.getGems(tool).modifyLoot(generatedLoot, ctx);
             AffixHelper.streamAffixes(tool).forEach(inst -> inst.modifyLoot(generatedLoot, ctx));
         }
+        else if (ctx.hasParam(LootContextParams.DIRECT_ATTACKING_ENTITY)) {
+            ItemStack weapon = ctx.getParam(LootContextParams.DIRECT_ATTACKING_ENTITY).getWeaponItem();
+            if (weapon != null) {
+                SocketHelper.getGems(weapon).modifyLoot(generatedLoot, ctx);
+                AffixHelper.streamAffixes(weapon).forEach(inst -> inst.modifyLoot(generatedLoot, ctx));
+            }
+        }
         return generatedLoot;
     }
 

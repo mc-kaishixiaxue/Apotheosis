@@ -15,6 +15,7 @@ import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.AllStatsBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.BloodyArrowBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.DropTransformBonus;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.FrozenDropsBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.LeechBlockBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.MageSlayerBonus;
 import dev.shadowsoffire.placebo.codec.CodecMap;
@@ -55,13 +56,13 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
     }
 
     /**
-     * Checks if this bonus supports the quality.
+     * Checks if this bonus supports this purity.
      *
-     * @param quality The quality being checked.
-     * @return True, if this bonus contains values for the specified quality.
-     * @apiNote Other methods in this class will throw an exception if the bonus does not support the quality.
+     * @param purity The purity being checked.
+     * @return True, if this bonus contains values for the specified purity.
+     * @apiNote Other methods in this class will throw an exception if the bonus does not support this purity.
      */
-    public abstract boolean supports(Purity quality);
+    public abstract boolean supports(Purity purity);
 
     /**
      * Gets the one-line socket bonus tooltip.
@@ -263,6 +264,7 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
         register("drop_transform", DropTransformBonus.CODEC);
         register("mageslayer", MageSlayerBonus.CODEC);
         register("mob_effect", MobEffectBonus.CODEC);
+        register("frozen_drops", FrozenDropsBonus.CODEC);
     }
 
     protected static <T extends GemBonus> App<RecordCodecBuilder.Mu<T>, GemClass> gemClass() {

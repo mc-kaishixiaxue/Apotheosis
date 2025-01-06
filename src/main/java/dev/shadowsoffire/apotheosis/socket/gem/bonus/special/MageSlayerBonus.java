@@ -2,12 +2,10 @@ package dev.shadowsoffire.apotheosis.socket.gem.bonus.special;
 
 import java.util.Map;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.affix.Affix;
-import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
@@ -23,13 +21,14 @@ public class MageSlayerBonus extends GemBonus {
 
     public static Codec<MageSlayerBonus> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
+            gemClass(),
             Purity.mapCodec(Codec.floatRange(0, 1)).fieldOf("values").forGetter(a -> a.values))
         .apply(inst, MageSlayerBonus::new));
 
     protected final Map<Purity, Float> values;
 
-    public MageSlayerBonus(Map<Purity, Float> values) {
-        super(new GemClass("helmet", ImmutableSet.of(LootCategory.HELMET)));
+    public MageSlayerBonus(GemClass gemClass, Map<Purity, Float> values) {
+        super(gemClass);
         this.values = values;
     }
 

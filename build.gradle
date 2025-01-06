@@ -306,7 +306,7 @@ tasks.register('stockDataPack', Zip) {
     destinationDirectory = file("${buildDir}/libs")
 
     from sourceSets.main.resources
-    include 'data/apotheosis/**'
+    include "data/${modid}/**"
 
     from temporaryDir 
     include 'pack.mcmeta'

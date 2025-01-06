@@ -51,6 +51,7 @@
         },
         {
             "type": "apotheosis:mageslayer",
+            "gem_class": "helmet",
             "values": {
                 "normal": 0.15,
                 "flawless": 0.225,

@@ -7,6 +7,9 @@ import java.util.function.UnaryOperator;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
+import dev.shadowsoffire.apotheosis.compat.twilight.FortificationBonus;
+import dev.shadowsoffire.apotheosis.compat.twilight.OreMagnetBonus;
+import dev.shadowsoffire.apotheosis.compat.twilight.TreasureGoblinBonus;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.conditions.MatchesBlockCondition;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
@@ -23,6 +26,7 @@ import dev.shadowsoffire.apotheosis.socket.gem.bonus.MultiAttrBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.AllStatsBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.BloodyArrowBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.DropTransformBonus;
+import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.FrozenDropsBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.LeechBlockBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.MageSlayerBonus;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
@@ -40,6 +44,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -51,6 +57,8 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class GemProvider extends DynamicRegistryProvider<Gem> {
 
@@ -66,6 +74,8 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
     public static final GemClass WEAPON_OR_TOOL = new GemClass("weapon_or_tool", LootCategory.MELEE_WEAPON, LootCategory.TRIDENT, LootCategory.BOW, LootCategory.BREAKER);
     public static final GemClass NON_TRIDENT_WEAPONS = new GemClass("weapons", LootCategory.MELEE_WEAPON, LootCategory.BOW);
     public static final GemClass ANYTHING = new GemClass("anything", LootCategory.VALUES.stream().filter(lc -> lc != LootCategory.NONE).toArray(LootCategory[]::new));
+
+    public static final Holder<MobEffect> TW_FROSTED = DeferredHolder.create(Registries.MOB_EFFECT, ResourceLocation.parse("twilightforest:frosted"));
 
     public GemProvider(PackOutput output, CompletableFuture<Provider> registries) {
         super(output, registries, GemRegistry.INSTANCE);
@@ -731,10 +741,11 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                     .value(Purity.NORMAL, -0.20F)
                     .value(Purity.FLAWLESS, -0.35F)
                     .value(Purity.PERFECT, -0.55F)))
-            .bonus(new MageSlayerBonus(Map.of(
-                Purity.NORMAL, 0.15F,
-                Purity.FLAWLESS, 0.225F,
-                Purity.PERFECT, 0.35F)))
+            .bonus(new MageSlayerBonus(
+                new GemClass(LootCategory.HELMET), Map.of(
+                    Purity.NORMAL, 0.15F,
+                    Purity.FLAWLESS, 0.225F,
+                    Purity.PERFECT, 0.35F)))
             .bonus(LootCategory.SHIELD, MobEffectBonus.builder()
                 .effect(MobEffects.DAMAGE_RESISTANCE)
                 .target(Target.BLOCK_SELF)
@@ -742,6 +753,87 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                 .value(Purity.FLAWLESS, 300, 0, 400)
                 .value(Purity.PERFECT, 300, 1, 400)));
 
+        addConditionally("twilightforest", "twilight/queen", TieredWeights.forTiersAbove(WorldTier.SUMMIT, 5, 1.5F), c -> c
+            .unique()
+            .minPurity(Purity.FLAWED)
+            .contstraints(Constraints.forDimension(ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse("twilightforest:twilight_forest"))))
+            .bonus(LootCategory.CHESTPLATE, FortificationBonus.builder()
+                .value(Purity.FLAWED, 0.05F, 6000)
+                .value(Purity.NORMAL, 0.10F, 5400)
+                .value(Purity.FLAWLESS, 0.125F, 5100)
+                .value(Purity.PERFECT, 0.15F, 4800))
+            .bonus(LootCategory.HELMET, AttributeBonus.builder()
+                .attr(ALObjects.Attributes.COLD_DAMAGE)
+                .op(Operation.ADD_MULTIPLIED_TOTAL)
+                .value(Purity.FLAWED, 0.50)
+                .value(Purity.NORMAL, 0.625)
+                .value(Purity.FLAWLESS, 0.75)
+                .value(Purity.PERFECT, 0.90))
+            .bonus(new FrozenDropsBonus(
+                new GemClass(LootCategory.MELEE_WEAPON), Map.of(
+                    Purity.NORMAL, 0.666F,
+                    Purity.FLAWLESS, 1.35F,
+                    Purity.PERFECT, 2.25F)))
+            .bonus(RANGED_WEAPON, MobEffectBonus.builder()
+                .effect(TW_FROSTED)
+                .target(Target.ARROW_TARGET)
+                .value(Purity.FLAWLESS, 180, 1, 500)
+                .value(Purity.PERFECT, 240, 2, 500)));
+
+        addConditionally("twilightforest", "twilight/forest", TieredWeights.forTiersAbove(WorldTier.SUMMIT, 5, 1.5F), c -> c
+            .unique()
+            .minPurity(Purity.FLAWED)
+            .contstraints(Constraints.forDimension(ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse("twilightforest:twilight_forest"))))
+            .bonus(WEAPONS, TreasureGoblinBonus.builder()
+                .value(Purity.FLAWED, 0.005F, 4800)
+                .value(Purity.NORMAL, 0.0075F, 4800)
+                .value(Purity.FLAWLESS, 0.01F, 4800)
+                .value(Purity.PERFECT, 0.015F, 4800))
+            .bonus(LootCategory.SHIELD, MultiAttrBonus.builder()
+                .desc("bonus.apotheosis:multi_attr.desc.and")
+                .modifier(b -> b
+                    .attr(ALObjects.Attributes.HEALING_RECEIVED)
+                    .op(Operation.ADD_MULTIPLIED_BASE)
+                    .value(Purity.FLAWED, 0.10F)
+                    .value(Purity.NORMAL, 0.20F)
+                    .value(Purity.FLAWLESS, 0.30F)
+                    .value(Purity.PERFECT, 0.45F))
+                .modifier(b -> b
+                    .attr(Attributes.ATTACK_SPEED)
+                    .op(Operation.ADD_MULTIPLIED_BASE)
+                    .value(Purity.FLAWED, -0.05F)
+                    .value(Purity.NORMAL, -0.10F)
+                    .value(Purity.FLAWLESS, -0.15F)
+                    .value(Purity.PERFECT, -0.25F)))
+            .bonus(new OreMagnetBonus(
+                new GemClass(LootCategory.BREAKER), Map.of(
+                    Purity.FLAWED, 24,
+                    Purity.NORMAL, 20,
+                    Purity.FLAWLESS, 16,
+                    Purity.PERFECT, 10)))
+            .bonus(LootCategory.CHESTPLATE, MultiAttrBonus.builder()
+                .desc("bonus.apotheosis:multi_attr.desc.but_and")
+                .modifier(b -> b
+                    .attr(ALObjects.Attributes.ARMOR_SHRED)
+                    .op(Operation.ADD_MULTIPLIED_BASE)
+                    .value(Purity.FLAWED, 0.35F)
+                    .value(Purity.NORMAL, 0.50F)
+                    .value(Purity.FLAWLESS, 0.75F)
+                    .value(Purity.PERFECT, 1F))
+                .modifier(b -> b
+                    .attr(ALObjects.Attributes.ARMOR_PIERCE)
+                    .op(Operation.ADD_MULTIPLIED_BASE)
+                    .value(Purity.FLAWED, -0.15F)
+                    .value(Purity.NORMAL, -0.225F)
+                    .value(Purity.FLAWLESS, -0.325F)
+                    .value(Purity.PERFECT, -0.40F))
+                .modifier(b -> b
+                    .attr(ALObjects.Attributes.PROT_PIERCE)
+                    .op(Operation.ADD_MULTIPLIED_BASE)
+                    .value(Purity.FLAWED, -0.05F)
+                    .value(Purity.NORMAL, -0.125F)
+                    .value(Purity.FLAWLESS, -0.225F)
+                    .value(Purity.PERFECT, -0.20F))));
     }
 
     private void addGem(String name, UnaryOperator<Gem.Builder> config) {
@@ -752,6 +844,12 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
         var builder = new Gem.Builder(weights);
         config.apply(builder);
         this.add(Apotheosis.loc(name), builder.build());
+    }
+
+    private void addConditionally(String modid, String name, TieredWeights weights, UnaryOperator<Gem.Builder> config) {
+        var builder = new Gem.Builder(weights);
+        config.apply(builder);
+        this.addConditionally(Apotheosis.loc(name), builder.build(), new ModLoadedCondition(modid));
     }
 
     /**

@@ -459,6 +459,7 @@
     "bonus.apotheosis:twilight_ore_magnet.desc": "Can be used as an Ore Magnet, costing an extra %s durability.",
     "bonus.apotheosis:twilight_treasure_goblin.desc": "Attacking an entity has a %s%% chance to summon a Treasure Goblin. %s",
     "bonus.apotheosis:twilight_fortification.desc": "Taking damage has a %s%% chance to fortify you with Twilight Shields. %s",
+    "bonus.apotheosis:frozen_drops.desc": "Killing an enemy with %s increases loot drops by %s%%.",
 
     "misc.apotheosis.level": "level",
     "misc.apotheosis.level.many": "levels",

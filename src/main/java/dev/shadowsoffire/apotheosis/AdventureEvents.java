@@ -31,6 +31,7 @@ import dev.shadowsoffire.apotheosis.tiers.WorldTier;
 import dev.shadowsoffire.apotheosis.tiers.augments.TierAugment;
 import dev.shadowsoffire.apotheosis.tiers.augments.TierAugment.Target;
 import dev.shadowsoffire.apotheosis.tiers.augments.TierAugmentRegistry;
+import dev.shadowsoffire.apothic_attributes.api.ALObjects;
 import dev.shadowsoffire.apothic_attributes.event.ApotheosisCommandEvent;
 import dev.shadowsoffire.placebo.events.AnvilLandEvent;
 import net.minecraft.core.BlockPos;
@@ -58,6 +59,7 @@ import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
@@ -362,6 +364,14 @@ public class AdventureEvents {
     public void sync(OnDatapackSyncEvent e) {
         ConfigPayload payload = new ConfigPayload();
         e.getRelevantPlayers().forEach(p -> PacketDistributor.sendToPlayer(p, payload));
+    }
+
+    @SubscribeEvent
+    public void recordColdDamage(LivingDamageEvent.Post e) {
+        if (e.getSource().is(ALObjects.DamageTypes.COLD_DAMAGE)) {
+            LivingEntity entity = e.getEntity();
+            entity.setData(Attachments.COLD_DAMAGE_TAKEN, entity.getData(Attachments.COLD_DAMAGE_TAKEN) + e.getNewDamage());
+        }
     }
 
     /**

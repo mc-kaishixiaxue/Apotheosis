@@ -109,7 +109,7 @@ public record TieredWeights(Map<WorldTier, Weight> weights) {
         /**
          * Cached {@link net.minecraft.util.random.Weight} with a value of zero that will not trigger the warning.
          */
-        static net.minecraft.util.random.Weight SAFE_ZERO = net.minecraft.util.random.Weight.of(0);
+        public static net.minecraft.util.random.Weight SAFE_ZERO = net.minecraft.util.random.Weight.of(0);
 
         TieredWeights weights();
 

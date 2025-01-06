@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.base.Predicates;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.shadowsoffire.apotheosis.AdventureConfig.ConfigPayload;
 import dev.shadowsoffire.apotheosis.Apoth.Attachments;
@@ -19,6 +20,7 @@ import dev.shadowsoffire.apotheosis.affix.reforging.ReforgingMenu;
 import dev.shadowsoffire.apotheosis.commands.AffixCommand;
 import dev.shadowsoffire.apotheosis.commands.BossCommand;
 import dev.shadowsoffire.apotheosis.commands.CategoryCheckCommand;
+import dev.shadowsoffire.apotheosis.commands.DebugWeightCommand;
 import dev.shadowsoffire.apotheosis.commands.GemCommand;
 import dev.shadowsoffire.apotheosis.commands.RarityCommand;
 import dev.shadowsoffire.apotheosis.commands.ReforgeCommand;
@@ -34,6 +36,8 @@ import dev.shadowsoffire.apotheosis.tiers.augments.TierAugmentRegistry;
 import dev.shadowsoffire.apothic_attributes.api.ALObjects;
 import dev.shadowsoffire.apothic_attributes.event.ApotheosisCommandEvent;
 import dev.shadowsoffire.placebo.events.AnvilLandEvent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -88,6 +92,10 @@ public class AdventureEvents {
         BossCommand.register(e.getRoot());
         AffixCommand.register(e.getRoot());
         WorldTierCommand.register(e.getRoot());
+
+        LiteralArgumentBuilder<CommandSourceStack> debug = Commands.literal("debug").requires(c -> c.hasPermission(4));
+        DebugWeightCommand.register(debug);
+        e.getRoot().then(debug);
     }
 
     @SubscribeEvent

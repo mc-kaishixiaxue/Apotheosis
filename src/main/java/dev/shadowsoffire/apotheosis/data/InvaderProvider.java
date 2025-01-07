@@ -358,7 +358,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
 
     }
 
-    private Invader.Builder basicMeleeStats(Invader.Builder builder) {
+    protected static Invader.Builder basicMeleeStats(Invader.Builder builder) {
         LootRarity uncommon = rarity("uncommon");
         LootRarity rare = rarity("rare");
         LootRarity epic = rarity("epic");
@@ -407,7 +407,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
                 .modifier(Attributes.SCALE, Operation.ADD_MULTIPLIED_TOTAL, -0.15F, 0.25F));
     }
 
-    private Invader.Builder basicRangedStats(Invader.Builder builder) {
+    protected static Invader.Builder basicRangedStats(Invader.Builder builder) {
         LootRarity uncommon = rarity("uncommon");
         LootRarity rare = rarity("rare");
         LootRarity epic = rarity("epic");
@@ -474,11 +474,11 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
         return builder;
     }
 
-    private void addBoss(String name, UnaryOperator<Invader.Builder> builder) {
+    protected void addBoss(String name, UnaryOperator<Invader.Builder> builder) {
         this.add(Apotheosis.loc(name), builder.apply(Invader.builder()).build());
     }
 
-    private static LootRarity rarity(String path) {
+    protected static LootRarity rarity(String path) {
         return Preconditions.checkNotNull(RarityRegistry.INSTANCE.getValue(Apotheosis.loc(path)));
     }
 

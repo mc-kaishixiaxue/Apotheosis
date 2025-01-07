@@ -1,20 +1,23 @@
 package dev.shadowsoffire.apotheosis.compat.twilight;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import dev.shadowsoffire.apotheosis.Apoth;
+import dev.shadowsoffire.apotheosis.Apoth.Attachments;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.affix.Affix;
+import dev.shadowsoffire.apotheosis.attachments.BonusLootTables;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.placebo.color.GradientColor;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
@@ -49,9 +52,7 @@ public class TreasureGoblinBonus extends GemBonus {
         if (Affix.isOnCooldown(makeUniqueId(inst), d.cooldown, user)) return;
         if (user.getRandom().nextFloat() <= d.chance) {
             Redcap goblin = AdventureTwilightCompat.REDCAP.get().create(user.level());
-            CompoundTag tag = new CompoundTag();
-            tag.putString("DeathLootTable", "apotheosis:entity/treasure_goblin");
-            goblin.readAdditionalSaveData(tag);
+            goblin.setData(Attachments.BONUS_LOOT_TABLES, new BonusLootTables(List.of(Apoth.LootTables.TREASURE_GOBLIN)));
             goblin.getPersistentData().putBoolean("apoth.treasure_goblin", true);
             goblin.setCustomName(Component.translatable("name.apotheosis.treasure_goblin").withStyle(s -> s.withColor(GradientColor.RAINBOW)));
             goblin.setCustomNameVisible(true);
@@ -66,7 +67,7 @@ public class TreasureGoblinBonus extends GemBonus {
                 if (user.level().noCollision(goblin)) break;
                 if (i == 7) goblin.setPos(target.position());
             }
-            goblin.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 0));
+            goblin.addEffect(new MobEffectInstance(MobEffects.GLOWING, 96000, 0, true, false));
             user.level().addFreshEntity(goblin);
             Affix.startCooldown(makeUniqueId(inst), user);
         }

@@ -2,7 +2,7 @@
     "type": "apotheosis:invader",
     "basic_data": {
         "bonus_loot": [
-            "apotheosis:bonus/boss_drops"
+            "apotheosis:entity/boss_drops"
         ],
         "constraints": {
             "biomes": "#c:is_wet/overworld"

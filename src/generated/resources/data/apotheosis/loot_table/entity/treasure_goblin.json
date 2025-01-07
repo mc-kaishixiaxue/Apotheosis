@@ -1,11 +1,11 @@
 {
-    "type": "minecraft:chest",
+    "type": "minecraft:entity",
     "pools": [
         {
             "bonus_rolls": {
                 "type": "minecraft:uniform",
                 "min": 0.0,
-                "max": 0.05
+                "max": 0.25
             },
             "entries": [
                 {
@@ -178,8 +178,8 @@
             ],
             "rolls": {
                 "type": "minecraft:uniform",
-                "min": 3.0,
-                "max": 5.0
+                "min": 2.0,
+                "max": 3.0
             }
         },
         {
@@ -284,145 +284,6 @@
                 },
                 {
                     "type": "placebo:stack_entry",
-                    "min": 3,
-                    "max": 6,
-                    "stack": {
-                        "count": 1,
-                        "id": "minecraft:slime_ball"
-                    },
-                    "weight": 50
-                },
-                {
-                    "type": "placebo:stack_entry",
-                    "min": 1,
-                    "max": 2,
-                    "stack": {
-                        "count": 1,
-                        "id": "minecraft:bucket"
-                    },
-                    "weight": 50
-                },
-                {
-                    "type": "placebo:stack_entry",
-                    "min": 1,
-                    "functions": [
-                        {
-                            "function": "minecraft:enchant_randomly",
-                            "options": "#minecraft:on_random_loot"
-                        }
-                    ],
-                    "max": 1,
-                    "quality": 5,
-                    "stack": {
-                        "count": 1,
-                        "id": "minecraft:diamond_sword"
-                    },
-                    "weight": 30
-                },
-                {
-                    "type": "placebo:stack_entry",
-                    "min": 1,
-                    "functions": [
-                        {
-                            "function": "minecraft:enchant_randomly",
-                            "options": "#minecraft:on_random_loot"
-                        }
-                    ],
-                    "max": 1,
-                    "quality": 5,
-                    "stack": {
-                        "count": 1,
-                        "id": "minecraft:diamond_axe"
-                    },
-                    "weight": 30
-                },
-                {
-                    "type": "placebo:stack_entry",
-                    "min": 1,
-                    "functions": [
-                        {
-                            "function": "minecraft:enchant_randomly",
-                            "options": "#minecraft:on_random_loot"
-                        }
-                    ],
-                    "max": 1,
-                    "quality": 5,
-                    "stack": {
-                        "count": 1,
-                        "id": "minecraft:diamond_pickaxe"
-                    },
-                    "weight": 30
-                },
-                {
-                    "type": "placebo:stack_entry",
-                    "min": 1,
-                    "functions": [
-                        {
-                            "function": "minecraft:enchant_randomly",
-                            "options": "#minecraft:on_random_loot"
-                        }
-                    ],
-                    "max": 1,
-                    "quality": 5,
-                    "stack": {
-                        "count": 1,
-                        "id": "minecraft:diamond_boots"
-                    },
-                    "weight": 20
-                },
-                {
-                    "type": "placebo:stack_entry",
-                    "min": 1,
-                    "functions": [
-                        {
-                            "function": "minecraft:enchant_randomly",
-                            "options": "#minecraft:on_random_loot"
-                        }
-                    ],
-                    "max": 1,
-                    "quality": 5,
-                    "stack": {
-                        "count": 1,
-                        "id": "minecraft:diamond_leggings"
-                    },
-                    "weight": 20
-                },
-                {
-                    "type": "placebo:stack_entry",
-                    "min": 1,
-                    "functions": [
-                        {
-                            "function": "minecraft:enchant_randomly",
-                            "options": "#minecraft:on_random_loot"
-                        }
-                    ],
-                    "max": 1,
-                    "quality": 5,
-                    "stack": {
-                        "count": 1,
-                        "id": "minecraft:diamond_chestplate"
-                    },
-                    "weight": 20
-                },
-                {
-                    "type": "placebo:stack_entry",
-                    "min": 1,
-                    "functions": [
-                        {
-                            "function": "minecraft:enchant_randomly",
-                            "options": "#minecraft:on_random_loot"
-                        }
-                    ],
-                    "max": 1,
-                    "quality": 5,
-                    "stack": {
-                        "count": 1,
-                        "id": "minecraft:diamond_helmet"
-                    },
-                    "weight": 20
-                },
-                {
-                    "type": "placebo:stack_entry",
                     "min": 1,
                     "functions": [
                         {
@@ -436,32 +297,54 @@
                         "count": 1,
                         "id": "minecraft:book"
                     },
-                    "weight": 20
+                    "weight": 40
                 },
                 {
                     "type": "apotheosis:random_gem",
-                    "purities": [
-                        "flawed"
-                    ],
-                    "quality": 15,
-                    "weight": 20
+                    "quality": 3,
+                    "weight": 80
+                },
+                {
+                    "type": "apotheosis:random_gem",
+                    "quality": 3,
+                    "weight": 80
                 },
                 {
                     "type": "apotheosis:random_affix_item",
-                    "quality": 15,
+                    "quality": 2,
                     "rarities": [
-                        "apotheosis:rare",
+                        "apotheosis:rare"
+                    ],
+                    "weight": 60
+                },
+                {
+                    "type": "apotheosis:random_affix_item",
+                    "quality": 3,
+                    "rarities": [
                         "apotheosis:epic"
                     ],
-                    "weight": 20
+                    "weight": 40
+                },
+                {
+                    "type": "apotheosis:random_affix_item",
+                    "quality": 5,
+                    "rarities": [
+                        "apotheosis:mythic"
+                    ],
+                    "weight": 10
+                },
+                {
+                    "type": "apotheosis:random_affix_item",
+                    "quality": 2,
+                    "weight": 100
                 }
             ],
             "rolls": {
                 "type": "minecraft:uniform",
-                "min": 3.0,
+                "min": 4.0,
                 "max": 7.0
             }
         }
     ],
-    "random_sequence": "apotheosis:chests/chest_valuable"
+    "random_sequence": "apotheosis:entity/treasure_goblin"
 }

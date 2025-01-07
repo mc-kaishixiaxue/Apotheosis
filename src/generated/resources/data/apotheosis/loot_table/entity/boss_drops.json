@@ -17,5 +17,5 @@
             "rolls": 1.0
         }
     ],
-    "random_sequence": "apotheosis:bonus/boss_drops"
+    "random_sequence": "apotheosis:entity/boss_drops"
 }

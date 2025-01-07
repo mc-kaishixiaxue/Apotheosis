@@ -117,7 +117,7 @@ public class AffixLootEntryProvider extends DynamicRegistryProvider<AffixLootEnt
 
     }
 
-    void addEntry(AffixLootEntry entry) {
+    protected void addEntry(AffixLootEntry entry) {
         this.add(Apotheosis.loc(BuiltInRegistries.ITEM.getKey(entry.stack().getItem()).getPath()), entry);
     }
 }

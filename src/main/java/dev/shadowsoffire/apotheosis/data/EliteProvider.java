@@ -53,7 +53,7 @@ public class EliteProvider extends DynamicRegistryProvider<Elite> {
                 .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 100, 0))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
                 .exclusion(new SpawnTypeExclusion(Set.of(MobSpawnType.SPAWN_EGG)))
-                .gearSets(WorldTier.PINNACLE, "#apotheosis_melee")
+                .gearSets(WorldTier.PINNACLE, "#pinnacle_melee")
                 .nbt(t -> t.putBoolean("IsScreamingGoat", true))
                 .nbt(t -> t.putBoolean("HasLeftHorn", true))
                 .nbt(t -> t.putBoolean("HasRightHorn", true))

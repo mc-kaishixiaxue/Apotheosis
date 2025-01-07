@@ -1,10 +1,11 @@
-package dev.shadowsoffire.apotheosis.data;
+package dev.shadowsoffire.apotheosis.data.twilight;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import dev.shadowsoffire.apotheosis.Apotheosis;
+import dev.shadowsoffire.apotheosis.data.AffixLootEntryProvider;
 import dev.shadowsoffire.apotheosis.loot.AffixLootEntry;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
@@ -117,7 +118,7 @@ public class TwilightAffixLootProvider extends AffixLootEntryProvider {
     }
 
     @Override
-    void addEntry(AffixLootEntry entry) {
+    protected void addEntry(AffixLootEntry entry) {
         ResourceLocation key = Apotheosis.loc("twilight/" + BuiltInRegistries.ITEM.getKey(entry.stack().getItem()).getPath());
         this.addConditionally(key, entry, new ModLoadedCondition("twilightforest"));
     }

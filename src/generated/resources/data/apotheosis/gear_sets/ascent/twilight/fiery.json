@@ -1,10 +1,16 @@
 {
+    "neoforge:conditions": [
+        {
+            "type": "neoforge:mod_loaded",
+            "modid": "twilightforest"
+        }
+    ],
     "type": "placebo:gear_set",
     "boots": [
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_boots"
+                "id": "twilightforest:fiery_boots"
             },
             "weight": 10
         }
@@ -13,7 +19,7 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_chestplate"
+                "id": "twilightforest:fiery_chestplate"
             },
             "weight": 10
         }
@@ -22,7 +28,7 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_helmet"
+                "id": "twilightforest:fiery_helmet"
             },
             "weight": 10
         }
@@ -31,7 +37,7 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_leggings"
+                "id": "twilightforest:fiery_leggings"
             },
             "weight": 10
         }
@@ -40,28 +46,21 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_sword"
+                "id": "twilightforest:fiery_sword"
             },
             "weight": 10
         },
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_axe"
+                "id": "twilightforest:diamond_minotaur_axe"
             },
             "weight": 10
         },
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_pickaxe"
-            },
-            "weight": 10
-        },
-        {
-            "stack": {
-                "count": 1,
-                "id": "minecraft:diamond_shovel"
+                "id": "twilightforest:fiery_pickaxe"
             },
             "weight": 10
         }
@@ -77,7 +76,7 @@
     ],
     "quality": 2.5,
     "tags": [
-        "frontier_melee"
+        "ascent_melee"
     ],
-    "weight": 10
+    "weight": 25
 }

@@ -1,18 +1,24 @@
 {
+    "neoforge:conditions": [
+        {
+            "type": "neoforge:mod_loaded",
+            "modid": "twilightforest"
+        }
+    ],
     "type": "placebo:gear_set",
     "boots": [
         {
             "stack": {
                 "components": {
-                    "apotheosis:durability_bonus": 0.7,
+                    "apotheosis:durability_bonus": 0.525,
                     "minecraft:enchantments": {
                         "levels": {
-                            "minecraft:protection": 6
+                            "minecraft:protection": 5
                         }
                     }
                 },
                 "count": 1,
-                "id": "minecraft:netherite_boots"
+                "id": "twilightforest:fiery_boots"
             },
             "weight": 10
         }
@@ -21,15 +27,15 @@
         {
             "stack": {
                 "components": {
-                    "apotheosis:durability_bonus": 0.7,
+                    "apotheosis:durability_bonus": 0.525,
                     "minecraft:enchantments": {
                         "levels": {
-                            "minecraft:protection": 6
+                            "minecraft:protection": 5
                         }
                     }
                 },
                 "count": 1,
-                "id": "minecraft:netherite_chestplate"
+                "id": "twilightforest:fiery_chestplate"
             },
             "weight": 10
         }
@@ -38,15 +44,15 @@
         {
             "stack": {
                 "components": {
-                    "apotheosis:durability_bonus": 0.7,
+                    "apotheosis:durability_bonus": 0.525,
                     "minecraft:enchantments": {
                         "levels": {
-                            "minecraft:protection": 6
+                            "minecraft:protection": 5
                         }
                     }
                 },
                 "count": 1,
-                "id": "minecraft:netherite_helmet"
+                "id": "twilightforest:fiery_helmet"
             },
             "weight": 10
         }
@@ -55,15 +61,15 @@
         {
             "stack": {
                 "components": {
-                    "apotheosis:durability_bonus": 0.7,
+                    "apotheosis:durability_bonus": 0.525,
                     "minecraft:enchantments": {
                         "levels": {
-                            "minecraft:protection": 6
+                            "minecraft:protection": 5
                         }
                     }
                 },
                 "count": 1,
-                "id": "minecraft:netherite_leggings"
+                "id": "twilightforest:fiery_leggings"
             },
             "weight": 10
         }
@@ -72,60 +78,45 @@
         {
             "stack": {
                 "components": {
-                    "apotheosis:durability_bonus": 0.8,
+                    "apotheosis:durability_bonus": 0.525,
                     "minecraft:enchantments": {
                         "levels": {
-                            "minecraft:sharpness": 15
+                            "minecraft:sharpness": 8
                         }
                     }
                 },
                 "count": 1,
-                "id": "minecraft:netherite_sword"
+                "id": "twilightforest:fiery_sword"
             },
             "weight": 10
         },
         {
             "stack": {
                 "components": {
-                    "apotheosis:durability_bonus": 0.8,
+                    "apotheosis:durability_bonus": 0.525,
                     "minecraft:enchantments": {
                         "levels": {
-                            "minecraft:sharpness": 15
+                            "minecraft:sharpness": 8
                         }
                     }
                 },
                 "count": 1,
-                "id": "minecraft:netherite_axe"
+                "id": "twilightforest:diamond_minotaur_axe"
             },
             "weight": 10
         },
         {
             "stack": {
                 "components": {
-                    "apotheosis:durability_bonus": 0.8,
+                    "apotheosis:durability_bonus": 0.525,
                     "minecraft:enchantments": {
                         "levels": {
-                            "minecraft:fortune": 15
+                            "minecraft:fortune": 8
                         }
                     }
                 },
                 "count": 1,
-                "id": "minecraft:netherite_pickaxe"
-            },
-            "weight": 10
-        },
-        {
-            "stack": {
-                "components": {
-                    "apotheosis:durability_bonus": 0.8,
-                    "minecraft:enchantments": {
-                        "levels": {
-                            "minecraft:fortune": 15
-                        }
-                    }
-                },
-                "count": 1,
-                "id": "minecraft:netherite_shovel"
+                "id": "twilightforest:fiery_pickaxe"
             },
             "weight": 10
         }
@@ -139,9 +130,9 @@
             "weight": 10
         }
     ],
-    "quality": 5.0,
+    "quality": 2.5,
     "tags": [
-        "apotheosis_melee"
+        "summit_melee"
     ],
-    "weight": 100
+    "weight": 40
 }

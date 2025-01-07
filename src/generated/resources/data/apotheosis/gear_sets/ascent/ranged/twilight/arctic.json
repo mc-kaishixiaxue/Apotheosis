@@ -1,10 +1,16 @@
 {
+    "neoforge:conditions": [
+        {
+            "type": "neoforge:mod_loaded",
+            "modid": "twilightforest"
+        }
+    ],
     "type": "placebo:gear_set",
     "boots": [
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_boots"
+                "id": "twilightforest:arctic_boots"
             },
             "weight": 10
         }
@@ -13,7 +19,7 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_chestplate"
+                "id": "twilightforest:arctic_chestplate"
             },
             "weight": 10
         }
@@ -22,7 +28,7 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_helmet"
+                "id": "twilightforest:arctic_helmet"
             },
             "weight": 10
         }
@@ -31,7 +37,7 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_leggings"
+                "id": "twilightforest:arctic_leggings"
             },
             "weight": 10
         }
@@ -40,44 +46,28 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_sword"
+                "id": "minecraft:bow"
+            },
+            "weight": 12
+        },
+        {
+            "stack": {
+                "count": 1,
+                "id": "minecraft:crossbow"
             },
             "weight": 10
         },
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_axe"
+                "id": "twilightforest:ice_bow"
             },
-            "weight": 10
-        },
-        {
-            "stack": {
-                "count": 1,
-                "id": "minecraft:diamond_pickaxe"
-            },
-            "weight": 10
-        },
-        {
-            "stack": {
-                "count": 1,
-                "id": "minecraft:diamond_shovel"
-            },
-            "weight": 10
-        }
-    ],
-    "offhands": [
-        {
-            "stack": {
-                "count": 1,
-                "id": "minecraft:shield"
-            },
-            "weight": 10
+            "weight": 2
         }
     ],
     "quality": 2.5,
     "tags": [
-        "frontier_melee"
+        "ascent_ranged"
     ],
-    "weight": 10
+    "weight": 25
 }

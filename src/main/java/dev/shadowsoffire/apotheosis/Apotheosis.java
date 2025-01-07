@@ -28,8 +28,9 @@ import dev.shadowsoffire.apotheosis.data.PurityWeightsProvider;
 import dev.shadowsoffire.apotheosis.data.RarityProvider;
 import dev.shadowsoffire.apotheosis.data.RogueSpawnerProvider;
 import dev.shadowsoffire.apotheosis.data.TierAugmentProvider;
-import dev.shadowsoffire.apotheosis.data.TwilightAffixLootProvider;
 import dev.shadowsoffire.apotheosis.data.WandererTradesProvider;
+import dev.shadowsoffire.apotheosis.data.twilight.TwilightAffixLootProvider;
+import dev.shadowsoffire.apotheosis.data.twilight.TwilightGearSetProvider;
 import dev.shadowsoffire.apotheosis.loot.AffixLootRegistry;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.loot.LootRule;
@@ -170,6 +171,7 @@ public class Apotheosis {
             .provider(RogueSpawnerProvider::new)
             .provider(WandererTradesProvider::new)
             .provider(TwilightAffixLootProvider::new)
+            .provider(TwilightGearSetProvider::new)
             .build(e);
 
         Object2IntOpenHashMap<String> map = (Object2IntOpenHashMap<String>) DataProvider.FIXED_ORDER_FIELDS;

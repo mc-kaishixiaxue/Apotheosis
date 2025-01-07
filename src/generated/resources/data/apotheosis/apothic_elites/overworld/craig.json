@@ -33,7 +33,7 @@
         ],
         "valid_gear_sets": {
             "pinnacle": [
-                "#apotheosis_melee"
+                "#pinnacle_melee"
             ]
         },
         "weights": {

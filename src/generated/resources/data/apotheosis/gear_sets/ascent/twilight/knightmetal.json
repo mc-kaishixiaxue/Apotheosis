@@ -1,10 +1,16 @@
 {
+    "neoforge:conditions": [
+        {
+            "type": "neoforge:mod_loaded",
+            "modid": "twilightforest"
+        }
+    ],
     "type": "placebo:gear_set",
     "boots": [
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_boots"
+                "id": "twilightforest:knightmetal_boots"
             },
             "weight": 10
         }
@@ -13,7 +19,7 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_chestplate"
+                "id": "twilightforest:knightmetal_chestplate"
             },
             "weight": 10
         }
@@ -22,7 +28,7 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_helmet"
+                "id": "twilightforest:knightmetal_helmet"
             },
             "weight": 10
         }
@@ -31,7 +37,7 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_leggings"
+                "id": "twilightforest:knightmetal_leggings"
             },
             "weight": 10
         }
@@ -40,28 +46,21 @@
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_sword"
+                "id": "twilightforest:knightmetal_sword"
             },
             "weight": 10
         },
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_axe"
+                "id": "twilightforest:knightmetal_axe"
             },
             "weight": 10
         },
         {
             "stack": {
                 "count": 1,
-                "id": "minecraft:diamond_pickaxe"
-            },
-            "weight": 10
-        },
-        {
-            "stack": {
-                "count": 1,
-                "id": "minecraft:diamond_shovel"
+                "id": "twilightforest:knightmetal_pickaxe"
             },
             "weight": 10
         }
@@ -72,12 +71,18 @@
                 "count": 1,
                 "id": "minecraft:shield"
             },
-            "weight": 10
+            "weight": 8
+        },
+        {
+            "stack": {
+                "count": 1,
+                "id": "twilightforest:knightmetal_shield"
+            },
+            "weight": 2
         }
     ],
-    "quality": 2.5,
     "tags": [
-        "frontier_melee"
+        "ascent_melee"
     ],
-    "weight": 10
+    "weight": 35
 }

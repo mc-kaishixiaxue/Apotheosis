@@ -461,7 +461,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
         builder.gearSets(WorldTier.FRONTIER, "#frontier_melee");
         builder.gearSets(WorldTier.ASCENT, "#ascent_melee");
         builder.gearSets(WorldTier.SUMMIT, "#summit_melee");
-        builder.gearSets(WorldTier.PINNACLE, "#apotheosis_melee");
+        builder.gearSets(WorldTier.PINNACLE, "#pinnacle_melee");
         return builder;
     }
 
@@ -470,7 +470,7 @@ public class InvaderProvider extends DynamicRegistryProvider<Invader> {
         builder.gearSets(WorldTier.FRONTIER, "#frontier_ranged");
         builder.gearSets(WorldTier.ASCENT, "#ascent_ranged");
         builder.gearSets(WorldTier.SUMMIT, "#summit_ranged");
-        builder.gearSets(WorldTier.PINNACLE, "#apotheosis_ranged");
+        builder.gearSets(WorldTier.PINNACLE, "#pinnacle_ranged");
         return builder;
     }
 

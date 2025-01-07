@@ -128,7 +128,7 @@ public class GearSetProvider extends DynamicRegistryProvider<GearSet> {
             .boots(new ItemStack(Items.IRON_BOOTS), 10)
             .tag("frontier_ranged"));
 
-        addSet("frontier/diamond", 10, 0, c -> c
+        addSet("frontier/diamond", 10, 2.5F, c -> c
             .mainhand(new ItemStack(Items.DIAMOND_SWORD), 10)
             .mainhand(new ItemStack(Items.DIAMOND_AXE), 10)
             .mainhand(new ItemStack(Items.DIAMOND_PICKAXE), 10)
@@ -286,8 +286,8 @@ public class GearSetProvider extends DynamicRegistryProvider<GearSet> {
             .boots(new ItemStack(Items.NETHERITE_BOOTS), 10)
             .tag("summit_ranged"));
 
-        // Apotheosis
-        addSet("apotheosis/enchanted_netherite", DEFAULT_WEIGHT, 5, c -> c
+        // Pinnacle
+        addSet("pinnacle/enchanted_netherite", DEFAULT_WEIGHT, 5, c -> c
             .mainhand(buffedItem(Items.NETHERITE_SWORD, enchants, 3F), 10)
             .mainhand(buffedItem(Items.NETHERITE_AXE, enchants, 3F), 10)
             .mainhand(buffedItem(Items.NETHERITE_PICKAXE, enchants, 3F), 10)
@@ -297,19 +297,19 @@ public class GearSetProvider extends DynamicRegistryProvider<GearSet> {
             .chestplate(buffedItem(Items.NETHERITE_CHESTPLATE, enchants, 2F), 10)
             .leggings(buffedItem(Items.NETHERITE_LEGGINGS, enchants, 2F), 10)
             .boots(buffedItem(Items.NETHERITE_BOOTS, enchants, 2F), 10)
-            .tag("apotheosis_melee"));
+            .tag("pinnacle_melee"));
 
-        addSet("apotheosis/ranged/enchanted_netherite", DEFAULT_WEIGHT, 5, c -> c
+        addSet("pinnacle/ranged/enchanted_netherite", DEFAULT_WEIGHT, 5, c -> c
             .mainhand(buffedItem(Items.BOW, enchants, 3F), 10)
             .mainhand(buffedItem(Items.CROSSBOW, enchants, 3F), 10)
             .helmet(buffedItem(Items.NETHERITE_HELMET, enchants, 2F), 10)
             .chestplate(buffedItem(Items.NETHERITE_CHESTPLATE, enchants, 2F), 10)
             .leggings(buffedItem(Items.NETHERITE_LEGGINGS, enchants, 2F), 10)
             .boots(buffedItem(Items.NETHERITE_BOOTS, enchants, 2F), 10)
-            .tag("apotheosis_ranged"));
+            .tag("pinnacle_ranged"));
     }
 
-    private ItemStack buffedItem(Item item, RegistryLookup<Enchantment> enchants, float magnitude) {
+    protected static ItemStack buffedItem(Item item, RegistryLookup<Enchantment> enchants, float magnitude) {
         ItemStack stack = new ItemStack(item);
         LootCategory cat = LootCategory.forItem(stack);
         stack.set(Components.DURABILITY_BONUS, Mth.clamp(0.35F * magnitude, 0, 0.8F));
@@ -328,7 +328,7 @@ public class GearSetProvider extends DynamicRegistryProvider<GearSet> {
         return stack;
     }
 
-    private ItemStack buffedGoldItem(Item item, RegistryLookup<Enchantment> enchants) {
+    protected static ItemStack buffedGoldItem(Item item, RegistryLookup<Enchantment> enchants) {
         ItemStack stack = new ItemStack(item);
         LootCategory cat = LootCategory.forItem(stack);
         stack.set(Components.DURABILITY_BONUS, 0.50F);
@@ -344,7 +344,7 @@ public class GearSetProvider extends DynamicRegistryProvider<GearSet> {
         return stack;
     }
 
-    private void addSet(String name, int weight, float quality, UnaryOperator<GSBuilder> config) {
+    protected void addSet(String name, int weight, float quality, UnaryOperator<GSBuilder> config) {
         this.add(Apotheosis.loc(name), config.apply(new GSBuilder(weight, quality)).build());
     }
 

@@ -10,15 +10,15 @@
         {
             "stack": {
                 "components": {
-                    "apotheosis:durability_bonus": 0.8,
+                    "apotheosis:durability_bonus": 0.525,
                     "minecraft:enchantments": {
                         "levels": {
-                            "minecraft:protection": 9
+                            "minecraft:protection": 5
                         }
                     }
                 },
                 "count": 1,
-                "id": "twilightforest:yeti_boots"
+                "id": "twilightforest:arctic_boots"
             },
             "weight": 10
         }
@@ -27,15 +27,15 @@
         {
             "stack": {
                 "components": {
-                    "apotheosis:durability_bonus": 0.8,
+                    "apotheosis:durability_bonus": 0.525,
                     "minecraft:enchantments": {
                         "levels": {
-                            "minecraft:protection": 9
+                            "minecraft:protection": 5
                         }
                     }
                 },
                 "count": 1,
-                "id": "twilightforest:yeti_chestplate"
+                "id": "twilightforest:arctic_chestplate"
             },
             "weight": 10
         }
@@ -44,15 +44,15 @@
         {
             "stack": {
                 "components": {
-                    "apotheosis:durability_bonus": 0.8,
+                    "apotheosis:durability_bonus": 0.525,
                     "minecraft:enchantments": {
                         "levels": {
-                            "minecraft:protection": 9
+                            "minecraft:protection": 5
                         }
                     }
                 },
                 "count": 1,
-                "id": "twilightforest:yeti_helmet"
+                "id": "twilightforest:arctic_helmet"
             },
             "weight": 10
         }
@@ -61,15 +61,15 @@
         {
             "stack": {
                 "components": {
-                    "apotheosis:durability_bonus": 0.8,
+                    "apotheosis:durability_bonus": 0.525,
                     "minecraft:enchantments": {
                         "levels": {
-                            "minecraft:protection": 9
+                            "minecraft:protection": 5
                         }
                     }
                 },
                 "count": 1,
-                "id": "twilightforest:yeti_leggings"
+                "id": "twilightforest:arctic_leggings"
             },
             "weight": 10
         }
@@ -77,56 +77,25 @@
     "mainhands": [
         {
             "stack": {
-                "components": {
-                    "apotheosis:durability_bonus": 0.8,
-                    "minecraft:enchantments": {
-                        "levels": {
-                            "minecraft:power": 15
-                        }
-                    }
-                },
                 "count": 1,
-                "id": "twilightforest:triple_bow"
+                "id": "minecraft:bow"
             },
-            "weight": 2
+            "weight": 12
+        },
+        {
+            "stack": {
+                "count": 1,
+                "id": "minecraft:crossbow"
+            },
+            "weight": 10
         },
         {
             "stack": {
                 "components": {
-                    "apotheosis:durability_bonus": 0.8,
+                    "apotheosis:durability_bonus": 0.525,
                     "minecraft:enchantments": {
                         "levels": {
-                            "minecraft:power": 15
-                        }
-                    }
-                },
-                "count": 1,
-                "id": "twilightforest:ender_bow"
-            },
-            "weight": 2
-        },
-        {
-            "stack": {
-                "components": {
-                    "apotheosis:durability_bonus": 0.8,
-                    "minecraft:enchantments": {
-                        "levels": {
-                            "minecraft:power": 15
-                        }
-                    }
-                },
-                "count": 1,
-                "id": "twilightforest:seeker_bow"
-            },
-            "weight": 2
-        },
-        {
-            "stack": {
-                "components": {
-                    "apotheosis:durability_bonus": 0.8,
-                    "minecraft:enchantments": {
-                        "levels": {
-                            "minecraft:power": 15
+                            "minecraft:power": 8
                         }
                     }
                 },
@@ -136,9 +105,9 @@
             "weight": 2
         }
     ],
-    "quality": 5.0,
+    "quality": 2.5,
     "tags": [
-        "pinnacle_ranged"
+        "summit_ranged"
     ],
-    "weight": 35
+    "weight": 40
 }

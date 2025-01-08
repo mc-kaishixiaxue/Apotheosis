@@ -1,3 +1,40 @@
+## 8.1.0
+Welcome to the first major update of Apotheosis 8! This update (re-)introduces the Twilight Forest, and brings a variety of other changes along the way.
+
+### New Content
+* Re-added Twilight Forest compatibility.
+  * Twilight Forest items will now generate in all dimensions, with different items showing up based on the current World Tier.
+  * Invaders will now spawn in the Twilight Forest.
+  * A new bonus has been added to the Gem of the Frozen Queen.
+* Added the Stoneforming and Sandforming ability-type affixes for Mining Tools.
+  * These affixes will let you swap between certain block types while breaking them, making it much easier to obtain certain resources.
+* The cost of each augmenting operation is now configurable.
+* The config options are now synced, where appropriate.
+* Added the `/apoth debug weights` command (permission level 4), which allows dumping luck-adjusted weight levels for various apoth objects.
+
+### Bugfixes
+* World Tier buttons will now attempt to stay on-screen even in weird resolutions.
+* Updated the Gateways compat to mostly work correctly.
+  * This format is still not final, and may be changed in future versions.
+* Fixed the Mythic rarity not removing the durability bonus component when it applied Unbreaking.
+* Fixed Purity Upgrade recipes not showing correctly in JEI.
+  * A broken logical statement was causing only some of the recipes to be added to JEI instead of all of them.
+
+### Balance
+* The strength and weight of the Giant Slaying affix has been reduced.
+  * Current HP damage was, and continues to be, very strong, so the numbers are getting knocked down a little bit.
+* Augmenting will now have a significant experience cost per operation.
+  * There's currently an overabundance of experience, especially with the World Tier buffs.
+  * The default values shouldn't break anyone's experience reserves, but this gives pack developers a suitable experience sink.
+* Reduced the bonus rolls on most loot tables significantly.
+  * Bonus loot rolls generate an additional ([random number in range] * player's luck value) loot rolls. At higher luck values, this was getting way out of hand.
+  * In the future, I might see if it's possible to clamp the number of bonus loot rolls, so luck has some impact, but not an unbounded amount of loot generation.
+
+### Technical
+* `GemInstance.unsocketed` was replaced with `UnsocketedGem.of`, which provides a clearer boundary when working with socketed vs unsocketed gems.
+  * For places that still need to consume either a socketed or unsocketed gem, there is now an interface: `GemView`.
+* A stock datapack artifact will now be published to CurseForge with each release of the mod.
+
 ## 8.0.2
 * Fixed fallback world tier logic ignoring creative players.
   * This could cause certain generation types to always generate using Haven when no survival players were nearby.

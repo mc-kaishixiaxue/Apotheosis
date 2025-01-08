@@ -10,6 +10,7 @@ import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.effect.MobEffectAffix.Target;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.GemView;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -58,7 +59,7 @@ public class MobEffectBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
+    public Component getSocketBonusTooltip(GemView gem, AttributeTooltipContext ctx) {
         MobEffectInstance inst = this.values.get(gem.purity()).build(this.effect);
         MutableComponent comp = this.target.toComponent(toComponent(inst, ctx.tickRate())).withStyle(ChatFormatting.YELLOW);
         int cooldown = this.getCooldown(gem.purity());

@@ -72,7 +72,7 @@ public class Gem implements CodecProvider<Gem>, Weighted, Constrained {
      * @param purity   The purity of this gem.
      * @param tooltips The destination for tooltips.
      */
-    public void addInformation(GemInstance gem, Consumer<Component> list, AttributeTooltipContext ctx) {
+    public void addInformation(GemView gem, Consumer<Component> list, AttributeTooltipContext ctx) {
         if (this.isUnique()) {
             list.accept(Component.translatable("text.apotheosis.unique").withStyle(Style.EMPTY.withColor(0xC73912)));
             list.accept(CommonComponents.EMPTY);

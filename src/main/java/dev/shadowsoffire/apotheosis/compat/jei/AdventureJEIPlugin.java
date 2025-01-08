@@ -15,9 +15,9 @@ import dev.shadowsoffire.apotheosis.socket.AddSocketsRecipe;
 import dev.shadowsoffire.apotheosis.socket.ReactiveSmithingRecipe;
 import dev.shadowsoffire.apotheosis.socket.SocketHelper;
 import dev.shadowsoffire.apotheosis.socket.gem.Gem;
-import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import dev.shadowsoffire.apotheosis.socket.gem.UnsocketedGem;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.GemCuttingRecipe;
 import dev.shadowsoffire.apotheosis.socket.gem.cutting.PurityUpgradeRecipe;
 import dev.shadowsoffire.apotheosis.util.ApothSmithingRecipe;
@@ -150,8 +150,8 @@ public class AdventureJEIPlugin implements IModPlugin {
 
         @Override
         public String apply(ItemStack stack, UidContext context) {
-            GemInstance inst = GemInstance.unsocketed(stack);
-            if (!inst.isValidUnsocketed()) {
+            UnsocketedGem inst = UnsocketedGem.of(stack);
+            if (!inst.isValid()) {
                 return BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
             }
             return inst.gem().getId() + "@" + inst.purity().getSerializedName();

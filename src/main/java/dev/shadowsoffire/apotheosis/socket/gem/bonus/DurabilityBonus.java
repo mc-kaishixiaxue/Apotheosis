@@ -9,6 +9,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.GemView;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -30,7 +31,7 @@ public class DurabilityBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
+    public Component getSocketBonusTooltip(GemView gem, AttributeTooltipContext ctx) {
         float level = this.values.get(gem.purity());
         return Component.translatable("bonus." + this.getTypeKey() + ".desc", Affix.fmt(100 * level)).withStyle(ChatFormatting.YELLOW);
     }

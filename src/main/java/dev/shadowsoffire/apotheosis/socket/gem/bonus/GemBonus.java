@@ -11,6 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.GemView;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.AllStatsBonus;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.special.BloodyArrowBonus;
@@ -66,11 +67,11 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
 
     /**
      * Gets the one-line socket bonus tooltip.
-     *
-     * @param gem    The gem stack.
+     * 
+     * @param gem    The gem view.
      * @param rarity The rarity of the gem.
      */
-    public abstract Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx);
+    public abstract Component getSocketBonusTooltip(GemView gem, AttributeTooltipContext ctx);
 
     /**
      * Retrieve the modifiers from this bonus to be applied to the socketed stack.
@@ -238,17 +239,21 @@ public abstract class GemBonus implements CodecProvider<GemBonus> {
      * <p>
      * Can be used to generate attribute modifiers, track cooldowns, and other things that need to be unique per-gem-in-slot.
      *
-     * @param inst The owning gem instance for the bonus
+     * @param view The owning gem instance for the bonus
      * @param salt A salt value, which can be used if the bonus needs multiple modifiers.
      */
-    protected static ResourceLocation makeUniqueId(GemInstance inst, String salt) {
-        return ResourceLocation.fromNamespaceAndPath(inst.gem().getId().getNamespace(), inst.gem().getId().getPath() + "_modifier_" + inst.category().getSlots().getSerializedName() + "_" + inst.slot() + salt);
+    protected static ResourceLocation makeUniqueId(GemView view, String salt) {
+        String path = view.gem().getId().getPath() + "_modifier_";
+        if (view instanceof GemInstance inst) {
+            path += inst.category().getSlots().getSerializedName() + "_" + inst.slot();
+        }
+        return ResourceLocation.fromNamespaceAndPath(view.gem().getId().getNamespace(), path + salt);
     }
 
     /**
      * Calls {@link #makeUniqueId(GemInstance, String)} with an empty salt value.
      */
-    protected static ResourceLocation makeUniqueId(GemInstance inst) {
+    protected static ResourceLocation makeUniqueId(GemView inst) {
         return makeUniqueId(inst, "");
     }
 

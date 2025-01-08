@@ -11,6 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.GemView;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -68,7 +69,7 @@ public class DropTransformBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
+    public Component getSocketBonusTooltip(GemView inst, AttributeTooltipContext ctx) {
         float chance = this.values.get(inst.purity());
         return Component.translatable(this.descKey, Affix.fmt(chance * 100)).withStyle(ChatFormatting.YELLOW);
     }

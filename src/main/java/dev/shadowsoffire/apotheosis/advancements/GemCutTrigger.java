@@ -5,8 +5,8 @@ import java.util.Optional;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import dev.shadowsoffire.apotheosis.socket.gem.UnsocketedGem;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -22,8 +22,8 @@ public class GemCutTrigger extends SimpleCriterionTrigger<GemCutTrigger.Instance
     }
 
     public void trigger(ServerPlayer player, ItemStack stack) {
-        GemInstance gem = GemInstance.unsocketed(stack);
-        if (gem.isValidUnsocketed()) {
+        UnsocketedGem gem = UnsocketedGem.of(stack);
+        if (gem.isValid()) {
             this.trigger(player, inst -> inst.test(gem));
         }
     }
@@ -36,7 +36,7 @@ public class GemCutTrigger extends SimpleCriterionTrigger<GemCutTrigger.Instance
             Purity.CODEC.optionalFieldOf("purity").forGetter(Instance::purity))
             .apply(inst, Instance::new));
 
-        public boolean test(GemInstance inst) {
+        public boolean test(UnsocketedGem inst) {
             return this.gem.test(inst.gemStack()) && (this.purity.isEmpty() || this.purity.get() == inst.purity());
         }
     }

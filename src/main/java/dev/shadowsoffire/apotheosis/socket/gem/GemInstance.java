@@ -35,8 +35,9 @@ import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 
 /**
- * A Gem Instance is a live copy of a Gem with all context needed to call Gem methods.<br>
- * This is the Gem counterparty of {@link AffixInstance}.
+ * A Gem Instance is a live copy of a Gem with all context needed to call Gem methods.
+ * <p>
+ * This is the Gem counterpart of {@link AffixInstance}.
  * <p>
  * The major difference between them is that most methods do not live on {@link Gem} but rather on {@link GemBonus}.
  *
@@ -46,7 +47,7 @@ import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
  * @param gemStack The itemstack form of the sockted Gem.
  * @param slot     The slot index of this gem in the socketed parent item.
  */
-public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity purity, ItemStack gemStack, int slot) {
+public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity purity, ItemStack gemStack, int slot) implements GemView {
 
     public static GemInstance EMPTY = new GemInstance(GemRegistry.INSTANCE.emptyHolder(), LootCategory.NONE, Purity.CHIPPED, ItemStack.EMPTY, -1);
 
@@ -80,20 +81,30 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity 
     /**
      * Creates a {@link GemInstance} with {@link LootCategory#NONE} and an unknown slot index (-1).
      * This instance will be unable to invoke bonus methods, but may be used to easily retrieve the gem properties.
+     * 
+     * @deprecated See {@link UnsocketedGem}.
      */
+    @Deprecated(forRemoval = true, since = "8.1.0")
     public static GemInstance unsocketed(ItemStack gemStack) {
         return socketed(LootCategory.NONE, gemStack, -1);
     }
 
+    /**
+     * @deprecated See {@link UnsocketedGem}.
+     */
+    @Deprecated(forRemoval = true, since = "8.1.0")
     public boolean equalsUnsocketed(GemInstance other) {
-        return this.isValidUnsocketed() && this.gem.equals(other.gem) && this.purity == other.purity;
+        return this.isValid() && this.gem.equals(other.gem) && this.purity == other.purity;
     }
 
     /**
      * Checks if the underlying {@link #gem} is bound, but does not validate that the {@link #category} is correct.
      * <p>
      * This should only be used in conjunction with {@link #unsocketed(ItemStack)}. Otherwise, use {@link #isValid()}.
+     * 
+     * @deprecated See {@link UnsocketedGem}.
      */
+    @Deprecated(forRemoval = true, since = "8.1.0")
     public boolean isValidUnsocketed() {
         return this.gem.isBound();
     }
@@ -108,11 +119,10 @@ public record GemInstance(DynamicHolder<Gem> gem, LootCategory category, Purity 
     }
 
     /**
-     * Checks if the gem and rarity are not null, and there is a valid bonus for the socketed category.<br>
-     * Will always return false if using {@link #unsocketed(ItemStack)}
+     * Checks if the gem and rarity are not null, and there is a valid bonus for the socketed category.
      */
     public boolean isValid() {
-        return this.isValidUnsocketed() && this.getGem().getBonus(this.category, this.purity).isPresent() && this.slot != -1;
+        return this.gem.isBound() && this.getGem().getBonus(this.category, this.purity).isPresent() && this.slot != -1;
     }
 
     /**

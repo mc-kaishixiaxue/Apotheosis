@@ -9,6 +9,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.GemView;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import net.minecraft.core.Holder;
@@ -53,7 +54,7 @@ public class AttributeBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
+    public Component getSocketBonusTooltip(GemView gem, AttributeTooltipContext ctx) {
         return this.attribute.value().toComponent(this.createModifier(gem), ctx.flag());
     }
 
@@ -62,7 +63,7 @@ public class AttributeBonus extends GemBonus {
         return this.values.containsKey(purity);
     }
 
-    public AttributeModifier createModifier(GemInstance gem) {
+    public AttributeModifier createModifier(GemView gem) {
         double value = this.values.get(gem.purity());
         return new AttributeModifier(makeUniqueId(gem), value, this.operation);
     }

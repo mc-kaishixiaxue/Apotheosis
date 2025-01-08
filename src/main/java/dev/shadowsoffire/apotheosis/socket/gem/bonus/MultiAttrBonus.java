@@ -12,6 +12,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.GemView;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import net.minecraft.ChatFormatting;
@@ -59,7 +60,7 @@ public class MultiAttrBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
+    public Component getSocketBonusTooltip(GemView inst, AttributeTooltipContext ctx) {
         Object[] values = new Object[this.modifiers.size() * 2];
         int i = 0;
         for (ModifierInst modifier : this.modifiers) {

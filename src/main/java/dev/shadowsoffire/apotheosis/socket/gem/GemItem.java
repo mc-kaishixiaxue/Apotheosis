@@ -35,8 +35,8 @@ public class GemItem extends Item implements ITabFiller {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
-        GemInstance inst = GemInstance.unsocketed(stack);
-        if (!inst.isValidUnsocketed()) {
+        UnsocketedGem inst = UnsocketedGem.of(stack);
+        if (!inst.isValid()) {
             tooltip.add(Component.literal("Errored gem with no bonus!").withStyle(ChatFormatting.GRAY));
             return;
         }
@@ -45,8 +45,8 @@ public class GemItem extends Item implements ITabFiller {
 
     @Override
     public Component getName(ItemStack pStack) {
-        GemInstance inst = GemInstance.unsocketed(pStack);
-        if (!inst.isValidUnsocketed()) return super.getName(pStack);
+        UnsocketedGem inst = UnsocketedGem.of(pStack);
+        if (!inst.isValid()) return super.getName(pStack);
         MutableComponent comp = Component.translatable(this.getDescriptionId(pStack));
         comp = Component.translatable("item.apotheosis.gem." + inst.purity().getSerializedName(), comp);
         return comp.withStyle(Style.EMPTY.withColor(inst.purity().getColor()));
@@ -61,8 +61,8 @@ public class GemItem extends Item implements ITabFiller {
 
     @Override
     public boolean isFoil(ItemStack pStack) {
-        GemInstance inst = GemInstance.unsocketed(pStack);
-        return inst.isValidUnsocketed() && inst.isPerfect();
+        UnsocketedGem inst = UnsocketedGem.of(pStack);
+        return inst.isValid() && inst.isPerfect();
     }
 
     @Override
@@ -87,8 +87,8 @@ public class GemItem extends Item implements ITabFiller {
     @Override
     @Nullable
     public String getCreatorModId(ItemStack stack) {
-        GemInstance inst = GemInstance.unsocketed(stack);
-        if (inst.isValidUnsocketed()) {
+        UnsocketedGem inst = UnsocketedGem.of(stack);
+        if (inst.isValid()) {
             return inst.gem().getId().getNamespace();
         }
         return super.getCreatorModId(stack);

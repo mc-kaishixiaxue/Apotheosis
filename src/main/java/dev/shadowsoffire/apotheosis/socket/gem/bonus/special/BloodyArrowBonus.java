@@ -10,6 +10,7 @@ import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.GemView;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.apotheosis.socket.gem.bonus.GemBonus;
 import dev.shadowsoffire.apothic_enchanting.Ench;
@@ -49,7 +50,7 @@ public class BloodyArrowBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(GemInstance inst, AttributeTooltipContext ctx) {
+    public Component getSocketBonusTooltip(GemView inst, AttributeTooltipContext ctx) {
         Data d = this.values.get(inst.purity());
         Component cooldown = Component.translatable("affix.apotheosis.cooldown", StringUtil.formatTickDuration(d.cooldown, ctx.tickRate()));
         return Component.translatable("bonus." + this.getTypeKey() + ".desc", Affix.fmt(d.healthCost * 100), Affix.fmt(100 * d.dmgMultiplier), cooldown).withStyle(ChatFormatting.YELLOW);

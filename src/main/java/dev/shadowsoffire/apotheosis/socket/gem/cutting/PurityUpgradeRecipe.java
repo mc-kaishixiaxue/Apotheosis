@@ -5,9 +5,9 @@ import java.util.List;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.GemItem;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import dev.shadowsoffire.apotheosis.socket.gem.UnsocketedGem;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -60,9 +60,9 @@ public record PurityUpgradeRecipe(Purity purity, List<SizedIngredient> left, Lis
 
     @Override
     public boolean matches(CuttingRecipeInput input, Level level) {
-        GemInstance baseInst = GemInstance.unsocketed(input.getBase());
-        GemInstance topInst = GemInstance.unsocketed(input.getTop());
-        if (baseInst.purity() != this.purity || !baseInst.equalsUnsocketed(topInst)) {
+        UnsocketedGem baseInst = UnsocketedGem.of(input.getBase());
+        UnsocketedGem topInst = UnsocketedGem.of(input.getTop());
+        if (baseInst.purity() != this.purity || !baseInst.equals(topInst)) {
             return false;
         }
 
@@ -71,18 +71,18 @@ public record PurityUpgradeRecipe(Purity purity, List<SizedIngredient> left, Lis
 
     @Override
     public boolean isValidBaseItem(CuttingRecipeInput input, ItemStack stack) {
-        GemInstance inst = GemInstance.unsocketed(stack);
-        return inst.isValidUnsocketed() && !inst.isPerfect();
+        UnsocketedGem inst = UnsocketedGem.of(stack);
+        return inst.isValid() && !inst.isPerfect();
     }
 
     @Override
     public boolean isValidTopItem(CuttingRecipeInput input, ItemStack stack) {
-        GemInstance baseInst = GemInstance.unsocketed(input.getBase());
-        if (!baseInst.isValidUnsocketed() || baseInst.isPerfect()) {
+        UnsocketedGem baseInst = UnsocketedGem.of(input.getBase());
+        if (!baseInst.isValid() || baseInst.isPerfect()) {
             return false;
         }
-        GemInstance inst = GemInstance.unsocketed(stack);
-        return baseInst.equalsUnsocketed(inst);
+        UnsocketedGem inst = UnsocketedGem.of(stack);
+        return baseInst.equals(inst);
     }
 
     @Override

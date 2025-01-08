@@ -10,6 +10,7 @@ import dev.shadowsoffire.apotheosis.affix.Affix;
 import dev.shadowsoffire.apotheosis.affix.effect.DamageReductionAffix.DamageType;
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.GemView;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -37,7 +38,7 @@ public class DamageReductionBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
+    public Component getSocketBonusTooltip(GemView gem, AttributeTooltipContext ctx) {
         float level = this.values.get(gem.purity());
         return Component.translatable("affix.apotheosis:damage_reduction.desc", Component.translatable("misc.apotheosis." + this.type.getSerializedName()), Affix.fmt(100 * level)).withStyle(ChatFormatting.YELLOW);
     }

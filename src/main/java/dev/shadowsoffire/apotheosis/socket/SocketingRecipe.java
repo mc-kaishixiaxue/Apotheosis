@@ -7,6 +7,7 @@ import dev.shadowsoffire.apotheosis.Apoth;
 import dev.shadowsoffire.apotheosis.event.CanSocketGemEvent;
 import dev.shadowsoffire.apotheosis.event.ItemSocketingEvent;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.UnsocketedGem;
 import dev.shadowsoffire.apotheosis.util.ApothSmithingRecipe;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
@@ -29,9 +30,12 @@ public class SocketingRecipe extends ApothSmithingRecipe {
     public boolean matches(SmithingRecipeInput inv, Level pLevel) {
         ItemStack input = inv.getItem(BASE);
         ItemStack gemStack = inv.getItem(ADDITION);
-        GemInstance gem = GemInstance.unsocketed(gemStack);
-        if (!gem.isValidUnsocketed()) return false;
-        if (!SocketHelper.hasEmptySockets(input)) return false;
+        UnsocketedGem gem = UnsocketedGem.of(gemStack);
+
+        if (!gem.isValid() || !SocketHelper.hasEmptySockets(input)) {
+            return false;
+        }
+
         CanSocketGemEvent event = NeoForge.EVENT_BUS.post(new CanSocketGemEvent(input, gemStack));
         return !event.isCanceled() && gem.canApplyTo(input);
     }
@@ -43,6 +47,11 @@ public class SocketingRecipe extends ApothSmithingRecipe {
     public ItemStack assemble(SmithingRecipeInput inv, HolderLookup.Provider regs) {
         ItemStack input = inv.getItem(BASE);
         ItemStack gemStack = inv.getItem(ADDITION);
+        UnsocketedGem gem = UnsocketedGem.of(gemStack);
+
+        if (!gem.isValid() || !SocketHelper.hasEmptySockets(input)) {
+            return ItemStack.EMPTY;
+        }
 
         ItemStack result = input.copy();
         result.setCount(1);

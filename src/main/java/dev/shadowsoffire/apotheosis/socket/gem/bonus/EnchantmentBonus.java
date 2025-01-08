@@ -8,6 +8,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.socket.gem.GemClass;
 import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
+import dev.shadowsoffire.apotheosis.socket.gem.GemView;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import net.minecraft.ChatFormatting;
@@ -40,7 +41,7 @@ public class EnchantmentBonus extends GemBonus {
     }
 
     @Override
-    public Component getSocketBonusTooltip(GemInstance gem, AttributeTooltipContext ctx) {
+    public Component getSocketBonusTooltip(GemView gem, AttributeTooltipContext ctx) {
         int level = this.values.get(gem.purity());
         String desc = "bonus." + this.getTypeKey() + ".desc";
         if (this.mode == Mode.GLOBAL) {

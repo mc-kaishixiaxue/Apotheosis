@@ -4,9 +4,9 @@ import java.util.stream.Stream;
 
 import com.mojang.serialization.MapCodec;
 
-import dev.shadowsoffire.apotheosis.socket.gem.GemInstance;
 import dev.shadowsoffire.apotheosis.socket.gem.GemRegistry;
 import dev.shadowsoffire.apotheosis.socket.gem.Purity;
+import dev.shadowsoffire.apotheosis.socket.gem.UnsocketedGem;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
@@ -21,8 +21,8 @@ public record GemIngredient(Purity purity) implements ICustomIngredient {
 
     @Override
     public boolean test(ItemStack stack) {
-        GemInstance inst = GemInstance.unsocketed(stack);
-        return inst.isValidUnsocketed() && inst.purity() == this.purity;
+        UnsocketedGem inst = UnsocketedGem.of(stack);
+        return inst.isValid() && inst.purity() == this.purity;
     }
 
     @Override

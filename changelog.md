@@ -1,3 +1,6 @@
+## 8.1.1
+* Fixed an issue where the augmenting table cost config wasn't working properly.
+
 ## 8.1.0
 Welcome to the first major update of Apotheosis 8! This update (re-)introduces the Twilight Forest, and brings a variety of other changes along the way.
 

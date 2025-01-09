@@ -31,16 +31,6 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
     public static final int UPGRADE = 0;
     public static final int REROLL = 1;
 
-    @Deprecated
-    public static final int UPGRADE_SIGIL_COST = 2;
-    @Deprecated
-    public static final int UPGRADE_LEVEL_COST = 225;
-
-    @Deprecated
-    public static final int REROLL_SIGIL_COST = 1;
-    @Deprecated
-    public static final int REROLL_LEVEL_COST = 175;
-
     protected final Player player;
     protected InternalItemHandler itemInv = new InternalItemHandler(1);
 
@@ -164,11 +154,11 @@ public class AugmentingMenu extends BlockEntityMenu<AugmentingTableTile> {
     }
 
     public boolean hasUpgradeCost() {
-        return this.getSigils().getCount() >= UPGRADE_SIGIL_COST && this.player.experienceLevel >= UPGRADE_LEVEL_COST;
+        return this.getSigils().getCount() >= AdventureConfig.upgradeSigilCost && this.player.experienceLevel >= AdventureConfig.upgradeLevelCost;
     }
 
     public boolean hasRerollCost() {
-        return this.getSigils().getCount() >= REROLL_SIGIL_COST && this.player.experienceLevel >= REROLL_LEVEL_COST;
+        return this.getSigils().getCount() >= AdventureConfig.rerollSigilCost && this.player.experienceLevel >= AdventureConfig.rerollLevelCost;
     }
 
     /**

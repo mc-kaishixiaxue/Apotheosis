@@ -11,7 +11,7 @@ import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 
 // Fixes https://github.com/neoforged/NeoForge/issues/1828
-@Mixin(GlobalLootModifierProvider.class)
+@Mixin(value = GlobalLootModifierProvider.class, remap = false)
 public class GLMProviderMixin {
 
     @Shadow

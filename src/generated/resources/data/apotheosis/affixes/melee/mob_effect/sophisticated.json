@@ -9,6 +9,7 @@
     },
     "mob_effect": "apothic_attributes:knowledge",
     "stack_on_reapply": true,
+    "stacking_limit": 3,
     "target": "attack_self",
     "types": [
         "trident",
@@ -22,7 +23,7 @@
                 "step": 20.0
             },
             "amplifier": 0.0,
-            "cooldown": 1200
+            "cooldown": 400
         },
         "apotheosis:rare": {
             "duration": {
@@ -31,7 +32,7 @@
                 "step": 20.0
             },
             "amplifier": 0.0,
-            "cooldown": 1200
+            "cooldown": 400
         },
         "apotheosis:epic": {
             "duration": {
@@ -44,7 +45,7 @@
                 "max": 1.0,
                 "step": 0.25
             },
-            "cooldown": 1200
+            "cooldown": 400
         },
         "apotheosis:mythic": {
             "duration": {
@@ -57,7 +58,7 @@
                 "max": 2.0,
                 "step": 0.25
             },
-            "cooldown": 1200
+            "cooldown": 400
         }
     }
 }

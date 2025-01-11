@@ -9,6 +9,7 @@
     },
     "mob_effect": "minecraft:poison",
     "stack_on_reapply": true,
+    "stacking_limit": 5,
     "target": "arrow_target",
     "types": [
         "trident",

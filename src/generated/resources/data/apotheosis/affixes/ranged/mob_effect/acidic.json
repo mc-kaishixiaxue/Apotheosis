@@ -12,6 +12,7 @@
     },
     "mob_effect": "apothic_attributes:sundering",
     "stack_on_reapply": true,
+    "stacking_limit": 4,
     "target": "arrow_target",
     "types": [
         "bow"
@@ -24,7 +25,7 @@
                 "step": 20.0
             },
             "amplifier": 0.0,
-            "cooldown": 60
+            "cooldown": 40
         }
     }
 }

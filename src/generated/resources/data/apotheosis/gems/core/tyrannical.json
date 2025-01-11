@@ -95,6 +95,7 @@
             "gem_class": "bow",
             "mob_effect": "apothic_attributes:bleeding",
             "stack_on_reapply": true,
+            "stacking_limit": 4,
             "target": "arrow_target",
             "values": {
                 "flawless": {

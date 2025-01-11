@@ -640,8 +640,8 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
                 .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 20, 5)))
             .categories(LootCategory.BOW)
             .stacking()
-            .limit(5)
-            .value(mythic, 80, 160, 0, 60));
+            .limit(4)
+            .value(mythic, 80, 160, 0, 40));
 
         this.addMobEffect("ranged", "ensnaring", MobEffects.MOVEMENT_SLOWDOWN, Target.ARROW_TARGET, b -> b
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
@@ -707,20 +707,20 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .stacking()
-            .limit(5)
-            .value(rare, 100, 200, 0, 30)
-            .value(epic, 100, 200, StepFunction.fromBounds(0, 1, 0.125F), 300)
-            .value(mythic, 200, 400, StepFunction.fromBounds(0, 1, 0.25F), 300));
+            .limit(3)
+            .value(rare, 100, 180, 0, 60)
+            .value(epic, 100, 200, StepFunction.fromBounds(0, 1, 0.125F), 60)
+            .value(mythic, 200, 400, StepFunction.fromBounds(0, 1, 0.25F), 60));
 
         this.addMobEffect("melee", "sophisticated", ALObjects.MobEffects.KNOWLEDGE, Target.ATTACK_SELF, b -> b
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .stacking()
             .limit(3)
-            .value(uncommon, 400, 600, 0, 1200)
-            .value(rare, 400, 800, 0, 1200)
-            .value(epic, 400, 800, StepFunction.fromBounds(0, 1, 0.25F), 1200)
-            .value(mythic, 400, 1000, StepFunction.fromBounds(0, 2, 0.25F), 1200));
+            .value(uncommon, 400, 600, 0, 400)
+            .value(rare, 400, 800, 0, 400)
+            .value(epic, 400, 800, StepFunction.fromBounds(0, 1, 0.25F), 400)
+            .value(mythic, 400, 1000, StepFunction.fromBounds(0, 2, 0.25F), 400));
 
         this.addMobEffect("melee", "omniscient", ALObjects.MobEffects.KNOWLEDGE, Target.ATTACK_SELF, b -> b
             .definition(AffixType.BASIC_EFFECT, d -> d
@@ -744,10 +744,10 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .stacking()
             .limit(3)
-            .value(uncommon, 200, 400, 0, 600)
-            .value(rare, 200, 600, 0, 600)
-            .value(epic, 200, 600, StepFunction.fromBounds(0, 1, 0.25F), 600)
-            .value(mythic, 200, 800, StepFunction.fromBounds(0, 2, 0.25F), 600));
+            .value(uncommon, 200, 400, 0, 300)
+            .value(rare, 200, 600, 0, 300)
+            .value(epic, 200, 600, StepFunction.fromBounds(0, 1, 0.25F), 300)
+            .value(mythic, 200, 800, StepFunction.fromBounds(0, 2, 0.25F), 300));
 
         // Shield basic effects
 
@@ -755,21 +755,21 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.SHIELD)
             .stacking()
-            .limit(5)
-            .value(uncommon, 100, 100, 0, 60)
-            .value(rare, 100, 120, 0, 60)
-            .value(epic, 100, 140, StepFunction.fromBounds(0, 1, 0.125F), 60)
-            .value(mythic, 100, 140, StepFunction.fromBounds(0, 1, 0.25F), 60));
+            .limit(4)
+            .value(uncommon, 100, 100, 0, 40)
+            .value(rare, 100, 120, 0, 40)
+            .value(epic, 100, 140, StepFunction.fromBounds(0, 1, 0.125F), 40)
+            .value(mythic, 100, 140, StepFunction.fromBounds(0, 1, 0.25F), 40));
 
         this.addMobEffect("shield", "venomous", MobEffects.POISON, Target.BLOCK_ATTACKER, b -> b
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.SHIELD)
             .stacking()
-            .limit(5)
-            .value(uncommon, 120, 120, 0, 300)
-            .value(rare, 120, 180, 0, 300)
-            .value(epic, 120, 200, StepFunction.fromBounds(0, 1, 0.25F), 300)
-            .value(mythic, 160, 240, StepFunction.fromBounds(0, 1, 0.5F), 300));
+            .limit(4)
+            .value(uncommon, 120, 120, 0, 200)
+            .value(rare, 120, 180, 0, 200)
+            .value(epic, 120, 200, StepFunction.fromBounds(0, 1, 0.25F), 120)
+            .value(mythic, 160, 240, StepFunction.fromBounds(0, 1, 0.5F), 120));
 
         this.addMobEffect("shield", "withering", MobEffects.WITHER, Target.BLOCK_ATTACKER, b -> b
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)

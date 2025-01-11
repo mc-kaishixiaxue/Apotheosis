@@ -473,6 +473,7 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                 .effect(ALObjects.MobEffects.BLEEDING)
                 .target(Target.ARROW_TARGET)
                 .stacking()
+                .limit(5)
                 .value(Purity.FLAWLESS, 160, 0, 40)
                 .value(Purity.PERFECT, 160, 1, 40)));
 
@@ -508,6 +509,7 @@ public class GemProvider extends DynamicRegistryProvider<Gem> {
                 .effect(MobEffects.DAMAGE_BOOST)
                 .target(Target.ARROW_TARGET)
                 .stacking()
+                .limit(5)
                 .value(Purity.FLAWLESS, 200, 0, 40)
                 .value(Purity.PERFECT, 200, 1, 40)));
 

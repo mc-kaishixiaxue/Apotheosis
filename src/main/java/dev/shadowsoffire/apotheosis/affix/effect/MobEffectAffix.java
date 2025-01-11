@@ -49,7 +49,8 @@ public class MobEffectAffix extends Affix {
             Target.CODEC.fieldOf("target").forGetter(a -> a.target),
             LootRarity.mapCodec(EffectData.CODEC).fieldOf("values").forGetter(a -> a.values),
             LootCategory.SET_CODEC.fieldOf("types").forGetter(a -> a.types),
-            Codec.BOOL.optionalFieldOf("stack_on_reapply", false).forGetter(a -> a.stackOnReapply))
+            Codec.BOOL.optionalFieldOf("stack_on_reapply", false).forGetter(a -> a.stackOnReapply),
+            Codec.intRange(1, 255).optionalFieldOf("stacking_limit", 255).forGetter(a -> a.stackingLimit))
         .apply(inst, MobEffectAffix::new));
 
     protected final Holder<MobEffect> effect;
@@ -57,14 +58,16 @@ public class MobEffectAffix extends Affix {
     protected final Map<LootRarity, EffectData> values;
     protected final Set<LootCategory> types;
     protected final boolean stackOnReapply;
+    protected final int stackingLimit;
 
-    public MobEffectAffix(AffixDefinition def, Holder<MobEffect> effect, Target target, Map<LootRarity, EffectData> values, Set<LootCategory> types, boolean stackOnReapply) {
+    public MobEffectAffix(AffixDefinition def, Holder<MobEffect> effect, Target target, Map<LootRarity, EffectData> values, Set<LootCategory> types, boolean stackOnReapply, int stackingLimit) {
         super(def);
         this.effect = effect;
         this.target = target;
         this.values = values;
         this.types = types;
         this.stackOnReapply = stackOnReapply;
+        this.stackingLimit = stackingLimit;
     }
 
     @Override
@@ -184,11 +187,13 @@ public class MobEffectAffix extends Affix {
         int cooldown = this.getCooldown(rarity);
         if (cooldown != 0 && isOnCooldown(this.id(), cooldown, target)) return;
         EffectData data = this.values.get(rarity);
-        var inst = target.getEffect(this.effect);
+        MobEffectInstance inst = target.getEffect(this.effect);
         if (this.stackOnReapply && inst != null) {
             if (inst != null) {
-                var newInst = new MobEffectInstance(this.effect, (int) Math.max(inst.getDuration(), data.duration.get(level)), (int) (inst.getAmplifier() + 1 + data.amplifier.get(level)));
-                target.addEffect(newInst);
+                int duration = Math.max(inst.getDuration(), data.duration.getInt(level));
+                int amp = Math.min(this.stackingLimit, inst.getAmplifier() + 1 + data.amplifier.getInt(level));
+                var newInst = new MobEffectInstance(this.effect, duration, amp, inst.isAmbient(), inst.isVisible());
+                inst.update(newInst);
             }
         }
         else {
@@ -265,6 +270,7 @@ public class MobEffectAffix extends Affix {
         protected final Map<LootRarity, EffectData> values = new HashMap<>();
         protected final Set<LootCategory> categories = new HashSet<>();
         protected boolean stacking = false;
+        private int limit = 255;
 
         public Builder(Holder<MobEffect> effect, Target target) {
             this.effect = effect;
@@ -304,9 +310,14 @@ public class MobEffectAffix extends Affix {
             return this;
         }
 
+        public Builder limit(int limit) {
+            this.limit = limit;
+            return this;
+        }
+
         public MobEffectAffix build() {
             Preconditions.checkArgument(!this.values.isEmpty());
-            return new MobEffectAffix(this.definition, this.effect, this.target, this.values, this.categories, this.stacking);
+            return new MobEffectAffix(this.definition, this.effect, this.target, this.values, this.categories, this.stacking, this.limit);
         }
     }
 

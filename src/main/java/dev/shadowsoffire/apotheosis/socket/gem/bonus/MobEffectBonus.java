@@ -42,20 +42,23 @@ public class MobEffectBonus extends GemBonus {
             BuiltInRegistries.MOB_EFFECT.holderByNameCodec().fieldOf("mob_effect").forGetter(a -> a.effect),
             Target.CODEC.fieldOf("target").forGetter(a -> a.target),
             Purity.mapCodec(EffectData.CODEC).fieldOf("values").forGetter(a -> a.values),
-            Codec.BOOL.optionalFieldOf("stack_on_reapply", false).forGetter(a -> a.stackOnReapply))
+            Codec.BOOL.optionalFieldOf("stack_on_reapply", false).forGetter(a -> a.stackOnReapply),
+            Codec.intRange(1, 255).optionalFieldOf("stacking_limit", 255).forGetter(a -> a.stackingLimit))
         .apply(inst, MobEffectBonus::new));
 
     protected final Holder<MobEffect> effect;
     protected final Target target;
     protected final Map<Purity, EffectData> values;
     protected final boolean stackOnReapply;
+    protected final int stackingLimit;
 
-    public MobEffectBonus(GemClass gemClass, Holder<MobEffect> effect, Target target, Map<Purity, EffectData> values, boolean stackOnReapply) {
+    public MobEffectBonus(GemClass gemClass, Holder<MobEffect> effect, Target target, Map<Purity, EffectData> values, boolean stackOnReapply, int stackingLimit) {
         super(gemClass);
         this.effect = effect;
         this.target = target;
         this.values = values;
         this.stackOnReapply = stackOnReapply;
+        this.stackingLimit = stackingLimit;
     }
 
     @Override
@@ -147,8 +150,10 @@ public class MobEffectBonus extends GemBonus {
         MobEffectInstance effectInst = target.getEffect(this.effect);
         if (this.stackOnReapply && effectInst != null) {
             if (inst != null) {
-                var newInst = new MobEffectInstance(this.effect, Math.max(effectInst.getDuration(), data.duration), effectInst.getAmplifier() + 1 + data.amplifier);
-                target.addEffect(newInst);
+                int duration = Math.max(effectInst.getDuration(), data.duration);
+                int amp = Math.min(this.stackingLimit, effectInst.getAmplifier() + 1 + data.amplifier);
+                var newInst = new MobEffectInstance(this.effect, duration, amp, effectInst.isAmbient(), effectInst.isVisible());
+                effectInst.update(newInst);
             }
         }
         else {
@@ -188,6 +193,10 @@ public class MobEffectBonus extends GemBonus {
         public MobEffectInstance build(Holder<MobEffect> effect) {
             return new MobEffectInstance(effect, this.duration, this.amplifier);
         }
+
+        public MobEffectInstance buildStacking(Holder<MobEffect> effect, int existingAmp) {
+            return new MobEffectInstance(effect, this.duration, this.amplifier + existingAmp);
+        }
     }
 
     public static class Builder extends GemBonus.Builder {
@@ -195,6 +204,7 @@ public class MobEffectBonus extends GemBonus {
         private Holder<MobEffect> effect;
         private Target target;
         private boolean stacking;
+        private int limit = 255;
 
         public Builder() {
             this.values = new HashMap<>();
@@ -229,9 +239,14 @@ public class MobEffectBonus extends GemBonus {
             return this;
         }
 
+        public Builder limit(int limit) {
+            this.limit = limit;
+            return this;
+        }
+
         @Override
         public MobEffectBonus build(GemClass gemClass) {
-            return new MobEffectBonus(gemClass, this.effect, this.target, this.values, this.stacking);
+            return new MobEffectBonus(gemClass, this.effect, this.target, this.values, this.stacking, this.limit);
         }
     }
 

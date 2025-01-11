@@ -640,6 +640,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
                 .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 20, 5)))
             .categories(LootCategory.BOW)
             .stacking()
+            .limit(5)
             .value(mythic, 80, 160, 0, 60));
 
         this.addMobEffect("ranged", "ensnaring", MobEffects.MOVEMENT_SLOWDOWN, Target.ARROW_TARGET, b -> b
@@ -670,6 +671,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.BOW, LootCategory.TRIDENT)
             .stacking()
+            .limit(5)
             .value(rare, 100, 160, 0, 40)
             .value(epic, 100, 160, StepFunction.fromBounds(0, 1, 0.25F), 40)
             .value(mythic, 100, 200, StepFunction.fromBounds(0, 2, 0.25F), 40));
@@ -686,6 +688,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
                 .exclusiveWith(afx("ranged/mob_effect/blighted")))
             .categories(LootCategory.BOW, LootCategory.TRIDENT)
             .stacking()
+            .limit(4)
             .value(mythic, 100, 200, 1, 40));
 
         // Melee Basic Effects
@@ -694,6 +697,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .stacking()
+            .limit(3)
             .value(uncommon, 100, 100, 0, 80)
             .value(rare, 100, 120, 0, 80)
             .value(epic, 100, 120, 0, 80)
@@ -703,6 +707,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .stacking()
+            .limit(5)
             .value(rare, 100, 200, 0, 30)
             .value(epic, 100, 200, StepFunction.fromBounds(0, 1, 0.125F), 300)
             .value(mythic, 200, 400, StepFunction.fromBounds(0, 1, 0.25F), 300));
@@ -711,6 +716,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .stacking()
+            .limit(3)
             .value(uncommon, 400, 600, 0, 1200)
             .value(rare, 400, 800, 0, 1200)
             .value(epic, 400, 800, StepFunction.fromBounds(0, 1, 0.25F), 1200)
@@ -722,6 +728,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
                 .exclusiveWith(afx("melee/mob_effect/sophisticated")))
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .stacking()
+            .limit(8)
             .value(mythic, 100, 160, StepFunction.fromBounds(0, 1, 0.125F), 80));
 
         this.addMobEffect("melee", "weakening", MobEffects.WEAKNESS, Target.ATTACK_TARGET, b -> b
@@ -736,6 +743,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.MELEE_WEAPON, LootCategory.TRIDENT)
             .stacking()
+            .limit(3)
             .value(uncommon, 200, 400, 0, 600)
             .value(rare, 200, 600, 0, 600)
             .value(epic, 200, 600, StepFunction.fromBounds(0, 1, 0.25F), 600)
@@ -747,6 +755,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.SHIELD)
             .stacking()
+            .limit(5)
             .value(uncommon, 100, 100, 0, 60)
             .value(rare, 100, 120, 0, 60)
             .value(epic, 100, 140, StepFunction.fromBounds(0, 1, 0.125F), 60)
@@ -756,6 +765,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
             .definition(AffixType.BASIC_EFFECT, DEFAULT_WEIGHT, DEFAULT_QUALITY)
             .categories(LootCategory.SHIELD)
             .stacking()
+            .limit(5)
             .value(uncommon, 120, 120, 0, 300)
             .value(rare, 120, 180, 0, 300)
             .value(epic, 120, 200, StepFunction.fromBounds(0, 1, 0.25F), 300)
@@ -780,6 +790,7 @@ public class AffixProvider extends DynamicRegistryProvider<Affix> {
                 .exclusiveWith(afx("shield/mob_effect/reinforcing")))
             .categories(LootCategory.SHIELD)
             .stacking()
+            .limit(3)
             .value(mythic, 100, 160, StepFunction.fromBounds(0, 1, 0.125F), 80));
 
         // Breaker Abilities

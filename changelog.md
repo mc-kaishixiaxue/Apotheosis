@@ -1,3 +1,9 @@
+## 8.1.2
+* Added a stacking limit field to mob effect affixes and gem bonuses.
+  * This field limits the amplifier of a stacked mob effect, preventing it from going to infinity on enough re-applications.
+  * The application method was also updated, which should prevent mob effect stacking from triggering other effects that happen when mob effects are applied. 
+* RuyaSavascisi: Added Turkish translation.
+
 ## 8.1.1
 * Fixed an issue where the augmenting table cost config wasn't working properly.
 

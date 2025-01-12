@@ -9,9 +9,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.mobs.registries.EliteRegistry;
 import dev.shadowsoffire.apotheosis.mobs.types.Elite;
-import dev.shadowsoffire.apotheosis.mobs.util.BossSpawnRules;
-import dev.shadowsoffire.apotheosis.mobs.util.Exclusion.SpawnTypeExclusion;
-import dev.shadowsoffire.apotheosis.mobs.util.Exclusion.SurfaceTypeExclusion;
+import dev.shadowsoffire.apotheosis.mobs.util.SpawnCondition;
+import dev.shadowsoffire.apotheosis.mobs.util.SpawnCondition.NotCondition;
+import dev.shadowsoffire.apotheosis.mobs.util.SpawnCondition.SpawnTypeCondition;
+import dev.shadowsoffire.apotheosis.mobs.util.SpawnCondition.SurfaceTypeCondition;
+import dev.shadowsoffire.apotheosis.mobs.util.SurfaceType;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.TieredWeights;
 import dev.shadowsoffire.apotheosis.tiers.WorldTier;
@@ -52,7 +54,7 @@ public class EliteProvider extends DynamicRegistryProvider<Elite> {
                 .name(Component.literal("Craig the Eternal").withStyle(s -> s.withColor(GradientColor.RAINBOW)))
                 .weights(TieredWeights.onlyFor(WorldTier.PINNACLE, 100, 0))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
-                .exclusion(new SpawnTypeExclusion(Set.of(MobSpawnType.SPAWN_EGG)))
+                .exclusion(excludedSpawnTypes(MobSpawnType.SPAWN_EGG))
                 .gearSets(WorldTier.PINNACLE, "#pinnacle_melee")
                 .nbt(t -> t.putBoolean("IsScreamingGoat", true))
                 .nbt(t -> t.putBoolean("HasLeftHorn", true))
@@ -76,8 +78,8 @@ public class EliteProvider extends DynamicRegistryProvider<Elite> {
                 .name(Component.literal("Honeyed Archer"))
                 .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 100, 0))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
-                .exclusion(new SpawnTypeExclusion(ApothMiscUtil.linkedSet(MobSpawnType.SPAWN_EGG, MobSpawnType.SPAWNER, MobSpawnType.MOB_SUMMONED)))
-                .exclusion(new SurfaceTypeExclusion(BossSpawnRules.NEEDS_SURFACE))
+                .exclusion(excludedSpawnTypes(MobSpawnType.SPAWN_EGG, MobSpawnType.SPAWNER, MobSpawnType.MOB_SUMMONED))
+                .exclusion(new SurfaceTypeCondition(SurfaceType.NEEDS_SURFACE))
                 .mount(m -> m
                     .entity(EntityType.BEE)
                     .nbt(t -> t.putInt("CannotEnterHiveTicks", 999999))
@@ -97,8 +99,8 @@ public class EliteProvider extends DynamicRegistryProvider<Elite> {
                 .name(Component.literal("Undead Knight"))
                 .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 100, 0))
                 .constraints(Constraints.forDimension(Level.OVERWORLD))
-                .exclusion(new SpawnTypeExclusion(ApothMiscUtil.linkedSet(MobSpawnType.SPAWN_EGG, MobSpawnType.SPAWNER, MobSpawnType.MOB_SUMMONED)))
-                .exclusion(new SurfaceTypeExclusion(BossSpawnRules.NEEDS_SURFACE))
+                .exclusion(excludedSpawnTypes(MobSpawnType.SPAWN_EGG, MobSpawnType.SPAWNER, MobSpawnType.MOB_SUMMONED))
+                .exclusion(new SurfaceTypeCondition(SurfaceType.NEEDS_SURFACE))
                 .mount(m -> m
                     .entity(EntityType.SKELETON_HORSE)
                     .nbt(skeletonHorseNbt())))
@@ -117,7 +119,7 @@ public class EliteProvider extends DynamicRegistryProvider<Elite> {
                 .name(Component.literal("Withering Archer"))
                 .weights(TieredWeights.forTiersAbove(WorldTier.FRONTIER, 100, 0))
                 .constraints(Constraints.forDimension(Level.NETHER))
-                .exclusion(new SpawnTypeExclusion(ApothMiscUtil.linkedSet(MobSpawnType.SPAWN_EGG, MobSpawnType.SPAWNER, MobSpawnType.MOB_SUMMONED)))
+                .exclusion(excludedSpawnTypes(MobSpawnType.SPAWN_EGG, MobSpawnType.SPAWNER, MobSpawnType.MOB_SUMMONED))
                 .nbt(witherCloud()))
             .stats(c -> c
                 .enchantChance(0.25F)
@@ -186,6 +188,10 @@ public class EliteProvider extends DynamicRegistryProvider<Elite> {
 
     private void addBoss(String name, UnaryOperator<Elite.Builder> builder) {
         this.add(Apotheosis.loc(name), builder.apply(Elite.builder()).build());
+    }
+
+    private static SpawnCondition excludedSpawnTypes(MobSpawnType... types) {
+        return new NotCondition(new SpawnTypeCondition(ApothMiscUtil.linkedSet(types)));
     }
 
 }

@@ -45,18 +45,18 @@ import net.minecraft.world.phys.AABB;
 /**
  * Basic boss information, shared between {@link Elite} and {@link Invader}.
  *
- * @param weights       The weights for this element, relative to other objects of the same type.
- * @param constraints   Application constraints that may remove this element from the available pool.
- * @param name          The entity name. May be a lang key. Empty or null will cause no name to be set.
- *                      The special string "use_name_generation" will invoke {@link NameHelper}.
- * @param bonusLoot     Any bonus loot tables that will be dropped by the entity.
- * @param gearSets      Per-tier lists of {@link SetPredicates} controlling what gear sets may be applied.
- *                      Not providing an entry for a tier will not equip anything. Individual predicates are logically OR'd.
- * @param nbt           Entity NBT to apply to the target mob.
- * @param mount         An optional {@link SupportingEntity} that the target entity will start riding.
- * @param support       A list of entities to spawn alongside the entity.
- * @param finalizeSpawn If {@link Mob#finalizeSpawn} will be called for the target entity.
- * @param exclusions    A list of exclusions that may prevent a selected entity from being spawned. Multiple exclusions are OR'd.
+ * @param weights         The weights for this element, relative to other objects of the same type.
+ * @param constraints     Application constraints that may remove this element from the available pool.
+ * @param name            The entity name. May be a lang key. Empty or null will cause no name to be set.
+ *                        The special string "use_name_generation" will invoke {@link NameHelper}.
+ * @param bonusLoot       Any bonus loot tables that will be dropped by the entity.
+ * @param gearSets        Per-tier lists of {@link SetPredicates} controlling what gear sets may be applied.
+ *                        Not providing an entry for a tier will not equip anything. Individual predicates are logically OR'd.
+ * @param nbt             Entity NBT to apply to the target mob.
+ * @param mount           An optional {@link SupportingEntity} that the target entity will start riding.
+ * @param support         A list of entities to spawn alongside the entity.
+ * @param finalizeSpawn   If {@link Mob#finalizeSpawn} will be called for the target entity.
+ * @param spawnConditions Spawn conditions that are required for the boss to spawn. Multiple exclusions are combined via logical and.
  */
 public record BasicBossData(
     TieredWeights weights,
@@ -68,7 +68,7 @@ public record BasicBossData(
     Optional<SupportingEntity> mount,
     List<SupportingEntity> support,
     boolean finalizeSpawn,
-    List<Exclusion> exclusions) {
+    List<SpawnCondition> spawnConditions) {
 
     /**
      * Causes {@link BasicBossData#name()} to be filled in with a generated name.
@@ -86,7 +86,7 @@ public record BasicBossData(
             SupportingEntity.CODEC.optionalFieldOf("mount").forGetter(BasicBossData::mount),
             SupportingEntity.CODEC.listOf().optionalFieldOf("supporting_entities", Collections.emptyList()).forGetter(BasicBossData::support),
             Codec.BOOL.optionalFieldOf("finalize", false).forGetter(BasicBossData::finalizeSpawn),
-            Exclusion.CODEC.listOf().optionalFieldOf("exclusions", Collections.emptyList()).forGetter(BasicBossData::exclusions))
+            SpawnCondition.CODEC.listOf().optionalFieldOf("spawn_conditions", Collections.emptyList()).forGetter(BasicBossData::spawnConditions))
         .apply(inst, BasicBossData::new));
 
     public static final Codec<AABB> AABB_CODEC = RecordCodecBuilder.create(inst -> inst
@@ -157,8 +157,8 @@ public record BasicBossData(
         return mountedEntity;
     }
 
-    public boolean isExcluded(Mob mob, ServerLevelAccessor level, MobSpawnType type) {
-        return Exclusion.isExcluded(this.exclusions, mob, level, type);
+    public boolean canSpawn(Mob mob, ServerLevelAccessor level, MobSpawnType type) {
+        return SpawnCondition.checkAll(this.spawnConditions, mob, level, type);
     }
 
     public static Builder builder() {
@@ -175,7 +175,7 @@ public record BasicBossData(
         private Optional<SupportingEntity> mount = Optional.empty();
         private List<SupportingEntity> support = new ArrayList<>();
         private boolean finalizeSpawn = false;
-        private List<Exclusion> exclusions = new ArrayList<>();
+        private List<SpawnCondition> exclusions = new ArrayList<>();
 
         public Builder weights(TieredWeights weights) {
             this.weights = weights;
@@ -256,12 +256,12 @@ public record BasicBossData(
             return this;
         }
 
-        public Builder exclusion(Exclusion exclusion) {
+        public Builder exclusion(SpawnCondition exclusion) {
             this.exclusions.add(exclusion);
             return this;
         }
 
-        public Builder exclusions(List<Exclusion> exclusions) {
+        public Builder exclusions(List<SpawnCondition> exclusions) {
             this.exclusions = exclusions;
             return this;
         }

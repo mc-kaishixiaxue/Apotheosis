@@ -9,20 +9,6 @@
                 "minecraft:overworld"
             ]
         },
-        "exclusions": [
-            {
-                "type": "apotheosis:spawn_type",
-                "spawn_types": [
-                    "spawn_egg",
-                    "spawner",
-                    "mob_summoned"
-                ]
-            },
-            {
-                "type": "apotheosis:surface_type",
-                "rule": "needs_surface"
-            }
-        ],
         "mount": {
             "entity": "minecraft:bee",
             "nbt": {
@@ -31,6 +17,23 @@
             }
         },
         "name": "Honeyed Archer",
+        "spawn_conditions": [
+            {
+                "type": "apotheosis:not",
+                "spawn_condition": {
+                    "type": "apotheosis:spawn_type",
+                    "spawn_types": [
+                        "spawn_egg",
+                        "spawner",
+                        "mob_summoned"
+                    ]
+                }
+            },
+            {
+                "type": "apotheosis:surface_type",
+                "rule": "needs_surface"
+            }
+        ],
         "valid_gear_sets": {
             "haven": [
                 "#haven_ranged"

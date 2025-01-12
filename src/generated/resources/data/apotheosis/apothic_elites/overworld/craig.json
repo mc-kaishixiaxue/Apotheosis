@@ -6,14 +6,6 @@
                 "minecraft:overworld"
             ]
         },
-        "exclusions": [
-            {
-                "type": "apotheosis:spawn_type",
-                "spawn_types": [
-                    "spawn_egg"
-                ]
-            }
-        ],
         "name": {
             "color": "rainbow",
             "text": "Craig the Eternal"
@@ -23,6 +15,17 @@
             "HasRightHorn": 1,
             "IsScreamingGoat": 1
         },
+        "spawn_conditions": [
+            {
+                "type": "apotheosis:not",
+                "spawn_condition": {
+                    "type": "apotheosis:spawn_type",
+                    "spawn_types": [
+                        "spawn_egg"
+                    ]
+                }
+            }
+        ],
         "supporting_entities": [
             {
                 "entity": "minecraft:sheep",

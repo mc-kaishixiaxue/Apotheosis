@@ -7,7 +7,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import dev.shadowsoffire.apotheosis.mobs.util.EntityModifier;
-import dev.shadowsoffire.apotheosis.mobs.util.Exclusion;
+import dev.shadowsoffire.apotheosis.mobs.util.SpawnCondition;
 import dev.shadowsoffire.apotheosis.tiers.Constraints;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
@@ -27,13 +27,13 @@ import net.minecraft.world.level.ServerLevelAccessor;
  * @param exclusions  Any entity-based restrictions on the application of this augmentation.
  * @param modifiers   The list of modifiers that will be applied to the target entity.
  */
-public record Augmentation(float chance, Constraints constraints, List<Exclusion> exclusions, List<EntityModifier> modifiers) implements CodecProvider<Augmentation> {
+public record Augmentation(float chance, Constraints constraints, List<SpawnCondition> exclusions, List<EntityModifier> modifiers) implements CodecProvider<Augmentation> {
 
     public static final Codec<Augmentation> CODEC = RecordCodecBuilder.create(inst -> inst
         .group(
             Codec.floatRange(0, 1).fieldOf("application_chance").forGetter(Augmentation::chance),
             Constraints.CODEC.fieldOf("constraints").forGetter(Augmentation::constraints),
-            Exclusion.CODEC.listOf().optionalFieldOf("exclusions", Collections.emptyList()).forGetter(Augmentation::exclusions),
+            SpawnCondition.CODEC.listOf().optionalFieldOf("exclusions", Collections.emptyList()).forGetter(Augmentation::exclusions),
             EntityModifier.CODEC.listOf().fieldOf("modifiers").forGetter(Augmentation::modifiers))
         .apply(inst, Augmentation::new));
 
@@ -47,11 +47,7 @@ public record Augmentation(float chance, Constraints constraints, List<Exclusion
             return false;
         }
 
-        if (Exclusion.isExcluded(this.exclusions, mob, level, type)) {
-            return false;
-        }
-
-        return true;
+        return SpawnCondition.checkAll(this.exclusions, mob, level, type);
     }
 
     public void apply(Mob mob, GenContext ctx) {

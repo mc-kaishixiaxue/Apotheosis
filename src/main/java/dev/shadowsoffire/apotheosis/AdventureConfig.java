@@ -10,7 +10,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.tuple.Pair;
 
 import dev.shadowsoffire.apotheosis.loot.LootCategory;
-import dev.shadowsoffire.apotheosis.mobs.util.BossSpawnRules;
+import dev.shadowsoffire.apotheosis.mobs.util.SurfaceType;
 import dev.shadowsoffire.placebo.config.Configuration;
 import dev.shadowsoffire.placebo.network.PayloadProvider;
 import net.minecraft.ResourceLocationException;
@@ -34,7 +34,7 @@ public class AdventureConfig {
 
     public static final List<ResourceLocation> DIM_WHITELIST = new ArrayList<>();
     public static final Map<Item, LootCategory> TYPE_OVERRIDES = new HashMap<>(); // TODO: Turn this into a datamap or a collection of item tags.
-    public static final Map<ResourceLocation, Pair<Float, BossSpawnRules>> BOSS_SPAWN_RULES = new HashMap<>();
+    public static final Map<ResourceLocation, Pair<Float, SurfaceType>> BOSS_SPAWN_RULES = new HashMap<>();
 
     public static float augmentedMobChance = 0.075F;
 
@@ -139,7 +139,7 @@ public class AdventureConfig {
         for (String s : dims) {
             try {
                 String[] split = s.split("\\|");
-                BOSS_SPAWN_RULES.put(ResourceLocation.parse(split[0]), Pair.of(Float.parseFloat(split[1]), BossSpawnRules.valueOf(split[2].toUpperCase(Locale.ROOT))));
+                BOSS_SPAWN_RULES.put(ResourceLocation.parse(split[0]), Pair.of(Float.parseFloat(split[1]), SurfaceType.valueOf(split[2].toUpperCase(Locale.ROOT))));
             }
             catch (Exception e) {
                 Apotheosis.LOGGER.error("Invalid boss spawn rules: " + s + " will be ignored");

@@ -19,7 +19,7 @@ import dev.shadowsoffire.apotheosis.mobs.registries.InvaderRegistry;
 import dev.shadowsoffire.apotheosis.mobs.types.Augmentation;
 import dev.shadowsoffire.apotheosis.mobs.types.Elite;
 import dev.shadowsoffire.apotheosis.mobs.types.Invader;
-import dev.shadowsoffire.apotheosis.mobs.util.BossSpawnRules;
+import dev.shadowsoffire.apotheosis.mobs.util.SurfaceType;
 import dev.shadowsoffire.apotheosis.mobs.util.SpawnCooldownSavedData;
 import dev.shadowsoffire.apotheosis.net.BossSpawnPayload;
 import dev.shadowsoffire.apotheosis.tiers.GenContext;
@@ -113,7 +113,7 @@ public class ApothMobEvents {
         ServerLevelAccessor sLevel = e.getLevel();
         ResourceLocation dimId = sLevel.getLevel().dimension().location();
 
-        Pair<Float, BossSpawnRules> rules = AdventureConfig.BOSS_SPAWN_RULES.get(dimId);
+        Pair<Float, SurfaceType> rules = AdventureConfig.BOSS_SPAWN_RULES.get(dimId);
         if (rules == null) {
             return false;
         }
@@ -126,7 +126,7 @@ public class ApothMobEvents {
                 return false;
             }
 
-            if (item.basicData().isExcluded(mob, sLevel, e.getSpawnType())) {
+            if (!item.basicData().canSpawn(mob, sLevel, e.getSpawnType())) {
                 return false;
             }
 
@@ -185,7 +185,7 @@ public class ApothMobEvents {
         ServerLevelAccessor sLevel = e.getLevel();
 
         Elite item = EliteRegistry.INSTANCE.getRandomItem(ctx, mob);
-        if (item == null || item.basicData().isExcluded(mob, sLevel, e.getSpawnType())) {
+        if (item == null || !item.basicData().canSpawn(mob, sLevel, e.getSpawnType())) {
             return false;
         }
 

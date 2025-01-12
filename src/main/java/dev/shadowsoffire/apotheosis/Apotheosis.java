@@ -40,7 +40,7 @@ import dev.shadowsoffire.apotheosis.mobs.ApothMobEvents;
 import dev.shadowsoffire.apotheosis.mobs.registries.AugmentRegistry;
 import dev.shadowsoffire.apotheosis.mobs.registries.EliteRegistry;
 import dev.shadowsoffire.apotheosis.mobs.registries.InvaderRegistry;
-import dev.shadowsoffire.apotheosis.mobs.util.Exclusion;
+import dev.shadowsoffire.apotheosis.mobs.util.SpawnCondition;
 import dev.shadowsoffire.apotheosis.net.BossSpawnPayload;
 import dev.shadowsoffire.apotheosis.net.RadialStateChangePayload;
 import dev.shadowsoffire.apotheosis.net.RerollResultPayload;
@@ -101,7 +101,7 @@ public class Apotheosis {
         ObfuscationReflectionHelper.setPrivateValue(RangedAttribute.class, (RangedAttribute) Attributes.ARMOR.value(), 200D, "maxValue");
         ObfuscationReflectionHelper.setPrivateValue(RangedAttribute.class, (RangedAttribute) Attributes.ARMOR_TOUGHNESS.value(), 100D, "maxValue");
         LootRule.initCodecs();
-        Exclusion.initCodecs();
+        SpawnCondition.initCodecs();
         GemBonus.initCodecs();
         if (ModList.get().isLoaded("gateways")) {
             GatewaysCompat.register();

@@ -16,8 +16,11 @@ import dev.shadowsoffire.placebo.codec.CodecMap;
 import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import dev.shadowsoffire.placebo.json.NBTAdapter;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -74,6 +77,7 @@ public interface SpawnCondition extends CodecProvider<SpawnCondition> {
     public static void initCodecs() {
         register("spawn_type", SpawnTypeCondition.CODEC);
         register("surface_type", SurfaceTypeCondition.CODEC);
+        register("has_tag", EntityTagCondition.CODEC);
         register("nbt", NbtCondition.CODEC);
         register("and", AndCondition.CODEC);
         register("or", OrCondition.CODEC);
@@ -108,6 +112,50 @@ public interface SpawnCondition extends CodecProvider<SpawnCondition> {
     }
 
     /**
+     * Checks that an entity matches the surface requirement as specified by the underlying {@link SurfaceType}.
+     */
+    public static record SurfaceTypeCondition(SurfaceType type) implements SpawnCondition {
+
+        public static Codec<SurfaceTypeCondition> CODEC = RecordCodecBuilder.create(inst -> inst
+            .group(
+                SurfaceType.CODEC.fieldOf("surface_type").forGetter(SurfaceTypeCondition::type))
+            .apply(inst, SurfaceTypeCondition::new));
+
+        @Override
+        public Codec<? extends SpawnCondition> getCodec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean test(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType, CompoundTag entityNbt) {
+            return this.type.test(level, mob.blockPosition());
+        }
+
+    }
+
+    /**
+     * Checks that an entity has the given entity type tag.
+     */
+    public static record EntityTagCondition(TagKey<EntityType<?>> tag) implements SpawnCondition {
+
+        public static Codec<EntityTagCondition> CODEC = RecordCodecBuilder.create(inst -> inst
+            .group(
+                TagKey.codec(Registries.ENTITY_TYPE).fieldOf("tag").forGetter(EntityTagCondition::tag))
+            .apply(inst, EntityTagCondition::new));
+
+        @Override
+        public Codec<? extends SpawnCondition> getCodec() {
+            return CODEC;
+        }
+
+        @Override
+        public boolean test(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType, CompoundTag entityNbt) {
+            return mob.getType().is(tag);
+        }
+
+    }
+
+    /**
      * Requires that the entity has a specific NBT value.
      * <p>
      * Use sparingly, as introducing this condition will cause all entities that spawn to be serialized for this check to work.
@@ -133,28 +181,6 @@ public interface SpawnCondition extends CodecProvider<SpawnCondition> {
         @Override
         public boolean requiresNbtAccess() {
             return true;
-        }
-
-    }
-
-    /**
-     * Checks that an entity matches the surface requirement as specified by the underlying {@link SurfaceType}.
-     */
-    public static record SurfaceTypeCondition(SurfaceType rule) implements SpawnCondition {
-
-        public static Codec<SurfaceTypeCondition> CODEC = RecordCodecBuilder.create(inst -> inst
-            .group(
-                SurfaceType.CODEC.fieldOf("rule").forGetter(SurfaceTypeCondition::rule))
-            .apply(inst, SurfaceTypeCondition::new));
-
-        @Override
-        public Codec<? extends SpawnCondition> getCodec() {
-            return CODEC;
-        }
-
-        @Override
-        public boolean test(Mob mob, ServerLevelAccessor level, MobSpawnType spawnType, CompoundTag entityNbt) {
-            return this.rule.test(level, mob.blockPosition());
         }
 
     }

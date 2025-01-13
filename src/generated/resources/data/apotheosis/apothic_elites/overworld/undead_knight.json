@@ -43,7 +43,7 @@
             },
             {
                 "type": "apotheosis:surface_type",
-                "rule": "needs_surface"
+                "surface_type": "needs_surface"
             }
         ],
         "valid_gear_sets": {

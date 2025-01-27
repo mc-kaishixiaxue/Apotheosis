@@ -9,13 +9,13 @@
     "text.apotheosis.world_tier.frontier": "边界",
     "text.apotheosis.world_tier.frontier.desc": "勇闯危险世界",
 
-    "text.apotheosis.world_tier.ascent": "攀升",
-    "text.apotheosis.world_tier.ascent.desc": "向力量开始攀升",
+    "text.apotheosis.world_tier.ascent": "进击",
+    "text.apotheosis.world_tier.ascent.desc": "寻求力量，达到更高高度",
 
-    "text.apotheosis.world_tier.summit": "高峰",
-    "text.apotheosis.world_tier.summit.desc": "你已到达高峰，但这不是终点",
+    "text.apotheosis.world_tier.summit": "顶点",
+    "text.apotheosis.world_tier.summit.desc": "你已到达顶点，但这不是终点",
 
-    "text.apotheosis.world_tier.pinnacle": "顶峰",
+    "text.apotheosis.world_tier.pinnacle": "巅峰",
     "text.apotheosis.world_tier.pinnacle.desc": "在山峰的风暴中迷失自我",
 
     "title.apotheosis.select_world_tier": "选择世界等级",
@@ -23,9 +23,9 @@
 
     "button.apotheosis.haven": "天堂",
     "button.apotheosis.frontier": "边界",
-    "button.apotheosis.ascent": "攀升",
-    "button.apotheosis.summit": "高峰",
-    "button.apotheosis.pinnacle": "顶峰",
+    "button.apotheosis.ascent": "进击",
+    "button.apotheosis.summit": "顶点",
+    "button.apotheosis.pinnacle": "巅峰",
     "button.apotheosis.tier_locked": "已锁定，完成%s以取得进展",
     "button.apotheosis.activate_tier": "激活世界等级：%s",
     "button.apotheosis.already_activated": "该世界等级目前处于激活状态",
@@ -614,7 +614,7 @@
 
     "rarity.apotheosis:common": "普通",
     "rarity.apotheosis:uncommon": "罕见",
-    "rarity.apotheosis:rare": "珍贵",
+    "rarity.apotheosis:rare": "稀有",
     "rarity.apotheosis:epic": "史诗",
     "rarity.apotheosis:mythic": "神话",
     "rarity.apotheosis:ancient": "远古",
@@ -642,20 +642,20 @@
     "advancements.apotheosis.progression.frontier.title": "世界等级：边界",
     "advancements.apotheosis.progression.frontier.desc": "装备全套词缀物品以取得“边界”进展",
 
-    "advancements.apotheosis.progression.ascent.title": "世界等级：攀升",
-    "advancements.apotheosis.progression.ascent.desc": "装备全套罕见装备并杀死入侵者以以开始你的攀升",
+    "advancements.apotheosis.progression.ascent.title": "世界等级：进击",
+    "advancements.apotheosis.progression.ascent.desc": "装备全套罕见装备并杀死入侵者以开始你的进击",
 
-    "advancements.apotheosis.progression.summit.title": "世界等级：高峰",
-    "advancements.apotheosis.progression.summit.desc": "要到达“高峰”，杀死凋灵，并装备全套珍贵装备",
+    "advancements.apotheosis.progression.summit.title": "世界等级：顶点",
+    "advancements.apotheosis.progression.summit.desc": "要达到“顶点”，杀死凋灵，并装备全套稀有装备",
 
-    "advancements.apotheosis.progression.pinnacle.title": "世界等级：顶峰",
-    "advancements.apotheosis.progression.pinnacle.desc": "进入“顶峰”需要解放末地，并获得全套史诗装备",
+    "advancements.apotheosis.progression.pinnacle.title": "世界等级：巅峰",
+    "advancements.apotheosis.progression.pinnacle.desc": "达到“巅峰”需要解放末地，并获得全套史诗装备",
 
     "advancements.apotheosis.affix": "神化词缀",
     "advancements.apotheosis.affix.desc": "找到一个带有神化词缀的物品。",
 
     "advancements.apotheosis.rare": "值钱的装备",
-    "advancements.apotheosis.rare.desc": "找到一个带有珍贵词缀的物品。",
+    "advancements.apotheosis.rare.desc": "找到一个带有稀有词缀的物品。",
 
     "advancements.apotheosis.epic": "史诗！",
     "advancements.apotheosis.epic.desc": "找到一个带有史诗词缀的物品。",

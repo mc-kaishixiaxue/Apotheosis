@@ -3,7 +3,7 @@
 
     "key.categories.apotheosis": "神化",
 
-    "text.apotheosis.world_tier.haven": "天堂",
+    "text.apotheosis.world_tier.haven": "避风港",
     "text.apotheosis.world_tier.haven.desc": "旅途的开始",
 
     "text.apotheosis.world_tier.frontier": "边界",
@@ -21,7 +21,7 @@
     "title.apotheosis.select_world_tier": "选择世界等级",
     "title.apotheosis.world_tier_details": "世界等级详情",
 
-    "button.apotheosis.haven": "天堂",
+    "button.apotheosis.haven": "避风港",
     "button.apotheosis.frontier": "边界",
     "button.apotheosis.ascent": "进击",
     "button.apotheosis.summit": "顶点",
@@ -636,8 +636,8 @@
     "advancements.apotheosis.progression.root.title": "神化世界等级",
     "advancements.apotheosis.progression.root.desc": "在神化中解锁世界等级的里程碑，按CTRL+T打开选择界面。",
 
-    "advancements.apotheosis.progression.haven.title": "天堂",
-    "advancements.apotheosis.progression.haven.desc": "当你找到第一个词缀物品时，“天堂”就会解锁",
+    "advancements.apotheosis.progression.haven.title": "避风港",
+    "advancements.apotheosis.progression.haven.desc": "当你找到第一个词缀物品时，“避风港”就会解锁",
 
     "advancements.apotheosis.progression.frontier.title": "世界等级：边界",
     "advancements.apotheosis.progression.frontier.desc": "装备全套词缀物品以取得“边界”进展",
